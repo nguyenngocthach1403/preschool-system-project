@@ -48,8 +48,8 @@
                     { name: 'Students',path: '/students', icon: student },
                     { name: 'Parents', path: '/parents', icon: parent },
                     { name: 'Classes', path: '/classes', icon: classes },
-                    { name: 'Staffs', path: '/dddd', icon: staff },
-                    { name: 'Account', path: '/dddd', icon: account },
+                    { name: 'Staffs', path: '/staffs', icon: staff },
+                    { name: 'Account', path: '/account', icon: account },
                     { name: 'Settings', path: '/dddd', icon: setting },
                     { name: 'Extensions', path: '/dddd', icon: extension }
                 ]
