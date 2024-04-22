@@ -19,7 +19,7 @@ const closeMenu = (is) => {
 </script>
 
 <template>
- <main v-bind:class="menuStyle">
+ <main v-bind:class="menuStyle" class="overflow-y-hidden">
     <section class="menu h-screen">
         <MenuComp :menu-style="menuStyle" @close-menu="closeMenu"/>
     </section>
