@@ -5,7 +5,13 @@
         <div class="text-left p-[20px] text-[36px] font-bold ">Student</div>
 
         <!-- Search-->
-
+        <div class="flex justify-between content-center">
+            <SearchFormComp></SearchFormComp>
+            
+            <ToolTipComp tool-tip-text="Add new student" class="text-[15px] text-white w-[60px] h-[40px] bg-black mt-5 mr-3 rounded-md bg-green-500">
+                 <img :src="add_icon" class="w-[30px] m-auto">
+            </ToolTipComp>
+        </div>
 
         <!-- Quick search -->
 
@@ -17,9 +23,14 @@
 <script setup>
     /* Import component here */
     import TableComp from '@/presentations/student_page/components/table_comp.vue'
-    import {ref} from 'vue'
+    import SearchFormComp from '@/components/search_form_comp.vue'
+    import ToolTipComp from '@/utils/resources/tooltip.vue'
+    import {ref, computed} from 'vue'
 
     /* Another import here */
+    import add_icon from '@/assets/icons/pls.svg'
+
+    const tooltip = ref(false)
 
     /* Data demo of Student Table */
     const dataOfTable = ref([
