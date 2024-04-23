@@ -1,14 +1,13 @@
 <template>
-    
-    <div class="bg-white ml-4 rounded-3xl text-center text-5xl h-dvh">
+    <div class="bg-white ml-4 rounded-3xl text-center h-dvh">
         <!-- Header -->
-        <div class="text-left p-[20px] text-[36px] font-bold ">Student</div>
+        <div class="text-left px-[20px] text-[36px] font-bold ">Student</div>
 
         <!-- Search-->
         <div class="flex justify-between content-center">
             <SearchFormComp></SearchFormComp>
             
-            <ToolTipComp tool-tip-text="Add new student" class="text-[15px] text-white w-[60px] h-[40px] bg-black mt-5 mr-3 rounded-md bg-green-500">
+            <ToolTipComp tool-tip-text="Add new student" class="text-[15px] text-white w-[60px] h-[40px] bg-black mr-3 rounded-md bg-green-500">
                  <img :src="add_icon" class="w-[30px] m-auto">
             </ToolTipComp>
         </div>
