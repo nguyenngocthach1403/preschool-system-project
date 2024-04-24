@@ -4,6 +4,7 @@ import DashBoardView from '@/presentations/dash_board_page/views/dash_board_page
 import StudentView from '@/presentations/student_page/view/student_page.vue';
 import ParentView from '@/presentations/parent_page/views/parent_page.vue';
 import ClassView from '@/presentations/class_page/views/class_page.vue';
+import StudentCreationView from '@/presentations/student_creation_page/views/student_creation_page.vue'
 
 
 
@@ -33,6 +34,11 @@ function Router()
                 name: 'ClassView',
                 path: '/classes',
                 component: ClassView
+            },
+            {
+                name: 'StudentCreationView',
+                path: '/students/create',
+                component: StudentCreationView
             }
         ]
     });
