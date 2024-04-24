@@ -1,21 +1,21 @@
 <template>
     <div class="menu-section bg-transparent">
         <!-- Title app -->
-        <div class="app-title text-center font-bold text-3xl bg-transparent h-20">
-            <div v-show="menuStyle === 'full-menu'">Preschool</div>
+        <div class="app-title text-center font-bold text-3xl bg-transparent h-20 mt-[5px]">
+            <div v-show="menuStyle === 'full-menu'" class="drop-shadow-md">Preschool</div>
         </div>
 
         <!-- User information -->
-        <div id="user-inf" class="h-28 bg-white my-10 rounded-xl shadow-xl">
+        <div id="user-inf" class="h-28 bg-white my-5 rounded-xl drop-shadow-xl">
             <div>
                 <div class="avatar" :class="menuStyle"></div>
             </div>
         </div>
 
         <!-- Menu list -->
-        <div class="menu-list my-10 bg-white py-1 rounded-xl shadow-xl pb-20">
+        <div class="menu-list my-10 bg-white py-1 rounded-15 drop-shadow-xl pb-20">
             <router-link v-for="item in menuItem" :key="item.name" :to="item.path">
-                <div class="menu-item">
+                <div class="menu-item h-50 pl-[15px]">
                     <div><img :src="item.icon"></div>
                     <span class="pl-4" v-show="menuStyle === 'full-menu'">{{ item.name }}</span>
                 </div>
@@ -115,10 +115,8 @@
     }
     .menu-item 
     {
-        height: 50px;
         margin: 0px 5px 4px 4px;
-        border-radius: 7px;
-        padding-left: 20px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
 

@@ -19,8 +19,8 @@ const closeMenu = (is) => {
 </script>
 
 <template>
- <main v-bind:class="menuStyle">
-    <section class="menu h-screen">
+ <main v-bind:class="menuStyle" class="overflow-y-hidden">
+    <section class="menu h-screen px-[10px]">
         <MenuComp :menu-style="menuStyle" @close-menu="closeMenu"/>
     </section>
     <section class="view h-screen ">
@@ -40,10 +40,6 @@ const closeMenu = (is) => {
         display: grid;
         grid-template-columns: 90px auto;
         transition: 0.5s  ease;
-    }
-    .menu 
-    {
-        padding: 10px;
     }
     .view{
         display: grid;
