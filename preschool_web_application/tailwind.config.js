@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       boxShadow: {
-        'xl' : '10px 20px 50px -15px rgba(0, 0, 0, 0.3)'
+        'xl' : '10px 20px 50px -15px rgba(0, 0, 0, 0.3)',
+        'ss' : '10px 10px 30px 0px rgba(0, 0, 0, 0.3)',
       },
       borderRadius: {
         '15': '15px',

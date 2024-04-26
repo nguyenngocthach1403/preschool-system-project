@@ -4,12 +4,20 @@
         <div class="text-left px-[20px] text-[36px] font-bold ">Student</div>
 
         <!-- Search-->
-        <div class="flex justify-between content-center">
+        <div class="flex justify-between content-center mr-3">
             <SearchFormComp></SearchFormComp>
             
-            <ToolTipComp tool-tip-text="Add new student" class="text-[15px] text-white w-[60px] h-[40px] bg-black mr-3 rounded-md bg-green-500">
-                 <img :src="add_icon" class="w-[30px] m-auto">
-            </ToolTipComp>
+
+            <router-link to="/students/create">
+                <!-- <ToolTipComp tool-tip-text="Add new student" class="text-[15px] text-white w-[60px] h-[40px] bg-black mr-3 rounded-md bg-green-500">
+                    <img :src="add_icon" class="w-[30px] m-auto">
+                </ToolTipComp> -->
+                <button class="w-full content-center flex justify-center h-[40px] bg-green-500 rounded-[6px] px-[10px] text-white py-2">
+                        <img :src="add_icon" class="w-[25px]">
+                        <div class="ml-2">Add student</div>
+                </button>
+            </router-link>
+            
         </div>
 
         <!-- Quick search -->
