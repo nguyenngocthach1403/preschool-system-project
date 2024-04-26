@@ -335,7 +335,7 @@
             return e.match(abilityInput.value)
         }) 
 
-        if(filterList.length ===0)
+        if(filterList.length === 0)
             return dropDownAbilities.value;
         return filterList
     })
