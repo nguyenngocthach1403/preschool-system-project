@@ -8,7 +8,7 @@
         <!--Body-->
 
         <!--Form Personal Information-->
-        <form class="w-full bg-white h-full rounded-15 grid grid-cols-3 overflow-scroll" action="submit">
+        <form class="w-full bg-white h-dvh rounded-15 grid grid-cols-3" action="submit">
             <div id="personal_info" class="px-[50px]">
                 <div class="title w-[200px] px-2 my-[20px] h-[25px] bg-[#49727D] text-white rounded-[5px] ">Thông tin cá nhân</div>
                 <!-- Add avatar-->
@@ -21,7 +21,7 @@
                     <span class="pl-4">Họ và tên</span>
                     <input v-model="nameStudentInput" type="text" placeholder="Họ và tên" class="mb-0 h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : isStudentNameValid}">
                     <div class="h-[20px] valid">
-                        <p v-if="isStudentNameValid" class="mb-4 text-red-300">{{ messageOfStudentName }}</p>
+                        <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p>
                     </div>
                 </label>
 
@@ -31,7 +31,7 @@
                         <span class="pl-4">Ngày sinh</span>
                         <input v-model="birthDayStudentInput" type="date" placeholder="Ho va ten" class="h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"  :class="{'invalid-input' : isBirdayStudentValid}">
                         <div class="h-[2px] valid">
-                            <p v-if="isBirdayStudentValid" class="text-red-300">{{ messageOfStudentBirthDay }}</p>
+                            <p v-if="messageOfStudentBirthDay" class="text-red-300">{{ messageOfStudentBirthDay }}</p>
                         </div>
                     </label>
                     <label class="ml-2">
@@ -67,7 +67,7 @@
                 <!--Ton giao-->
                 <label>
                     <span class="pl-4">Tôn giáo</span>
-                    <input type="text" placeholder="Kinh" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-300 px-4">
+                    <input type="text" v-model="religionStudentInput" placeholder="Phật, Hồi, Thiên Chúa" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-300 px-4">
                 </label>
 
                 <!--Dia chi-->
@@ -84,36 +84,49 @@
             </div>
 
             <!--Form Personal Health-->
-            <div id="health_info" class="px-[50px] border-x-2">
+            <div id="health_info" class="px-[50px] border-x-2 h-full ooverflow-hidden overflow-y-auto pb-[100px]">
                 <!--Title-->
-                <div class="title w-[200px] px-2 my-[20px] h-[25px] bg-[#5242B4] rounded-[5px] text-white">Thông tin sức khỏe</div>
+                <div class="title w-[200px] px-2 my-[20px] h-[25px] bg-[#5242B4] rounded-[5px] text-white sticky top-0 z-10">Thông tin sức khỏe</div>
                 
                 <!--Cân nặng & chiều cao-->
                 <div class="flex">
                     <label class="mr-2 relative">
                         <span class="pl-4">Cân nặng</span>
                         <span class="input-prefix absolute right-[10px] top-[45%]">kg</span>
-                        <input type="text" placeholder="0" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                        <input type="text" v-model="studentWeight" placeholder="0" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
                     </label>
                     <label class="ml-2 relative">
                         <span class="pl-4">Chiều cao</span>
                         <span class="input-prefix absolute right-[10px] top-[45%]">m</span>
-                        <input type="text" placeholder="100" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                        <input type="text" v-model="studentHeight" placeholder="100" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
                     </label>
                 </div>
                 <!--Bơi lội-->
-                <label>
+                <div class='relative'>
                     <span class="pl-4">Các khả năng (Nếu có)</span>
-                    <input type="text" placeholder="" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
-                </label>
+                    <div class="flex my-[5px] flex-wrap">
+                        <div class="text-wrap mx-2 my-[2px] bg-green-500 pl-[12px] pr-[8px] text-white rounded-[5px] flex" v-for="(item, index) in abilityList" :key="index">
+                            <span>{{ item }}</span>
+                            <img :src="close_icon" @click.prevent="deleteItemAbilityList(index)" class="w-[12px] ml-3">
+                        </div>
+                    </div>
+                    <label for="">
+                        <input type="text" @focus="showDropDownAbility = !showDropDownAbility"  @keydown.enter.prevent="chooseItemDropDownAbilities(abilityInput)" v-model="abilityInput" placeholder="" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                        <div v-show="showDropDownAbility" class="nation-drop-down w-full border-2 rounded-[5px] overflow-y-auto z-10">
+                            <div class="option-item" v-for="(item) in filteredAbility" :key=item @click="chooseItemDropDownAbilities(item)">{{ item }}</div>
+                        </div>
+                    </label>
+                </div>
                 <!--Tình trạng mắt-->
                 <div class="eyes-state flex">
                     <label>
                         <span class="pl-4">Tình trạng mắt</span>
                         <!-- <input type="text" placeholder="" class=" mb-4 h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"> -->
                         <select name="" id="" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
-                                <option value="selection" disabled selected>Select</option>
+                                <option value="Cận" selected>Bình thường</option>
                                 <option value="Cận">Cận thị</option>
+                                <option value="Cận">Loạn thị</option>
+                                <option value="Cận">Khuyết tật</option>
                         </select>
                     </label>
                     <label class="ml-2 relative">
@@ -126,29 +139,19 @@
                 <!--Tình trạng tai-->
                 <label>
                     <span class="pl-4">Tình trạng tai</span>
-                    <textarea cols="30" rows="10" placeholder="Nhập tình trạng tai" class="mb-[20px] h-[80px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4 py-2"></textarea>
-                    <!-- <input type="text" cols="40" rows="5" placeholder="Địa chỉ người thân" class="mb-4 h-[80px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"> -->
+                    <input type="text" v-model="earsStateInput" placeholder="Nhập dị ứng" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
                 </label>
-
                 <!--Tim mạch-->
                 <label>
                     <span class="pl-4">Tim mạch</span>
-                    <textarea cols="30" rows="10" placeholder="Nhập tình trạng tim" class="mb-[20px] h-[80px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4 py-2"></textarea>
-                    <!-- <input type="text" cols="40" rows="5" placeholder="Địa chỉ người thân" class="mb-4 h-[80px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"> -->
+                    <input type="text" v-model="heartStateInput" placeholder="Nhập dị ứng" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
                 </label>
 
                 <!--Dị ứng-->
                 <label>
                     <span class="pl-4">Dị ứng</span>
-                    <textarea cols="30" rows="10" class="mb-[20px] h-[80px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4 py-2"></textarea>
-                    <!-- <input type="text" cols="40" rows="5" placeholder="Địa chỉ người thân" class="mb-4 h-[80px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"> -->
+                    <input type="text" cols="40" rows="5" v-model="allergyInput" placeholder="Nhập dị ứng" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
                 </label>
-
-                <!---Các khả năng-->
-                <!-- <label>
-                    <span class="pl-4">Các khả năng (Nếu có)</span>
-                    <input type="text" placeholder="" class=" mb-4 h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
-                </label> -->
             </div>
 
             <!--Form Personal Relationships-->
@@ -159,14 +162,19 @@
                 <!--Họ tên-->
                 <label>
                     <span class="pl-4">Họ và tên</span>
-                    <input type="text" placeholder="Họ và tên người thân" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                    <input type="text" v-model="nameRelativeInput" placeholder="Họ và tên người thân" class=" h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : isValidRelativeName}">
+                    <div class="h-[20px] valid">
+                        <p v-if="messageOfRelativeName" class="mb-4 text-red-300">{{ messageOfRelativeName }}</p>
+                    </div>
                 </label>
-
                 <!--Birthdy & Gender-->
                 <div class="flex">
                     <label class="mr-2">
                         <span class="pl-4">Ngày sinh</span>
-                        <input type="date" placeholder="Ho va ten" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                        <input type="date" v-model="birdayRelativeInput" placeholder="Ho va ten" class="h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                        <div class="h-[20px] valid">
+                            <p v-if="messageOfRelativeBirthday" class="mb-4 text-red-300">{{ messageOfRelativeBirthday }}</p>
+                        </div>
                     </label>
                     <label class="ml-2">
                         <span class="pl-4">Giới tính</span>
@@ -175,7 +183,6 @@
                             <option value="selection" disabled selected>Select</option>
                             <option value="Female">Nam</option>
                             <option value="Male">Nữ</option>
-
                         </select>
                     </label>
                 </div>
@@ -185,25 +192,25 @@
                     <span class="pl-4">Quan hệ với bé</span>
                     <!-- <input type="text" placeholder="Bố" class="mb-4 h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"> -->
                     <select name="" id="" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
-                            <option value="selection" disabled selected>Select</option>
-                            <option value="Father">Bố</option>
-                            <option value="Mother">Mẹ</option>
-                            <option value="GrandMother">Bà</option>
-                            <option value="GrandFather">Ông</option>
-                            <option value="Uncle">Chú</option>
+                        <option value="selection" disabled selected>Select</option>
+                        <option value="Father">Bố</option>
+                        <option value="Mother">Mẹ</option>
+                        <option value="GrandMother">Bà</option>
+                        <option value="GrandFather">Ông</option>
+                        <option value="Uncle">Chú</option>
                     </select>
                 </label>
 
                 <!--Số điện thoại-->
                 <label>
                     <span class="pl-4">Số điện thoại</span>
-                    <input type="tel" placeholder="0xxxxxxxxx" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                    <input type="tel" v-model="phoneInput" placeholder="0xxxxxxxxx" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
                 </label>
 
                 <!--Email-->
                 <label>
                     <span class="pl-4">Email</span>
-                    <input type="email" placeholder="abc@abc.com" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
+                    <input type="email" v-model="emailInput" placeholder="abc@abc.com" class="mb-[20px] h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4">
                 </label>
 
                 <!--Địa chỉ-->
@@ -233,6 +240,7 @@
     /*Import icon */
     import save_icon from '@/assets/icons/save.svg'
     import user_icon from '@/assets/icons/avatar.svg'
+    import close_icon from '@/assets/icons/close.svg'
     
     import {ref, computed, watch, onMounted} from 'vue'
 
@@ -248,20 +256,39 @@
     const religionStudentInput = ref(null)
     const placeOfResidenceStudentInput = ref(null)
     const placeOfOriginStudentInput = ref(null)
+    const studentHeight = ref(null)
+    const studentWeight = ref(null)
+    const abilityInput = ref(null)
+    const earsStateInput = ref(null)
+    const heartStateInput = ref(null)
+    const eyeStateInput  =ref(null)
+    const allergyInput =ref(null)
+    const nameRelativeInput = ref(null)
+    const birdayRelativeInput = ref(null)
+    const genderRelativeInput = ref(null)
+    const relationshipInput = ref(null)
+    const phoneInput = ref(null)
+    const emailInput = ref(null)
+    const addressRelativeInput = ref(null)
+
 
     const showNationDropDown = ref(false)
+    const showDropDownAbility =ref(false)
 
     // valid valiable
-    const isStudentNameValid = ref(false)
     const messageOfStudentName = ref('')
 
-    const isBirdayStudentValid =ref(false)
     const messageOfStudentBirthDay = ref('')
+
+    const messageOfRelativeName = ref('')
+
+    const messageOfRelativeBirthday = ref('')
 
     //ref
     const studentGender = ref(null)
 
     let studentModel = {
+        'avatar' : null,
         'name': null,
         'gender': null,
         'birthday': null,
@@ -269,13 +296,49 @@
         'nationality': null,
         'placeOfResidence' :null,
         'placeOfOrigin': null,
+        'religion': null,
+        'height' : null,
+        'weight': null,
+        'abilities': null,
+        'allergy': null,
+        'earsState': null,
+        'heartState': null,
     }
 
     const chooseItemNationDropDown = (item) => {
         nationStudentInput.value = item
     }
 
+    const chooseItemDropDownAbilities = (item) =>
+    {
+        if(abilityList.value.indexOf(item) !== -1)
+            return 
+        abilityList.value.push(item)
+        studentModel.abilities = abilityList.value
+        saveLocalStudentInputData()
+    }
+
+    const deleteItemAbilityList = (index) => {
+        abilityList.value.splice(index, 1)
+        studentModel.abilities = abilityList.value
+        saveLocalStudentInputData()
+    }
+
+    const abilityList = ref([]);
+
     const dropDown = ref(["Kinh","Tày","Thái","Mường","H'Mông","Dao","Khơ Me","Nùng","H'rê","Gia Rai","Ê Đê","Ba Na","Xơ Đăng","Sán Chay","Cơ Tu","Chăm","Sán Dìu","Hà Nhì","Ra Glai","La Chí","M'Nông","Chứt","Xê Đăng","Bru-Vân Kiều","Giáy","Cơ Ho","Tà Ôi","Co","Ta Oi","Kháng","Co Lao","La Ha","Pu Péo","Lự","Ngái","Pa Thẻn","Lô Lô","Chơ Ro","Mảng","Cờ Lao","Bố Y","La Hu","Pà Thẻn","Lào","Mông","Pơng","Cống","Si La","Ơ Đu","Mảng","M'ngông","Thổ",])
+
+    const dropDownAbilities = ref(['Bơi lội', 'Làm toán cơ bản', 'Làm toán nâng cao', 'Đọc bản chữ cái', 'Viết chữ', 'Đánh vần'])
+
+    const filteredAbility =  computed(() => {
+        const filterList =  dropDownAbilities.value.filter((e) => {
+            return e.match(abilityInput.value)
+        }) 
+
+        if(filterList.length ===0)
+            return dropDownAbilities.value;
+        return filterList
+    })
 
     const filteredNationStudent = computed(() => {
         return dropDown.value.filter((e) => {
@@ -288,17 +351,31 @@
         studentModel.gender = event.target.value
         saveLocalStudentInputData()
     }
-    watch(nameStudentInput, (newVal) => {
 
+    watch(earsStateInput, (newVal) => {
+        studentModel.earsState = newVal
+        saveLocalStudentInputData()
+    })
+
+    watch(heartStateInput, (newVal) => {
+        studentModel.heartState = newVal
+        saveLocalStudentInputData()
+    })
+    
+    watch(allergyInput, (newVal) => {
+        studentModel.allergy = newVal
+        saveLocalStudentInputData()
+    })
+
+    watch(nameStudentInput, (newVal) => {
         const valid = nameStudentValid(newVal)
         if(valid!== '')
         {
             messageOfStudentName.value = valid
-            isStudentNameValid.value = true
             return
         }
 
-        isStudentNameValid.value = false;
+        messageOfStudentName.value = ''
 
         studentModel.name = newVal;
         saveLocalStudentInputData()
@@ -308,12 +385,11 @@
         const valid = birthdayStudentValid(newVal);
         if(valid !== '')
         {
-            isBirdayStudentValid.value = true
             messageOfStudentBirthDay.value = valid
             return
         }
 
-        isBirdayStudentValid.value = false
+        messageOfStudentBirthDay.value = ''
 
         studentModel.birthday = newVal;
         saveLocalStudentInputData()
@@ -340,6 +416,44 @@
         saveLocalStudentInputData()
     })
 
+    watch(religionStudentInput, (newVal) => {
+        studentModel.religion = newVal;
+        saveLocalStudentInputData()
+    })
+
+    watch(nameRelativeInput, (newVal) => {
+        const valid = nameStudentValid(newVal)
+        if(valid !== '')
+        {
+            messageOfRelativeName.value = valid
+            return 
+        }
+
+        messageOfRelativeName.value =''
+
+    })
+
+    watch(studentHeight, (newVal) => {
+        studentModel.height = newVal
+        saveLocalStudentInputData()
+    })
+
+    watch(studentWeight, (newVal) => {
+        studentModel.weight = newVal
+        saveLocalStudentInputData()
+    })
+
+    watch(birdayRelativeInput, (newVal) => {
+        const valid = birthdayStudentValid(newVal)
+        if(valid !== '')
+        {
+            messageOfRelativeBirthday.value = valid
+            return 
+        }
+
+        messageOfRelativeBirthday.value =''
+
+    })
 
     //Lưu dữ liệu vào bộ nhớ đệm
     function saveLocalStudentInputData()
@@ -357,7 +471,7 @@
         if(!avatar_upload) return 
 
         //Kiểm tra size
-        if(avatar_upload.value.size > 5120) 
+        if(avatar_upload.value.size / 1024 > 5120) 
         {
             //Bỏ nếu quá dung lượng cho phếp
             avatar_upload.value = null
@@ -366,6 +480,9 @@
 
         //Tạo đường dẫn của ảnh
         avatar_path.value = URL.createObjectURL(avatar_upload.value)
+
+        studentModel.avatar = avatar_path.value
+        saveLocalStudentInputData()
     }
 
     onMounted(() => {
@@ -378,6 +495,12 @@
         nationalityStudentInput.value = studentModel.nationality
         placeOfOriginStudentInput.value = studentModel.placeOfOrigin
         placeOfResidenceStudentInput.value = studentModel.placeOfResidence
+        religionStudentInput.value = studentModel.religion
+        avatar_path.value = studentModel.avatar
+        allergyInput.value = studentModel.allergy
+        earsStateInput.value = studentModel.earsState
+        heartStateInput.value = studentModel.heartState
+        abilityList.value = studentModel.abilities
     })
 
 </script>
@@ -406,5 +529,7 @@
         background-color:  #5242B4;
         color: white;
     }
-    
+    #health_info::-webkit-scrollbar {
+        width: 10px;
+    }
 </style>
