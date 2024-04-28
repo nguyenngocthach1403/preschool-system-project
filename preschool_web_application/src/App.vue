@@ -19,11 +19,11 @@ const closeMenu = (is) => {
 </script>
 
 <template>
- <main v-bind:class="menuStyle" class="overflow-y-hidden">
-    <section class="menu h-screen px-[10px]">
+ <main v-bind:class="menuStyle" class="overflow-y-hidden h-screen">
+    <section class="menu h-full px-[10px]">
         <MenuComp :menu-style="menuStyle" @close-menu="closeMenu"/>
     </section>
-    <section class="view h-screen ">
+    <section class="view h-full">
         <header class="h-20 ml-3 rounded-xl"></header>
         <router-view></router-view>
     </section>
@@ -40,9 +40,5 @@ const closeMenu = (is) => {
         display: grid;
         grid-template-columns: 90px auto;
         transition: 0.5s  ease;
-    }
-    .view{
-        display: grid;
-        grid-template-rows: 100px auto;
     }
 </style>
