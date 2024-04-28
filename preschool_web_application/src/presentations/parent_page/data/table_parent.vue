@@ -10,11 +10,13 @@
             <span class="total-label">Tổng cộng:</span>
             <span class="total-count">{{ totalStudents }}</span>
           </div>
-         <div class="add-button">
+         <router-link to="/parents/create">
+          <div class="add-button">
           <button>
             <img :src="add_icon" class="w-[30px] m-auto">
           </button>
-         </div> 
+        </div> 
+         </router-link>
         </div>
         <div class="container">
           <button @click="filterAll">Tất cả</button>
@@ -63,6 +65,7 @@
   import delete_icon from '@/assets/icons/delete.svg'
   import edit_icon from '@/assets/icons/edit.svg'
   import add_icon from '@/assets/icons/pls.svg'
+  import AddParent from '@/presentations/parent_page/views/parent_create_page.vue'
   export default {
     data() {
       return {
@@ -182,7 +185,8 @@
         sortCriteria: 'all',
         delete_icon: delete_icon,
         edit_icon: edit_icon,
-        add_icon: add_icon
+        add_icon: add_icon,
+        AddParent: AddParent,
       }
     },
     methods: {
@@ -216,7 +220,7 @@
       },
       totalStudents() {
         return this.students.length
-      }
+      },
     }
   }
   </script>
@@ -284,6 +288,7 @@
   align-items: center; 
   justify-content: center; 
   background-color: #007bff; 
+  height: 50px;
   width: 60px; 
   border-radius: 5px; 
   cursor: pointer;
