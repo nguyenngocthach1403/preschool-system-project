@@ -9,13 +9,7 @@
             
 
             <router-link to="/students/create">
-                <!-- <ToolTipComp tool-tip-text="Add new student" class="text-[15px] text-white w-[60px] h-[40px] bg-black mr-3 rounded-md bg-green-500">
-                    <img :src="add_icon" class="w-[30px] m-auto">
-                </ToolTipComp> -->
-                <button class="w-full content-center flex justify-center h-[40px] bg-green-500 rounded-[6px] px-[10px] text-white py-2">
-                        <img :src="add_icon" class="w-[25px]">
-                        <div class="ml-2">Add student</div>
-                </button>
+                <CreateButtonComp></CreateButtonComp>
             </router-link>
             
         </div>
@@ -32,6 +26,7 @@
     import TableComp from '@/presentations/student_page/components/table_comp.vue'
     import SearchFormComp from '@/components/search_form_comp.vue'
     import ToolTipComp from '@/utils/resources/tooltip.vue'
+    import CreateButtonComp from '@/components/create_button.vue'
     import {ref, computed} from 'vue'
 
     /* Another import here */
