@@ -1,7 +1,7 @@
 <template>
     <div class="overflow-scroll h-[700px] 2xl:h-dvh"> 
         <!--Table here-->
-        <table class="mb-[250px] h-dvh w-full">
+        <table class="mb-[250px] h-fit w-full">
             <thead class="text-[17px] text-white bg-[#7BA7D7] sticky top-0">
                 <tr>
                     <th class="px-7 py-3 text-left">Avatar</th>
@@ -27,7 +27,7 @@
                     <td class="hidden xl:table-cell px-3 w-dvw"><span>{{ item.birthday }}</span></td>
                     <td class="px-3"><div class="rounded-[50px] h-[30px] text-white w-[85px] content-center text-center text-[15px]" :class="`${checkStatusToClass(item.status)}`">{{ checkStatusToContent(item.status) }}</div></td>
                     <td class="content-center px-3">
-                        <div class="hidden  xl:flex">
+                        <div class="hidden xl:flex">
                             <div class="feature w-[50px] h-[30px] rounded-[50px] bg-[#DE2E2E] mr-[3px] hover:bg-[rgb(206,44,44)]  content-center" > <img :src="delete_icon" class="w-[17px] m-auto"></div>
                             <div class="feature w-[50px] h-[30px] rounded-[50px] bg-[#3B44D1] mr-[3px] hover:bg-[rgb(53,61,186)]  content-center"> <img :src="edit_icon" class="w-[17px] m-auto"> </div>
                             <div class="feature w-[50px] h-[30px] rounded-[50px] bg-[#53808C] mr-[3px] hover:bg-[rgb(73,114,125)]  content-center"> <img :src="chat_icon" class="w-[17px] m-auto"> </div>
@@ -83,10 +83,6 @@
     }
 
     defineProps({
-        titleHeads: {
-            type: Array,
-            required: true
-        },
         dataTable: 
         {
             type: Array,
