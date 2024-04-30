@@ -19,7 +19,7 @@
                 <!--Name-->
                 <label>
                     <span class="pl-4">Họ và tên</span>
-                    <input v-model="nameStudentInput" type="text" placeholder="Họ và tên" class="mb-0 h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : isStudentNameValid}">
+                    <input v-model="nameStudentInput" type="text" placeholder="Họ và tên" class="mb-0 h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : messageOfStudentName}">
                     <div class="h-[20px] valid">
                         <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p>
                     </div>
@@ -29,8 +29,8 @@
                 <div class="flex">
                     <label class="mr-2">
                         <span class="pl-4">Ngày sinh</span>
-                        <input v-model="birthDayStudentInput" type="date" placeholder="Ho va ten" class="h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"  :class="{'invalid-input' : isBirdayStudentValid}">
-                        <div class="h-[2px] valid">
+                        <input v-model="birthDayStudentInput" type="date" placeholder="Ho va ten" class="h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4"  :class="{'invalid-input' : messageOfStudentBirthDay}">
+                        <div class="h-[20px] valid">
                             <p v-if="messageOfStudentBirthDay" class="text-red-300">{{ messageOfStudentBirthDay }}</p>
                         </div>
                     </label>
@@ -42,9 +42,9 @@
                             <option value="0">Nữ</option>
                             <option value="1">Nam</option>
                         </select>
-                        <div class="h-[20px] valid">
+                        <!-- <div class="h-[20px] valid">
                             <p v-if="isStudentNameValid" class="text-red-300">{{ }}</p>
-                        </div>
+                        </div> -->
                     </label>
                 </div>
                 <!--Dan toc-->
@@ -162,7 +162,7 @@
                 <!--Họ tên-->
                 <label>
                     <span class="pl-4">Họ và tên</span>
-                    <input type="text" v-model="nameRelativeInput" placeholder="Họ và tên người thân" class=" h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : isValidRelativeName}">
+                    <input type="text" v-model="nameRelativeInput" placeholder="Họ và tên người thân" class=" h-[40px] rounded-md my-[5px] w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : messageOfRelativeName}">
                     <div class="h-[20px] valid">
                         <p v-if="messageOfRelativeName" class="mb-4 text-red-300">{{ messageOfRelativeName }}</p>
                     </div>
