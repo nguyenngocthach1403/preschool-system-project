@@ -5,10 +5,8 @@ import StudentView from '@/presentations/student_page/view/student_page.vue';
 import ParentView from '@/presentations/parent_page/views/parent_page.vue';
 import ClassView from '@/presentations/class_page/views/class_page.vue';
 import StudentCreationView from '@/presentations/student_creation_page/views/student_creation_page.vue';
-import ParentCreationView from '@/presentations/parent_page/views/parent_create_page.vue'
-
-
-
+import ParentCreationView from '@/presentations/parent_page/views/parent_create_page.vue';
+import login_view from '@/presentations/login_page /login_view.vue';
 const router = Router()
 export default router;
 function Router()
@@ -46,6 +44,11 @@ function Router()
                 path: '/parents/create',
                 component: ParentCreationView
             },
+            {
+                name: 'LoginView',
+                path: '/login',
+                component: login_view
+            }
 
         ]
     });
