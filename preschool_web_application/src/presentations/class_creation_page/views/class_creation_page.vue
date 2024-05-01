@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-gray-200/50 content-center text-[15px]">
-        <form @submit.prevent class="view w-[700px] h-[700px] bg-white rounded-[15px] px-[40px] text-start relative">
+    <div class="bg-gray-500/50 content-center text-[15px]">
+        <form @submit.prevent="handleSubmitAddNewClass" :class="{'leave-active' : isLeave}" class="view w-[700px] h-[700px] bg-white rounded-[15px] px-[40px] text-start m-auto relative">
             <!--Title-->
             <div class="text-[19px] flex justify-between">
                 <span class="font-bold">Tạo lớp học mới</span>
@@ -98,28 +98,42 @@
 
     import {ref} from 'vue'
     import close_icon from '@/assets//icons//close.svg'
+    import { useClassStore} from '@/stores/class_store.js'
 
     const classNameInput = ref('')
     const dateBeginInput = ref(null)
     const dateFinishInput = ref(null)
     const limitedStudent = ref(0)
     const formTeacherInput = ref('')
+    const classStore = useClassStore()
+    const classLevelInput = ref(null)
+    const classTypeInput = ref(null)
+
+    const isLeave = ref(false)
 
     const avatarUpload = ref(null)
     const avatarPath = ref(null)
 
     const emits = defineEmits(['close'])
 
-    const closePage = () => [
-        emits('close', false)
-    ]
+    const closePage = () => {
+
+        isLeave.value = true
+
+        setTimeout(() => {
+            emits('close')
+            isLeave.value = false
+        }, 200)
+    }
+        
+    
 
     const selectLevels = (event) => {
-        console.log(event.target.value)
+        classLevelInput.value = event.target.value
     }
 
     const selectType = (event) => {
-        console.log(event.target.value)
+        classTypeInput.value =  event.target.value
     }
 
     const handleUploadImg = (event) => {
@@ -141,27 +155,57 @@
         avatarPath.value = URL.createObjectURL(avatarUpload.value)
     }
 
+
+    const handleSubmitAddNewClass = () => {
+        classStore.addClass({
+            avatar: '',
+            name: classNameInput.value,
+            teacher: formTeacherInput.value,
+            member: 0,
+            limitedMember: limitedStudent.value,
+            levels: classLevelInput.value,
+            type: classTypeInput.value,
+            dateBegin: dateBeginInput.value,
+            dateFinish: dateFinishInput.value,
+            session: '2020-2021',
+            created: new Date(),
+            status: 'Sắp bắt đầu'
+        })
+    }
 </script>
 
 <style scoped>
     .view
     {
-        animation: next 0.3s forwards linear;
-        /* transition: 1s ease-in; */
+        animation: enter 0.3s forwards normal;
     }
 
 
-    @keyframes next {
-        0% {
-            margin: 0;
+    @keyframes enter {
+        0%{
+            opacity: 0;
+            translate: -100px 0;
         }
-        50%
-        {
-            margin-left: 300px;
+        100%{
+            opacity: 1;
+            translate: 100px 0;
         }
-        100%
-        {
-            margin-left: 700px;
+    }   
+
+    @keyframes leave {
+        0%{
+            opacity: 1;
+            translate: 100px 0;
+        }
+        100%{
+            opacity: 0;
+            translate: -100px 0;
         }
     }
+
+    .leave-active
+    {
+        animation: leave 0.5s forwards normal !important;
+    }
+
 </style>
