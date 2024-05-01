@@ -23,17 +23,17 @@
             </div>
             <div class="number-of-membver flex text-[13px] text-gray-500 h-[25px] my-1">
                 <img :src="member_icon" class="rounded-[50px] h-[25px] w-[25px]">
-                <span class="ml-5 h-full content-center">Member: 30/45</span>
+                <span class="ml-5 h-full content-center">Member: {{ classData.member ?? 0 }}/{{ classData.limitedMember ?? 0 }}</span>
             </div>
-            <div class="number-of-membver flex text-[13px] text-gray-500 content-center h-[25px] my-1">
+            <!-- <div class="number-of-membver flex text-[13px] text-gray-500 content-center h-[25px] my-1">
                 <img :src="member_icon" class="rounded-[50px] h-[25px] w-[25px]">
-                <span class="ml-5 h-full content-center">In class: 29/30</span>
-            </div>
+                <span class="ml-5 h-full content-center">In class: 29/{{ classData.member }}</span>
+            </div> -->
             <div class="divider h-[1px] w-full bg-[#B4B4B4]"></div>
             <div class="number-of-membver flex text-[13px] text-gray-500 content-center h-[25px] my-1">
-                <span class="ml-2 h-full content-center">11-11-1111</span>
+                <span class="ml-2 h-full content-center">{{ classData.dateBegin ?? '1-1-1111'}}</span>
                 <span class="ml-2 h-full content-center">-</span>
-                <span class="ml-2 h-full content-center">11-11-1111</span>
+                <span class="ml-2 h-full content-center">{{ classData.dateFinish ?? '1-1-1111' }}</span>
             </div>
         </div>
     </div>
@@ -50,7 +50,6 @@
         }
     })
 
-
     const status = (status) =>
     {
         switch (status) {
@@ -62,8 +61,6 @@
                 return 'none'
         }
     }
-
-
 
 </script>
 
