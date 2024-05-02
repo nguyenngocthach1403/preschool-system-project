@@ -19,7 +19,7 @@
           <div class="forgot-password">
             <a href="#">Quên mật khẩu</a>
           </div>
-          <button type="submit">Đăng nhập</button>
+          <router-link to="/home-page"><button type="submit">Đăng nhập</button></router-link>
         </form>
       </div>
     </div>
