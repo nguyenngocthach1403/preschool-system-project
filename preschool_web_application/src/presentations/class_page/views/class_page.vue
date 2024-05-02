@@ -16,15 +16,20 @@
 </template>
 
 <script setup>
-    import {ref, computed} from 'vue'
+    import {ref, computed, onMounted} from 'vue'
 
     import ClassCardComp from '../components//class_card.vue'
     import SearchFormComp from '@/components/search_form_comp.vue'
     import CreateButtonComp from '@/components/create_button.vue'
     import ClassCreationView from '..//..//class_creation_page//views//class_creation_page.vue'
+    import {useClassStore} from '@/stores//class_store.js'
     const searchText = ref('')
-
+    const classStore = useClassStore()
     const showCreateClass = ref(false)
+
+    onMounted(() => {
+        classDataDemo.value = classStore.classes
+    })
 
     const getSearchText = (event) => {
         searchText.value = event;
@@ -41,138 +46,7 @@
         })
     })
 
-    const classDataDemo = ref([
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'Lop123',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Kết thúc',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'Lopda3',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'dadada',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'On',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'dadadada',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Off',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'Lop11231223',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai C'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'bvbfgsfg',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.w-5sI6XWm3gGn7nUeBYuFwHaE8?rs=1&pid=ImgDetMainhttps://th.bing.com/th/id/OIP.w-5sI6XWm3gGn7nUeBYuFwHaE8?rs=1&pid=ImgDetMain',
-            name: 'bgmjyikyukjy',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'sfdgwgshjgwej',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'abfbabafdba',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.zlRoUz7KpSdC_AxwnLpXmAHaE8?w=255&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'Lop11231223',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai C'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'bvbfgsfg',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'bgmjyikyukjy',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai A'
-        },
-        {
-            avatar: 'https://th.bing.com/th/id/OIP.YEBNakGnuRtmoLbisYedDwHaFj?w=223&h=180&c=7&r=0&o=5&pid=1.7',
-            name: 'sfdgwgshjgwej',
-            teacher: 'Copp',
-            member: 30,
-            limitedMenber: 40,
-            session: '2020-2021',
-            status: 'Đang hoạt động',
-            type: 'Loai B'
-        },
-    ])
+    const classDataDemo = ref([])
 </script>
 
 <style scoped>
