@@ -1,6 +1,7 @@
 <script setup>
 import MenuComp from '@/components/menu_comp.vue';
-
+import LoginComp from '@/presentations/login_page/login_view.vue'
+import router from './router/router';
 import {ref } from 'vue'
 
 const menuStyle = ref('full-menu');
@@ -28,7 +29,8 @@ const closeMenu = (is) => {
         <router-view></router-view>
     </section>
  </main>
-</template>
+</template> 
+
 
 <style scoped>
     .full-menu{

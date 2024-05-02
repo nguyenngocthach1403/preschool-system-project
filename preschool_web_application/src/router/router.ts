@@ -6,7 +6,7 @@ import ParentView from '@/presentations/parent_page/views/parent_page.vue';
 import ClassView from '@/presentations/class_page/views/class_page.vue';
 import StudentCreationView from '@/presentations/student_creation_page/views/student_creation_page.vue';
 import ParentCreationView from '@/presentations/parent_page/views/parent_create_page.vue';
-import login_view from '@/presentations/login_page /login_view.vue';
+import LoginView from '@/presentations/login_page/login_view.vue';
 const router = Router()
 export default router;
 function Router()
@@ -15,8 +15,13 @@ function Router()
         history: createWebHistory(),
         routes: [
             {
+                name: 'LoginView',
+                path: '/login',
+                component: LoginView
+            },
+            {
                 name: 'DashBoardView',
-                path: '/',
+                path: '/dashboard',
                 component: DashBoardView
             },
             {
@@ -44,11 +49,6 @@ function Router()
                 path: '/parents/create',
                 component: ParentCreationView
             },
-            {
-                name: 'LoginView',
-                path: '/login',
-                component: login_view
-            }
 
         ]
     });
