@@ -44,7 +44,7 @@
             return {
                 isMenuClose :true,
                 menuItem: [
-                    { name: 'Dasboard',path: '/', icon: dash },
+                    { name: 'Dasboard',path: '/dashboard', icon: dash },
                     { name: 'Students',path: '/students', icon: student },
                     { name: 'Parents', path: '/parents', icon: parent },
                     { name: 'Classes', path: '/classes', icon: classes },
