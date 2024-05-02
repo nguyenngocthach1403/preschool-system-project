@@ -6,6 +6,7 @@ import ParentView from '@/presentations/parent_page/views/parent_page.vue';
 import ClassView from '@/presentations/class_page/views/class_page.vue';
 import StudentCreationView from '@/presentations/student_creation_page/views/student_creation_page.vue';
 import ParentCreationView from '@/presentations/parent_page/views/parent_create_page.vue';
+import HomePage from '@/presentations/home_page/views/home_page.vue'
 import LoginView from '@/presentations/login_page/login_view.vue';
 const router = Router()
 export default router;
@@ -16,40 +17,46 @@ function Router()
         routes: [
             {
                 name: 'LoginView',
-                path: '/login',
+                path: '/',
                 component: LoginView
             },
             {
-                name: 'DashBoardView',
-                path: '/dashboard',
-                component: DashBoardView
-            },
-            {
-                name: 'StudentView',
-                path: '/students',
-                component: StudentView
-            },
-            {
-                name: 'ParentView',
-                path: '/parents',
-                component: ParentView
-            },
-            {
-                name: 'ClassView',
-                path: '/classes',
-                component: ClassView
-            },
-            {
-                name: 'StudentCreationView',
-                path: '/students/create',
-                component: StudentCreationView
-            },
-            {
-                name: 'ParentCreationView',
-                path: '/parents/create',
-                component: ParentCreationView
-            },
-
+                name: 'HomePage',
+                path: '/home-page',
+                component: HomePage,
+                children: [
+                    {
+                        name: 'StudentView',
+                        path: '/students',
+                        component: StudentView
+                    },
+                    {
+                        name: 'ParentView',
+                        path: '/parents',
+                        component: ParentView
+                    },
+                    {
+                        name: 'DashBoardView',
+                        path: '/dashboard',
+                        component: DashBoardView
+                    },
+                    {
+                        name: 'ClassView',
+                        path: '/classes',
+                        component: ClassView
+                    },
+                    {
+                        name: 'StudentCreationView',
+                        path: '/students/create',
+                        component: StudentCreationView
+                    },
+                    {
+                        name: 'ParentCreationView',
+                        path: '/parents/create',
+                        component: ParentCreationView
+                    },
+                ]
+            }
         ]
     });
     return router
