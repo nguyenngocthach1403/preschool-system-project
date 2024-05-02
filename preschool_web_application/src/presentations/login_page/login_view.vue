@@ -8,12 +8,12 @@
             <h1>Đăng nhập</h1>
           <label for="name">Email</label>
           <div class="form-group">
-            <img src="/src/assets/icons/account.svg" alt="" />
+            <img src="/src/assets/icons/member.svg" alt="" />
             <input type="email" id="email" v-model="email" placeholder="Nhập email" />
           </div>
           <label for="email">Mật khẩu</label>
           <div class="form-group">
-            <img src="/src/assets/icons/account.svg" alt="" />
+            <img src="/src/assets/icons/key.svg" alt="" />
             <input type="text" id="password" v-model="password" placeholder="Nhập mật khẩu" />
           </div>
           <div class="forgot-password">
@@ -79,6 +79,8 @@
   .form-group img {
     width: 30px;
     height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
     background-color: #fff;
   }
   
