@@ -18,12 +18,18 @@ function Router()
             {
                 name: 'LoginView',
                 path: '/',
-                component: LoginView
+                component: LoginView,
             },
             {
                 name: 'HomePage',
                 path: '/home-page',
                 component: HomePage,
+                beforeEnter(to) {
+                    if((to.name) !== 'HomePage')
+                    {
+                        return '/home-page'
+                    }
+                },
                 children: [
                     {
                         name: 'StudentView',
