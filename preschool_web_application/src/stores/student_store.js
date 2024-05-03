@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { ddmmyyyyDateString } from "../utils/resources/format_date";
 
 export const useStudentStore = defineStore('studentStore' , {
     state: () => ({
@@ -23,18 +24,14 @@ export const useStudentStore = defineStore('studentStore' , {
             {'id':  18,'avatar' : 'https://th.bing.com/th/id/OIP.62UW2I5_9IgQNmE5f305WAHaEK?w=286&h=180&c=7&r=0&o=5&pid=1.7', 'name': 'Nguyen Quoc Thach', 'gender': 0, 'class': 'CD TH 21DD', 'birthday': '1/4/2004', 'status' :2},
             {'id':  19,'avatar' : 'https://th.bing.com/th/id/OIP.62UW2I5_9IgQNmE5f305WAHaEK?w=286&h=180&c=7&r=0&o=5&pid=1.7', 'name': 'Nguyen Van A', 'gender': 0, 'class': 'CD TH 21DD', 'birthday': '1/4/2004', 'status' :2},
         ],
-        isBusy: false
     }),
     actions: {
         addStudent(studentToAdd)
         {
-            this.isBusy = true
             //Add to student to Db 
 
             //Add new student
             this.students.push(studentToAdd)
-
-            this.isBusy = false
         },
         deleteStudent(idStudentToDel)
         {
@@ -45,6 +42,20 @@ export const useStudentStore = defineStore('studentStore' , {
                     return
                 }  
             }
-        }   
+        },
+        updateStudent(studentToUpdate)   
+        { 
+            console.log(studentToUpdate)
+            for (let index = 0; index < this.students.length; index++) {
+                if(this.students[index]['id'] == studentToUpdate.id)
+                {
+                    this.students[index].name = studentToUpdate.name
+                    this.students[index].class = studentToUpdate.class
+                    this.students[index].gender = Number.parseInt(studentToUpdate.gender)
+                    this.students[index].birthday = ddmmyyyyDateString(studentToUpdate.birthday)
+
+                }
+            }
+        } 
     }
 })
