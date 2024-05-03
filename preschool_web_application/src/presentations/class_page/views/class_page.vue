@@ -1,6 +1,6 @@
 <template>
     <div class="bg-white h-dvh ml-4 rounded-3xl text-center text-3xl  pb-[200px] overflow-hidden">
-        <ClassCreationView class="w-screen h-screen bg-black absolute z-10 left-0 top-0" v-show="showCreateClass" @close="closeCreateClassPage($event)" />
+        <ClassCreationView class="w-screen h-screen bg-black absolute z-10 left-0 top-0" v-if="showCreateClass" @close="showCreateClass = false" />
         <!-- Header -->
         <div class="text-left px-[20px] pt-[10px] text-[36px] font-bold ">Class</div>
 
