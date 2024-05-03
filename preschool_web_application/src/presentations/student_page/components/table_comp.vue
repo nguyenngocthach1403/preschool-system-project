@@ -15,7 +15,7 @@
             </thead>
             <tbody>
                 <tr v-for="(item) in dataTable" :key="item.id" class="text-[19px] h-[50px] text-left even:bg-gray-200" >
-                    <td class="px-3"><div class="ml-[15px]"><img :src="item.avatar" class="w-[40px] h-[40px] rounded-[50px]"> </div></td>
+                    <td class="px-3"><div class="ml-[15px]"><img :src="item.avatar" class="w-[40px] h-[40px] rounded-[50px] object-cover"> </div></td>
                     <td class="w-dvw px-3">
                         <span>{{ item.name }}</span>
                         <dd class="lg:hidden text-gray-500 text-[15px] my-[5px]">{{ item.class }}</dd>

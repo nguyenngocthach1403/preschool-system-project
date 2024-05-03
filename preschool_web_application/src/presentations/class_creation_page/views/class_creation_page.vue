@@ -1,13 +1,7 @@
 <template>
-    <div class="bg-gray-500/50 content-center text-[15px]">
-        <form @submit.prevent="handleSubmitAddNewClass" :class="{'leave-active' : isLeave}" class="view w-[700px] h-[700px] bg-white rounded-[15px] px-[40px] text-start m-auto relative">
-            <!--Title-->
-            <div class="text-[19px] flex justify-between">
-                <span class="font-bold">Tạo lớp học mới</span>
-                <div @click="closePage" class="h-[40px] hover:bg-red-500 hover:text-white content-center px-[12px] rounded-md absolute right-0 cursor-pointer">
-                    <img class="w-[25px]" :src="close_icon" alt="">
-                </div>
-            </div>
+    <Layout :title="'Tạo lớp học mới'">
+        <template #content>
+            <form @submit.prevent="handleSubmitAddNewClass" class="px-[40px] relative text-[15px] text-start">
             <!--Add Avatar-->
             <div class="add-avatar w-[100px] h-[100px] m-auto bg-[#D9D9D9] rounded-md relative" >
                 <img v-if="avatarPath" :src="avatarPath" class="w-[100px] h-[100px] m-auto object-cover rounded-md border-2">
@@ -87,18 +81,20 @@
                 </label>
             </div>
             <!--Button save & close-->
-            <button class="absolute bottom-4 h-[45px] px-[12px] bg-green-500 text-white rounded-md left-[325px] hover:bg-green-600">
-                Lưu
-            </button>
         </form>
-    </div>
+        </template>
+        <template #bottom>
+            <SaveButton ></SaveButton>
+        </template>
+    </Layout>
 </template>
 
 <script setup>
 
     import {ref} from 'vue'
-    import close_icon from '@/assets//icons//close.svg'
     import { useClassStore} from '@/stores/class_store.js'
+    import Layout from '@/components/edit_and_create_layout.vue'
+    import SaveButton from "@/components/save_button.vue"
 
     const classNameInput = ref('')
     const dateBeginInput = ref(null)
@@ -114,17 +110,17 @@
     const avatarUpload = ref(null)
     const avatarPath = ref(null)
 
-    const emits = defineEmits(['close'])
+    // const emits = defineEmits(['close'])
 
-    const closePage = () => {
+    // const closePage = () => {
 
-        isLeave.value = true
+    //     isLeave.value = true
 
-        setTimeout(() => {
-            emits('close')
-            isLeave.value = false
-        }, 200)
-    }
+    //     setTimeout(() => {
+    //         emits('close')
+    //         isLeave.value = false
+    //     }, 200)
+    // }
         
     
 
