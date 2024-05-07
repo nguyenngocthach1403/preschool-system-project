@@ -2,9 +2,9 @@
     <div class="z-20 h-screen w-screen bg-gray-500/75 content-center text-[15px]">
         <div class="body w-[800px] h-fit bg-white m-auto relative rounded-[15px]" :class="{'leave-active': isLeave}">
             <!--Header-->
-            <div class="heade w-full pl-[20px] flex justify-between">
+            <div class="heade w-full p-[10px] py-[10px] flex justify-between border-b-2 mb-5">
                 <span class="text-[19px]">{{ title }}</span> 
-                <button class="px-[20px] rounded-bl-md rounded-tr-[15px] hover:bg-red-200 active:bg-red-500" @click="closeView"><img :src="close_icon" class="w-[20px]"></button>
+                <button class="px-[10px] rounded-md active:ring active:ring-[#3B44D1]" @click="closeView"><img :src="close_icon" class="w-[20px]"></button>
             </div>
             <slot name="content"></slot>
             <slot name="bottom"></slot>

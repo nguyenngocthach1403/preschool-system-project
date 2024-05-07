@@ -20,7 +20,8 @@
         <!-- Quick search -->
 
         <!-- Table components -->
-        <TableComp :data-table="filteredStudentData" @delete-student="deleteStudentById" @edit-student="editStudent"></TableComp>
+        <TableComp :data-table="filteredStudentData" @delete-student="deleteStudentById" @edit-student="editStudent" @sort-student-id="sortDataByID" @sort-student-name="sortDataByName" 
+        @sort-student-class="sortDataByClass"></TableComp>
     </div>  
 </template>
 
@@ -64,17 +65,36 @@
         })
     })
 
+    const sortDataByID = () => {
+        dataOfTable.value.sort((a,b) => a.id - b.id)
+    }
+
+    const sortDataByName = () => {
+        dataOfTable.value.sort((a,b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+    }
+
+    const sortDataByClass = () => {
+        dataOfTable.value.sort((a,b) => a.class.localeCompare(b.class))
+    }
+
     const getConfirm = (event) => {
-        
         if(event) 
         { 
-            studentStore.deleteStudent(localStorage.getItem('studentIDToDel'))
+            const studentToDel = JSON.parse(localStorage.getItem('studentToDel') || {})
+            studentStore.deleteStudent(studentToDel.id)
+            //emit toast
+            emits('add-toast', {
+                title: "Detele Successfully!",
+                content: "Delete " + studentToDel.name + ' student',
+                type: 0
+            })
         }
         showConfirmDialog.value = null
     }
-    
+
+    const emits = defineEmits(['add-toast'])
     const deleteStudentById = (event) => {
-        localStorage.setItem('studentIDToDel', event.id)
+        localStorage.setItem('studentToDel', JSON.stringify(event))
         showConfirmDialog.value = 'Bạn có muốn xóa bé ' + event.name + ' không?'
     }
 
