@@ -19,6 +19,7 @@
     <!-- Search-->
     <div class="flex justify-between content-center mr-3">
       <SearchFormComp @passSearchText="getSearchText"></SearchFormComp>
+      {{ loading }}
 
       <router-link to="/students/create">
         <CreateButtonComp></CreateButtonComp>
@@ -48,8 +49,9 @@ import CreateButtonComp from "@/components/create_button.vue";
 import ConfirmDialog from "@/components/confirm_dialog.vue";
 import EditStudentView from "./student_edition_view.vue";
 
-import { ref, computed, onMounted } from "vue";
-import { useStudentStore } from "@/stores/student_store.js";
+import { ref, computed, onMounted, watch } from "vue";
+import { storeToRefs } from "pinia";
+import { useStudentStore } from "../../../stores/student_store";
 
 /* Another import here */
 import add_icon from "@/assets/icons/pls.svg";
@@ -63,8 +65,18 @@ const studentDel = ref(null);
 const showConfirmDialog = ref("");
 const showStudentEdit = ref(null);
 
-onMounted(() => {
+const { students, loading } = storeToRefs(studentStore);
+onMounted(async () => {
+  studentStore.getStudent();
+  console.log("SS", students);
+  console.log("a", loading);
   dataOfTable.value = studentStore.students;
+});
+
+watch(loading, () => {
+  if (loading) {
+    dataOfTable.value = studentStore.students;
+  }
 });
 
 const getSearchText = (event) => {
