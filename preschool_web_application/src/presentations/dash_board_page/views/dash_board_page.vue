@@ -2,6 +2,8 @@
     <div class="bg-white ml-4 rounded-3xl text-center text-3xl">
         Dashboard
     </div> 
+    <router-link to="/registration"><button>Phieu dang ky</button></router-link>
+
 </template>
 
 <script lang="ts">
