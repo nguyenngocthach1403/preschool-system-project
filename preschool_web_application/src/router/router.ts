@@ -25,7 +25,7 @@ function Router()
             },
             {
                 name: 'RegistrationFormView',
-                path: '/registration',
+                path: '/register',
                 component: RegistrationForm,
             },
             {
