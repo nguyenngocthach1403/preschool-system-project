@@ -51,13 +51,13 @@ class Database {
     }
   }
 
-  async selectLimit(table, columns = "*", limit = "", offset = "") {
+  async selectLimit(table, columns = "*", where = "", limit = "", offset = "") {
     try {
-      const sql = `SELECT ${columns} FROM ${table} LIMIT ${limit} OFFSET ${offset}`;
+      const sql = `SELECT ${columns} FROM ${table} ${where} ${limit} ${offset}`;
       const rows = await this.query(sql);
       return rows;
     } catch (error) {
-      throw error;
+      return error;
     }
   }
 
@@ -65,7 +65,19 @@ class Database {
     try {
       const sql = `INSERT INTO ${table} SET ?`;
       const result = await this.query(sql, data);
-      return result.insertId;
+      return result.affectedRows;
+    } catch (error) {
+      return error.code;
+    }
+  }
+
+  async delete(table, where) {
+    try {
+      const sql = `DELETE FROM ${table} ${where}`;
+
+      const result = await this.query(sql);
+
+      return result.affectedRows;
     } catch (error) {
       throw error;
     }
