@@ -1,7 +1,7 @@
 <template>
-  <div class="overflow-scroll h-[700px] 2xl:h-dvh mr-[10px]">
+  <div class="overflow-hidden h-fit mr-[10px]">
     <!--Table here-->
-    <table class="mb-[250px] h-fit w-full">
+    <table class="h-fit w-full">
       <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
         <tr>
           <th class="px-3 py-3 text-left"></th>
@@ -83,7 +83,7 @@
           <td class="px-3">
             <div class="ml-[15px]">
               <img
-                :src="item.avatar"
+                :src="item.avatar ?? avatar"
                 class="w-[40px] h-[40px] rounded-[50px] object-cover"
               />
             </div>
@@ -102,13 +102,14 @@
             </dd>
           </td>
           <td class="hidden 2xl:table-cell px-3 w-[600px] text-blue-900">
-            <span>{{ item.id }}</span>
+            <span>PRE{{ item.id }}</span>
           </td>
           <td class="hidden 2xl:table-cell px-3 w-[600px]">
             <span>{{ convertNumToGender(item.gender) }}</span>
           </td>
           <td class="hidden lg:table-cell w-[1000px] px-3">
-            <span>{{ item.class }}</span>
+            <span v-if="item.class">{{ item.class }}</span>
+            <span v-if="!item.class" class="italic">None</span>
           </td>
           <td class="hidden xl:table-cell px-3 w-dvw">
             <span>{{ new Date(item.birthday).toDateString() }}</span>
@@ -174,33 +175,10 @@ import chat_icon from "../../../assets/icons/chat.svg";
 import eye_icon from "../../../assets/icons/eye.svg";
 import menu_vertical_icon from "../../../assets/icons/menu-vertical.svg";
 import sort_icon from "../../../assets/icons/Sorting arrowheads.svg";
+import avatar from "../../../assets/img/avartar_default.jpg";
 
 /* Import function */
 import convertNumToGender from "../../../utils/resources/convert_gender";
-
-const checkStatusToClass = (sts) => {
-  switch (sts) {
-    case 0:
-      return "none-status";
-    case 1:
-      return "studing-status";
-    case 2:
-      return "save-status";
-    default:
-      return "#FFFFFF";
-  }
-};
-
-const checkStatusToContent = (sts) => {
-  switch (sts) {
-    case 1:
-      return "Đang học";
-    case 2:
-      return "Bảo lưu";
-    default:
-      return "Chưa rõ";
-  }
-};
 
 defineProps({
   dataTable: {
@@ -211,13 +189,38 @@ defineProps({
 
 const emits = defineEmits(["delete-student", "edit-student"]);
 
-const deleteStudent = (studentIdToDel) => {
+//Funtion
+function deleteStudent(studentIdToDel) {
   emits("delete-student", studentIdToDel);
-};
+}
 
-const editStudent = (student) => {
+function editStudent(student) {
   emits("edit-student", student);
-};
+}
+
+function checkStatusToContent(sts) {
+  switch (sts) {
+    case 1:
+      return "Đang học";
+    case 2:
+      return "Bảo lưu";
+    default:
+      return "Chưa rõ";
+  }
+}
+
+function checkStatusToClass(sts) {
+  switch (sts) {
+    case 0:
+      return "none-status";
+    case 1:
+      return "studing-status";
+    case 2:
+      return "save-status";
+    default:
+      return "#FFFFFF";
+  }
+}
 </script>
 
 <style scoped>
