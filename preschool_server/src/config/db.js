@@ -82,6 +82,33 @@ class Database {
       throw error;
     }
   }
+  async update(table, updates, where) {
+    try {
+      const setClause = Object.keys(updates)
+        .map((key) => `${key} = ?`)
+        .join(", ");
+
+      const whereClause =
+        where && Object.keys(where).length > 0
+          ? `WHERE ${Object.keys(where)
+              .map((key) => `${key} = ?`)
+              .join(" AND ")}`
+          : "";
+
+      const sql = `UPDATE ${table} SET ${setClause} ${whereClause}`;
+
+      const values = [
+        ...Object.values(updates),
+        ...(where ? Object.values(where) : []),
+      ];
+
+      const result = await this.query(sql, values);
+
+      return result.affectedRows;
+    } catch (error) {
+      return error.code;
+    }
+  }
 }
 
 module.exports = new Database({

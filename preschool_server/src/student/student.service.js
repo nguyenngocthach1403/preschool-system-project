@@ -119,8 +119,12 @@ async function getByID(id) {
   }
 }
 
-async function deleteStudent(id) {
-  return db.delete("Students", `WHERE id like ${id}`);
+async function deleteStudent(idStudentToDel) {
+  return db.update(
+    process.env.STUDENT_TB,
+    { deleted: true },
+    { id: idStudentToDel }
+  );
 }
 
 async function getPage(page, limit) {
