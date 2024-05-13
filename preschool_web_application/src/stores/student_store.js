@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ddmmyyyyDateString } from "../utils/resources/format_date";
-import axios from "axios";
+import StudentService from "../services/student.service";
+import studentService from "../services/student.service";
 
 export const useStudentStore = defineStore("studentStore", {
   state: () => ({
@@ -38,12 +39,9 @@ export const useStudentStore = defineStore("studentStore", {
     async deleteStudentInDB(idStudentToDel) {
       this.loading = true;
 
-      const query = `http://localhost:9000/students/delete?id=${idStudentToDel}`;
-      // const query = `http://localhost:9000/students/delete?id=1`;
+      const res = await studentService.deleleStudent(idStudentToDel);
 
-      const res = await fetch(query);
-
-      const data = await res.json();
+      const data = res.data;
 
       if (data.status == 200) {
         this.deleteStudent(idStudentToDel);
@@ -57,8 +55,7 @@ export const useStudentStore = defineStore("studentStore", {
     async createStudent(studentToCreate) {
       this.status = "creating";
 
-      const query = `http://localhost:9000/students/create`;
-      const res = await axios.post(query, studentToCreate);
+      const res = await StudentService.createStudent(studentToCreate);
 
       const data = res.data;
 
@@ -78,11 +75,13 @@ export const useStudentStore = defineStore("studentStore", {
 
       this.resetPage();
 
-      const query = `http://localhost:9000/students/search?text=${searchText}&page=${this.page}&limit=${this.limit}`;
+      const res = await studentService.search(
+        searchText,
+        this.page,
+        this.limit
+      );
 
-      const res = await fetch(query);
-
-      const data = await res.json();
+      const data = res.data;
 
       if (data.status == 404) {
         console.log(data.message);
@@ -106,18 +105,16 @@ export const useStudentStore = defineStore("studentStore", {
     },
 
     async getTotalStudent() {
-      //Querry
-      const query = `http://localhost:9000/students/total`;
+      const res = await studentService.countStudent();
 
-      const res = await fetch(query);
-
-      const numStudent = await res.json();
+      const numStudent = res.data;
 
       this.total = numStudent.data;
     },
 
     async getStudent() {
       this.loading = true;
+
       this.status = "loading";
 
       await this.getTotalStudent();
@@ -127,9 +124,11 @@ export const useStudentStore = defineStore("studentStore", {
         return;
       }
 
-      const query = `http://localhost:9000/students?page=${this.page}&limit=${this.limit}`;
-      const res = await fetch(query);
-      const dataRes = await res.json();
+      const res = await studentService.getStudent(this.page, this.limit);
+      const dataRes = res.data;
+
+      console.log(dataRes);
+
       const data = dataRes.data;
 
       if (data.status === 404) {
