@@ -34,24 +34,18 @@
                   Họ và tên
                   <img
                     :src="sort_icon"
-                    @click="$emit('sort-student-name')"
-                    class="w-[20px] hover:bg-gray-200/25 rounded-full"
-                  />
-                </div>
-              </th>
-              <th class="px-3 text-left">
-                <div class="flex">
-                  ID
-                  <img
-                    :src="sort_icon"
-                    @click="$emit('sort-student-id')"
+                    @click="$emit('sort-parent-name')"
                     class="w-[20px] hover:bg-gray-200/25 rounded-full"
                   />
                 </div>
               </th>
               <th>Giới tính</th>
               <th>Lớp</th>
-              <th>Birthday</th>
+              <th>Ngày sinh</th>
+              <th>Địa chỉ</th>
+              <th>Nghề nghiệp</th>
+              <th>Số điện thoại</th>
+              <th>Vai trò</th>
               <th>Trạng thái</th>
               <th>Chức năng</th>
             </tr>
@@ -59,15 +53,20 @@
           <tbody>
             <tr
               class="h-[60px] text-left even:bg-gray-50 hover:bg-gray-200"
-              v-for="student in filteredStudents"
-              :key="student.id"
+              v-for="parent in parents"
+              :key="parent.id"
             >
-              <td class="w-dvw">{{ student.fullName }}</td>
-              <td class="w-dvw text-[#3B44D1]">{{ student.fullName }}</td>
-              <td class="w-[300px]">{{ student.gender }}</td>
-              <td class="w-[700px]">{{ student.grade }}</td>
-              <td class="w-[700px]">{{ student.birthday }}</td>
-              <td class="w-[700px]">{{ student.status }}</td>
+              <td class="w-dvw">{{}}</td>
+              <!-- <td class="w-dvw text-[#3B44D1]">{{ student.fullName }}</td> -->
+              <!-- <td class="w-[300px]">{{ parent.id}}</td> -->
+              <td class="w-[300px]">{{ parent.name }}</td>
+              <td class="w-[300px]">{{ parent.gender }}</td>
+              <td class="w-[300px]">{{ parent.birthday }}</td>
+              <td class="w-[300px]">{{ parent.address }}</td>
+              <td class="w-[700px]">{{ parent.job }}</td>
+              <td class="w-[700px]">{{ parent.email }}</td>
+              <td class="w-[700px]">{{ parent.phone }}</td>
+              <td class="w-[700px]">{{ parent.role }}</td>
               <td class="w-[200px]">
                 <!-- <div class="button-container">
                   <button class="delete-button">
@@ -99,179 +98,98 @@
     </main>
   </div>
 </template>
-  
-  <script>
-import "primeicons/primeicons.css";
+
+<script>
+import { ref, computed } from "vue";
+import axios from "axios";
 import delete_icon from "@/assets/icons/delete.svg";
 import edit_icon from "@/assets/icons/edit.svg";
 import add_icon from "@/assets/icons/pls.svg";
 import AddParent from "@/presentations/parent_page/views/parent_create_page.vue";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
 export default {
-  data() {
-    return {
-      students: [
-        {
-          id: 1,
-          fullName: "Nguyễn Văn A",
-          gender: "Nam",
-          grade: "10A",
-          birthday: "2000-01-01",
-          status: "Hoạt động",
-        },
-        {
-          id: 2,
-          fullName: "Trần Thị B",
-          gender: "Nữ",
-          grade: "10B",
-          birthday: "2001-02-02",
-          status: "Khóa",
-        },
-        {
-          id: 3,
-          fullName: "Lê Văn C",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 4,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 5,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 6,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 7,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 8,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 9,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 10,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 11,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 12,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 13,
-          fullName: "Lê Văn D",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-        {
-          id: 14,
-          fullName: "Lê Văn 4",
-          gender: "Nam",
-          grade: "11C",
-          birthday: "2002-03-03",
-          status: "Hoạt động",
-        },
-      ],
-      searchQuery: "",
-      sortCriteria: "all",
-      delete_icon: delete_icon,
-      edit_icon: edit_icon,
-      add_icon: add_icon,
-      AddParent: AddParent,
-      sort_icon: sort_icon,
+  setup() {
+    const parents = ref([]);
+    const newParent = ref({
+      fullname: "",
+      gender: "",
+      birthday: "",
+      address: "",
+      job: "",
+      email: "",
+      phone: "",
+      role: "",
+      account_id: "",
+      status: 1,
+    });
+    const searchQuery = ref("");
+    const sortCriteria = ref("all");
+
+    const filterAll = () => {
+      sortCriteria.value = "all";
     };
-  },
-  methods: {
-    filterAll() {
-      this.sortCriteria = "all";
-    },
-    filterAZ() {
-      this.sortCriteria = "AZ";
-    },
-    filterZA() {
-      this.sortCriteria = "ZA";
-    },
-  },
-  computed: {
-    filteredStudents() {
-      const filteredStudents = this.students.filter((student) => {
+
+    const filterAZ = () => {
+      sortCriteria.value = "AZ";
+    };
+
+    const filterZA = () => {
+      sortCriteria.value = "ZA";
+    };
+
+    const filteredParents = computed(() => {
+      const filteredParents = students.value.filter((student) => {
         return student.fullName
           .toLowerCase()
-          .includes(this.searchQuery.toLowerCase());
+          .includes(searchQuery.value.toLowerCase());
       });
 
-      if (this.sortCriteria === "AZ") {
-        filteredStudents.sort((a, b) => {
+      if (sortCriteria.value === "AZ") {
+        return filteredParents.sort((a, b) => {
           return a.fullName.localeCompare(b.fullName);
         });
-      } else if (this.sortCriteria === "ZA") {
-        filteredStudents.sort((a, b) => {
+      } else if (sortCriteria.value === "ZA") {
+        return filteredParents.sort((a, b) => {
           return b.fullName.localeCompare(a.fullName);
         });
       }
+      return filteredParents;
+    });
+    const fetchParents = async () => {
+      try {
+        const response = await axios.get("http://localhost:9000/parents");
+        parents.value = response.data;
+      } catch (error) {
+        console.error("Error fetching parents:", error);
+      }
+    };
 
-      return filteredStudents;
-    },
-    totalStudents() {
-      return this.students.length;
-    },
+    return {
+      parents,
+      newParent,
+      searchQuery,
+      sortCriteria,
+      filterAll,
+      filterAZ,
+      filterZA,
+      filteredParents,
+      delete_icon,
+      edit_icon,
+      add_icon,
+      AddParent,
+      sort_icon,
+      fetchParents,
+    };
   },
 };
 </script>
-  
+
 <style scoped>
+.dashboard {
+  display: flex;
+  justify-content: start;
+}
+
 .flex-container {
   display: flex;
   justify-content: start;
@@ -358,7 +276,8 @@ export default {
 table {
   /* width: 100%;
   height: 100vh; */
-  margin-bottom: 250px;
+  /* margin-bottom: 250px; */
+  margin: 0 auto;
   /* border-collapse: collapse; */
 }
 
@@ -366,17 +285,18 @@ table {
   max-height: 700px;
   overflow-y: auto;
 } */
-/* th,
+th,
 td {
   padding: 8px;
   border: 0px solid #ffffff;
   text-align: left;
-} */
+}
 
-/* th {
-  color: #ffffff;
-  background-color: #53808c;
-} */
+th {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 /* .table tr:nth-child(even) {
   background-color: #f2f2f2;

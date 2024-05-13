@@ -4,7 +4,7 @@
     <div class="flex justify-between content-center mr-3">
       <SearchForm @passSearchText="getSearchText"></SearchForm>
 
-      <router-link to="/students/create">
+      <router-link to="/parents/create">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
@@ -18,5 +18,4 @@ import SearchForm from "../../../components/search_form_comp.vue";
 import CreateButtonComp from "../../../components/create_button.vue";
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
