@@ -216,6 +216,7 @@ import { storeToRefs } from "pinia";
 import SaveButton from "../../../components/save_button.vue";
 
 import ListBox from "../../../components/select_comp.vue";
+import axios from "axios";
 
 onBeforeMount(() => {
   getDrafValue();
@@ -369,6 +370,21 @@ async function submitCreateStudent() {
     fork: studentForkInput.value,
     status: classInput.value != undefined ? 1 : 0,
   };
+
+  const resultUpload = await studentStore.storeImage(fileUpload.value);
+
+  if (!resultUpload.url) {
+    console.log(resultUpload);
+    emits("add-toast", {
+      title: "Upload image failed!",
+      content: `Quá trình tải ảnh thất bại!`,
+      type: 1,
+    });
+    return;
+  }
+  studentToCreate.avatarPath = resultUpload.url;
+
+  console.log(studentToCreate);
 
   const result = await studentStore.createStudent(studentToCreate);
   console.log(result);

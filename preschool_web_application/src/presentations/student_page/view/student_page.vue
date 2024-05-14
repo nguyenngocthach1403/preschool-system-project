@@ -82,7 +82,7 @@
       <Pagination
         v-if="status !== 'search_failed' && status !== 'load_failed'"
         :page-nums="round(total / limit)"
-        @click-page="page = $event - 1"
+        @click-page="changePage($event)"
       ></Pagination>
     </div>
   </div>
@@ -120,7 +120,7 @@ onMounted(async () => {
   studentStore.getStudent();
 
   //Get total student
-  // studentStore.getTotalStudent();
+  studentStore.getTotalStudent();
 
   dataOfTable.value = studentStore.students;
 });
@@ -131,9 +131,9 @@ watch(loading, () => {
   }
 });
 
-watch(page, () => {
-  studentStore.getStudent();
-});
+// watch(page, () => {
+//   studentStore.getStudent();
+// });
 
 const getSearchText = (event) => {
   searchText.value = event;
@@ -183,6 +183,11 @@ const deleteStudentById = (event) => {
 
 function round(value) {
   return Math.ceil(value);
+}
+
+function changePage(event) {
+  const page = event - 1;
+  studentStore.changePage(page);
 }
 
 async function deleteStudent(studentToDel) {

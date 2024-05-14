@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ddmmyyyyDateString } from "../utils/resources/format_date";
 import StudentService from "../services/student.service";
 import studentService from "../services/student.service";
+import axios from "axios";
 
 export const useStudentStore = defineStore("studentStore", {
   state: () => ({
@@ -15,7 +16,7 @@ export const useStudentStore = defineStore("studentStore", {
   }),
   actions: {
     resetPage() {
-      if (this.page !== 0) this.page = 0;
+      if (this.page != 0) this.page = 0;
     },
 
     formatDataStudent(dataStudent) {
@@ -69,11 +70,35 @@ export const useStudentStore = defineStore("studentStore", {
       return studentToCreate.name;
     },
 
+    async storeImage(image) {
+      this.status = "creating";
+      const formData = new FormData();
+      formData.append("upload_preset", "preschool");
+      formData.append("file", image);
+      try {
+        const res = await axios.post(
+          "https://api.cloudinary.com/v1_1/diaia9ndd/image/upload",
+          formData
+        );
+        console.log(res);
+        if (res.status == 200) {
+          return res.data;
+        } else {
+          return;
+        }
+      } catch (error) {
+        return error;
+      }
+    },
+
     async searchStudent(searchText) {
       this.loading = true;
       this.status = "searching";
 
-      this.resetPage();
+      if (searchText !== this.txtSearch) {
+        console.log("Reset page 0");
+        this.resetPage();
+      }
 
       const res = await studentService.search(
         searchText,
@@ -91,7 +116,7 @@ export const useStudentStore = defineStore("studentStore", {
         this.status = "search_failed";
         return;
       }
-
+      console.log(data.total);
       this.total = data.total;
 
       const studentResponse = data.data;
@@ -101,7 +126,7 @@ export const useStudentStore = defineStore("studentStore", {
       this.students = studentFormated;
 
       this.loading = false;
-      this.status = "searhed";
+      this.status = "searched";
     },
 
     async getTotalStudent() {
@@ -117,12 +142,12 @@ export const useStudentStore = defineStore("studentStore", {
 
       this.status = "loading";
 
-      await this.getTotalStudent();
+      // await this.getTotalStudent();
 
-      if (this.total == 0) {
-        this.status = "load_failed";
-        return;
-      }
+      // if (this.total == 0) {
+      //   this.status = "load_failed";
+      //   return;
+      // }
 
       const res = await studentService.getStudent(this.page, this.limit);
       const dataRes = res.data;
@@ -159,6 +184,17 @@ export const useStudentStore = defineStore("studentStore", {
           this.students.splice(index, 1);
           return;
         }
+      }
+    },
+
+    async changePage(newVal) {
+      this.page = newVal;
+      if (this.txtSearch != "") {
+        console.log("Has search");
+        this.searchStudent(this.txtSearch);
+      } else {
+        console.log("No search");
+        this.getStudent();
       }
     },
 
