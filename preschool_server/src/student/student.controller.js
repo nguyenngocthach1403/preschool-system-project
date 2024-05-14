@@ -7,16 +7,133 @@ const db = require("../config/db");
 const studentService = require("./student.service");
 
 router.get("/", getAll);
-router.get("/:id", getByID);
+// router.get("/:id", getByID);
+router.get("/total", getTotalStudent);
 
-function getAll(req, res, next) {
+router.get("/search", getStudentSearch);
+
+router.get("/delete", deleteStudent);
+
+router.post("/create", createStudent);
+
+async function createStudent(req, res, next) {
+  console.log(req.body);
+
+  const result = await studentService.createNewStudent(req.body);
+
+  if (result === "ER_NO_DEFAULT_FOR_FIELD") {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Dữ liệu tạo chưa đủ!",
+      })
+    );
+  }
+  if (result === "ER_DUP_ENTRY") {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Mã học sinh đã tồn tại!",
+      })
+    );
+  }
+  if (result > 0) {
+    res.send(
+      JSON.stringify({
+        status: 200,
+        message: "Successfull",
+        effectedRows: result,
+      })
+    );
+    return;
+  }
+}
+
+async function deleteStudent(req, res, next) {
+  if (req.query.id === undefined) {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Resouse not found",
+      })
+    );
+    return;
+  }
+
+  const result = await studentService.deleteStudent(req.query.id);
+
+  if (result === 0) {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Resouse not found",
+      })
+    );
+  } else {
+    res.send(
+      JSON.stringify({
+        status: 200,
+        message: "Resouse delete Successful",
+      })
+    );
+  }
+}
+
+async function getStudentSearch(req, res, next) {
+  console.log(req.query.text, req.query.page, req.query.limit);
+
+  const totalResult = await studentService.countSearchStudent(req.query.text);
+  if (totalResult[0]["total"] == 0) {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Not found any student",
+      })
+    );
+    return;
+  }
+
+  const resultStudentSearch = await studentService.searchStudent(
+    req.query.text,
+    req.query.page,
+    req.query.limit
+  );
+
+  res.send({
+    status: 200,
+    message: "Successful",
+    total: totalResult[0]["total"],
+    data: resultStudentSearch,
+  });
+}
+
+async function getTotalStudent(req, res, next) {
+  console.log("Get total student in database");
+
+  const countStudent = await studentService.countStudent();
+
+  res.send(
+    JSON.stringify({
+      status: 200,
+      message: "Successful",
+      data: countStudent[0]["total"],
+    })
+  );
+}
+
+async function getAll(req, res, next) {
   if (req.query.page !== undefined && req.query.limit !== undefined) {
-    console.log(req.query.page);
     studentService
       .getPage(req.query.page, req.query.limit)
       .then((result) => {
         if (result.length !== 0) {
-          res.send(result);
+          res.send(
+            JSON.stringify({
+              status: 200,
+              message: "Successful",
+              data: result,
+            })
+          );
         } else {
           res.send([]);
         }

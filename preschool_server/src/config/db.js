@@ -51,13 +51,13 @@ class Database {
     }
   }
 
-  async selectLimit(table, columns = "*", limit = "", offset = "") {
+  async selectLimit(table, columns = "*", where = "", limit = "", offset = "") {
     try {
-      const sql = `SELECT ${columns} FROM ${table} LIMIT ${limit} OFFSET ${offset}`;
+      const sql = `SELECT ${columns} FROM ${table} ${where} ${limit} ${offset}`;
       const rows = await this.query(sql);
       return rows;
     } catch (error) {
-      throw error;
+      return error;
     }
   }
 
@@ -65,9 +65,48 @@ class Database {
     try {
       const sql = `INSERT INTO ${table} SET ?`;
       const result = await this.query(sql, data);
-      return result.insertId;
+      return result.affectedRows;
+    } catch (error) {
+      return error.code;
+    }
+  }
+
+  async delete(table, where) {
+    try {
+      const sql = `DELETE FROM ${table} ${where}`;
+
+      const result = await this.query(sql);
+
+      return result.affectedRows;
     } catch (error) {
       throw error;
+    }
+  }
+  async update(table, updates, where) {
+    try {
+      const setClause = Object.keys(updates)
+        .map((key) => `${key} = ?`)
+        .join(", ");
+
+      const whereClause =
+        where && Object.keys(where).length > 0
+          ? `WHERE ${Object.keys(where)
+              .map((key) => `${key} = ?`)
+              .join(" AND ")}`
+          : "";
+
+      const sql = `UPDATE ${table} SET ${setClause} ${whereClause}`;
+
+      const values = [
+        ...Object.values(updates),
+        ...(where ? Object.values(where) : []),
+      ];
+
+      const result = await this.query(sql, values);
+
+      return result.affectedRows;
+    } catch (error) {
+      return error.code;
     }
   }
 }
