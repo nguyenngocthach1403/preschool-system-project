@@ -2,7 +2,7 @@ const db = require("../config/db");
 require("dotenv").config();
 
 module.exports = {
-  getAll,
+  getStudents,
   getByID,
   getPage,
   countStudent,
@@ -13,29 +13,46 @@ module.exports = {
 };
 
 async function createNewStudent(studentToCreate) {
-  //Add ID for student
-  // Structure Id -> [year][stt]
-  //get total student this year
-  const id = await createIDStudent();
-  studentToCreate.id = parseInt(id, 10);
-  return await db.insert(process.env.STUDENT_TB, studentToCreate);
+  try {
+    const id = await createIDStudent();
+    studentToCreate.id = parseInt(id, 10);
+    return await db.insert(process.env.STUDENT_TB, studentToCreate);
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
+  }
 }
 
 async function createIDStudent() {
-  const year = new Date().getFullYear();
+  try {
+    db.createConnection();
 
-  console.log(year);
-  const res = await db.select(
-    "Students",
-    "Count(*) AS total",
-    `WHERE Students.created like '%${year}%'`
-  );
+    const year = new Date().getFullYear();
 
-  const idCreated = `${year}` + `${padNumber(res[0]["total"] + 1)}`;
+    console.log(year);
+    const res = await db.select(
+      "Students",
+      "Count(*) AS total",
+      `WHERE Students.created like '%${year}%'`
+    );
 
-  console.log("ID studetn gerenated: ", idCreated);
+    const idCreated = `${year}` + `${padNumber(res[0]["total"] + 1)}`;
 
-  return idCreated;
+    console.log("ID studetn gerenated: ", idCreated);
+
+    return idCreated;
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  }
 }
 
 function padNumber(number) {
@@ -56,57 +73,96 @@ function getKey(studentToCreate) {
   return keys;
 }
 
-async function getAll() {
+async function getStudents() {
   try {
-    db.connect();
+    db.createConnection();
     return db.select(
       `${process.env.STUDENT_TB} LEFT JOIN Classes ON Students.classID = Classes.classID`,
       "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
       "WHERE Students.deleted = 0"
     );
   } catch (error) {
-    db.disconnect();
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
   }
 }
 
 async function countStudent() {
   try {
-    db.connect();
-    return db.select(
+    //Connect to DB
+    db.createConnection();
+
+    //Excute query select
+    return await db.select(
       "Students",
       "Count(*) AS total",
       "WHERE Students.deleted = 0"
     );
   } catch (error) {
-    db.disconnect();
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
   }
 }
 
 async function searchStudent(txtSearch, page, limit) {
-  return db.selectLimit(
-    `${process.env.STUDENT_TB} LEFT JOIN Classes ON Students.classID = Classes.classID`,
-    "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
-    `WHERE Students.deleted = 0 AND Students.name LIKE '%${txtSearch}%' OR Students.id Like '%${txtSearch}%'`,
-    limit !== undefined ? `LIMIT ${limit}` : "",
-    limit !== undefined ? `OFFSET ${page * limit}` : ""
-  );
+  try {
+    db.createConnection();
+    return db.selectLimit(
+      `${process.env.STUDENT_TB} LEFT JOIN Classes ON Students.classID = Classes.classID`,
+      "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
+      `WHERE Students.deleted = 0 AND Students.name LIKE '%${txtSearch}%' OR Students.id Like '%${txtSearch}%'`,
+      limit !== undefined ? `LIMIT ${limit}` : "",
+      limit !== undefined ? `OFFSET ${page * limit}` : ""
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
+  }
 }
 
 async function countSearchStudent(txtSearch) {
   try {
-    db.connect();
+    db.createConnection();
+
     return db.select(
       "Students LEFT JOIN Classes ON Students.classID = Classes.classID",
       "Count(*) AS total",
       `WHERE Students.deleted = 0 AND Students.name LIKE '%${txtSearch}%' OR Students.id Like '%${txtSearch}%'`
     );
   } catch (error) {
-    db.disconnect();
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
   }
 }
 
 async function getByID(id) {
   try {
+    db.createConnection();
+
     return db.select(
       "Students LEFT JOIN Classes ON Students.classID = Classes.classID",
       "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
@@ -115,20 +171,42 @@ async function getByID(id) {
         : ""
     );
   } catch (error) {
-    db.disconnect();
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
   }
 }
 
 async function deleteStudent(idStudentToDel) {
-  return db.update(
-    process.env.STUDENT_TB,
-    { deleted: true },
-    { id: idStudentToDel }
-  );
+  try {
+    db.createConnection();
+
+    return db.update(
+      process.env.STUDENT_TB,
+      { deleted: true },
+      { id: idStudentToDel }
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
+  }
 }
 
 async function getPage(page, limit) {
   try {
+    db.createConnection();
+
     return db.selectLimit(
       "Students LEFT JOIN Classes ON Students.classID = Classes.classID",
       "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
@@ -137,6 +215,13 @@ async function getPage(page, limit) {
       limit !== undefined ? `OFFSET ${page * limit}` : ""
     );
   } catch (error) {
-    db.disconnect();
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
   }
 }
