@@ -41,6 +41,7 @@ const menuStyle = ref("full-menu");
 const isMenuClose = ref(true);
 
 const closeMenu = (is) => {
+  console.log(is);
   if (is) {
     menuStyle.value = "hide-menu";
     return;

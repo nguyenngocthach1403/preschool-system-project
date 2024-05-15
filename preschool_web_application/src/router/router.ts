@@ -9,6 +9,7 @@ import ParentCreationView from '@/presentations/parent_page/views/parent_create_
 import HomePage from '@/presentations/home_page/views/home_page.vue'
 import LoginView from '@/presentations/login_page/login_view.vue';
 import RegistrationForm from '@/presentations/registration/view/registration-form.vue'
+import RegistrationView from "../presentations/registration_page/view/registration_view.vue"
 const router = Router()
 export default router;
 function Router()
@@ -67,6 +68,11 @@ function Router()
                         path: '/parents/create',
                         component: ParentCreationView
                     },
+                    {
+                        name: 'RegistrationView',
+                        path: '/registration_view',
+                        component: RegistrationView,
+                    }
                 ]
             }
         ]
