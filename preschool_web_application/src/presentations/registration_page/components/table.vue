@@ -78,10 +78,10 @@
               <span class="font-bold">Vai trò:</span> {{ checkRole(item.role) }}
             </dd>
           </td>
-          <td class="px-3 w-[200px]">
+          <td class="px-3 w-[400px]">
             <button
               @click.prevent
-              v-if="!item.user"
+              v-if="item.user == null"
               class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
             >
               Tạo tài khoản

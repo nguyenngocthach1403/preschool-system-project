@@ -30,7 +30,7 @@ async function getRegistration(req, res) {
     });
   }
 
-  const result = await registationService.getRegistrations(0, 20);
+  const result = await registationService.getRegistrations(page, limit);
   if (result.code) {
     res.status(500).json({
       status: 500,

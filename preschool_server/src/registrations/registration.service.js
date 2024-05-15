@@ -8,9 +8,8 @@ module.exports = {
 
 async function getTotalRegistration() {
   try {
-    if (!db.connection) {
-      db.createConnection();
-    }
+    db.createConnection();
+    console.log("Count registration:");
     return await db.select(process.env.REGISTRATION_DB, "Count(*) AS total");
   } catch (error) {
     return {
@@ -26,9 +25,7 @@ async function getTotalRegistration() {
 
 async function getRegistrations(page, limit) {
   try {
-    if (!db.connection) {
-      db.createConnection();
-    }
+    db.createConnection();
     const data = await db.selectLimit(
       process.env.REGISTRATION_DB,
       "*",
