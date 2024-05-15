@@ -1,7 +1,18 @@
 var mysql = require("mysql2");
 class Database {
   constructor(config) {
-    this.connection = mysql.createConnection(config);
+    this.config = config;
+    this.connection = mysql.createConnection(this.config);
+  }
+
+  createConnection() {
+    try {
+      this.connection = mysql.createConnection(this.config);
+      console.log("Database connected successfully.");
+    } catch (error) {
+      console.error("Error connecting to the database:", error);
+      throw error;
+    }
   }
 
   connect() {
@@ -12,7 +23,7 @@ class Database {
           reject(err);
         } else {
           console.log("Connected to MySql database");
-          resolve();
+          resolve(true);
         }
       });
     });
@@ -47,7 +58,7 @@ class Database {
       const rows = await this.query(sql);
       return rows;
     } catch (error) {
-      throw error;
+      return error.code;
     }
   }
 
@@ -57,7 +68,7 @@ class Database {
       const rows = await this.query(sql);
       return rows;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -106,7 +117,7 @@ class Database {
 
       return result.affectedRows;
     } catch (error) {
-      return error.code;
+      throw error;
     }
   }
 }

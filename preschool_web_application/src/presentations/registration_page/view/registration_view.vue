@@ -1,31 +1,18 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
-    <ConfirmDialog
-      v-if="showConfirmDialog"
-      class="absolute top-0 left-0"
-      :content="showConfirmDialog"
-      @confirm="getConfirm"
-    />
-    <EditStudentView
-      v-if="showStudentEdit"
-      class="absolute top-0 left-0"
-      :student-data="showStudentEdit"
-      @close="showStudentEdit = false"
-    />
-
     <!-- Header -->
     <div class="text-left px-[20px] text-[36px] font-bold">Registration</div>
 
     <!-- Search-->
     <div class="flex justify-between content-center mr-3">
-      <SearchFormComp @passSearchText="getSearchText"></SearchFormComp>
-      <router-link to="/students/create">
+      <SearchFormComp></SearchFormComp>
+      <!-- <router-link to="/students/create">
         <CreateButtonComp></CreateButtonComp>
-      </router-link>
+      </router-link> -->
     </div>
 
     <!--Show muc-->
-    <!-- <div class="my-2 w-full text-start px-6">
+    <div class="my-2 w-full text-start px-6">
       Hiển thị
       <select
         id="show-num-student"
@@ -41,15 +28,14 @@
         <option value="70">70</option>
         <option value="100">100</option>
       </select>
-      học sinh
-    </div> -->
+      Danh mục
+    </div>
 
     <!-- Quick search -->
 
     <!-- Table components -->
     <TableComp :data="dataTable"></TableComp>
-
-    <!-- <div
+    <div
       class="bottom-table-section flex justify-between h-[37px] content-center"
     >
       <div
@@ -57,34 +43,54 @@
         class="h-[37px] content-center mx-[20px]"
       >
         Hiển thị từ {{ page * limit + 1 }} đến
-        {{ (page + 1) * limit - (limit - students.length) }} trong
-        {{ total }} học sinh
+        {{ (page + 1) * limit - (limit - registrations.length) }} trong
+        {{ total }} danh mục
       </div>
       <div
         v-if="status == 'search_failed'"
         class="h-[37px] content-center mx-[20px]"
       >
-        Not found any student!
+        không tìm thấy danh mục nào!
       </div>
       <div
         v-if="status == 'load_failed'"
         class="h-[37px] content-center mx-[20px]"
       >
-        There are no students!
+        Không có danh mục nào tồn tại!
       </div>
       <Pagination
-          v-if="status !== 'search_failed' && status !== 'load_failed'"
-          :page-nums="round(total / limit)"
-          @click-page="changePage($event)"
-        ></Pagination>
-    </div> -->
+        :page-nums="round(registrationStore.total / registrationStore.limit)"
+        @click-page="changePage($event)"
+      ></Pagination>
+    </div>
   </div>
 </template>
 
 <script setup>
 import TableComp from "../components/table.vue";
 import SearchFormComp from "../../../components/search_form_comp.vue";
-import { ref } from "vue";
+import Pagination from "../../../components/pagination.vue";
+import { storeToRefs, mapState } from "pinia";
+import { useRegistrionStore } from "../../../stores/registration_store";
+import { onMounted, ref, watch } from "vue";
+
+const registrationStore = useRegistrionStore();
+const { registrations, total, status, limit, page, loading } =
+  storeToRefs(registrationStore);
+
+onMounted(async () => {
+  await registrationStore.getRegistration();
+
+  dataTable.value = registrationStore.formatRegistration(
+    registrationStore.registrations
+  );
+});
+
+watch(loading, () => {
+  dataTable.value = registrationStore.formatRegistration(
+    registrationStore.registrations
+  );
+});
 
 const dataTable = ref([
   {
@@ -112,4 +118,13 @@ const dataTable = ref([
     user: "NNTHACH",
   },
 ]);
+function changePage(event) {
+  registrationStore.changePage(event - 1);
+}
+function round(value) {
+  return Math.ceil(value);
+}
+function showStudentNumSelectChange(event) {
+  registrationStore.changeLimit(parseInt(event.target.value));
+}
 </script>

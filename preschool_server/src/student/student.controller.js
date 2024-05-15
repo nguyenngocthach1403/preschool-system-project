@@ -21,10 +21,11 @@ async function createStudent(req, res, next) {
 
   const result = await studentService.createNewStudent(req.body);
 
-  if (result === "ER_NO_DEFAULT_FOR_FIELD") {
+  if (result.code === "ER_NO_DEFAULT_FOR_FIELD") {
     res.send(
       JSON.stringify({
         status: 404,
+        error: result.message,
         message: "Dữ liệu tạo chưa đủ!",
       })
     );
@@ -33,6 +34,7 @@ async function createStudent(req, res, next) {
     res.send(
       JSON.stringify({
         status: 404,
+        error: result.message,
         message: "Mã học sinh đã tồn tại!",
       })
     );
@@ -122,37 +124,29 @@ async function getTotalStudent(req, res, next) {
 }
 
 async function getAll(req, res, next) {
-  if (req.query.page !== undefined && req.query.limit !== undefined) {
-    studentService
-      .getPage(req.query.page, req.query.limit)
-      .then((result) => {
-        if (result.length !== 0) {
-          res.send(
-            JSON.stringify({
-              status: 200,
-              message: "Successful",
-              data: result,
-            })
-          );
-        } else {
-          res.send([]);
-        }
-      })
-      .catch(next);
-  } else {
-    studentService
-      .getAll()
-      .then((result) => {
-        res.send(
-          JSON.stringify({
-            status: 200,
-            message: "Successful",
-            data: result,
-          })
-        );
-      })
-      .catch(next);
+  const { limit, page } = req.query;
+  if (limit === undefined || page === undefined) {
+    return res.status(400).json({
+      status: 400,
+      error: "Invalid input: Querry must has limit and page",
+    });
   }
+
+  const result = await studentService.getPage(page, limit);
+
+  if (result.code) {
+    return res.status(500).json({
+      status: 500,
+      code: result.code,
+      error: result.message,
+    });
+  }
+
+  return res.status(200).json({
+    status: 200,
+    message: "Successful",
+    data: result,
+  });
 }
 
 function getByID(req, res, next) {
