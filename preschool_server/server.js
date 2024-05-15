@@ -24,6 +24,11 @@ app.get("/", (req, res) => {
 
 app.use("/students", require("./src/student/student.controller"));
 
+app.use(
+  "/registrations",
+  require("./src/registrations/registation.controller")
+);
+
 app.listen(port, () => {
   console.log(`listen port ${port}`);
 });
