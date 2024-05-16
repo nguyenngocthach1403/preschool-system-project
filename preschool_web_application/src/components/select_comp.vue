@@ -1,6 +1,16 @@
 <template>
-  <div id="list-box" class="relative">
+  <div
+    id="list-box"
+    class="relative"
+    :style="{
+      cursor: drops.disable ? 'not-allowed' : 'default',
+    }"
+  >
     <button
+      :style="{
+        'pointer-events': drops.disable ? 'none' : 'auto',
+        'background-color': drops.disable ? '#ECECEC' : 'transpanent',
+      }"
       @focus="showList = true"
       @focusout="closeList"
       class="relative w-full cursor-default rounded-md bg-white h-full py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
@@ -62,6 +72,10 @@ import { ref, onMounted } from "vue";
 onMounted(() => {
   console.log(drops.valueActive);
 
+  if (drops.disable) {
+    drops.optionList = [drops.valueActive];
+  }
+
   for (let index = 0; index < drops.optionList.length; index++) {
     const element = drops.optionList[index];
     if (
@@ -69,8 +83,11 @@ onMounted(() => {
       element.name.match(drops.valueActive)
     ) {
       value.value = element;
+
+      console.log(value.value);
     }
   }
+  console.log(drops.optionList);
 });
 
 const showList = ref(false);
@@ -86,7 +103,7 @@ function closeList() {
   }, 50);
 }
 
-const drops = defineProps(["optionList", "valueActive"]);
+const drops = defineProps(["optionList", "valueActive", "disable"]);
 </script>
 
 <style lang="scss" scoped>

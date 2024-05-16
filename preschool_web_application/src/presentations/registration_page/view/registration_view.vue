@@ -1,5 +1,11 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
+    <CreateAccountView
+      v-if="showCreateAccountView"
+      class="absolute top-0 left-0"
+      @close="showCreateAccountView = false"
+      :registration="registerItem"
+    />
     <!-- Header -->
     <div class="text-left px-[20px] text-[36px] font-bold">Registration</div>
 
@@ -34,7 +40,10 @@
     <!-- Quick search -->
 
     <!-- Table components -->
-    <TableComp :data="dataTable"></TableComp>
+    <TableComp
+      :data="dataTable"
+      @click-create-acount="createAccountShow($event)"
+    ></TableComp>
     <div
       class="bottom-table-section flex justify-between h-[37px] content-center"
     >
@@ -68,6 +77,7 @@
 
 <script setup>
 import TableComp from "../components/table.vue";
+import CreateAccountView from "../../account_page/components/create_account_view.vue";
 import SearchFormComp from "../../../components/search_form_comp.vue";
 import Pagination from "../../../components/pagination.vue";
 import { storeToRefs, mapState } from "pinia";
@@ -91,6 +101,10 @@ watch(loading, () => {
     registrationStore.registrations
   );
 });
+
+const showCreateAccountView = ref(false);
+
+const registerItem = ref(null);
 
 const dataTable = ref([
   {
@@ -120,6 +134,10 @@ const dataTable = ref([
 ]);
 function changePage(event) {
   registrationStore.changePage(event - 1);
+}
+function createAccountShow(event) {
+  showCreateAccountView.value = true;
+  registerItem.value = event;
 }
 function round(value) {
   return Math.ceil(value);
