@@ -5,6 +5,7 @@
       class="absolute top-0 left-0"
       @close="showCreateAccountView = false"
       :registration="registerItem"
+      @add-toast="$emit('add-toast', $event), close()"
     />
     <!-- Header -->
     <div class="text-left px-[20px] text-[36px] font-bold">Registration</div>
@@ -41,7 +42,7 @@
 
     <!-- Table components -->
     <TableComp
-      :data="dataTable"
+      :data="registrationStore.formatRegistration(registrations)"
       @click-create-acount="createAccountShow($event)"
     ></TableComp>
     <div
@@ -144,5 +145,9 @@ function round(value) {
 }
 function showStudentNumSelectChange(event) {
   registrationStore.changeLimit(parseInt(event.target.value));
+}
+function close() {
+  showCreateAccountView.value = false;
+  registrationStore.getRegistration();
 }
 </script>
