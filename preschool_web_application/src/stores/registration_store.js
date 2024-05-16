@@ -80,8 +80,10 @@ export const useRegistrionStore = defineStore("registrationStore", {
       };
     },
     async changePage(page) {
-      this.page = page;
-      this.getRegistration();
+      if (page != this.page) {
+        this.page = page;
+        this.getRegistration();
+      }
     },
     async changeLimit(newVal) {
       if (newVal >= this.total && this.page != 0) {
