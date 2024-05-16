@@ -100,7 +100,7 @@ const getConfirm = (event) => {
     const studentToDel = JSON.parse(localStorage.getItem("studentToDel") || {});
     studentStore.deleteStudent(studentToDel.id);
     //emit toast
-    emits("add-toast", {
+    emits({
       title: "Detele Successfully!",
       content: "Delete " + studentToDel.name + " student",
       type: 0,
@@ -120,5 +120,4 @@ const editStudent = (event) => {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
