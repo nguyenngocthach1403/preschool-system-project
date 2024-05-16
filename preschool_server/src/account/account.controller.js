@@ -28,20 +28,27 @@ async function getAccountTotal(req, res) {
 async function getAccont(req, res) {
   const { limit, page } = req.query;
 
-  if (limit === undefined || page === undefined) {
-    return res.status(400).json({
+  if (limit === "undefined") {
+    return res.status(200).json({
+      status: 404,
+      error: "Invalid Input: Query must has limit and page",
+    });
+  }
+  if (!limit || !page) {
+    return res.status(200).json({
+      status: 404,
       error: "Invalid Input: Query must has limit and page",
     });
   }
 
   const result = await accountService.getAccount(limit, page * limit);
 
-  // if (result !== Array || result.length === 0) {
-  //   res.status(400).json({
-  //     status: 400,
-  //     message: "Dont has any here!",
-  //   });
-  // }
+  if (result.code) {
+    return res.status(200).json({
+      status: 404,
+      message: result.message,
+    });
+  }
   res.status(200).json({
     status: 200,
     message: "Successful!",
