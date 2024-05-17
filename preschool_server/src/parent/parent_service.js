@@ -3,6 +3,7 @@ const db = require("../config/db");
 module.exports = {
   getAll,
   getByID,
+  isDuplicateEmailOrPhone,
   insertParent,
   updateParent,
   deleteParent,
@@ -31,10 +32,23 @@ async function getByID(id) {
     db.disconnect();
   }
 }
+async function isDuplicateEmailOrPhone(email, phone) {
+  try {
+    const result = await db.select(
+      "Parent",
+      "*",
+      `WHERE email = '${email}' OR phone = '${phone}'`
+    );
+    return result.length > 0;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function insertParent(data) {
   try {
     const parentId = await db.insert("Parent", data);
-    console.log(`Parent created with ID: ${parentId}`);
+    // console.log(`Parent created with ID: ${parentId}`);
     return parentId;
   } catch (error) {
     console.error("Error inserting parent:", error);
@@ -53,7 +67,7 @@ async function updateParent(id, newData) {
 }
 async function deleteParent(where) {
   try {
-    console.log(`delete`);
+    // console.log(`delete`);
     return db.delete("Parent", where);
   } catch (error) {
     console.error("Error deleting parent:", error);
