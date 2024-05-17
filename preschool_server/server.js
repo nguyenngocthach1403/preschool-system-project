@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+const path = require("path");
 
 const port = process.env.PORT;
 
@@ -18,6 +19,10 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
@@ -27,6 +32,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/students", require("./src/student/student.controller"));
+app.use("/parents", require("./src/parent/parent_controller"));
 
 app.use(
   "/registrations",
