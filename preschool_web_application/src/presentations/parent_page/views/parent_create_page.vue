@@ -101,75 +101,83 @@
   </div>
 </template>
 
-<script>
-import router from "@/router/router";
+<script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
-export default {
-  components() {
-    router: router;
-  },
-  setup() {
-    const name = ref("");
-    const gender = ref(0);
-    const birthday = ref("");
-    const address = ref("");
-    const job = ref("");
-    const email = ref("");
-    const phone = ref("");
-    const role = ref(0);
-    const status = ref(1);
-    const account_id = ref("");
 
-    const saveData = async () => {
-      try {
-        const response = await axios.post(
-          "http://localhost:9000/parents/insert",
-          {
-            name: name.value,
-            gender: gender.value,
-            birthday: birthday.value,
-            address: address.value,
-            job: job.value,
-            email: email.value,
-            phone: phone.value,
-            role: role.value,
-            status: status.value,
-            account_id: account_id.value,
-          }
-        );
-        if (response.status === 200) {
-          console.log("Success");
-          router.push("/parents");
-        } else {
-          console.log("Fail");
-        }
-      } catch (e) {
-        console.log(e);
+const name = ref("");
+const gender = ref(0);
+const birthday = ref("");
+const address = ref("");
+const job = ref("");
+const email = ref("");
+const phone = ref("");
+const role = ref(0);
+const status = ref(1);
+const account_id = ref("");
+const emits = defineEmits(["add-toast"]);
+const router = useRouter();
+
+const checkDuplicate = async () => {
+  try {
+    const checkDuplicateResponse = await axios.post(
+      "http://localhost:9000/parents/duplicate",
+      {
+        email: email.value,
+        phone: phone.value,
       }
-    };
-    const cancel = () => {
-      console.log("out");
-      router.push("/");
-    };
-    return {
-      name,
-      gender,
-      birthday,
-      address,
-      job,
-      email,
-      phone,
-      role,
-      status,
-      account_id,
-      saveData,
-      cancel,
-    };
-  },
+    );
+    return checkDuplicateResponse.data;
+  } catch (error) {
+    console.log(e);
+  }
+};
+const saveData = async () => {
+  try {
+    const isDuplicate = await checkDuplicate();
+    if (isDuplicate.message === "Email or phone already exists.") {
+      emits("add-toast", {
+        title: "Email hoặc số điện thoại đã tồn tại, vui lòng thử lại!",
+        type: 1,
+      });
+      return;
+    } else if (isDuplicate.message === "Email and phone are unique.") {
+      const response = await axios.post(
+        "http://localhost:9000/parents/insert",
+        {
+          name: name.value,
+          gender: gender.value,
+          birthday: birthday.value,
+          address: address.value,
+          job: job.value,
+          email: email.value,
+          phone: phone.value,
+          role: role.value,
+          status: status.value,
+          account_id: account_id.value,
+        }
+      );
+      if (response.status === 200) {
+        emits("add-toast", {
+          title: "Create Successfully!",
+          type: 0,
+        });
+        console.log("Success");
+        router.push("/parents");
+      } else {
+        console.log("Fail");
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const cancel = () => {
+  router.push("/parents");
 };
 </script>
-
 <style scoped>
 .info-form {
   font-size: 20px;
