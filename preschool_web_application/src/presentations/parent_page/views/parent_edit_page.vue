@@ -6,12 +6,7 @@
         <div class="form-group-row">
           <div class="form-group">
             <label for="name">Họ tên</label>
-            <input
-              type="text"
-              id="name"
-              v-model="name"
-              placeholder="Nhập họ tên"
-            />
+            <input type="text" id="name" v-model="name" />
           </div>
 
           <div class="form-group">
@@ -31,44 +26,24 @@
           </div>
           <div class="form-group">
             <label for="address">Địa chỉ</label>
-            <input
-              type="text"
-              id="address"
-              v-model="address"
-              placeholder="Nhập địa chỉ"
-            />
+            <input type="text" id="address" v-model="address" />
           </div>
         </div>
         <div class="form-group-row">
           <div class="form-group">
             <label for="job">Nghề nghiệp</label>
-            <input
-              type="text"
-              id="job"
-              v-model="job"
-              placeholder="Nhập nghề nghiệp"
-            />
+            <input type="text" id="job" v-model="job" />
           </div>
           <div class="form-group">
             <label for="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              v-model="email"
-              placeholder="Nhập email"
-            />
+            <input type="email" id="email" v-model="email" />
           </div>
         </div>
 
         <div class="form-group-row">
           <div class="form-group">
             <label for="phone">Số điện thoại</label>
-            <input
-              type="tel"
-              id="phone"
-              v-model="phone"
-              placeholder="Nhập số điện thoại"
-            />
+            <input type="tel" id="phone" v-model="phone" />
           </div>
           <div class="form-group">
             <label for="role">Vai trò</label>
@@ -82,19 +57,20 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="account_id">Account ID</label>
-          <input
-            type="text"
-            id="account_id"
-            v-model="account_id"
-            placeholder="Nhập account id"
-          />
+        <div class="form-group-row">
+          <div class="form-group">
+            <label for="account_id">Account ID</label>
+            <input type="text" id="account_id" v-model="account_id" />
+          </div>
+          <div class="form-group">
+            <label for="status">Trạng thái hoạt động</label>
+            <input type="text" id="status" v-model="status" />
+          </div>
         </div>
 
         <div class="container-btn">
           <button class="btn-close" @click="cancel">Huỷ</button>
-          <button class="btn-save" @click="saveData">Lưu</button>
+          <button class="btn-save" @click="updateParent">Lưu</button>
         </div>
       </div>
     </div>
@@ -102,29 +78,62 @@
 </template>
 
 <script>
-import router from "@/router/router";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
+import router from "@/router/router";
 export default {
-  components() {
-    router: router;
-  },
   setup() {
     const name = ref("");
-    const gender = ref(0);
+    const gender = ref("");
     const birthday = ref("");
     const address = ref("");
     const job = ref("");
     const email = ref("");
     const phone = ref("");
-    const role = ref(0);
-    const status = ref(1);
+    const role = ref("");
+    const status = ref("");
     const account_id = ref("");
-
-    const saveData = async () => {
+    const getParent = async () => {
       try {
-        const response = await axios.post(
-          "http://localhost:9000/parents/insert",
+        const parentId = router.currentRoute.value.params.id;
+        console.log(parentId);
+        const response = await axios.get(
+          `http://localhost:9000/parents/${parentId}`
+        );
+        const parents = response.data[0];
+        // console.log(parents);
+        // const parsedBirthday = new Date(parents.birthday)
+        //   .toISOString()
+        //   .split("T")[0];
+        const parsedBirthday = new Date(parents.birthday);
+        const formattedBirthday = `${parsedBirthday.getFullYear()}-${String(
+          parsedBirthday.getMonth() + 1
+        ).padStart(2, "0")}-${String(parsedBirthday.getDate()).padStart(
+          2,
+          "0"
+        )}`;
+        if (parents) {
+          name.value = parents.name;
+          gender.value = parents.gender;
+          birthday.value = formattedBirthday;
+          address.value = parents.address;
+          job.value = parents.job;
+          email.value = parents.email;
+          phone.value = parents.phone;
+          role.value = parents.role;
+          status.value = parents.status;
+          account_id.value = parents.account_id;
+        }
+        console.log(birthday.value);
+      } catch (error) {
+        console.error("Error fetching parents:", error);
+      }
+    };
+    const updateParent = async () => {
+      try {
+        const parentId = router.currentRoute.value.params.id;
+        const response = await axios.put(
+          `http://localhost:9000/parents/${parentId}`,
           {
             name: name.value,
             gender: gender.value,
@@ -144,14 +153,16 @@ export default {
         } else {
           console.log("Fail");
         }
-      } catch (e) {
-        console.log(e);
+      } catch (error) {
+        console.error("Error updating parent:", error);
       }
     };
     const cancel = () => {
-      console.log("out");
-      router.push("/");
+      router.push("/parents");
     };
+    onMounted(() => {
+      getParent();
+    });
     return {
       name,
       gender,
@@ -163,8 +174,9 @@ export default {
       role,
       status,
       account_id,
-      saveData,
       cancel,
+      getParent,
+      updateParent,
     };
   },
 };
