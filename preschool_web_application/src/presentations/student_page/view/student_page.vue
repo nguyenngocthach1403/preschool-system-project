@@ -166,26 +166,53 @@ const sortDataByClass = () => {
 const getConfirm = (event) => {
   if (event) {
     const studentToDel = JSON.parse(localStorage.getItem("studentToDel") || {});
-    studentStore.deleteStudent(studentToDel.id);
-    //emit toast
-    emits("add-toast", {
-      title: "Detele Successfully!",
-      content: "Delete " + studentToDel.name + " student",
-      type: 0,
-    });
-  }
-  showConfirmDialog.value = null;
-};
 
+    deleteStudent(studentToDel);
+
+    showConfirmDialog.value = null;
+  }
+};
+const editStudent = (event) => {
+  showStudentEdit.value = event;
+};
 const emits = defineEmits(["add-toast"]);
 const deleteStudentById = (event) => {
   localStorage.setItem("studentToDel", JSON.stringify(event));
   showConfirmDialog.value = "Bạn có muốn xóa bé " + event.name + " không?";
 };
 
-const editStudent = (event) => {
-  showStudentEdit.value = event;
-};
+function round(value) {
+  return Math.ceil(value);
+}
+
+function changePage(event) {
+  const page = event - 1;
+  studentStore.changePage(page);
+}
+
+async function deleteStudent(studentToDel) {
+  const resultOfDel = await studentStore.deleteStudentInDB(studentToDel.id);
+
+  if (resultOfDel) {
+    //emit toast
+    emits("add-toast", {
+      title: "Detele Successfully!",
+      content: "Delete " + studentToDel.name + " student",
+      type: 0,
+    });
+  } else {
+    //emit toast
+    emits("add-toast", {
+      title: "Detele Failed!",
+      content: `Not found ${studentToDel.name}`,
+      type: 1,
+    });
+  }
+}
+
+function showStudentNumSelectChange(event) {
+  studentStore.changeLimit(parseInt(event.target.value));
+}
 </script>
 
 <style scoped></style>
