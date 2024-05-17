@@ -1,6 +1,40 @@
 const db = require("../config/db");
 require("dotenv").config();
-module.exports = { getAccount, getAccountTotal };
+module.exports = {
+  getAccount,
+  getAccountTotal,
+  createAccount,
+  updateRegistration,
+};
+
+async function createAccount(accountToCreate) {
+  try {
+    db.createConnection();
+
+    return db.insert(process.env.ACCOUNT_TB, accountToCreate);
+  } catch (error) {
+    return {
+      code: error.code,
+      message: error.sqlMessage,
+    };
+  } finally {
+    db.disconnect();
+  }
+}
+
+async function updateRegistration(id, username) {
+  try {
+    db.createConnection();
+    return db.update("Registers", { acountId: username }, { id: id });
+  } catch (error) {
+    return {
+      code: error.code,
+      message: error.sqlMessage,
+    };
+  } finally {
+    db.disconnect();
+  }
+}
 
 async function getAccount(limit, offset) {
   try {

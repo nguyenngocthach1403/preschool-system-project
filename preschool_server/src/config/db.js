@@ -78,7 +78,7 @@ class Database {
       const result = await this.query(sql, data);
       return result.affectedRows;
     } catch (error) {
-      return error.code;
+      return error;
     }
   }
 
@@ -117,7 +117,7 @@ class Database {
 
       return result.affectedRows;
     } catch (error) {
-      throw error;
+      return error;
     }
   }
 }
