@@ -69,72 +69,6 @@ function Router() {
             component: ParentCreationView,
           },
           {
-            name: "ParentEditView",
-            path: "/parents/edit/:id",
-            component: ParentEditView,
-          },
-        ],
-      },
-    ],
-  });
-  return router;
-}
-
-function Router() {
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-      {
-        name: "LoginView",
-        path: "/",
-        component: LoginView,
-      },
-      {
-        name: "RegistrationFormView",
-        path: "/register",
-        component: RegistrationForm,
-      },
-      {
-        name: "HomePage",
-        path: "/home-page",
-        component: HomePage,
-        beforeEnter(to) {
-          if (to.name !== "HomePage") {
-            return "/home-page";
-          }
-        },
-        children: [
-          {
-            name: "StudentView",
-            path: "/students",
-            component: StudentView,
-          },
-          {
-            name: "ParentView",
-            path: "/parents",
-            component: ParentView,
-          },
-          {
-            name: "DashBoardView",
-            path: "/dashboard",
-            component: DashBoardView,
-          },
-          {
-            name: "ClassView",
-            path: "/classes",
-            component: ClassView,
-          },
-          {
-            name: "StudentCreationView",
-            path: "/students/create",
-            component: StudentCreationView,
-          },
-          {
-            name: "ParentCreationView",
-            path: "/parents/create",
-            component: ParentCreationView,
-          },
-          {
             name: "RegistrationView",
             path: "/registration_view",
             component: RegistrationView,
@@ -143,6 +77,11 @@ function Router() {
             name: "AccountView",
             path: "/account",
             component: AccountView,
+          },
+          {
+            name: "ParentEditView",
+            path: "/parents/edit/:id",
+            component: ParentEditView,
           },
         ],
       },
