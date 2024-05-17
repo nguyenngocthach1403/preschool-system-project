@@ -64,7 +64,10 @@
           </div>
           <div class="form-group">
             <label for="status">Trạng thái hoạt động</label>
-            <input type="text" id="status" v-model="status" />
+            <select id="role" v-model="status" class="form-control">
+              <option value="0">Không hoạt động</option>
+              <option value="1">Hoạt động</option>
+            </select>
           </div>
         </div>
 
@@ -101,10 +104,6 @@ export default {
           `http://localhost:9000/parents/${parentId}`
         );
         const parents = response.data[0];
-        // console.log(parents);
-        // const parsedBirthday = new Date(parents.birthday)
-        //   .toISOString()
-        //   .split("T")[0];
         const parsedBirthday = new Date(parents.birthday);
         const formattedBirthday = `${parsedBirthday.getFullYear()}-${String(
           parsedBirthday.getMonth() + 1

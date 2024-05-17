@@ -8,7 +8,10 @@
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
-    <TableData :searchText="searchText"></TableData>
+    <TableData
+      :searchText="searchText"
+      @add-toast="$emit('add-toast', $event)"
+    ></TableData>
   </div>
 </template>
 

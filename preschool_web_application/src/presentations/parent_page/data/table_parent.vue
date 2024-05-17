@@ -1,8 +1,8 @@
 <template>
   <div class="dashboard text-[14px]">
     <main>
-      <div class="overflow-scroll h-dvh">
-        <table class="table">
+      <div class="overflow-scroll h-[700px] 2xl:h-dvh mr-[10px]h-dvh">
+        <table class="mb-[250px] h-fit w-full">
           <thead
             class="sticky top-0 text-[15px] bg-[#3B44D1] text-white text-white z-10"
           >
@@ -43,7 +43,7 @@
               <td class="w-[700px]">{{ parent.job }}</td>
               <td class="w-[700px]">{{ parent.email }}</td>
               <td class="w-[700px]">{{ parent.phone }}</td>
-              <td class="w-[700px]">{{ parent.role }}</td>
+              <td class="w-[700px]">{{ getRoleString(parent.role) }}</td>
               <td class="w-[700px]">
                 {{ parent.status === 1 ? "Hoạt động" : "Không hoạt động" }}
               </td>
@@ -69,7 +69,6 @@
       </div>
     </main>
   </div>
-  <Toast v-if="showToast" :toastItemData="toastData" @closeToast="closeToast" />
   <div v-if="showOverlay" class="overlay"></div>
   <div v-if="deleteConfirmation" class="delete-confirmation">
     <p>Bạn có chắc chắn muốn xoá?</p>
@@ -80,132 +79,124 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, computed, defineEmits } from "vue";
-import router from "@/router/router";
+<script setup>
+import { ref, computed, defineEmits, defineProps } from "vue";
 import moment from "moment";
 import axios from "axios";
+import router from "@/router/router";
 import delete_icon from "@/assets/icons/delete.svg";
 import edit_icon from "@/assets/icons/edit.svg";
 import add_icon from "@/assets/icons/pls.svg";
-import AddParent from "@/presentations/parent_page/views/parent_create_page.vue";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
-export default {
-  props: {
-    searchText: String,
-  },
-  setup(props) {
-    const parents = ref([]);
-    const showOverlay = ref(false);
-    const deleteConfirmation = ref(false);
-    const parentToDelete = ref(null);
-    const emits = defineEmits(["add-toast"]);
-    const fetchParents = async () => {
-      try {
-        const response = await axios.get("http://localhost:9000/parents");
-        parents.value = response.data;
-        // console.log(parents);
-      } catch (error) {
-        console.error("Error fetching parents:", error);
-      }
-    };
-    const formatDate = (birthday) => {
-      const formattedDate = moment(birthday).format("DD/MM/YYYY");
-      return formattedDate;
-    };
 
-    const filteredParents = computed(() => {
-      if (props.searchText == "") {
-        return parents.value.data;
-      } else {
-        const searchTextLowerCase = props.searchText.toLowerCase();
-        console.log(props);
-        console.log(parents.value);
-        return parents.value.data.filter((parent) =>
-          parent.name.toLowerCase().includes(searchTextLowerCase)
-        );
-      }
-    });
+// const searchText = ref(props.searchText);
+const searchtext = defineProps({
+  searchText: String,
+});
+const parents = ref([]);
+const showOverlay = ref(false);
+const deleteConfirmation = ref(false);
+const parentToDelete = ref(null);
+const emits = defineEmits(["add-toast"]);
 
-    const editParent = (parentId) => {
-      router.push({ name: "ParentEditView", params: { id: parentId } });
-    };
+const formatDate = (birthday) => moment(birthday).format("DD/MM/YYYY");
 
-    const showConfirmation = (parent) => {
-      console.log("a");
-      showOverlay.value = true;
-      deleteConfirmation.value = true;
-      parentToDelete.value = parent;
-    };
-    const confirmDelete = async (parent) => {
-      try {
-        const parentId = parent.id;
-        await axios.delete(`http://localhost:9000/parents/${parentId}`);
-        emits("add-toast", {
-          title: "Detele Successfully!",
-          content: "Delete " + parent.name + " student",
-          type: 0,
-        });
-        cancelDelete();
-      } catch (error) {
-        console.error("Error deleting parent:", error);
-      }
-    };
-    const cancelDelete = () => {
-      showOverlay.value = false;
-      deleteConfirmation.value = false;
-    };
-    // watch(
-    //   () => searchText,
-    //   (newValue, oldValue) => {
-    //     searchText.value = newValue;
-    //     fetchParents();
-    //   }
-    // );
-
-    onMounted(() => {
-      fetchParents();
-    });
-
-    return {
-      parents,
-      delete_icon,
-      edit_icon,
-      add_icon,
-      AddParent,
-      filteredParents,
-      editParent,
-      sort_icon,
-      router,
-      formatDate,
-      deleteConfirmation,
-      parentToDelete,
-      showConfirmation,
-      confirmDelete,
-      cancelDelete,
-      showOverlay,
-    };
-  },
+const fetchParents = async () => {
+  try {
+    const response = await axios.get("http://localhost:9000/parents");
+    parents.value = response.data;
+  } catch (error) {
+    console.error("Error fetching parents:", error);
+  }
 };
+const getRoleString = (role) => {
+  switch (role) {
+    case 1:
+      return "Bố";
+    case 2:
+      return "Mẹ";
+    case 3:
+      return "Anh, chị";
+    case 4:
+      return "Ông, bà";
+    case 5:
+      return "Người giám hộ";
+    default:
+      return "Khác";
+  }
+};
+
+const filteredParents = computed(() => {
+  if (searchtext.searchText === "") {
+    return parents.value.data;
+  } else {
+    const searchTextLowerCase = searchtext.searchText.toLowerCase();
+    return parents.value.data.filter((parent) =>
+      parent.name.toLowerCase().includes(searchTextLowerCase)
+    );
+  }
+});
+
+const editParent = (parentId) => {
+  router.push({ name: "ParentEditView", params: { id: parentId } });
+};
+
+const showConfirmation = (parent) => {
+  showOverlay.value = true;
+  deleteConfirmation.value = true;
+  parentToDelete.value = parent;
+};
+const confirmDelete = async (parent) => {
+  try {
+    if (parent.status === 0) {
+      emits("add-toast", {
+        title: "Delete Failed!",
+        content: parent.name + " is inactive, cannot be deleted",
+        type: 1,
+      });
+      cancelDelete(true);
+    } else {
+      const parentId = parent.id;
+      await axios.delete(`http://localhost:9000/parents/${parentId}`);
+      emits("add-toast", {
+        title: "Delete Successfully!",
+        content: "Delete " + parent.name + " parent",
+        type: 0,
+      });
+      cancelDelete(true);
+    }
+  } catch (error) {
+    console.error("Error deleting parent:", error);
+    cancelDelete(false);
+  }
+};
+const cancelDelete = (success) => {
+  if (success) {
+    showOverlay.value = false;
+    deleteConfirmation.value = false;
+  } else {
+    deleteConfirmation.value = false;
+  }
+};
+
+fetchParents();
 </script>
 
 <style scoped>
-.dashboard {
+/* .dashboard {
   display: flex;
   justify-content: start;
-}
+} */
 
 th,
 td {
-  padding: 5px;
+  padding: 10px;
   border: 0px solid #ffffff;
   text-align: left;
 }
 
 th {
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .overlay {
