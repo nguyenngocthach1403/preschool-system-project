@@ -215,5 +215,4 @@ function showStudentNumSelectChange(event) {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

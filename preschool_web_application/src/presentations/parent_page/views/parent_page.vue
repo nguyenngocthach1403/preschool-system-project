@@ -4,11 +4,14 @@
     <div class="flex justify-between content-center mr-3">
       <SearchForm @passSearchText="getSearchText"></SearchForm>
 
-      <router-link to="/students/create">
+      <router-link to="/parents/create">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
-    <TableData></TableData>
+    <TableData
+      :searchText="searchText"
+      @add-toast="$emit('add-toast', $event)"
+    ></TableData>
   </div>
 </template>
 
@@ -16,7 +19,13 @@
 import TableData from "../data/table_parent.vue";
 import SearchForm from "../../../components/search_form_comp.vue";
 import CreateButtonComp from "../../../components/create_button.vue";
+import { ref } from "vue";
+
+const searchText = ref("");
+
+const getSearchText = (text) => {
+  searchText.value = text;
+};
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
