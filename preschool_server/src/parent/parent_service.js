@@ -44,7 +44,7 @@ async function insertParent(data) {
 
 async function updateParent(id, newData) {
   try {
-    await db.update("Parent", newData, `id = ${id}`);
+    await db.updateParent("Parent", newData, `id = ${id}`);
     console.log(`updated ${id}`);
   } catch (error) {
     console.error(`Error updating ID ${id}:`, error);
@@ -54,7 +54,7 @@ async function updateParent(id, newData) {
 async function deleteParent(where) {
   try {
     console.log(`delete`);
-    return db.delete("Parent", where);
+    return db.deleteParent("Parent", where);
   } catch (error) {
     console.error("Error deleting parent:", error);
     throw error;

@@ -120,7 +120,7 @@ class Database {
       throw error;
     }
   }
-  async update(table, data, where) {
+  async updateParent(table, data, where) {
     try {
       const sql = `UPDATE ${table} SET ? ${where ? `WHERE ${where}` : ""}`;
       const result = await this.query(sql, data);
@@ -130,7 +130,7 @@ class Database {
     }
   }
 
-  async delete(table, where) {
+  async deleteParent(table, where) {
     try {
       const sql = `UPDATE ${table} SET status = 0 WHERE ${where}`;
       const result = await this.query(sql);

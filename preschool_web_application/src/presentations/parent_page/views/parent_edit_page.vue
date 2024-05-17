@@ -80,7 +80,7 @@
   </div>
 </template>
 
-<script>
+<!-- <script>
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import router from "@/router/router";
@@ -179,6 +179,92 @@ export default {
     };
   },
 };
+</script> -->
+
+<script setup>
+import { ref, onMounted } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
+
+const name = ref("");
+const gender = ref("");
+const birthday = ref("");
+const address = ref("");
+const job = ref("");
+const email = ref("");
+const phone = ref("");
+const role = ref("");
+const status = ref("");
+const account_id = ref("");
+
+const router = useRouter();
+
+const getParent = async () => {
+  try {
+    const parentId = router.currentRoute.value.params.id;
+    console.log(parentId);
+    const response = await axios.get(
+      `http://localhost:9000/parents/${parentId}`
+    );
+    const parents = response.data[0];
+    const parsedBirthday = new Date(parents.birthday);
+    const formattedBirthday = `${parsedBirthday.getFullYear()}-${String(
+      parsedBirthday.getMonth() + 1
+    ).padStart(2, "0")}-${String(parsedBirthday.getDate()).padStart(2, "0")}`;
+    if (parents) {
+      name.value = parents.name;
+      gender.value = parents.gender;
+      birthday.value = formattedBirthday;
+      address.value = parents.address;
+      job.value = parents.job;
+      email.value = parents.email;
+      phone.value = parents.phone;
+      role.value = parents.role;
+      status.value = parents.status;
+      account_id.value = parents.account_id;
+    }
+    console.log(birthday.value);
+  } catch (error) {
+    console.error("Error fetching parents:", error);
+  }
+};
+
+const updateParent = async () => {
+  try {
+    const parentId = router.currentRoute.value.params.id;
+    const response = await axios.put(
+      `http://localhost:9000/parents/${parentId}`,
+      {
+        name: name.value,
+        gender: gender.value,
+        birthday: birthday.value,
+        address: address.value,
+        job: job.value,
+        email: email.value,
+        phone: phone.value,
+        role: role.value,
+        status: status.value,
+        account_id: account_id.value,
+      }
+    );
+    if (response.status === 200) {
+      console.log("Success");
+      router.push("/parents");
+    } else {
+      console.log("Fail");
+    }
+  } catch (error) {
+    console.error("Error updating parent:", error);
+  }
+};
+
+const cancel = () => {
+  router.push("/parents");
+};
+
+onMounted(() => {
+  getParent();
+});
 </script>
 
 <style scoped>
