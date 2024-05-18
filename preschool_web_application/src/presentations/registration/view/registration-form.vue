@@ -28,10 +28,10 @@
         ></textarea>
       </div>
 
-      <City_District_WardDropdown
-        v-model:selectedCity="city"
-        v-model:selectedDistrict="district"
-        v-model:selectedWard="town"
+      <select_locantion
+        :selectedCity="city"
+        :selectedDistrict="district"
+        :selectedWard="town"
         @update:selectedCity="handleCityChange"
         @update:selectedDistrict="handleDistrictChange"
         @update:selectedWard="handleWardChange"
@@ -103,10 +103,10 @@
 import { ref } from "vue";
 import axios from "axios";
 import delete_icon from "@/assets/icons/delete.svg";
-import City_District_WardDropdown from "@/components/City_District_WardDropdown.vue";
+import select_locantion from "@/components/select_location.vue";
 export default {
   components: {
-    City_District_WardDropdown,
+    select_locantion,
   },
   setup() {
     const your_name = ref("");
