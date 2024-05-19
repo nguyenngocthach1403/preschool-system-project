@@ -187,8 +187,10 @@ export const useStudentStore = defineStore("studentStore", {
       }
     },
 
-    async changePage(newVal) {
-      this.page = newVal;
+    async changePage(page) {
+      if (this.page === page) return;
+
+      this.page = page;
       if (this.txtSearch != "") {
         console.log("Has search");
         this.searchStudent(this.txtSearch);
@@ -211,8 +213,10 @@ export const useStudentStore = defineStore("studentStore", {
         }
       }
     },
-    async changeLimit(newVal) {
-      this.limit = newVal;
+    async changeLimit(limit) {
+      if (this.limit === limit) return;
+
+      this.limit = limit;
       if (this.txtSearch != "") {
         this.searchStudent(this.txtSearch);
       } else {

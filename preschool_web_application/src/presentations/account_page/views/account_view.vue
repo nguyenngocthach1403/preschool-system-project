@@ -1,6 +1,10 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
-    <div class="text-left px-[20px] text-[36px] font-bold">Account</div>
+    <div
+      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
+    >
+      Account
+    </div>
     <SearchFormComp />
     <!--Show muc-->
     <div class="my-2 w-full text-start px-6">

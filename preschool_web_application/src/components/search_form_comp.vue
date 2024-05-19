@@ -5,7 +5,7 @@
         type="text"
         v-model="searchText"
         placeholder="Search here"
-        class="rounded-[8px] border-[2px] h-[45px] pl-3 text-[17px] w-full focus:outline-0 focus:ring-[#3B44D1] focus:border-[#3B44D1]"
+        class="rounded-[8px] border-[1px] h-[45px] pl-3 text-[17px] w-full focus:outline-0 focus:ring-[#3B44D1] focus:border-[#3B44D1]"
       />
       <div
         @click="$emit('passSearchText', searchText)"

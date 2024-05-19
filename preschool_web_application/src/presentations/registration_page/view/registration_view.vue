@@ -8,7 +8,11 @@
       @add-toast="$emit('add-toast', $event), close()"
     />
     <!-- Header -->
-    <div class="text-left px-[20px] text-[36px] font-bold">Registration</div>
+    <div
+      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
+    >
+      Registration
+    </div>
 
     <!-- Search-->
     <div class="flex justify-between content-center mr-3">
