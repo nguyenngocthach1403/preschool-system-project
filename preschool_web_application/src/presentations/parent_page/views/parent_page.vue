@@ -1,6 +1,10 @@
 <template>
-  <div class="bg-white ml-4 rounded-3xl text-center h-dvh">
-    <div class="text-left px-[20px] text-[36px] font-bold">Parent</div>
+  <div class="bg-white ml-4 rounded-3xl text-center h-fit">
+    <div
+      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
+    >
+      Parent
+    </div>
     <div class="flex justify-between content-center mr-3">
       <SearchForm @passSearchText="getSearchText"></SearchForm>
 
