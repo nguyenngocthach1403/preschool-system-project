@@ -3,6 +3,7 @@ const db = require("../config/db");
 module.exports = {
   getAll,
   getByID,
+  isDuplicate,
   insertParent,
   updateParent,
   deleteParent,
@@ -29,6 +30,18 @@ async function getByID(id) {
     );
   } catch (error) {
     db.disconnect();
+  }
+}
+async function isDuplicate(email, phone, account_id) {
+  try {
+    const result = await db.select(
+      "Parent",
+      "*",
+      `WHERE email = '${email}' OR phone = '${phone}' OR account_id = '${account_id}'`
+    );
+    return result.length > 0;
+  } catch (error) {
+    throw error;
   }
 }
 async function insertParent(data) {

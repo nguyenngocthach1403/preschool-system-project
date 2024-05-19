@@ -8,6 +8,7 @@ router.get("/:id", getByID);
 router.post("/insert", insertParent);
 router.put("/:id", updateParent);
 router.delete("/:id", deleteParent);
+router.post("/duplicate", isDuplicate);
 
 function getAll(req, res, next) {
   if (req.query.page !== undefined && req.query.limit !== undefined) {
@@ -44,6 +45,23 @@ function getByID(req, res, next) {
     .getByID(req.params.id)
     .then((result) => res.send(result))
     .catch(next);
+}
+async function isDuplicate(req, res, next) {
+  try {
+    const { email, phone, account_id } = req.body;
+    const duplicateParent = await parentService.isDuplicate(
+      email,
+      phone,
+      account_id
+    );
+    if (duplicateParent) {
+      res.json({ message: "Email or phone or account_id already exists." });
+    } else {
+      res.json({ message: "Email, phone and account_id are unique." });
+    }
+  } catch (error) {
+    next(error);
+  }
 }
 
 async function insertParent(req, res, next) {
