@@ -19,10 +19,6 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
@@ -39,6 +35,8 @@ app.use(
   require("./src/registrations/registation.controller")
 );
 
+app.use("/register", require("./src/register/register"));
+app.use("/images", express.static(path.join(__dirname, "uploads")));
 app.use("/account", require("./src/account/account.controller"));
 
 app.listen(port, () => {
