@@ -38,6 +38,7 @@ app.use(
 app.use("/register", require("./src/register/register"));
 app.use("/images", express.static(path.join(__dirname, "uploads")));
 app.use("/account", require("./src/account/account.controller"));
+app.use("/class", require("./src/class/class.controller"));
 
 app.listen(port, () => {
   console.log(`listen port ${port}`);

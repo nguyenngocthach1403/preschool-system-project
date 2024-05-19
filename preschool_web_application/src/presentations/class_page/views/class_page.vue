@@ -22,11 +22,9 @@
       />
     </div>
 
-    <div
-      class="w-full h-full flex flex-wrap content-start mx-[15px] pb-[20px] overflow-auto"
-    >
+    <div class="w-full h-fit flex flex-wrap content-start mx-[15px] pb-[20px]">
       <ClassCardComp
-        v-for="item in filteredClass"
+        v-for="item in classes"
         :key="item"
         :class-data="item"
         class="hover:bg-gray-200"
@@ -43,13 +41,28 @@ import SearchFormComp from "@/components/search_form_comp.vue";
 import CreateButtonComp from "@/components/create_button.vue";
 import ClassCreationView from "..//..//class_creation_page//views//class_creation_page.vue";
 import { useClassStore } from "@/stores//class_store.js";
+import { storeToRefs } from "pinia";
 const searchText = ref("");
 const classStore = useClassStore();
 const showCreateClass = ref(false);
 
-onMounted(() => {
+const { classes, limit, page, status } = storeToRefs(classStore);
+
+onMounted(async () => {
   classDataDemo.value = classStore.classes;
+
+  const result = await classStore.fetchClass();
+
+  if (!result.success) {
+    emits("add-toast", {
+      title: "Load data faild",
+      content: result.message,
+      type: 1,
+    });
+  }
 });
+
+const emits = defineEmits(["add-toast"]);
 
 const getSearchText = (event) => {
   searchText.value = event;
@@ -59,17 +72,17 @@ const closeCreateClassPage = (event) => {
   showCreateClass.value = event;
 };
 
-const filteredClass = computed(() => {
-  return classDataDemo.value.filter((e) => {
-    return (
-      e.name.match(searchText.value) ||
-      e.teacher.match(searchText.value) ||
-      e.type.match(searchText.value) ||
-      e.status.match(searchText.value) ||
-      e.session.match(searchText.value)
-    );
-  });
-});
+// const filteredClass = computed(() => {
+//   return classDataDemo.value.filter((e) => {
+//     return (
+//       e.name.match(searchText.value) ||
+//       e.teacher.match(searchText.value) ||
+//       e.type.match(searchText.value) ||
+//       e.status.match(searchText.value) ||
+//       e.session.match(searchText.value)
+//     );
+//   });
+// });
 
 const classDataDemo = ref([]);
 </script>
