@@ -41,7 +41,7 @@
     <div class="menu-list bg-white py-1 text-gray-600 pb-20 px-3">
       <span class="text-[15px] text-gray-500">Quản lý</span>
       <router-link v-for="item in managerItem" :key="item.name" :to="item.path">
-        <div class="menu-item h-50 pl-[25px]">
+        <div class="menu-item h-[45px] pl-[25px]">
           <div><img :src="item.icon" class="w-[20px]" /></div>
           <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
             item.name
@@ -54,14 +54,16 @@
       class="menu-list bg-white w-full py-1 text-gray-600 px-3 absolute bottom-0"
     >
       <span class="text-[15px] text-gray-500">Hỗ trợ</span>
-      <router-link v-for="item in settingItem" :key="item.name" :to="item.path">
-        <div class="menu-item h-50 pl-[25px]">
-          <div><img :src="item.icon" class="w-[20px]" /></div>
-          <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
-            item.name
-          }}</span>
-        </div>
-      </router-link>
+      <div
+        v-for="item in settingItem"
+        :key="item.name"
+        class="menu-item h-50 pl-[25px]"
+      >
+        <div><img :src="item.icon" class="w-[20px]" /></div>
+        <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
+          item.name
+        }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -76,6 +78,7 @@ import setting from "@/assets/icons/setting.svg";
 import extension from "@/assets/icons/ex.svg";
 import account from "@/assets/icons/account.svg";
 import registration from "@/assets/icons/Registration.svg";
+import logout from "@/assets/icons/Logout.svg";
 
 import { ref } from "vue";
 
@@ -87,15 +90,13 @@ const managerItem = ref([
   { name: "Học sinh", path: "/students", icon: student },
   { name: "Phụ huynh", path: "/parents", icon: parent },
   { name: "Lớp học", path: "/classes", icon: classes },
-  { name: "Nhân viên", path: "/registration_view", icon: staff },
+  { name: "Nhân viên", path: "/ddd", icon: staff },
   { name: "Tài khoản", path: "/account", icon: account },
   { name: "Cài đặt", path: "/dddd", icon: setting },
   { name: "Danh mục", path: "/dddd", icon: extension },
 ]);
 
-const settingItem = ref([
-  { name: "Đăng xuất", path: "/dashboard", icon: dash },
-]);
+const settingItem = ref([{ name: "Đăng xuất", icon: logout }]);
 
 const drops = defineProps({
   menuStyle: String,

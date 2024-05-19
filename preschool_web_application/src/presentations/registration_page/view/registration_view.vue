@@ -50,7 +50,7 @@
       @click-create-acount="createAccountShow($event)"
     ></TableComp>
     <div
-      class="bottom-table-section flex justify-between h-[37px] content-center"
+      class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
     >
       <div
         v-if="status !== 'search_failed' && status !== 'load_failed'"
@@ -74,6 +74,7 @@
       </div>
       <Pagination
         :page-nums="round(registrationStore.total / registrationStore.limit)"
+        :page-active="page + 1"
         @click-page="changePage($event)"
       ></Pagination>
     </div>

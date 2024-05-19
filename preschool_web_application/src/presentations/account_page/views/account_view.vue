@@ -51,6 +51,7 @@
       </div>
       <Pagination
         :page-nums="round(total / limit)"
+        :page-active="page + 1"
         @click-page="accountStore.changePage($event - 1)"
       ></Pagination>
     </div>
@@ -67,7 +68,7 @@ import { storeToRefs } from "pinia";
 
 const accountStore = useAccountStore();
 
-const { account, page, limit, total, status } = storeToRefs(accountStore);
+const { account, status, page, limit, total } = storeToRefs(accountStore);
 
 const emits = defineEmits(["add-toast"]);
 
