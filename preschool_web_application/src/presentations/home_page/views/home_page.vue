@@ -1,6 +1,6 @@
 <template>
   <main v-bind:class="menuStyle" class="overflow-y-hidden h-screen">
-    <ToastList class="absolute top-5 right-10 z-20" :toast-list="toasts" />
+    <ToastList class="absolute top-5 right-10 z-30" :toast-list="toasts" />
     <section class="menu h-full bg-white drop-shadow-xl relative">
       <button
         class="bg-white rounded-full w-8 h-8 absolute top-24 right-[-15px] z-20"

@@ -115,7 +115,7 @@
               {{ item.syllabus ?? "None" }}
             </dd>
           </td>
-          <td class="px-3 w-[200px]">
+          <td class="px-3 w-[600px]">
             <div
               class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border"
               :class="classStatus(item.profileStatus)"

@@ -36,10 +36,17 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+
+onMounted(() => {
+  pageActive.value = props.pageActive;
+});
 
 const pageActive = ref(1);
 const props = defineProps({
+  pageActive: {
+    type: Number,
+  },
   pageNums: {
     type: Number,
   },

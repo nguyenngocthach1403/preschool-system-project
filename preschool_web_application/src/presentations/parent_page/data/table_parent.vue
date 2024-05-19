@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard text-[14px]">
     <main>
-      <div class="overflow-scroll h-[700px] 2xl:h-dvh mr-[10px]h-dvh">
+      <div class="2xl:h-dvh mr-[10px] h-fit">
         <table class="mb-[250px] h-fit w-full">
           <thead
             class="sticky top-0 text-[15px] bg-[#3B44D1] text-white text-white z-10"
@@ -38,7 +38,10 @@
               <td class="w-[300px]">
                 {{ parent.gender === 0 ? "Nam" : "Nữ" }}
               </td>
-              <td class="w-[300px]">{{ formatDate(parent.birthday) }}</td>
+              <td class="w-[300px]">
+                {{ new Date(parent.birthday).toLocaleDateString() }}
+              </td>
+
               <td class="w-[300px]">{{ parent.address }}</td>
               <td class="w-[700px]">{{ parent.job }}</td>
               <td class="w-[700px]">{{ parent.email }}</td>
@@ -68,20 +71,20 @@
         </table>
       </div>
     </main>
-  </div>
-  <div v-if="showOverlay" class="overlay"></div>
-  <div v-if="deleteConfirmation" class="delete-confirmation">
-    <p>Bạn có chắc chắn muốn xoá?</p>
-    <button class="confirm" @click="confirmDelete(parentToDelete)">
-      Xác nhận
-    </button>
-    <button class="cancel" @click="cancelDelete">Hủy</button>
+    <div v-if="showOverlay" class="overlay"></div>
+    <div v-if="deleteConfirmation" class="delete-confirmation">
+      <p>Bạn có chắc chắn muốn xoá?</p>
+      <button class="confirm" @click="confirmDelete(parentToDelete)">
+        Xác nhận
+      </button>
+      <button class="cancel" @click="cancelDelete">Hủy</button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, defineEmits, defineProps } from "vue";
-import moment from "moment";
+import { ref, computed } from "vue";
+// import moment from "moment";
 import axios from "axios";
 import router from "@/router/router";
 import delete_icon from "@/assets/icons/delete.svg";
@@ -98,8 +101,6 @@ const showOverlay = ref(false);
 const deleteConfirmation = ref(false);
 const parentToDelete = ref(null);
 const emits = defineEmits(["add-toast"]);
-
-const formatDate = (birthday) => moment(birthday).format("DD/MM/YYYY");
 
 const fetchParents = async () => {
   try {

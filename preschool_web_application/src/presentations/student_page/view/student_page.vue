@@ -84,6 +84,7 @@
       <Pagination
         v-if="status !== 'search_failed' && status !== 'load_failed'"
         :page-nums="round(total / limit)"
+        :page-active="page + 1"
         @click-page="changePage($event)"
       ></Pagination>
     </div>

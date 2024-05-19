@@ -27,7 +27,8 @@ export const useRegistrionStore = defineStore("registrationStore", {
           role: element.role,
           levels: element.levels,
           syllabus: element.syllabus,
-          profileStatus: element.infomationState,
+          profileStatus:
+            element.infomationState == 1 || element.file_paths ? 1 : 0,
           user: element.acountId,
         });
       }
