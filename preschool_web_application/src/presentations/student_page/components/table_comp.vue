@@ -16,6 +16,7 @@
               />
             </div>
           </th>
+          <th class="px-3 text-left">Phụ huynh</th>
           <th class="px-3 text-left">
             <div class="flex">
               ID
@@ -100,6 +101,21 @@
             <dd class="xl:hidden text-gray-500 text-[14px] my-[5px]">
               {{ item.birthday }}
             </dd>
+          </td>
+          <td class="w-dvw px-3">
+            <button
+              @click.prevent
+              v-if="item.parent.length === 0"
+              class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
+            >
+              Thêm phụ huynh
+            </button>
+            <p v-for="parent in item.parent" :key="parent">
+              <span class="font-bold">
+                {{ returnRelation(parent.relationship) }}:
+              </span>
+              <span> {{ parent.parentName }}</span>
+            </p>
           </td>
           <td class="hidden 2xl:table-cell px-3 w-[600px] text-blue-900">
             <span>PRE{{ item.id }}</span>
@@ -206,6 +222,17 @@ function checkStatusToContent(sts) {
       return "Bảo lưu";
     default:
       return "Chưa rõ";
+  }
+}
+
+function returnRelation(rel) {
+  switch (rel) {
+    case 1:
+      return "Bố";
+    case 2:
+      return "Mẹ";
+    default:
+      break;
   }
 }
 

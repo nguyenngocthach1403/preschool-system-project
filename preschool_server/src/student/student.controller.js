@@ -10,7 +10,7 @@ router.get("/", getAll);
 // router.get("/:id", getByID);
 router.get("/total", getTotalStudent);
 
-router.get("/search", getStudentSearch);
+// router.get("/search", getStudentSearch);
 
 router.get("/delete", deleteStudent);
 
@@ -132,7 +132,7 @@ async function getAll(req, res, next) {
     });
   }
 
-  const result = await studentService.getPage(page, limit);
+  const result = await studentService.getStudent(page, limit);
 
   if (result.code) {
     return res.status(500).json({

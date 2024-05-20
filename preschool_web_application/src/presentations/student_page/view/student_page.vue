@@ -21,7 +21,7 @@
     <!-- Search-->
     <div class="flex justify-between content-center mt-5 mr-3">
       <SearchFormComp @passSearchText="getSearchText"></SearchFormComp>
-      <router-link to="/students/create">
+      <router-link :to="{ name: 'StudentCreationView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>

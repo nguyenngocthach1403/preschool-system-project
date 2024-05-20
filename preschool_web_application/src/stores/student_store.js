@@ -29,9 +29,12 @@ export const useStudentStore = defineStore("studentStore", {
           avatar: element.avatarPath,
           name: element.name,
           gender: element.gender,
+          classId: element.classId,
           class: element.className,
           birthday: new Date(element.birthday).toLocaleDateString(),
           status: element.status,
+          parent: element.parent,
+          created: element.created,
         });
       }
       return students;

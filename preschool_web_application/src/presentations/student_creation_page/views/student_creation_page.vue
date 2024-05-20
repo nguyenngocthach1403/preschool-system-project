@@ -361,7 +361,7 @@ async function submitCreateStudent() {
   const studentToCreate = {
     name: studentNameInput.value,
     avatarPath: null,
-    classId: classInput.value == 0 ? null : classInput.value,
+    // classId: classInput.value == 0 ? null : classInput.value,
     birthday: studentBirthDayInput.value,
     gender: studentGenderInput.value,
     placeOfOrigin: placeOfOriginInput.value,
@@ -371,20 +371,20 @@ async function submitCreateStudent() {
     status: classInput.value != undefined ? 1 : 0,
   };
 
-  const resultUpload = await studentStore.storeImage(fileUpload.value);
+  // const resultUpload = await studentStore.storeImage(fileUpload.value);
 
-  if (!resultUpload.url) {
-    console.log(resultUpload);
-    emits("add-toast", {
-      title: "Upload image failed!",
-      content: `Quá trình tải ảnh thất bại!`,
-      type: 1,
-    });
-    return;
-  }
-  studentToCreate.avatarPath = resultUpload.url;
+  // if (!resultUpload.url) {
+  //   console.log(resultUpload);
+  //   emits("add-toast", {
+  //     title: "Upload image failed!",
+  //     content: `Quá trình tải ảnh thất bại!`,
+  //     type: 1,
+  //   });
+  //   return;
+  // }
+  // studentToCreate.avatarPath = resultUpload.url;
 
-  console.log(studentToCreate);
+  // console.log(studentToCreate);
 
   const result = await studentStore.createStudent(studentToCreate);
   console.log(result);

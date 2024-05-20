@@ -1,10 +1,10 @@
-const db = require("../config/db");
-require("dotenv").config();
+const config = require("../../src/config/config");
+const db = require("../config/db.service");
 
 module.exports = {
-  getStudents,
+  getAllStudents,
   getByID,
-  getPage,
+  getStudent,
   countStudent,
   searchStudent,
   countSearchStudent,
@@ -16,35 +16,25 @@ async function createNewStudent(studentToCreate) {
   try {
     const id = await createIDStudent();
     studentToCreate.id = parseInt(id, 10);
-    return await db.insert(process.env.STUDENT_TB, studentToCreate);
+    return await db.insert(config.tb.student, studentToCreate);
   } catch (error) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
 async function createIDStudent() {
   try {
-    db.createConnection();
-
     const year = new Date().getFullYear();
-
-    console.log(year);
     const res = await db.select(
-      "Students",
+      `${config.tb.student}`,
       "Count(*) AS total",
       `WHERE Students.created like '%${year}%'`
     );
 
     const idCreated = `${year}` + `${padNumber(res[0]["total"] + 1)}`;
-
-    console.log("ID studetn gerenated: ", idCreated);
 
     return idCreated;
   } catch (error) {
@@ -73,121 +63,126 @@ function getKey(studentToCreate) {
   return keys;
 }
 
-async function getStudents() {
+function formatStudentJson(data) {
+  let students = [];
+  data.forEach((element) => {
+    if (students.some((obj) => obj.id === element.id)) {
+      const elementExited = students.find((obj) => obj.id === element.id);
+      elementExited.parent = [
+        ...elementExited.parent,
+        {
+          parentId: element["parentId"],
+          parentName: element["parentName"],
+          relationship: element["relationship"],
+        },
+      ];
+    } else {
+      if (element.parentId) {
+        element.parent = [
+          {
+            parentId: element["parentId"],
+            parentName: element["parentName"],
+            relationship: element["relationship"],
+          },
+        ];
+        delete element.parentId;
+        delete element.parentName;
+        delete element.relationship;
+      } else {
+        element.parent = [];
+      }
+      students.push(element);
+    }
+  });
+
+  return students;
+}
+
+async function getAllStudents() {
   try {
-    db.createConnection();
-    return db.select(
-      `${process.env.STUDENT_TB} LEFT JOIN Classes ON Students.classID = Classes.classID`,
-      "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
-      "WHERE Students.deleted = 0"
+    const data = await db.select(
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
+      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className, r.relationship, p.name AS parentName, p.id AS parentId",
+      "WHERE s.deleted = 0"
     );
+    return formatStudentJson(data);
   } catch (error) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
 async function countStudent() {
   try {
-    //Connect to DB
-    db.createConnection();
-
     //Excute query select
     return await db.select(
-      "Students",
+      `${config.tb.student} AS s`,
       "Count(*) AS total",
-      "WHERE Students.deleted = 0"
+      "WHERE s.deleted = 0"
     );
   } catch (error) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
-async function searchStudent(txtSearch, page, limit) {
+async function searchStudent(txtSearch, offset, limit) {
   try {
-    db.createConnection();
-    return db.selectLimit(
-      `${process.env.STUDENT_TB} LEFT JOIN Classes ON Students.classID = Classes.classID`,
-      "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
-      `WHERE Students.deleted = 0 AND Students.name LIKE '%${txtSearch}%' OR Students.id Like '%${txtSearch}%'`,
-      limit !== undefined ? `LIMIT ${limit}` : "",
-      limit !== undefined ? `OFFSET ${page * limit}` : ""
+    const data = await db.selectLimit(
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
+      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className, r.relationship, p.name AS parentName, p.id AS parentId",
+      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id Like '%${txtSearch}%'`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
     );
+
+    return formatStudentJson(data);
   } catch (error) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
 async function countSearchStudent(txtSearch) {
   try {
-    db.createConnection();
-
-    return db.select(
-      "Students LEFT JOIN Classes ON Students.classID = Classes.classID",
+    return await db.select(
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
       "Count(*) AS total",
-      `WHERE Students.deleted = 0 AND Students.name LIKE '%${txtSearch}%' OR Students.id Like '%${txtSearch}%'`
+      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id Like '%${txtSearch}%'`
     );
   } catch (error) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
 async function getByID(id) {
   try {
-    db.createConnection();
-
-    return db.select(
-      "Students LEFT JOIN Classes ON Students.classID = Classes.classID",
-      "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
-      id !== undefined
-        ? `WHERE Students.deleted = 0 AND Students.id = ${id}`
-        : ""
+    return await db.select(
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
+      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className, r.relationship, p.name AS parentName, p.id AS parentId",
+      `WHERE Students.deleted = 0 AND Students.id = ${id}`
     );
   } catch (error) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
 async function deleteStudent(idStudentToDel) {
   try {
-    db.createConnection();
-
     return db.update(
-      process.env.STUDENT_TB,
+      config.tb.student,
       { deleted: true },
       { id: idStudentToDel }
     );
@@ -196,32 +191,24 @@ async function deleteStudent(idStudentToDel) {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
-async function getPage(page, limit) {
+async function getStudent(page, limit) {
   try {
-    db.createConnection();
-
-    return db.selectLimit(
-      "Students LEFT JOIN Classes ON Students.classID = Classes.classID",
-      "Students.id, Students.avatarPath, Students.name, Classes.className, Students.gender, Students.birthday, Students.status",
-      "WHERE Students.deleted = 0",
-      limit !== undefined ? `LIMIT ${limit}` : "",
-      limit !== undefined ? `OFFSET ${page * limit}` : ""
+    const data = await db.selectLimit(
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
+      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className, r.relationship, p.name AS parentName, p.id AS parentId",
+      "WHERE s.deleted = 0",
+      `LIMIT ${limit}`,
+      `OFFSET ${page * limit}`
     );
+
+    return formatStudentJson(data);
   } catch (error) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
