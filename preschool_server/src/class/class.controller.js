@@ -6,7 +6,6 @@ router.get("/", getClass);
 
 async function getClass(req, res) {
   const { limit, offset } = req.query;
-  console.log(limit, offset);
 
   //   //Xác thực đầu vào từ người dùng request
   if (

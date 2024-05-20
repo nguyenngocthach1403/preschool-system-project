@@ -1,4 +1,3 @@
-const { parse } = require("dotenv");
 const express = require("express");
 
 const accountService = require("./account.service");
