@@ -14,7 +14,9 @@
       <header
         class="h-16 bg-transparent sticky fixed absolute top-0 shadow z-20"
       >
-        <div class="h-full bg-white"></div>
+        <div class="h-full bg-white">
+          {{ username }}
+        </div>
       </header>
       <router-view
         class="mt-5"
@@ -30,8 +32,19 @@ import MenuComp from "@/components/menu_comp.vue";
 import ToastList from "@/components/toast_list.vue";
 import next_icon from "@/assets/icons/Right.svg";
 import pre_icon from "@/assets/icons/Left Arrow.svg";
+import { onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-import { ref } from "vue";
+const route = useRoute();
+const router = useRouter();
+const username = ref("");
+watch(() => {
+  console.log(route);
+});
+
+onMounted(() => {
+  console.log(username.value);
+});
 
 const toasts = ref([]);
 
