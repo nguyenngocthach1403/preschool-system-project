@@ -2,10 +2,15 @@ const db = require("../config/db");
 
 module.exports = {
   getAll,
-  getByID,
+  // getByID,
+  countParent,
+  searchParent,
+  countSearchParent,
+  isDuplicate,
   insertParent,
   updateParent,
   deleteParent,
+  getPage,
 };
 
 async function getAll() {
@@ -20,16 +25,105 @@ async function getAll() {
   }
 }
 
-async function getByID(id) {
+// async function getByID(id) {
+//   try {
+//     return db.select(
+//       "Parent",
+//       "name, gender, birthday, address, job, email, phone, role, status, account_id",
+//       id !== undefined ? `Where Parent = ${id}` : ""
+//     );
+//   } catch (error) {
+//     db.disconnect();
+//   }
+// }
+async function countParent() {
+  try {
+    db.createConnection();
+    console.log("Count parent:");
+    return await db.select("Parent", "Count(*) AS total", "WHERE deleted = 0");
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
+  }
+}
+async function searchParent(txtSearch, page, limit) {
+  try {
+    db.createConnection();
+    return db.selectLimit(
+      "Parent",
+      "*",
+      `WHERE name LIKE "%${txtSearch}%"`,
+      `LIMIT ${limit}`,
+      `OFFSET ${limit * page}`
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
+  }
+}
+
+async function countSearchParent(txtSearch) {
   try {
     db.createConnection();
     return db.select(
       "Parent",
-      "name, gender, birthday, address, job, email, phone, role, status, account_id",
-      id !== undefined ? `Where Parent.id = ${id}` : ""
+      "Count(*) AS total",
+      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%'`
     );
   } catch (error) {
-    db.disconnect();
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
+  }
+}
+async function getPage(page, limit) {
+  try {
+    db.createConnection();
+
+    return db.selectLimit(
+      "Parent",
+      "*",
+      `LIMIT ${limit}`,
+      `OFFSET ${limit * page}`
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  } finally {
+    if (db.connection) {
+      db.disconnect();
+    }
+  }
+}
+async function isDuplicate(email, phone, account_id) {
+  try {
+    const result = await db.select(
+      "Parent",
+      "*",
+      `WHERE email = '${email}' OR phone = '${phone}' OR account_id = '${account_id}'`
+    );
+    return result.length > 0;
+  } catch (error) {
+    throw error;
   }
 }
 async function insertParent(data) {

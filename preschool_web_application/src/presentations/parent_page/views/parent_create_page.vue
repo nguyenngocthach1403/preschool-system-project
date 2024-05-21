@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center text-3xl">
     <div class="info-form">
-      <h1>Thông tin cá nhân</h1>
+      <h1>Thêm phụ huynh</h1>
       <div class="row">
         <div class="form-group-row">
           <div class="form-group">
@@ -84,17 +84,21 @@
         </div>
         <div class="form-group">
           <label for="account_id">Account ID</label>
-          <input
-            type="text"
-            id="account_id"
-            v-model="account_id"
-            placeholder="Nhập account id"
-          />
+          <div class="account-container">
+            <input
+              type="text"
+              id="account_id"
+              v-model="account_id"
+              placeholder="Nhập account id"
+            />
+          </div>
         </div>
 
         <div class="container-btn">
-          <button class="btn-close" @click="cancel">Huỷ</button>
-          <button class="btn-save" @click="saveData">Lưu</button>
+          <!-- <button class="btn-close" @click="cancel">Huỷ</button>
+          <button class="btn-save" @click="saveData">Lưu</button> -->
+          <closeButton @click="cancel" />
+          <saveButton @click="saveData" />
         </div>
       </div>
     </div>
@@ -105,6 +109,8 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import saveButton from "@/components/save_button.vue";
+import closeButton from "@/components/close_button.vue";
 
 const name = ref("");
 const gender = ref(0);
@@ -126,6 +132,7 @@ const checkDuplicate = async () => {
       {
         email: email.value,
         phone: phone.value,
+        account_id: account_id.value,
       }
     );
     return checkDuplicateResponse.data;
@@ -136,13 +143,18 @@ const checkDuplicate = async () => {
 const saveData = async () => {
   try {
     const isDuplicate = await checkDuplicate();
-    if (isDuplicate.message === "Email or phone already exists.") {
+    if (
+      isDuplicate.message === "Email or phone or account_id already exists."
+    ) {
       emits("add-toast", {
-        title: "Email hoặc số điện thoại đã tồn tại, vui lòng thử lại!",
+        title:
+          "Email hoặc số điện thoại hoặc account_id đã tồn tại, vui lòng thử lại!",
         type: 1,
       });
       return;
-    } else if (isDuplicate.message === "Email and phone are unique.") {
+    } else if (
+      isDuplicate.message === "Email, phone and account_id are unique."
+    ) {
       const response = await axios.post(
         "http://localhost:9000/parents/insert",
         {
@@ -179,6 +191,12 @@ const cancel = () => {
 };
 </script>
 <style scoped>
+h1 {
+  text-align: start;
+  padding-left: 15px;
+  padding-top: 10px;
+  border-bottom: 1px solid #ccc;
+}
 .info-form {
   font-size: 20px;
   height: 700px;
@@ -186,11 +204,11 @@ const cancel = () => {
   flex-direction: column;
 }
 .row {
-  margin-top: 40px;
+  margin-top: 20px;
 }
 .form-group-row {
   display: flex;
-  justify-content: flex-start;
+  /* justify-content: flex-start; */
 }
 .form-group {
   flex: 1;
@@ -198,23 +216,35 @@ const cancel = () => {
 }
 
 label {
+  padding-left: 40px;
   display: block;
   margin-bottom: 5px;
   text-align: left;
+  color: #3b44d1;
 }
 
 input,
 select {
-  width: 90%;
-  padding: 8px;
+  width: 520px;
+  padding: 5px;
   border: 1px solid #ccc;
+  border-radius: 5px;
   box-sizing: border-box;
+}
+.account-container {
+  display: flex;
+  justify-content: flex-start;
+  height: 48px;
+  margin-left: 30px;
 }
 
 .container-btn {
+  width: 250px;
   display: flex;
+  margin-left: auto;
+  margin-right: 10px;
 }
-.btn-save {
+/* .btn-save {
   width: 100px;
   margin-left: 5px;
   background-color: #4caf50;
@@ -231,5 +261,5 @@ select {
   padding: 10px 20px;
   border: none;
   cursor: pointer;
-}
+} */
 </style>

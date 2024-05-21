@@ -132,7 +132,7 @@ class Database {
 
   async deleteParent(table, where) {
     try {
-      const sql = `UPDATE ${table} SET status = 0 WHERE ${where}`;
+      const sql = `UPDATE ${table} SET deleted = 1 WHERE ${where}`;
       const result = await this.query(sql);
       return result.affectedRows;
     } catch (error) {

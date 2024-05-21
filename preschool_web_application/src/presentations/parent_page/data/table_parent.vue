@@ -1,8 +1,8 @@
 <template>
   <div class="dashboard text-[14px]">
     <main>
-      <div class="2xl:h-dvh mr-[10px] h-fit">
-        <table class="mb-[250px] h-fit w-full">
+      <div class="2xl:h-dvh mr-[10px]h-dvh">
+        <table class="h-fit w-full">
           <thead
             class="sticky top-0 text-[15px] bg-[#3B44D1] text-white text-white z-10"
           >
@@ -31,7 +31,7 @@
           <tbody>
             <tr
               class="h-[60px] text-left even:bg-gray-50 hover:bg-gray-200"
-              v-for="parent in filteredParents"
+              v-for="parent in dataTable"
               :key="parent.id"
             >
               <td class="w-[300px]">{{ parent.name }}</td>
@@ -93,23 +93,32 @@ import add_icon from "@/assets/icons/pls.svg";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
 
 // const searchText = ref(props.searchText);
-const searchtext = defineProps({
-  searchText: String,
-});
-const parents = ref([]);
+// const searchtext = defineProps({
+//   searchText: String,
+// });
+// const parents = ref([]);
 const showOverlay = ref(false);
 const deleteConfirmation = ref(false);
 const parentToDelete = ref(null);
 const emits = defineEmits(["add-toast"]);
 
-const fetchParents = async () => {
-  try {
-    const response = await axios.get("http://localhost:9000/parents");
-    parents.value = response.data;
-  } catch (error) {
-    console.error("Error fetching parents:", error);
-  }
-};
+const formatDate = (birthday) => moment(birthday).format("DD/MM/YYYY");
+
+defineProps({
+  dataTable: {
+    type: Array,
+    required: true,
+  },
+});
+// const fetchParents = async () => {
+//   try {
+//     const response = await axios.get("http://localhost:9000/parents");
+//     parents.value = response.data;
+//     console.log(parents);
+//   } catch (error) {
+//     console.error("Error fetching parents:", error);
+//   }
+// };
 const getRoleString = (role) => {
   switch (role) {
     case 1:
@@ -127,16 +136,16 @@ const getRoleString = (role) => {
   }
 };
 
-const filteredParents = computed(() => {
-  if (searchtext.searchText === "") {
-    return parents.value.data;
-  } else {
-    const searchTextLowerCase = searchtext.searchText.toLowerCase();
-    return parents.value.data.filter((parent) =>
-      parent.name.toLowerCase().includes(searchTextLowerCase)
-    );
-  }
-});
+// const filteredParents = computed(() => {
+//   if (searchtext.searchText === "") {
+//     return parents.value.data;
+//   } else {
+//     const searchTextLowerCase = searchtext.searchText.toLowerCase();
+//     return parents.value.data.filter((parent) =>
+//       parent.name.toLowerCase().includes(searchTextLowerCase)
+//     );
+//   }
+// });
 
 const editParent = (parentId) => {
   router.push({ name: "ParentEditView", params: { id: parentId } });
@@ -180,7 +189,7 @@ const cancelDelete = (success) => {
   }
 };
 
-fetchParents();
+// fetchParents();
 </script>
 
 <style scoped>
