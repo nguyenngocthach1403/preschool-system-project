@@ -1,5 +1,5 @@
-const db = require("../config/db");
-require("dotenv").config();
+const db = require("../config/db.service");
+const config = require("../config/config");
 
 module.exports = {
   getTotalRegistration,
@@ -8,26 +8,20 @@ module.exports = {
 
 async function getTotalRegistration() {
   try {
-    db.createConnection();
-    console.log("Count registration:");
-    return await db.select(process.env.REGISTRATION_DB, "Count(*) AS total");
+    console.log("  * Count registration:");
+    return await db.select(config.tb.register, "Count(*) AS total");
   } catch (error) {
     return {
       code: error.code,
       message: "An error occurred while executing the query.",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
 async function getRegistrations(page, limit) {
   try {
-    db.createConnection();
     const data = await db.selectLimit(
-      process.env.REGISTRATION_DB,
+      config.tb.register,
       "*",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
@@ -38,9 +32,5 @@ async function getRegistrations(page, limit) {
       code: error.code,
       message: "An error occurred while executing the query.",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }

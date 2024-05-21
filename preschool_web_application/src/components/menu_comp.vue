@@ -19,7 +19,7 @@
       <div class="flex w-full content-center h-[50px] gap-3 my-3 relative">
         <div class="avatar rounded-full w-[50px] h-[50px] bg-blue-500"></div>
         <div class="user">
-          <p class="text-[16px]">Username</p>
+          <p class="text-[16px]">{{ username }}</p>
           <p class="text-gray-500 text-[14px]">Admin</p>
         </div>
         <!-- <div class="change-account h-5 w-5 bg-black"></div> -->
@@ -28,11 +28,15 @@
 
     <div class="menu-list bg-white text-gray-600 py-1 px-3">
       <span class="text-[15px] text-gray-500">Trung tâm</span>
-      <router-link v-for="item in menu" :key="item.name" :to="item.path">
+      <router-link
+        v-for="item in menu"
+        :key="item.name"
+        :to="{ name: item.name }"
+      >
         <div class="menu-item h-50 pl-[25px]">
           <div><img :src="item.icon" class="w-[20px]" /></div>
           <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
-            item.name
+            item.title
           }}</span>
         </div>
       </router-link>
@@ -40,11 +44,15 @@
     <!-- Menu list -->
     <div class="menu-list bg-white py-1 text-gray-600 pb-20 px-3">
       <span class="text-[15px] text-gray-500">Quản lý</span>
-      <router-link v-for="item in managerItem" :key="item.name" :to="item.path">
+      <router-link
+        v-for="item in managerItem"
+        :key="item.name"
+        :to="{ name: item.name }"
+      >
         <div class="menu-item h-[45px] pl-[25px]">
           <div><img :src="item.icon" class="w-[20px]" /></div>
           <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
-            item.name
+            item.title
           }}</span>
         </div>
       </router-link>
@@ -58,10 +66,11 @@
         v-for="item in settingItem"
         :key="item.name"
         class="menu-item h-50 pl-[25px]"
+        @click="logout"
       >
         <div><img :src="item.icon" class="w-[20px]" /></div>
         <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
-          item.name
+          item.title
         }}</span>
       </div>
     </div>
@@ -78,25 +87,37 @@ import setting from "@/assets/icons/setting.svg";
 import extension from "@/assets/icons/ex.svg";
 import account from "@/assets/icons/account.svg";
 import registration from "@/assets/icons/Registration.svg";
-import logout from "@/assets/icons/Logout.svg";
+import logoutIcon from "@/assets/icons/Logout.svg";
 
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const isMenuClose = ref(true);
 
-const menu = ref([{ name: "Thông kê", path: "/dashboard", icon: dash }]);
+const username = ref(Window.user);
+
+function logout() {
+  if (localStorage.getItem("user")) {
+    localStorage.setItem("user", null);
+  }
+  window.user = null;
+  router.push({ path: "/" });
+}
+
+const menu = ref([{ title: "Thông kê", name: "DashBoardView", icon: dash }]);
 const managerItem = ref([
-  { name: "Khách hàng", path: "/registration_view", icon: registration },
-  { name: "Học sinh", path: "/students", icon: student },
-  { name: "Phụ huynh", path: "/parents", icon: parent },
-  { name: "Lớp học", path: "/classes", icon: classes },
-  { name: "Nhân viên", path: "/ddd", icon: staff },
-  { name: "Tài khoản", path: "/account", icon: account },
-  { name: "Cài đặt", path: "/dddd", icon: setting },
-  { name: "Danh mục", path: "/dddd", icon: extension },
+  { title: "Khách hàng", name: "RegistrationView", icon: registration },
+  { title: "Học sinh", name: "StudentView", icon: student },
+  { title: "Phụ huynh", name: "ParentView", icon: parent },
+  { title: "Lớp học", name: "ClassView", icon: classes },
+  // { title: "Nhân viên", name: "/ddd", icon: staff },
+  { title: "Tài khoản", name: "AccountView", icon: account },
+  // { title: "Cài đặt", name: "/dddd", icon: setting },
+  // { title: "Danh mục", name: "/dddd", icon: extension },
 ]);
 
-const settingItem = ref([{ name: "Đăng xuất", icon: logout }]);
+const settingItem = ref([{ name: "Đăng xuất", icon: logoutIcon }]);
 
 const drops = defineProps({
   menuStyle: String,

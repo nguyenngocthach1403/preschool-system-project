@@ -1,4 +1,3 @@
-const { parse } = require("dotenv");
 const express = require("express");
 
 const accountService = require("./account.service");
@@ -49,13 +48,15 @@ async function createAccount(req, res) {
     role: data.role,
   });
 
-  if (result.code) {
-    return res.status(200).json({
-      status: 404,
-      message: "Create failed!",
-      error: result.message,
-    });
-  }
+  console.log(result);
+
+  // if (Object.keys(result).includes("code")) {
+  //   return res.status(200).json({
+  //     status: 404,
+  //     message: "Create failed!",
+  //     error: result.message,
+  //   });
+  // }
 
   if (Object.keys(data).includes("registrationId")) {
     await accountService.updateRegistration(data.registrationId, data.username);

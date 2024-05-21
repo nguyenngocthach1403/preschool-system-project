@@ -1,6 +1,5 @@
-const db = require("../config/db");
-
-require("dotenv").config();
+const db = require("../config/db.service");
+const config = require("../config/config");
 
 module.exports = {
   getClass,
@@ -8,9 +7,8 @@ module.exports = {
 
 async function getClass(limit, offset) {
   try {
-    db.createConnection();
     return await db.selectLimit(
-      process.env.CLASS_TB,
+      config.tb.class,
       "*",
       "",
       `LIMIT ${limit}`,
@@ -21,7 +19,5 @@ async function getClass(limit, offset) {
       code: error.code,
       message: error.sqlMessage,
     };
-  } finally {
-    db.disconnect();
   }
 }

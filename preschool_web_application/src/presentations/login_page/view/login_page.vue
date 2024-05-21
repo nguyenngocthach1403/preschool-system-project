@@ -18,31 +18,43 @@
         <span class="text-white text-[27px]">Preschool</span>
       </div>
       <div></div>
-      <form action="">
+      <form @submit.prevent="login">
         <!--Username-->
-        <div class="my-6">
+        <div class="my-3">
           <label for="" class="relative">
-            <p class="text-white text-start my-2 text-[19px]">Email</p>
+            <p class="text-white text-start my-2 text-[19px]">Tài khoản</p>
             <input
-              placeholder="abc@gmail.comm"
+              v-model="username"
+              placeholder="Nhập tài khoản"
               type="text"
-              class="w-full h-[48px] text-white rounded-md border-[0.1rem] focus:ring-1 ring-white focus:border-white border-gray-300 bg-[#3B44D1] outline-none px-5 text-[17px] placeholder:text-[#FFFFFF]"
+              class="w-full h-[48px] text-white rounded-md border-[0.1rem] focus:ring-1 ring-white focus:border-white border-gray-300 bg-[#3B44D1] outline-none px-5 text-[17px] placeholder:text-gray-300"
               id="username-input"
             />
+            <div class="h-5 my-1">
+              <p v-if="inValidUsername" class="text-red-400">
+                Mật khẩu không được bỏ trống.
+              </p>
+            </div>
             <!-- <img :src="account_icon" class="absolute top-2/3 left-2" /> -->
           </label>
         </div>
 
         <!--Password-->
-        <div class="my-6">
+        <div class="my-3">
           <label for="">
             <p class="text-white text-start my-2 text-[19px]">Mật khẩu</p>
             <input
+              v-model="password"
               type="password"
-              class="w-full h-[48px] text-white rounded-md border-[0.1rem] focus:ring-1 ring-white focus:border-white border-gray-300 bg-[#3B44D1] outline-none px-5 text-[17px] placeholder:text-[#FFFFFF]"
-              id="username-input"
+              class="w-full h-[48px] text-white rounded-md border-[0.1rem] focus:ring-1 ring-white focus:border-white border-gray-300 bg-[#3B44D1] outline-none px-5 text-[17px] placeholder:text-gray-300"
+              id="password-input"
               placeholder="Nhập mật khẩu"
             />
+            <div class="h-5 my-1">
+              <p v-if="inValidPassword" class="text-red-400">
+                Mật khẩu không được bỏ trống.
+              </p>
+            </div>
           </label>
         </div>
         <!--Rememer pass & forgot pass-->
@@ -52,6 +64,7 @@
               for=""
               class="relative flex items-center rounded-full cursor-pointer"
               ><input
+                v-model="rememberPassword"
                 type="checkbox"
                 class="before:content[''] hover:ring-white peer relative h-5 w-5 cursor-pointer appearance-none rounded-[5px] border border-white transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:bg-white checked:border-none hover:before:opacity-10"
                 id="check"
@@ -90,9 +103,7 @@
         <div
           class="w-full bg-white my-6 h-[48px] content-center text-[#3B44D1] rounded-md active:scale-[98%] hover:bg-gray-200"
         >
-          <button type="button" class="w-full h-full">
-            <router-link to="/home-page">Đăng nhập</router-link>
-          </button>
+          <button type="submit" class="w-full h-full">Đăng nhập</button>
         </div>
       </form>
     </section>
@@ -100,7 +111,52 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import account_icon from "../../../assets/icons/account.svg";
+import authService from "../../../services/authentication.service";
+
+const router = useRouter();
+const route = useRoute();
+const rememberPassword = ref(false);
+const username = ref("");
+const password = ref("");
+const inValidUsername = ref(false);
+const inValidPassword = ref(false);
+async function login() {
+  if (username.value.trim() == "") {
+    inValidUsername.value = true;
+  } else {
+    inValidUsername.value = false;
+  }
+
+  if (password.value.trim() == "") {
+    inValidPassword.value = true;
+  } else {
+    inValidPassword.value = false;
+  }
+
+  if (inValidPassword.value || inValidUsername.value) {
+    return;
+  }
+
+  const response = await authService.login(username.value, password.value);
+
+  const data = response.data;
+
+  if (data.status == 200) {
+    if (rememberPassword) {
+      localStorage.setItem("user", data.data[0]["username"]);
+    }
+    window.user = data.data[0]["username"];
+    router.push({
+      name: "DashBoardView",
+      params: {
+        username: data.data[0]["username"],
+      },
+    });
+  }
+}
 </script>
 
 <style  scoped>

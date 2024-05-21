@@ -30,8 +30,7 @@ import MenuComp from "@/components/menu_comp.vue";
 import ToastList from "@/components/toast_list.vue";
 import next_icon from "@/assets/icons/Right.svg";
 import pre_icon from "@/assets/icons/Left Arrow.svg";
-
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const toasts = ref([]);
 

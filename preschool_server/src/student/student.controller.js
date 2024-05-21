@@ -82,7 +82,23 @@ async function deleteStudent(req, res, next) {
 }
 
 async function getStudentSearch(req, res, next) {
-  console.log(req.query.text, req.query.page, req.query.limit);
+  const { text, page, limit } = req.query;
+
+  console.log(text, page, limit);
+
+  if (text == undefined || page == undefined || limit == undefined) {
+    return res.status(200).json({
+      status: 500,
+      error: "Invalid: Value is undefined",
+    });
+  }
+
+  if (page == "" || limit == "") {
+    return res.status(200).json({
+      status: 500,
+      error: "Invalid: Value is empty",
+    });
+  }
 
   const totalResult = await studentService.countSearchStudent(req.query.text);
   if (totalResult[0]["total"] == 0) {
@@ -110,7 +126,7 @@ async function getStudentSearch(req, res, next) {
 }
 
 async function getTotalStudent(req, res, next) {
-  console.log("Get total student in database");
+  console.log(" * Get total student in database");
 
   const countStudent = await studentService.countStudent();
 
@@ -132,7 +148,7 @@ async function getAll(req, res, next) {
     });
   }
 
-  const result = await studentService.getPage(page, limit);
+  const result = await studentService.getStudent(page, limit);
 
   if (result.code) {
     return res.status(500).json({
@@ -141,6 +157,8 @@ async function getAll(req, res, next) {
       error: result.message,
     });
   }
+
+  console.log(result);
 
   return res.status(200).json({
     status: 200,
