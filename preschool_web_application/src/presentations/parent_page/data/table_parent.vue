@@ -1,11 +1,7 @@
 <template>
   <div class="dashboard text-[14px]">
     <main>
-<<<<<<< HEAD
-      <div class="2xl:h-dvh mr-[10px] h-fit">
-=======
       <div class="overflow-scroll h-[700px] 2xl:h-dvh mr-[10px]h-dvh">
->>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
         <table class="mb-[250px] h-fit w-full">
           <thead
             class="sticky top-0 text-[15px] bg-[#3B44D1] text-white text-white z-10"
@@ -42,14 +38,9 @@
               <td class="w-[300px]">
                 {{ parent.gender === 0 ? "Nam" : "Nữ" }}
               </td>
-<<<<<<< HEAD
               <td class="w-[300px]">
                 {{ new Date(parent.birthday).toLocaleDateString() }}
               </td>
-
-=======
-              <td class="w-[300px]">{{ formatDate(parent.birthday) }}</td>
->>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
               <td class="w-[300px]">{{ parent.address }}</td>
               <td class="w-[700px]">{{ parent.job }}</td>
               <td class="w-[700px]">{{ parent.email }}</td>
@@ -99,13 +90,7 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
 import { ref, computed } from "vue";
-// import moment from "moment";
-=======
-import { ref, computed, defineEmits, defineProps } from "vue";
-import moment from "moment";
->>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 import axios from "axios";
 import router from "@/router/router";
 import delete_icon from "@/assets/icons/delete.svg";
@@ -123,11 +108,6 @@ const deleteConfirmation = ref(false);
 const parentToDelete = ref(null);
 const emits = defineEmits(["add-toast"]);
 
-<<<<<<< HEAD
-=======
-const formatDate = (birthday) => moment(birthday).format("DD/MM/YYYY");
-
->>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 const fetchParents = async () => {
   try {
     const response = await axios.get("http://localhost:9000/parents");
