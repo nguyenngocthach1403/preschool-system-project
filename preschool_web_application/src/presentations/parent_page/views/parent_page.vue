@@ -1,21 +1,35 @@
 <template>
-    <div class="bg-white ml-4 rounded-3xl text-center text-3xl">
-        Parent
-    </div>  
+  <div class="bg-white ml-4 rounded-3xl text-center h-fit">
+    <div
+      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
+    >
+      Parent
+    </div>
+    <div class="flex justify-between content-center mr-3">
+      <SearchForm @passSearchText="getSearchText"></SearchForm>
+
+      <router-link to="/parents/create">
+        <CreateButtonComp></CreateButtonComp>
+      </router-link>
+    </div>
+    <TableData
+      :searchText="searchText"
+      @add-toast="$emit('add-toast', $event)"
+    ></TableData>
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup>
+import TableData from "../data/table_parent.vue";
+import SearchForm from "../../../components/search_form_comp.vue";
+import CreateButtonComp from "../../../components/create_button.vue";
+import { ref } from "vue";
 
-export default defineComponent({
-    setup () {
-        
+const searchText = ref("");
 
-        return {}
-    }
-})
+const getSearchText = (text) => {
+  searchText.value = text;
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,145 +1,196 @@
 <template>
-    <div class="menu-section bg-transparent">
-        <!-- Title app -->
-        <div class="app-title text-center font-bold text-3xl bg-transparent h-20">
-            <div v-show="menuStyle === 'full-menu'">Preschool</div>
-        </div>
-
-        <!-- User information -->
-        <div id="user-inf" class="h-28 bg-white my-10 rounded-xl shadow-xl">
-            <div>
-                <div class="avatar" :class="menuStyle"></div>
-            </div>
-        </div>
-
-        <!-- Menu list -->
-        <div class="menu-list my-10 bg-white py-1 rounded-xl shadow-xl pb-20">
-            <router-link v-for="item in menuItem" :key="item.name" :to="item.path">
-                <div class="menu-item">
-                    <div><img :src="item.icon"></div>
-                    <span class="pl-4" v-show="menuStyle === 'full-menu'">{{ item.name }}</span>
-                </div>
-            </router-link>
-            <button class="shadow-xl" :class="menuStyle" @click="closeMenu"></button>
-        </div>
-
+  <div class="menu-section h-full bg-transparent">
+    <!-- Title app -->
+    <div
+      class="app-title text-center font-bold text-3xl flex justify-center py-4 bg-transparent h-[60px] content-center"
+    >
+      <div v-show="menuStyle === 'full-menu'" class="drop-shadow-md">
+        Preschool
+      </div>
     </div>
+
+    <!-- User information -->
+    <div
+      id="user-inf"
+      class="h-fit bg-white my-5 border-t-[1px] border-b-[1px] px-3"
+    >
+      <!--Avatar & Username-->
+
+      <div class="flex w-full content-center h-[50px] gap-3 my-3 relative">
+        <div class="avatar rounded-full w-[50px] h-[50px] bg-blue-500"></div>
+        <div class="user">
+          <p class="text-[16px]">{{ username }}</p>
+          <p class="text-gray-500 text-[14px]">Admin</p>
+        </div>
+        <!-- <div class="change-account h-5 w-5 bg-black"></div> -->
+      </div>
+    </div>
+
+    <div class="menu-list bg-white text-gray-600 py-1 px-3">
+      <span class="text-[15px] text-gray-500">Trung tâm</span>
+      <router-link
+        v-for="item in menu"
+        :key="item.name"
+        :to="{ name: item.name }"
+      >
+        <div class="menu-item h-50 pl-[25px]">
+          <div><img :src="item.icon" class="w-[20px]" /></div>
+          <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
+            item.title
+          }}</span>
+        </div>
+      </router-link>
+    </div>
+    <!-- Menu list -->
+    <div class="menu-list bg-white py-1 text-gray-600 pb-20 px-3">
+      <span class="text-[15px] text-gray-500">Quản lý</span>
+      <router-link
+        v-for="item in managerItem"
+        :key="item.name"
+        :to="{ name: item.name }"
+      >
+        <div class="menu-item h-[45px] pl-[25px]">
+          <div><img :src="item.icon" class="w-[20px]" /></div>
+          <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
+            item.title
+          }}</span>
+        </div>
+      </router-link>
+    </div>
+
+    <div
+      class="menu-list bg-white w-full py-1 text-gray-600 px-3 absolute bottom-0"
+    >
+      <span class="text-[15px] text-gray-500">Hỗ trợ</span>
+      <div
+        v-for="item in settingItem"
+        :key="item.name"
+        class="menu-item h-50 pl-[25px]"
+        @click="logout"
+      >
+        <div><img :src="item.icon" class="w-[20px]" /></div>
+        <span class="pl-4" v-show="menuStyle === 'full-menu'">{{
+          item.title
+        }}</span>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-    import dash from '@/assets/icons/dashboard.svg';
-    import student from '@/assets/icons/student.svg';
-    import parent from '@/assets/icons/extension.svg';
-    import classes from '@/assets/icons/class.svg';
-    import staff from '@/assets/icons/staff.svg';
-    import setting from '@/assets/icons/setting.svg';
-    import extension from '@/assets/icons/ex.svg';
-    import account from '@/assets/icons/account.svg';
+import dash from "@/assets/icons/dashboard.svg";
+import student from "@/assets/icons/student.svg";
+import parent from "@/assets/icons/extension.svg";
+import classes from "@/assets/icons/class.svg";
+import staff from "@/assets/icons/staff.svg";
+import setting from "@/assets/icons/setting.svg";
+import extension from "@/assets/icons/ex.svg";
+import account from "@/assets/icons/account.svg";
 
-    
-
-    export default 
-    {
-        data() {
-            return {
-                isMenuClose :true,
-                menuItem: [
-                    { name: 'Dasboard',path: '/', icon: dash },
-                    { name: 'Students',path: '/students', icon: student },
-                    { name: 'Parents', path: '/parents', icon: parent },
-                    { name: 'Classes', path: '/classes', icon: classes },
-                    { name: 'Staffs', path: '/staffs', icon: staff },
-                    { name: 'Account', path: '/account', icon: account },
-                    { name: 'Settings', path: '/dddd', icon: setting },
-                    { name: 'Extensions', path: '/dddd', icon: extension }
-                ]
-            }
-        },
-        props: {
-            "menuStyle": String
-        },
-        methods: {
-            closeMenu()
-            {
-                this.isMenuClose = !this.isMenuClose;
-                this.$emit('close-menu',this.isMenuClose)
-            }
-        },
-        
-        
-    }
-
-    
+export default {
+  data() {
+    return {
+      isMenuClose: true,
+      menuItem: [
+        { name: "Dasboard", path: "/", icon: dash },
+        { name: "Students", path: "/students", icon: student },
+        { name: "Parents", path: "/parents", icon: parent },
+        { name: "Classes", path: "/classes", icon: classes },
+        { name: "Staffs", path: "/dddd", icon: staff },
+        { name: "Account", path: "/dddd", icon: account },
+        { name: "Settings", path: "/dddd", icon: setting },
+        { name: "Extensions", path: "/dddd", icon: extension },
+      ],
+    };
+  },
+  props: {
+    menuStyle: String,
+  },
+  methods: {
+    closeMenu() {
+      this.isMenuClose = !this.isMenuClose;
+      this.$emit("close-menu", this.isMenuClose);
+    },
+  },
+};
 </script>
 
 <style scoped>
-    .app-title {
-        transition: 0.5 ease;
-    }
-    
-    /* user information css */
-    #user-inf
-    {
-        position: relative !important;
-    }
-    .avatar
-    {
-        width: 70px;
-        height:70px;
-        border-radius: 50%;
-        background-color: rgb(9, 129, 129);
-        position: absolute !important;
-        top: -30%;
-        left: 95px;
-    }
-    .hide-menu
-    {
-        left: 0px;
-        transition: 0.5s ease;
-    }
-    .full-menu
-    {
-        left: 85px;
-        transition: 0.5s ease;
-    }
+.app-title {
+  transition: 0.5 ease;
+}
 
-    /* menu css */
-    .router-link-active .menu-item
-    {
-        background-color: rgb(200, 200, 200);
-        transition: 1s ease-in;
-    }
-    .menu-list
-    {
-        position: relative;
-    }
-    .menu-item 
-    {
-        height: 50px;
-        margin: 0px 5px 4px 4px;
-        border-radius: 7px;
-        padding-left: 20px;
-        display: flex;
-        align-items: center;
+/* user information css */
+.menu-list {
+  font-size: 14px;
+}
+.hide-menu {
+  left: 0px;
+  transition: 0.5s ease;
+}
 
-    }
-    .menu-item:hover{
-        background-color: rgb(200, 200, 200);
-    }
-    button{
-        width: 70px;
-        height: 40px;
-        background-color: rgb(255, 255, 255);
-        position: absolute;
-        bottom: -30px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 999px;
-        border-bottom-left-radius: 999px;
+.hide-menu .user {
+  display: none;
+}
+.hide-menu .change-account {
+  display: none;
+}
+.hide-menu .avatar {
+  margin: auto;
+}
+.full-menu {
+  left: 85px;
+  transition: 0.5s ease;
+}
 
-    }
-    button:active
-    {
-        scale: 98%;
-    }
+/* menu css */
+.router-link-active .menu-item {
+  /* background-color: rgb(231, 231, 231); */
+  /* background-color: #3b44d1; */
+  transition: 0.18s ease-in;
+  border-radius: 5px !important;
+  color: black !important ;
+  /* color: white; */
+  font-size: 15px;
+  position: relative;
+  display: flex;
+}
+
+.router-link-active .menu-item::before {
+  animation: active 0.5s forwards normal;
+  content: "";
+  background-color: #3b44d1;
+  width: 100%;
+  position: absolute;
+  height: 3px;
+  left: 0;
+  bottom: 0;
+}
+
+.menu-item {
+  margin: 0px 0px 4px 0px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+}
+.menu-item:hover {
+  background-color: rgb(231, 231, 231);
+}
+
+@keyframes active {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+button {
+  position: absolute;
+  top: 100%;
+  left: 100px;
+}
+#user-inf {
+  position: relative !important;
+}
 </style>
