@@ -8,6 +8,10 @@ router.get("/:id", getByID);
 router.post("/insert", insertParent);
 router.put("/:id", updateParent);
 router.delete("/:id", deleteParent);
+<<<<<<< HEAD
+=======
+router.post("/duplicate", isDuplicateEmailOrPhone);
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 
 function getAll(req, res, next) {
   if (req.query.page !== undefined && req.query.limit !== undefined) {
@@ -48,13 +52,36 @@ function getByID(req, res, next) {
 
 async function insertParent(req, res, next) {
   try {
+<<<<<<< HEAD
     console.log(req.body);
+=======
+    // console.log(req.body);
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
     const insertId = await parentService.insertParent(req.body);
     res.json({ insertId });
   } catch (error) {
     next(error);
   }
 }
+<<<<<<< HEAD
+=======
+async function isDuplicateEmailOrPhone(req, res, next) {
+  try {
+    const { email, phone } = req.body;
+    const duplicateParent = await parentService.isDuplicateEmailOrPhone(
+      email,
+      phone
+    );
+    if (duplicateParent) {
+      res.json({ message: "Email or phone already exists." });
+    } else {
+      res.json({ message: "Email and phone are unique." });
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 
 async function updateParent(req, res, next) {
   try {

@@ -139,13 +139,38 @@ class Database {
       throw error;
     }
   }
+  async update(table, data, where) {
+    try {
+      const sql = `UPDATE ${table} SET ? ${where ? `WHERE ${where}` : ""}`;
+      const result = await this.query(sql, data);
+      return result.affectedRows;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete(table, where) {
+    try {
+      const sql = `UPDATE ${table} SET status = 0 WHERE ${where}`;
+      const result = await this.query(sql);
+      return result.affectedRows;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
+// module.exports = new Database({
+//   host: "localhost",
+//   user: "root",
+//   password: "congagay08773",
+//   database: "preschool_db",
+// });
 module.exports = new Database({
   host: "localhost",
   user: "root",
-  password: "congagay08773",
-  database: "preschool_db",
+  password: "",
+  database: "pre_school",
 });
 // module.exports = new Database({
 //   host: "localhost",

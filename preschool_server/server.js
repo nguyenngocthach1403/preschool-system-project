@@ -1,8 +1,11 @@
 const express = require("express");
 const cors = require("cors");
+<<<<<<< HEAD
 const config = require("./src/config/config");
 const morgan = require("morgan");
 
+=======
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 const app = express();
 const path = require("path");
 
@@ -34,6 +37,7 @@ app.use("/login", require("./src/auth/auth.controller"));
 app.use("/students", require("./src/student/student.controller"));
 app.use("/parents", require("./src/parent/parent_controller"));
 
+<<<<<<< HEAD
 app.use(
   "/registrations",
   require("./src/registrations/registation.controller")
@@ -43,6 +47,11 @@ app.use("/register", require("./src/register/register"));
 app.use("/images", express.static(path.join(__dirname, "uploads")));
 app.use("/account", require("./src/account/account.controller"));
 app.use("/class", require("./src/class/class.controller"));
+=======
+app.use("/register", require("./src/register/register"));
+
+app.use("/images", express.static(path.join(__dirname, "uploads")));
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 
 app.listen(port, () => {
   console.log(`listen port ${port}`);

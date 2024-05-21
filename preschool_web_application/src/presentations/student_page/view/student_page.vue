@@ -169,6 +169,19 @@ const sortDataByClass = () => {
 const getConfirm = (event) => {
   if (event) {
     const studentToDel = JSON.parse(localStorage.getItem("studentToDel") || {});
+<<<<<<< HEAD
+=======
+    studentStore.deleteStudent(studentToDel.id);
+    //emit toast
+    emits({
+      title: "Detele Successfully!",
+      content: "Delete " + studentToDel.name + " student",
+      type: 0,
+    });
+  }
+  showConfirmDialog.value = null;
+};
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 
     deleteStudent(studentToDel);
 

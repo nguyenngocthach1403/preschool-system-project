@@ -80,7 +80,11 @@
   </div>
 </template>
 
+<<<<<<< HEAD
 <!-- <script>
+=======
+<script>
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 import { ref, onMounted } from "vue";
 import axios from "axios";
 import router from "@/router/router";
@@ -179,6 +183,7 @@ export default {
     };
   },
 };
+<<<<<<< HEAD
 </script> -->
 
 <script setup>
@@ -265,6 +270,8 @@ const cancel = () => {
 onMounted(() => {
   getParent();
 });
+=======
+>>>>>>> 1637cf83c0620e2faf000a77893904a64a96e945
 </script>
 
 <style scoped>
