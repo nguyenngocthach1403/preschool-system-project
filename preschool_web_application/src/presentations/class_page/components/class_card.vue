@@ -66,11 +66,11 @@
         class="number-of-membver flex text-[13px] text-gray-500 content-center h-[25px] my-1"
       >
         <span class="ml-2 h-full content-center">{{
-          classData.dateBegin ?? "1-1-1111"
+          classData.start ?? "1-1-1111"
         }}</span>
         <span class="ml-2 h-full content-center">-</span>
         <span class="ml-2 h-full content-center">{{
-          classData.dateFinish ?? "1-1-1111"
+          classData.end ?? "1-1-1111"
         }}</span>
       </div>
     </div>

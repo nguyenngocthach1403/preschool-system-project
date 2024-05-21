@@ -38,7 +38,10 @@
               <td class="w-[300px]">
                 {{ parent.gender === 0 ? "Nam" : "Nữ" }}
               </td>
-              <td class="w-[300px]">{{ formatDate(parent.birthday) }}</td>
+              <td class="w-[300px]">
+                {{ new Date(parent.birthday).toLocaleDateString() }}
+              </td>
+
               <td class="w-[300px]">{{ parent.address }}</td>
               <td class="w-[700px]">{{ parent.job }}</td>
               <td class="w-[700px]">{{ parent.email }}</td>
@@ -80,8 +83,8 @@
 </template>
 
 <script setup>
-import { ref, computed, defineEmits, defineProps } from "vue";
-import moment from "moment";
+import { ref, computed } from "vue";
+// import moment from "moment";
 import axios from "axios";
 import router from "@/router/router";
 import delete_icon from "@/assets/icons/delete.svg";

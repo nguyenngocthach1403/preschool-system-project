@@ -29,9 +29,12 @@ export const useStudentStore = defineStore("studentStore", {
           avatar: element.avatarPath,
           name: element.name,
           gender: element.gender,
+          classId: element.classId,
           class: element.className,
           birthday: new Date(element.birthday).toLocaleDateString(),
           status: element.status,
+          parents: element.parents,
+          created: element.created,
         });
       }
       return students;
@@ -150,9 +153,10 @@ export const useStudentStore = defineStore("studentStore", {
       // }
 
       const res = await studentService.getStudent(this.page, this.limit);
+
       const dataRes = res.data;
 
-      console.log(dataRes);
+      console.log(res);
 
       const data = dataRes.data;
 
@@ -187,8 +191,10 @@ export const useStudentStore = defineStore("studentStore", {
       }
     },
 
-    async changePage(newVal) {
-      this.page = newVal;
+    async changePage(page) {
+      if (this.page === page) return;
+
+      this.page = page;
       if (this.txtSearch != "") {
         console.log("Has search");
         this.searchStudent(this.txtSearch);
@@ -211,8 +217,10 @@ export const useStudentStore = defineStore("studentStore", {
         }
       }
     },
-    async changeLimit(newVal) {
-      this.limit = newVal;
+    async changeLimit(limit) {
+      if (this.limit === limit) return;
+
+      this.limit = limit;
       if (this.txtSearch != "") {
         this.searchStudent(this.txtSearch);
       } else {

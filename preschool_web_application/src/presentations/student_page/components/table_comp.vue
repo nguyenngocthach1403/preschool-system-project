@@ -8,16 +8,6 @@
           <th class="px-7 py-3 text-left">Avatar</th>
           <th class="px-3 text-left">
             <div class="flex">
-              Họ và tên
-              <img
-                :src="sort_icon"
-                @click="$emit('sort-student-name')"
-                class="w-[20px] hover:bg-gray-200/25 rounded-full"
-              />
-            </div>
-          </th>
-          <th class="px-3 text-left">
-            <div class="flex">
               ID
               <img
                 :src="sort_icon"
@@ -26,7 +16,17 @@
               />
             </div>
           </th>
-          <th class="px-3 text-left hidden 2xl:table-cell">Giới tính</th>
+          <th class="px-3 text-left">
+            <div class="flex">
+              Họ và tên
+              <img
+                :src="sort_icon"
+                @click="$emit('sort-student-name')"
+                class="w-[20px] hover:bg-gray-200/25 rounded-full"
+              />
+            </div>
+          </th>
+          <th class="px-3 text-left">Phụ huynh</th>
           <th class="px-3 text-left hidden lg:table-cell">
             <div class="flex">
               Lớp
@@ -37,6 +37,7 @@
               />
             </div>
           </th>
+          <th class="px-3 text-left hidden 2xl:table-cell">Giới tính</th>
           <th class="px-3 text-left hidden xl:table-cell">Ngày sinh</th>
           <th class="px-3 text-left">Trạng thái</th>
           <th class="px-3 text-left">Chức năng</th>
@@ -88,6 +89,9 @@
               />
             </div>
           </td>
+          <td class="hidden 2xl:table-cell px-3 w-[600px] text-blue-900">
+            <span>PRE{{ item.id }}</span>
+          </td>
           <td class="w-dvw px-3">
             <span>{{ item.name }}</span>
             <!-- <dd class="text-[#3B44D1] text-[14px] my-[5px]">HS12121222</dd> -->
@@ -101,16 +105,35 @@
               {{ item.birthday }}
             </dd>
           </td>
-          <td class="hidden 2xl:table-cell px-3 w-[600px] text-blue-900">
-            <span>PRE{{ item.id }}</span>
+          <td class="w-dvw px-3">
+            <button
+              @click.prevent
+              v-if="item.parents.length === 0"
+              class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
+            >
+              Thêm phụ huynh
+            </button>
+            <p v-for="parent in item.parents" :key="parent">
+              <span class="font-bold">
+                {{ returnRelation(parent.relationship) }}:
+              </span>
+              <span> {{ parent.name }}</span>
+            </p>
+          </td>
+          <td class="hidden lg:table-cell w-[1000px] px-3">
+            <span v-if="item.class">{{ item.class }}</span>
+            <button
+              @click.prevent
+              v-if="!item.class"
+              class="hover:bg-red-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-red-300 text-[12px] border bg-red-200/25 text-red-600 cursor-default"
+            >
+              Thêm vào lớp
+            </button>
           </td>
           <td class="hidden 2xl:table-cell px-3 w-[600px]">
             <span>{{ convertNumToGender(item.gender) }}</span>
           </td>
-          <td class="hidden lg:table-cell w-[1000px] px-3">
-            <span v-if="item.class">{{ item.class }}</span>
-            <span v-if="!item.class" class="italic">None</span>
-          </td>
+
           <td class="hidden xl:table-cell px-3 w-dvw">
             <span>{{ new Date(item.birthday).toDateString() }}</span>
           </td>
@@ -206,6 +229,17 @@ function checkStatusToContent(sts) {
       return "Bảo lưu";
     default:
       return "Chưa rõ";
+  }
+}
+
+function returnRelation(rel) {
+  switch (rel) {
+    case 1:
+      return "Bố";
+    case 2:
+      return "Mẹ";
+    default:
+      break;
   }
 }
 

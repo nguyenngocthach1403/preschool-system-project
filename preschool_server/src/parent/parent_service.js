@@ -15,7 +15,7 @@ module.exports = {
 
 async function getAll() {
   try {
-    db.connect();
+    db.createConnection();
     return db.select(
       "Parent",
       "id, name, gender, birthday, address, job, email, phone, role, status"
@@ -77,7 +77,6 @@ async function searchParent(txtSearch, page, limit) {
 async function countSearchParent(txtSearch) {
   try {
     db.createConnection();
-
     return db.select(
       "Parent",
       "Count(*) AS total",
@@ -129,6 +128,7 @@ async function isDuplicate(email, phone, account_id) {
 }
 async function insertParent(data) {
   try {
+    db.createConnection();
     const parentId = await db.insert("Parent", data);
     console.log(`Parent created with ID: ${parentId}`);
     return parentId;
@@ -140,6 +140,7 @@ async function insertParent(data) {
 
 async function updateParent(id, newData) {
   try {
+    db.createConnection();
     await db.updateParent("Parent", newData, `id = ${id}`);
     console.log(`updated ${id}`);
   } catch (error) {
@@ -149,6 +150,7 @@ async function updateParent(id, newData) {
 }
 async function deleteParent(where) {
   try {
+    db.createConnection();
     console.log(`delete`);
     return db.deleteParent("Parent", where);
   } catch (error) {

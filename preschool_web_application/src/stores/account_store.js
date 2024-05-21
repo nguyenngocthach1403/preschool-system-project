@@ -25,6 +25,26 @@ export const useAccountStore = defineStore("accountStore", {
       }
       return account;
     },
+
+    async createAccount(accountToCreate) {
+      this.status = "creating";
+
+      console.log("Account to create", accountToCreate);
+
+      const response = await accountService.createAccount(accountToCreate);
+
+      const data = response.data;
+
+      console.log("Response: ", response);
+
+      if (data.status == 404) {
+        this.status = "create_failed";
+        return { success: false, message: data.error };
+      }
+
+      this.status = "created";
+      return { success: true, message: "Create successful." };
+    },
     async getTotal() {
       const response = await accountService.getTotalAccount();
 

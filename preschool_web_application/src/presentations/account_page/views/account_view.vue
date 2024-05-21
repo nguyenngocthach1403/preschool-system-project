@@ -1,6 +1,10 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
-    <div class="text-left px-[20px] text-[36px] font-bold">Account</div>
+    <div
+      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
+    >
+      Account
+    </div>
     <SearchFormComp />
     <!--Show muc-->
     <div class="my-2 w-full text-start px-6">
@@ -47,6 +51,7 @@
       </div>
       <Pagination
         :page-nums="round(total / limit)"
+        :page-active="page + 1"
         @click-page="accountStore.changePage($event - 1)"
       ></Pagination>
     </div>
@@ -63,7 +68,7 @@ import { storeToRefs } from "pinia";
 
 const accountStore = useAccountStore();
 
-const { account, page, limit, total, status } = storeToRefs(accountStore);
+const { account, status, page, limit, total } = storeToRefs(accountStore);
 
 const emits = defineEmits(["add-toast"]);
 

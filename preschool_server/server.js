@@ -1,13 +1,15 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+const config = require("./src/config/config");
+const morgan = require("morgan");
 
 const app = express();
 const path = require("path");
 
-const port = process.env.PORT;
+// const port = process.env.PORT;
+const port = config.port;
 
-const db = require("./src/config/db"); // Database
+app.use(morgan("dev"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,6 +29,8 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
+app.use("/login", require("./src/auth/auth.controller"));
+
 app.use("/students", require("./src/student/student.controller"));
 app.use("/parents", require("./src/parent/parent_controller"));
 
@@ -38,6 +42,7 @@ app.use(
 app.use("/register", require("./src/register/register"));
 app.use("/images", express.static(path.join(__dirname, "uploads")));
 app.use("/account", require("./src/account/account.controller"));
+app.use("/class", require("./src/class/class.controller"));
 
 app.listen(port, () => {
   console.log(`listen port ${port}`);

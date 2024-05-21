@@ -14,12 +14,14 @@
     />
 
     <!-- Header -->
-    <div class="text-left px-[20px] text-[36px] font-bold">Student</div>
+    <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
+      Student
+    </div>
 
     <!-- Search-->
-    <div class="flex justify-between content-center mr-3">
+    <div class="flex justify-between content-center mt-5 mr-3">
       <SearchFormComp @passSearchText="getSearchText"></SearchFormComp>
-      <router-link to="/students/create">
+      <router-link :to="{ name: 'StudentCreationView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
@@ -82,6 +84,7 @@
       <Pagination
         v-if="status !== 'search_failed' && status !== 'load_failed'"
         :page-nums="round(total / limit)"
+        :page-active="page + 1"
         @click-page="changePage($event)"
       ></Pagination>
     </div>

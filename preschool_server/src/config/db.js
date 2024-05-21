@@ -78,7 +78,7 @@ class Database {
       const result = await this.query(sql, data);
       return result.affectedRows;
     } catch (error) {
-      return error.code;
+      return error;
     }
   }
 
@@ -117,7 +117,7 @@ class Database {
 
       return result.affectedRows;
     } catch (error) {
-      throw error;
+      return error;
     }
   }
   async updateParent(table, data, where) {
@@ -141,15 +141,15 @@ class Database {
   }
 }
 
-// module.exports = new Database({
-//   host: "localhost",
-//   user: "root",
-//   password: "congagay08773",
-//   database: "preschool_db",
-// });
 module.exports = new Database({
   host: "localhost",
   user: "root",
-  password: "",
-  database: "pre_school",
+  password: "congagay08773",
+  database: "preschool_db",
 });
+// module.exports = new Database({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "pres_chool",
+// });

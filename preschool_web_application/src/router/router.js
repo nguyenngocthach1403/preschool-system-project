@@ -7,7 +7,7 @@ import ClassView from "@/presentations/class_page/views/class_page.vue";
 import StudentCreationView from "@/presentations/student_creation_page/views/student_creation_page.vue";
 import ParentCreationView from "@/presentations/parent_page/views/parent_create_page.vue";
 import HomePage from "@/presentations/home_page/views/home_page.vue";
-import LoginView from "@/presentations/login_page/login_view.vue";
+import LoginView from "@/presentations/login_page/view/login_page.vue";
 import RegistrationForm from "@/presentations/registration/view/registration-form.vue";
 import ParentEditView from "@/presentations/parent_page/views/parent_edit_page.vue";
 import RegistrationView from "../presentations/registration_page/view/registration_view.vue";
@@ -22,70 +22,82 @@ function Router() {
         name: "LoginView",
         path: "/",
         component: LoginView,
+        meta: {
+          requireAuth: false,
+        },
       },
       {
         name: "RegistrationFormView",
         path: "/register",
         component: RegistrationForm,
+        meta: {
+          requireAuth: false,
+        },
       },
       {
-        name: "HomePage",
-        path: "/home-page",
+        path: "/home-page/:username",
+        name: "homepage",
         component: HomePage,
-        beforeEnter(to) {
-          if (to.name !== "HomePage") {
-            return "/home-page";
-          }
+        meta: {
+          requireAuth: true,
         },
         children: [
           {
             name: "StudentView",
-            path: "/students",
+            path: "/home-page/:username/students",
             component: StudentView,
           },
           {
             name: "ParentView",
-            path: "/parents",
+            path: "/home-page/:username/parent",
             component: ParentView,
           },
           {
             name: "DashBoardView",
-            path: "/dashboard",
+            path: "/home-page/:username/dashboard",
             component: DashBoardView,
           },
           {
             name: "ClassView",
-            path: "/classes",
+            path: "/home-page/:username/class",
             component: ClassView,
           },
           {
             name: "StudentCreationView",
-            path: "/students/create",
+            path: "/home-page/:username/student-creation",
             component: StudentCreationView,
           },
           {
             name: "ParentCreationView",
-            path: "/parents/create",
+            path: "/home-page/:username/parent-creation",
             component: ParentCreationView,
           },
           {
             name: "RegistrationView",
-            path: "/registration_view",
+            path: "/home-page/:username/registration",
             component: RegistrationView,
           },
           {
             name: "AccountView",
-            path: "/account",
+            path: "/home-page/:username/account",
             component: AccountView,
           },
           {
             name: "ParentEditView",
-            path: "/parents/edit/:id",
+            path: "/home-page/:username/parent-edit",
             component: ParentEditView,
           },
         ],
       },
     ],
+  });
+  router.beforeEach((to, from) => {
+    if (localStorage.getItem("user") !== null) {
+      if (to.meta.requireAuth && !window.user) {
+        alert("You are not logged in");
+        return "/";
+      }
+    }
   });
   return router;
 }
