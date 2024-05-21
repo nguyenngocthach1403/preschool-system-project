@@ -4,47 +4,84 @@ const db = require("../config/db");
 const parentService = require("./parent_service");
 
 router.get("/", getAll);
-router.get("/:id", getByID);
+// router.get("/:id", getByID);
 router.post("/insert", insertParent);
 router.put("/:id", updateParent);
 router.delete("/:id", deleteParent);
 router.post("/duplicate", isDuplicate);
+router.get("/total", getTotalParent);
+router.get("/search", getParentSearch);
 
-function getAll(req, res, next) {
-  if (req.query.page !== undefined && req.query.limit !== undefined) {
-    console.log(req.query.page);
-    parentService
-      .getPage(req.query.page, req.query.limit)
-      .then((result) => {
-        if (result.length !== 0) {
-          res.send(result);
-        } else {
-          res.send([]);
-        }
-      })
-      .catch(next);
-  } else {
-    parentService
-      .getAll()
-      .then((result) => {
-        res.send(
-          JSON.stringify({
-            status: 200,
-            message: "Successful",
-            data: result,
-          })
-        );
-      })
-      .catch(next);
+async function getAll(req, res, next) {
+  const { limit, page } = req.query;
+  if (limit === undefined || page === undefined) {
+    return res.status(400).json({
+      status: 400,
+      error: "Invalid input: Querry must has limit and page",
+    });
   }
+
+  const result = await parentService.getPage(page, limit);
+
+  if (result.code) {
+    return res.status(500).json({
+      status: 500,
+      code: result.code,
+      error: result.message,
+    });
+  }
+  res.status(200).json({
+    status: 200,
+    message: "Successful",
+    data: result,
+  });
 }
 
-function getByID(req, res, next) {
-  console.log(req.params.id);
-  parentService
-    .getByID(req.params.id)
-    .then((result) => res.send(result))
-    .catch(next);
+// function getByID(req, res, next) {
+//   console.log(req.params.id);
+//   parentService
+//     .getByID(req.params.id)
+//     .then((result) => res.send(result))
+//     .catch(next);
+// }
+async function getTotalParent(req, res, next) {
+  console.log("Get total parent in database");
+
+  const countParent = await parentService.countParent();
+
+  res.send(
+    JSON.stringify({
+      status: 200,
+      message: "Successful",
+      data: countParent[0]["total"],
+    })
+  );
+}
+
+async function getParentSearch(req, res, next) {
+  console.log(req.query.text, req.query.page, req.query.limit);
+
+  const totalResult = await parentService.countSearchParent(req.query.text);
+  if (totalResult[0]["total"] == 0) {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Not found any student",
+      })
+    );
+    return;
+  }
+  const resultParentSearch = await parentService.searchParent(
+    req.query.text,
+    req.query.page,
+    req.query.limit
+  );
+  res.send({
+    status: 200,
+    message: "Successful",
+    total: totalResult[0]["total"],
+    data: resultParentSearch,
+  });
 }
 async function isDuplicate(req, res, next) {
   try {
