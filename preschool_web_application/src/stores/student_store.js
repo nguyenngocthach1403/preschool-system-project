@@ -33,7 +33,7 @@ export const useStudentStore = defineStore("studentStore", {
           class: element.className,
           birthday: new Date(element.birthday).toLocaleDateString(),
           status: element.status,
-          parent: element.parent,
+          parents: element.parents,
           created: element.created,
         });
       }
@@ -153,9 +153,10 @@ export const useStudentStore = defineStore("studentStore", {
       // }
 
       const res = await studentService.getStudent(this.page, this.limit);
+
       const dataRes = res.data;
 
-      console.log(dataRes);
+      console.log(res);
 
       const data = dataRes.data;
 

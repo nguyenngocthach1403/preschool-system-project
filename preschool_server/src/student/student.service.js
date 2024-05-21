@@ -3,13 +3,14 @@ const db = require("../config/db.service");
 
 module.exports = {
   getAllStudents,
-  getByID,
+  getStudentByID,
   getStudent,
   countStudent,
   searchStudent,
   countSearchStudent,
   deleteStudent,
   createNewStudent,
+  getParentBuStudentId,
 };
 
 async function createNewStudent(studentToCreate) {
@@ -133,14 +134,24 @@ async function countStudent() {
 async function searchStudent(txtSearch, offset, limit) {
   try {
     const data = await db.selectLimit(
-      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
-      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className, r.relationship, p.name AS parentName, p.id AS parentId",
-      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id Like '%${txtSearch}%'`,
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID`,
+      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className",
+      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id = '%${txtSearch}%'`,
       `LIMIT ${limit}`,
-      `OFFSET ${offset}`
+      `OFFSET ${offset * limit}`
     );
 
-    return formatStudentJson(data);
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index];
+      const parents = await getParentBuStudentId(element.id);
+      if (parents.length === 0) {
+        element.parents = [];
+      } else {
+        element.parents = parents;
+      }
+    }
+
+    return data;
   } catch (error) {
     return {
       code: error.code,
@@ -152,9 +163,9 @@ async function searchStudent(txtSearch, offset, limit) {
 async function countSearchStudent(txtSearch) {
   try {
     return await db.select(
-      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID`,
       "Count(*) AS total",
-      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id Like '%${txtSearch}%'`
+      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id = '%${txtSearch}%'`
     );
   } catch (error) {
     return {
@@ -164,13 +175,22 @@ async function countSearchStudent(txtSearch) {
   }
 }
 
-async function getByID(id) {
+async function getStudentByID(id) {
   try {
-    return await db.select(
-      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
-      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className, r.relationship, p.name AS parentName, p.id AS parentId",
-      `WHERE Students.deleted = 0 AND Students.id = ${id}`
+    const data = await db.selectLimit(
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID`,
+      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className",
+      `WHERE s.deleted = 0 AND s.id = ${id} `
     );
+
+    const parents = await getParentBuStudentId(id);
+    if (parents.length === 0) {
+      element.parents = [];
+    } else {
+      element.parents = parents;
+    }
+
+    return data;
   } catch (error) {
     return {
       code: error.code,
@@ -194,17 +214,41 @@ async function deleteStudent(idStudentToDel) {
   }
 }
 
-async function getStudent(page, limit) {
+async function getParentBuStudentId(id) {
+  try {
+    const data = await db.select(
+      `${config.tb.relationship} r 
+    LEFT JOIN ${config.tb.parent} p ON r.parentId = p.id `,
+      "p.* , r.relationship",
+      `WHERE r.studentId = ${id}`
+    );
+    return data;
+  } catch (error) {
+    return error;
+  }
+}
+
+async function getStudent(offset, limit) {
   try {
     const data = await db.selectLimit(
-      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID LEFT JOIN ${config.tb.relationship} r ON s.id = r.studentID LEFT JOIN ${config.tb.parent} p ON p.id = r.parentID`,
-      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className, r.relationship, p.name AS parentName, p.id AS parentId",
+      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID`,
+      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className",
       "WHERE s.deleted = 0",
       `LIMIT ${limit}`,
-      `OFFSET ${page * limit}`
+      `OFFSET ${offset * limit}`
     );
 
-    return formatStudentJson(data);
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index];
+      const parents = await getParentBuStudentId(element.id);
+      if (parents.length === 0) {
+        element.parents = [];
+      } else {
+        element.parents = parents;
+      }
+    }
+
+    return data;
   } catch (error) {
     return {
       code: error.code,

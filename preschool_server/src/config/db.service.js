@@ -32,7 +32,7 @@ async function selectLimit(
 async function insert(table, data) {
   try {
     const sql = `INSERT INTO ${table} SET ?`;
-    const result = await dbPool.query(sql, data);
+    const [result] = await dbPool.query(sql, data);
     return result.affectedRows;
   } catch (error) {
     throw error;
@@ -71,7 +71,7 @@ async function update(table, updates, where) {
       ...(where ? Object.values(where) : []),
     ];
 
-    const result = await dbPool.query(sql, values);
+    const [result] = await dbPool.query(sql, values);
 
     return result.affectedRows;
   } catch (error) {

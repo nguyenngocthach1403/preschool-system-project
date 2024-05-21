@@ -41,13 +41,6 @@ function Router() {
         meta: {
           requireAuth: true,
         },
-        beforeEnter(to, from) {
-          console.log(to.meta.requireAuth);
-
-          if (!to.params.username) {
-            return "/";
-          }
-        },
         children: [
           {
             name: "StudentView",
