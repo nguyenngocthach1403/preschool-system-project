@@ -11,17 +11,46 @@ module.exports = {
   deleteStudent,
   createNewStudent,
   getParentBuStudentId,
+  createRelatioship,
 };
 
 async function createNewStudent(studentToCreate) {
   try {
+    // Tao Id chho học sinh mới
     const id = await createIDStudent();
     studentToCreate.id = parseInt(id, 10);
-    return await db.insert(config.tb.student, studentToCreate);
+    //Tạo học sinh
+    const result = await db.insert(config.tb.student, studentToCreate);
+
+    if (result <= 0) {
+      return false;
+    }
+
+    return {
+      success: true,
+      studentCreated: studentToCreate.id,
+    };
   } catch (error) {
+    console.error(error);
     return {
       code: error.code,
-      message: "An error occusred while excuted query",
+      message: error.sqlMessage,
+    };
+  }
+}
+
+async function createRelatioship(data) {
+  try {
+    const result = await db.insert(config.tb.relationship, data);
+    if (result === 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
     };
   }
 }

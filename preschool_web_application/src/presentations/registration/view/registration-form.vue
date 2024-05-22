@@ -251,7 +251,6 @@ const register = async () => {
         title: "Đăng ký thành công",
         type: 0,
       });
-      router.push("/");
     } else {
       console.log("Fail");
     }

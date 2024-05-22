@@ -4,7 +4,21 @@ const config = require("../config/config");
 module.exports = {
   getTotalRegistration,
   getRegistrations,
+  createRegister,
 };
+
+async function createRegister(data) {
+  try {
+    console.log("  * Create registration:");
+    return await db.insert(config.tb.register, data);
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occurred while executing the query.",
+      error: error.sqlMessage,
+    };
+  }
+}
 
 async function getTotalRegistration() {
   try {
