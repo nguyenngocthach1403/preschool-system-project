@@ -84,7 +84,7 @@ function Router() {
           },
           {
             name: "ParentEditView",
-            path: "/home-page/:username/parent-edit",
+            path: "/home-page/:username/parent-edit/:id",
             component: ParentEditView,
           },
         ],

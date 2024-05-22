@@ -94,7 +94,6 @@ const email = ref("");
 const phone = ref("");
 const role = ref("");
 const status = ref("");
-// const account_id = ref("");
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
 
@@ -143,7 +142,6 @@ const updateParent = async () => {
         phone: phone.value,
         role: role.value,
         status: status.value,
-        // account_id: account_id.value,
       }
     );
     if (response.status === 200) {
@@ -151,7 +149,7 @@ const updateParent = async () => {
         title: "Update Successfully!",
         type: 0,
       });
-      router.push("/parents");
+      router.push({ name: "ParentView" });
     } else {
       console.log("Fail");
     }
@@ -161,7 +159,7 @@ const updateParent = async () => {
 };
 
 const cancel = () => {
-  router.push("/parents");
+  router.push({ name: "ParentView" });
 };
 
 onMounted(() => {
