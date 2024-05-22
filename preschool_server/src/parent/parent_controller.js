@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/db");
 const parentService = require("./parent_service");
 
 router.get("/", getAll);
-// router.get("/:id", getByID);
 router.post("/insert", insertParent);
 router.put("/:id", updateParent);
-router.delete("/:id", deleteParent);
+// router.delete("/:id", deleteParent);
 router.post("/duplicate", isDuplicate);
 router.get("/total", getTotalParent);
 router.get("/search", getParentSearch);
+router.get("/delete", deleteParent);
+router.get("/:id", getByID);
 
 async function getAll(req, res, next) {
   const { limit, page } = req.query;
@@ -37,13 +37,13 @@ async function getAll(req, res, next) {
   });
 }
 
-// function getByID(req, res, next) {
-//   console.log(req.params.id);
-//   parentService
-//     .getByID(req.params.id)
-//     .then((result) => res.send(result))
-//     .catch(next);
-// }
+function getByID(req, res, next) {
+  console.log(req.params.id);
+  parentService
+    .getByID(req.params.id)
+    .then((result) => res.send(result))
+    .catch(next);
+}
 async function getTotalParent(req, res, next) {
   console.log("Get total parent in database");
 
@@ -103,9 +103,12 @@ async function isDuplicate(req, res, next) {
 
 async function insertParent(req, res, next) {
   try {
-    console.log(req.body);
     const insertId = await parentService.insertParent(req.body);
-    res.json({ insertId });
+    if (insertId) {
+      res.status(200).json({ message: "success" });
+    } else {
+      res.status(500).json({ message: "error add parent" });
+    }
   } catch (error) {
     next(error);
   }
@@ -121,14 +124,42 @@ async function updateParent(req, res, next) {
     next(error);
   }
 }
+// async function deleteParent(req, res, next) {
+//   try {
+//     const parentId = `id = ${req.params.id}`;
+//     await parentService.deleteParent(parentId);
+//     res.json({ message: `Delete successfully.` });
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 async function deleteParent(req, res, next) {
-  try {
-    const parentId = `id = ${req.params.id}`;
-    // const affectedRows = await parentService.deleteParent(parentId);
-    await parentService.deleteParent(parentId);
-    res.json({ message: `Delete successfully.` });
-  } catch (error) {
-    next(error);
+  if (req.query.id === undefined) {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Resouse not found",
+      })
+    );
+    return;
+  }
+
+  const result = await parentService.deleteParent(req.query.id);
+
+  if (result === 0) {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Resouse not found",
+      })
+    );
+  } else {
+    res.send(
+      JSON.stringify({
+        status: 200,
+        message: "Resouse delete Successful",
+      })
+    );
   }
 }
 module.exports = router;
