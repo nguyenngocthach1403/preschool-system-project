@@ -63,14 +63,21 @@ export const useStudentStore = defineStore("studentStore", {
 
       const data = res.data;
 
+      console.log(res);
+
       if (data.status != 200) {
         this.status = "create_failed";
-        return data.message;
+        return {
+          success: false,
+          message: data.error,
+        };
       }
 
       this.status = "created";
 
-      return studentToCreate.name;
+      return {
+        success: true,
+      };
     },
 
     async storeImage(image) {

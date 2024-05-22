@@ -35,10 +35,10 @@
                 placeholder="Họ và tên"
                 class="h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
               />
-              <div class="h-[20px] valid">
-                <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">
+              <div class="valid">
+                <p class="h-5 mb-4 text-red-300">
                   {{ messageOfStudentName }}
-                </p> -->
+                </p>
               </div>
             </label>
             <label class="w-full text-start">
@@ -61,11 +61,11 @@
                   type="date"
                   class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
                 />
-                <!-- <div class="h-[20px] valid">
-              <p v-if="messageOfStudentName" class="mb-4 text-red-300">
-                {{ messageOfStudentName }}
-              </p>
-            </div> -->
+                <div class="h-5 valid">
+                  <p class="mb-4 text-red-300">
+                    {{ invalidBirday }}
+                  </p>
+                </div>
               </label>
               <label class="w-[200px] text-start">
                 <span class="pl-4 text-blue-700">Nơi sinh</span>
@@ -91,6 +91,9 @@
                 @click.prevent
                 class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
               />
+              <div class="h-5 valid">
+                <p class="mb-4 text-red-300">{{ invalidGender }}</p>
+              </div>
             </label>
           </div>
           <div id="input-side-3" class="flex w-full gap-5 mx-[20px] mb-[20px]">
@@ -208,7 +211,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, onMounted, onBeforeMount, watch } from "vue";
 
 import avatar_default from "@/assets/icons/avatar.svg";
 import { useStudentStore } from "../../../stores/student_store";
@@ -233,16 +236,19 @@ const status = storeToRefs(studentStore).status;
 const studentAvatarPath = ref(null);
 const fileUpload = ref(null);
 
-const studentNameInput = ref("");
-const classInput = ref("");
-const studentBirthDayInput = ref("");
+const studentNameInput = ref(null);
+const classInput = ref(0);
+const studentBirthDayInput = ref(null);
 const studentPlaceOfBirthInput = ref("");
-const studentGenderInput = ref("");
+const studentGenderInput = ref(1);
 const studentForkInput = ref(0);
 const nationInput = ref("");
 const parentIdInput = ref("");
 const addressInput = ref("");
 const placeOfOriginInput = ref("");
+const messageOfStudentName = ref("");
+const invalidBirday = ref("");
+const invalidGender = ref("");
 
 const genderList = ref([
   { id: 0, name: "Nam" },
@@ -355,53 +361,89 @@ const data = ref([
   },
 ]);
 
+watch(studentNameInput, () => {
+  if (studentNameInput.value !== "") {
+    messageOfStudentName.value = null;
+  }
+});
+
+watch(studentBirthDayInput, () => {
+  if (
+    studentBirthDayInput.value !== "" ||
+    studentBirthDayInput.value !== null
+  ) {
+    invalidBirday.value = null;
+  }
+});
+
+watch(studentGenderInput, () => {
+  if (studentGenderInput.value == 1 || studentGenderInput.value == 0) {
+    invalidGender.value = null;
+  }
+});
+
 const emits = defineEmits(["add-toast"]);
 
+function checkVadlidInput() {
+  const invalid = ref(false);
+  if (studentNameInput.value === null || studentNameInput.value == "") {
+    messageOfStudentName.value = "Không được bỏ trống tên.";
+    invalid.value = true;
+  }
+  if (
+    studentBirthDayInput.value === null ||
+    studentBirthDayInput.value === ""
+  ) {
+    invalidBirday.value = "Không được bỏ trống ngày sinh.";
+    invalid.value = true;
+  }
+
+  if (!studentGenderInput.value === 1 || !studentGenderInput.value === 0) {
+    invalidGender.value = "Vui lòng chọn giới tính.";
+    invalid.value = true;
+  }
+
+  return invalid.value;
+}
+
 async function submitCreateStudent() {
-  const studentToCreate = {
-    name: studentNameInput.value,
-    avatarPath: null,
-    // classId: classInput.value == 0 ? null : classInput.value,
-    birthday: studentBirthDayInput.value,
-    gender: studentGenderInput.value,
-    placeOfOrigin: placeOfOriginInput.value,
-    nation: nationInput.value,
-    placeOfBirth: studentPlaceOfBirthInput.value,
-    fork: studentForkInput.value,
-    status: classInput.value != undefined ? 1 : 0,
-  };
+  if (checkVadlidInput()) {
+    return;
+  }
 
-  // const resultUpload = await studentStore.storeImage(fileUpload.value);
+  const formData = new FormData();
+  formData.append("files", fileUpload.value);
+  formData.append("name", studentNameInput.value);
+  formData.append("gender", studentGenderInput.value);
+  formData.append("placeOfOrigin", placeOfOriginInput.value);
+  formData.append("nation", nationInput.value);
+  formData.append("birthday", studentBirthDayInput.value);
+  formData.append("placeOfBirth", studentPlaceOfBirthInput.value);
+  formData.append("fork", studentForkInput.value);
+  formData.append("status", classInput.value != undefined ? 1 : 0);
+  if (parentIdInput.value !== "") {
+    formData.append("parentId", parentIdInput.value);
+  }
+  if (classInput.value !== 0) {
+    formData.append("classId", classInput.value);
+  }
 
-  // if (!resultUpload.url) {
-  //   console.log(resultUpload);
-  //   emits("add-toast", {
-  //     title: "Upload image failed!",
-  //     content: `Quá trình tải ảnh thất bại!`,
-  //     type: 1,
-  //   });
-  //   return;
-  // }
-  // studentToCreate.avatarPath = resultUpload.url;
+  const result = await studentStore.createStudent(formData);
 
-  // console.log(studentToCreate);
-
-  const result = await studentStore.createStudent(studentToCreate);
-  console.log(result);
-  if (status == "create_failed") {
+  if (!result.success) {
     emits("add-toast", {
-      title: "Deleted Failed!",
-      content: result,
+      title: "Create Student Failed!",
+      content: result.message,
       type: 1,
     });
-  } else {
-    emits("add-toast", {
-      title: "Create Successful!",
-      content: `Tạo bé ${result} thành công.`,
-      type: 0,
-    });
-    resetInput();
+    return;
   }
+  emits("add-toast", {
+    title: "Create Successful!",
+    content: `Tạo bé ${studentNameInput.value} thành công.`,
+    type: 0,
+  });
+  resetInput();
 }
 
 function saveDrafValueInput() {

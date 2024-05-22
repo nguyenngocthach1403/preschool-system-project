@@ -9,7 +9,11 @@ export default {
 };
 
 function createStudent(dataToCreate) {
-  return api().post("/students/create", dataToCreate);
+  return api().post("/students/create", dataToCreate, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }
 
 function search(txtSearch, page, limit) {
