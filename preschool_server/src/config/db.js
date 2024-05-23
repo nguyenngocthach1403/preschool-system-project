@@ -141,15 +141,15 @@ class Database {
   }
 }
 
-module.exports = new Database({
-  host: "localhost",
-  user: "root",
-  password: "congagay08773",
-  database: "preschool_db",
-});
 // module.exports = new Database({
 //   host: "localhost",
 //   user: "root",
-//   password: "",
-//   database: "pres_chool",
+//   password: "congagay08773",
+//   database: "preschool_db",
 // });
+module.exports = new Database({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "pre_school",
+});

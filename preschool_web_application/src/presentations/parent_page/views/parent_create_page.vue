@@ -176,7 +176,7 @@ const saveData = async () => {
           type: 0,
         });
         console.log("Success");
-        router.push("/parents");
+        router.push({ name: "ParentView" });
       } else {
         console.log("Fail");
       }
@@ -187,7 +187,7 @@ const saveData = async () => {
 };
 
 const cancel = () => {
-  router.push("/parents");
+  router.push({ name: "ParentView" });
 };
 </script>
 <style scoped>

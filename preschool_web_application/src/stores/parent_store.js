@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-// import { ddmmyyyyDateString } from "../utils/resources/format_date";
+import { ddmmyyyyDateString } from "../utils/resources/format_date";
 import parentService from "../services/parent.service";
 // import axios from "axios";
 
@@ -36,16 +36,16 @@ export const useParentStore = defineStore("parentStore", {
         this.status = "search_failed";
         return;
       }
-      console.log(data.total);
+      // console.log(data.total);
       this.total = data.total;
 
-      const parentResponse = data.data;
+      // const parentResponse = data.data;
       //   const studentFormated = this.formatDataStudent(studentResponse);
       //   this.students = studentFormated;
       this.loading = false;
       this.status = "searched";
       this.parents = res.data.data;
-      console.log(this.parents);
+      // console.log(this.parents);
     },
 
     async getTotalParent() {
@@ -53,8 +53,31 @@ export const useParentStore = defineStore("parentStore", {
       console.log(res);
       const numParent = res.data;
       this.total = numParent.data;
-      console.log(numParent.data);
+      // console.log(numParent.data);
       return numParent.data;
+    },
+    deleteParent(idParentToDel) {
+      for (let index = 0; index < this.parents.length; index++) {
+        if (this.parents[index]["id"] == idParentToDel) {
+          this.parents.splice(index, 1);
+          return;
+        }
+      }
+    },
+    async deleteParentInDB(idParentToDel) {
+      this.loading = true;
+
+      const res = await parentService.deleleParent(idParentToDel);
+
+      const data = res.data;
+
+      if (data.status == 200) {
+        this.deleteParent(idParentToDel);
+        this.loading = false;
+        return true;
+      }
+
+      return false;
     },
 
     async getParent() {
@@ -74,7 +97,7 @@ export const useParentStore = defineStore("parentStore", {
       this.loading = false;
       this.parents = dataRes.data;
       // console.log(dataRes.data);
-      console.log(this.parents);
+      // console.log(this.parents);
     },
 
     async changePage(newVal) {

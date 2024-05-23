@@ -1,9 +1,10 @@
-const db = require("../config/db");
+const db = require("../config/db.service");
+const db1 = require("../config/db");
 const config = require("../config/config");
 
 module.exports = {
   getAll,
-  // getByID,
+  getByID,
   countParent,
   searchParent,
   countSearchParent,
@@ -17,16 +18,26 @@ module.exports = {
 
 async function getAll() {
   try {
-    db.createConnection();
     return db.select(
       "Parent",
       "id, name, gender, birthday, address, job, email, phone, role, status"
     );
   } catch (error) {
-    db.disconnect();
+    return error;
   }
 }
 
+async function getByID(id) {
+  try {
+    return db1.select(
+      "Parent",
+      "name, gender, birthday, address, job, email, phone, role, status",
+      id !== undefined ? `Where id = ${id}` : ""
+    );
+  } catch (error) {
+    return error;
+  }
+}
 // async function getByID(id) {
 //   try {
 //     return db.select(
@@ -54,10 +65,8 @@ async function getParentById(id) {
     };
   }
 }
-
 async function countParent() {
   try {
-    db.createConnection();
     console.log("Count parent:");
     return await db.select("Parent", "Count(*) AS total", "WHERE deleted = 0");
   } catch (error) {
@@ -65,15 +74,10 @@ async function countParent() {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 async function searchParent(txtSearch, page, limit) {
   try {
-    db.createConnection();
     return db.selectLimit(
       "Parent",
       "*",
@@ -86,16 +90,11 @@ async function searchParent(txtSearch, page, limit) {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 
 async function countSearchParent(txtSearch) {
   try {
-    db.createConnection();
     return db.select(
       "Parent",
       "Count(*) AS total",
@@ -106,19 +105,14 @@ async function countSearchParent(txtSearch) {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 async function getPage(page, limit) {
   try {
-    db.createConnection();
-
     return db.selectLimit(
       "Parent",
       "*",
+      "WHERE deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
@@ -127,10 +121,6 @@ async function getPage(page, limit) {
       code: error.code,
       message: "An error occusred while excuted query",
     };
-  } finally {
-    if (db.connection) {
-      db.disconnect();
-    }
   }
 }
 async function isDuplicate(email, phone, account_id) {
@@ -147,7 +137,6 @@ async function isDuplicate(email, phone, account_id) {
 }
 async function insertParent(data) {
   try {
-    db.createConnection();
     const parentId = await db.insert("Parent", data);
     console.log(`Parent created with ID: ${parentId}`);
     return parentId;
@@ -159,21 +148,29 @@ async function insertParent(data) {
 
 async function updateParent(id, newData) {
   try {
-    db.createConnection();
-    await db.updateParent("Parent", newData, `id = ${id}`);
+    await db1.updateParent("Parent", newData, `id = ${id}`);
     console.log(`updated ${id}`);
   } catch (error) {
     console.error(`Error updating ID ${id}:`, error);
     throw error;
   }
 }
-async function deleteParent(where) {
+// async function deleteParent(where) {
+//   try {
+//     console.log(`delete`);
+//     return db.deleteRow("Parent", where);
+//   } catch (error) {
+//     console.error("Error deleting parent:", error);
+//     throw error;
+//   }
+// }
+async function deleteParent(idParentToDel) {
   try {
-    db.createConnection();
-    console.log(`delete`);
-    return db.deleteParent("Parent", where);
+    return db.update("Parent", { deleted: 1 }, { id: idParentToDel });
   } catch (error) {
-    console.error("Error deleting parent:", error);
-    throw error;
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
   }
 }
