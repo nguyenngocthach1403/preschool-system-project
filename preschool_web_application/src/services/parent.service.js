@@ -5,6 +5,7 @@ export default {
   countParent,
   getParent,
   deleleParent,
+  getParentById,
 };
 
 function search(txtSearch, page, limit) {
@@ -22,4 +23,7 @@ function getParent(page, limit) {
 }
 function deleleParent(idParentToDel) {
   return api().get(`/parents/delete?id=${idParentToDel}`);
+}
+function getParentById(id) {
+  return api().get(`/parents/get/id/${id}`);
 }

@@ -11,17 +11,83 @@ module.exports = {
   deleteStudent,
   createNewStudent,
   getParentBuStudentId,
+  createRelatioship,
+  updateStudent,
+  isExistStudent,
+  isExistRelationship,
+  deleteRelationship,
 };
 
 async function createNewStudent(studentToCreate) {
   try {
+    // Tao Id chho học sinh mới
     const id = await createIDStudent();
     studentToCreate.id = parseInt(id, 10);
-    return await db.insert(config.tb.student, studentToCreate);
+    //Tạo học sinh
+    const result = await db.insert(config.tb.student, studentToCreate);
+
+    if (result <= 0) {
+      return false;
+    }
+
+    return {
+      success: true,
+      studentCreated: studentToCreate.id,
+    };
   } catch (error) {
+    console.error(error);
     return {
       code: error.code,
-      message: "An error occusred while excuted query",
+      message: error.sqlMessage,
+    };
+  }
+}
+
+async function deleteRelationship(studentId, parentId) {
+  try {
+    const result = await db.deleteRow(
+      config.tb.relationship,
+      `WHERE parentId = ${parentId} AND studentId = ${studentId}`
+    );
+
+    if (result == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function isExistRelationship(studentId, parentId) {
+  try {
+    const result = await db.select(
+      config.tb.relationship,
+      "*",
+      `WHERE parentId = ${parentId} AND studentId = ${studentId}`
+    );
+
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function createRelatioship(data) {
+  try {
+    const result = await db.insert(config.tb.relationship, data);
+    if (result === 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
     };
   }
 }
@@ -135,7 +201,7 @@ async function searchStudent(txtSearch, offset, limit) {
   try {
     const data = await db.selectLimit(
       `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID`,
-      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className",
+      "s.*, c.classID, c.className",
       `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id = '%${txtSearch}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${offset * limit}`
@@ -179,21 +245,67 @@ async function getStudentByID(id) {
   try {
     const data = await db.selectLimit(
       `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID`,
-      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className",
+      "s.*, c.classID, c.className",
       `WHERE s.deleted = 0 AND s.id = ${id} `
     );
 
     const parents = await getParentBuStudentId(id);
     if (parents.length === 0) {
-      element.parents = [];
+      data[0].parents = [];
     } else {
-      element.parents = parents;
+      data[0].parents = parents;
     }
 
     return data;
   } catch (error) {
     return {
       code: error.code,
+      error: error.sqlMessage,
+      message: "An error occusred while excuted query",
+    };
+  }
+}
+
+async function isExistStudent(id) {
+  try {
+    const student = await db.select(
+      config.tb.student,
+      "*",
+      `WHERE deleted = 0 AND id = ${id} `
+    );
+
+    if (student.length == 0) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function updateStudent(id, dataToUpdate) {
+  try {
+    console.log(dataToUpdate);
+    const keys = Object.keys(dataToUpdate);
+    for (let index = 0; index < keys.length; index++) {
+      const key = keys[index];
+      if (dataToUpdate[key] == undefined) {
+        delete dataToUpdate[key];
+      }
+    }
+
+    const result = await db.update(config.tb.student, dataToUpdate, { id: id });
+
+    if (result != 1) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
       message: "An error occusred while excuted query",
     };
   }
@@ -232,7 +344,7 @@ async function getStudent(offset, limit) {
   try {
     const data = await db.selectLimit(
       `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.classID = c.classID`,
-      "s.id, s.name, s.avatarPath, s.birthday, s.gender, s.fork, s.nation, s.placeOfBirth, s.status, s.created, c.classID, c.className",
+      "s.*, s.placeOfOrigin, c.classID, c.className",
       "WHERE s.deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${offset * limit}`

@@ -7,6 +7,8 @@ export const useClassStore = defineStore("classStore", {
     page: 0,
     limit: 20,
     status: "initial",
+    searchText: "",
+    total: 0,
   }),
 
   actions: {
@@ -15,7 +17,7 @@ export const useClassStore = defineStore("classStore", {
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
         classes.push({
-          id: data.classId,
+          id: element.classID,
           avatar: element.imgPath,
           name: element.className,
           start: new Date(element.startDate).toLocaleDateString(),
@@ -28,7 +30,8 @@ export const useClassStore = defineStore("classStore", {
             new Date(element.startDate) > new Date()
               ? "Đang hoạt động"
               : "Kết thúc",
-          type: element.levels ?? "None",
+          levels: element.levelsName ?? "none",
+          sysllabus: element.sysllabusName ?? "none",
         });
       }
       return classes;
@@ -39,6 +42,28 @@ export const useClassStore = defineStore("classStore", {
       this.classes.push(classToAdd);
 
       this.isBusy = false;
+    },
+
+    async searchClasses(searchText) {
+      this.status = "searching";
+
+      if (this.searchText != searchText) {
+        this.searchClass = searchText;
+      }
+
+      const response = await classService.searchClass(
+        this.searchClass,
+        this.limit,
+        this.page
+      );
+
+      console.log(response);
+
+      if (response.status == 200 && response.data.status == 200) {
+        this.total = response.data.total;
+        this.classes = this.formatClass(response.data.data);
+        this.status = "searched";
+      }
     },
 
     async fetchClass() {
@@ -66,6 +91,7 @@ export const useClassStore = defineStore("classStore", {
       }
 
       this.classes = this.formatClass(data.data);
+      console.log(response);
       this.status = "loaded";
 
       return {

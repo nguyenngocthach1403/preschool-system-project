@@ -11,6 +11,7 @@ router.get("/total", getTotalParent);
 router.get("/search", getParentSearch);
 router.get("/delete", deleteParent);
 router.get("/:id", getByID);
+router.get("/get/id/:id", getParentById);
 
 async function getAll(req, res, next) {
   const { limit, page } = req.query;
@@ -56,6 +57,38 @@ async function getTotalParent(req, res, next) {
       data: countParent[0]["total"],
     })
   );
+}
+
+async function getParentById(req, res) {
+  const id = req.params.id;
+  if (id == undefined) {
+    return res.status(500).json({
+      status: 500,
+      error: "Không tìm thấy id.",
+    });
+  }
+
+  const result = await parentService.getParentById(id);
+
+  if (result.code) {
+    return res.status(200).json({
+      status: 500,
+      error: result.error,
+    });
+  }
+
+  if (result.length == 0) {
+    return res.status(200).json({
+      status: 500,
+      error: "Không tìm thấy phụ huynh",
+    });
+  }
+
+  res.status(200).json({
+    status: 200,
+    message: "Succesful.",
+    data: result,
+  });
 }
 
 async function getParentSearch(req, res, next) {

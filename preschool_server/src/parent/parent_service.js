@@ -1,5 +1,6 @@
 const db = require("../config/db.service");
 const db1 = require("../config/db");
+const config = require("../config/config");
 
 module.exports = {
   getAll,
@@ -12,6 +13,7 @@ module.exports = {
   updateParent,
   deleteParent,
   getPage,
+  getParentById,
 };
 
 async function getAll() {
@@ -34,6 +36,33 @@ async function getByID(id) {
     );
   } catch (error) {
     return error;
+  }
+}
+// async function getByID(id) {
+//   try {
+//     return db.select(
+//       "Parent",
+//       "name, gender, birthday, address, job, email, phone, role, status, account_id",
+//       id !== undefined ? `Where Parent = ${id}` : ""
+//     );
+//   } catch (error) {
+//     db.disconnect();
+//   }
+// }
+
+async function getParentById(id) {
+  try {
+    return await db.select(
+      `${config.tb.parent} AS p`,
+      "p.*",
+      `WHERE p.id = ${id}`
+    );
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
   }
 }
 async function countParent() {

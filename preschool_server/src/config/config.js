@@ -7,6 +7,8 @@ const config = {
     class: "classes",
     relationship: "Relationship",
     parent: "Parent",
+    levels: "levels",
+    sysllabus: "syllabus",
   },
 };
 
