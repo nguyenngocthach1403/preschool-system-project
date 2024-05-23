@@ -121,10 +121,19 @@
             </p>
           </td>
           <td class="hidden lg:table-cell w-[1000px] px-3">
-            <span v-if="item.class">{{ item.class }}</span>
+            <div v-if="item.class" class="">
+              <span>{{ item.class }} </span>
+              <button
+                @click="$emit('add-student-into-class', item)"
+                class="w-[19px] m-auto h-[19px] p-1 ml-5 mt-1 rounded-md hover:bg-gray-200"
+              >
+                <img class="w-full h-full" :src="change_icon" alt="" />
+              </button>
+            </div>
             <button
               @click.prevent
               v-if="!item.class"
+              @click="$emit('add-student-into-class', item)"
               class="hover:bg-red-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-red-300 text-[12px] border bg-red-200/25 text-red-600 cursor-default"
             >
               Thêm vào lớp
@@ -199,7 +208,7 @@ import eye_icon from "../../../assets/icons/eye.svg";
 import menu_vertical_icon from "../../../assets/icons/menu-vertical.svg";
 import sort_icon from "../../../assets/icons/Sorting arrowheads.svg";
 import avatar from "../../../assets/img/avartar_default.jpg";
-
+import change_icon from "../../../assets/icons/Data Transfer.svg";
 /* Import function */
 import convertNumToGender from "../../../utils/resources/convert_gender";
 
@@ -210,7 +219,11 @@ defineProps({
   },
 });
 
-const emits = defineEmits(["delete-student", "edit-student"]);
+const emits = defineEmits([
+  "delete-student",
+  "edit-student",
+  "add-student-into-class",
+]);
 
 //Funtion
 function deleteStudent(studentIdToDel) {

@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ddmmyyyyDateString } from "../utils/resources/format_date";
-import StudentService from "../services/student.service";
 import studentService from "../services/student.service";
 import axios from "axios";
 
@@ -34,6 +33,11 @@ export const useStudentStore = defineStore("studentStore", {
           birthday: new Date(element.birthday).toLocaleDateString(),
           status: element.status,
           parents: element.parents,
+          fork: element.fork,
+          address: element.address,
+          origin: element.placeOfOrigin,
+          placeOfBirth: element.placeOfBirth,
+          nation: element.nation,
           created: element.created,
         });
       }
@@ -59,7 +63,7 @@ export const useStudentStore = defineStore("studentStore", {
     async createStudent(studentToCreate) {
       this.status = "creating";
 
-      const res = await StudentService.createStudent(studentToCreate);
+      const res = await studentService.createStudent(studentToCreate);
 
       const data = res.data;
 
@@ -80,25 +84,29 @@ export const useStudentStore = defineStore("studentStore", {
       };
     },
 
-    async storeImage(image) {
-      this.status = "creating";
-      const formData = new FormData();
-      formData.append("upload_preset", "preschool");
-      formData.append("file", image);
-      try {
-        const res = await axios.post(
-          "https://api.cloudinary.com/v1_1/diaia9ndd/image/upload",
-          formData
-        );
-        console.log(res);
-        if (res.status == 200) {
-          return res.data;
-        } else {
-          return;
-        }
-      } catch (error) {
-        return error;
+    async updateStudent(idStudent, dataToUpdate) {
+      this.status = "updating";
+
+      const response = await studentService.updateStudent(
+        idStudent,
+        dataToUpdate
+      );
+
+      console.log("aa", response);
+
+      if (response.status === 500) {
+        this.status = "update_failed";
+        return {
+          success: false,
+          message: response.data.error,
+        };
       }
+
+      this.getStudent();
+      return {
+        success: true,
+        message: response.data.message,
+      };
     },
 
     async searchStudent(searchText) {
@@ -211,19 +219,6 @@ export const useStudentStore = defineStore("studentStore", {
       }
     },
 
-    updateStudent(studentToUpdate) {
-      console.log(studentToUpdate);
-      for (let index = 0; index < this.students.length; index++) {
-        if (this.students[index]["id"] == studentToUpdate.id) {
-          this.students[index].name = studentToUpdate.name;
-          this.students[index].class = studentToUpdate.class;
-          this.students[index].gender = Number.parseInt(studentToUpdate.gender);
-          this.students[index].birthday = ddmmyyyyDateString(
-            studentToUpdate.birthday
-          );
-        }
-      }
-    },
     async changeLimit(limit) {
       if (this.limit === limit) return;
 

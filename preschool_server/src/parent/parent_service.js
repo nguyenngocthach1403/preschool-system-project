@@ -43,7 +43,7 @@ async function getParentById(id) {
   try {
     return await db.select(
       `${config.tb.parent} AS p`,
-      "p.id, p.role",
+      "p.*",
       `WHERE p.id = ${id}`
     );
   } catch (error) {

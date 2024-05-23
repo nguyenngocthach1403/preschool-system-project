@@ -4,13 +4,21 @@
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
       :content="showConfirmDialog"
-      @confirm="getConfirm"
+      @confirm="getConfirm($event)"
     />
     <EditStudentView
       v-if="showStudentEdit"
       class="absolute top-0 left-0"
       :student-data="showStudentEdit"
+      @add-toast="$emit('add-toast', $event)"
       @close="showStudentEdit = false"
+    />
+    <PopUpAddStudentIntoClass
+      class="absolute top-0 left-0"
+      v-if="showPopUpAddClass"
+      :student-data="showPopUpAddClass ?? null"
+      @close="showPopUpAddClass = null"
+      @add-toast="$emit('add-toast', $event)"
     />
 
     <!-- Header -->
@@ -56,6 +64,7 @@
       @sort-student-id="sortDataByID"
       @sort-student-name="sortDataByName"
       @sort-student-class="sortDataByClass"
+      @add-student-into-class="showAddClassFunction($event)"
     ></TableComp>
 
     <div
@@ -95,20 +104,15 @@
 /* Import component here */
 import TableComp from "@/presentations/student_page/components/table_comp.vue";
 import SearchFormComp from "@/components/search_form_comp.vue";
-import ToolTipComp from "@/utils/resources/tooltip.vue";
 import CreateButtonComp from "@/components/create_button.vue";
 import ConfirmDialog from "@/components/confirm_dialog.vue";
 import EditStudentView from "./student_edition_view.vue";
 import Pagination from "../../../components/pagination.vue";
-
+import PopUpAddStudentIntoClass from "../components/popup_add_student_to_class.vue";
 import { ref, computed, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useStudentStore } from "../../../stores/student_store";
 
-/* Another import here */
-import add_icon from "@/assets/icons/pls.svg";
-
-const tooltip = ref(false);
 const searchText = ref("");
 const studentStore = useStudentStore();
 /* Data demo of Student Table */
@@ -116,6 +120,7 @@ const dataOfTable = ref([]);
 const studentDel = ref(null);
 const showConfirmDialog = ref("");
 const showStudentEdit = ref(null);
+const showPopUpAddClass = ref(false);
 
 const { students, page, limit, loading, total, status } =
   storeToRefs(studentStore);
@@ -173,6 +178,8 @@ const getConfirm = (event) => {
     deleteStudent(studentToDel);
 
     showConfirmDialog.value = null;
+  } else {
+    showConfirmDialog.value = null;
   }
 };
 const editStudent = (event) => {
@@ -216,6 +223,10 @@ async function deleteStudent(studentToDel) {
 function showStudentNumSelectChange(event) {
   studentStore.changeLimit(parseInt(event.target.value));
 }
+function showAddClassFunction(event) {
+  showPopUpAddClass.value = event;
+}
 </script>
 
-<style scoped></style>
+<style >
+</style>
