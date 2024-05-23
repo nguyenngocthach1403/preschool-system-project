@@ -19,7 +19,7 @@ module.exports = {
 async function getAll() {
   try {
     return db.select(
-      "Parent",
+      config.tb.parent,
       "id, name, gender, birthday, address, job, email, phone, role, status"
     );
   } catch (error) {
@@ -30,7 +30,7 @@ async function getAll() {
 async function getByID(id) {
   try {
     return db1.select(
-      "Parent",
+      config.tb.parent,
       "name, gender, birthday, address, job, email, phone, role, status",
       id !== undefined ? `Where id = ${id}` : ""
     );
@@ -68,7 +68,11 @@ async function getParentById(id) {
 async function countParent() {
   try {
     console.log("Count parent:");
-    return await db.select("Parent", "Count(*) AS total", "WHERE deleted = 0");
+    return await db.select(
+      config.tb.parent,
+      "Count(*) AS total",
+      "WHERE deleted = 0"
+    );
   } catch (error) {
     return {
       code: error.code,
@@ -79,7 +83,7 @@ async function countParent() {
 async function searchParent(txtSearch, page, limit) {
   try {
     return db.selectLimit(
-      "Parent",
+      config.tb.parent,
       "*",
       `WHERE name LIKE "%${txtSearch}%"`,
       `LIMIT ${limit}`,
@@ -96,7 +100,7 @@ async function searchParent(txtSearch, page, limit) {
 async function countSearchParent(txtSearch) {
   try {
     return db.select(
-      "Parent",
+      config.tb.parent,
       "Count(*) AS total",
       `WHERE deleted = 0 AND name LIKE '%${txtSearch}%'`
     );
@@ -110,7 +114,7 @@ async function countSearchParent(txtSearch) {
 async function getPage(page, limit) {
   try {
     return db.selectLimit(
-      "Parent",
+      config.tb.parent,
       "*",
       "WHERE deleted = 0",
       `LIMIT ${limit}`,
@@ -126,7 +130,7 @@ async function getPage(page, limit) {
 async function isDuplicate(email, phone, account_id) {
   try {
     const result = await db.select(
-      "Parent",
+      config.tb.parent,
       "*",
       `WHERE email = '${email}' OR phone = '${phone}' OR account_id = '${account_id}'`
     );
@@ -137,7 +141,7 @@ async function isDuplicate(email, phone, account_id) {
 }
 async function insertParent(data) {
   try {
-    const parentId = await db.insert("Parent", data);
+    const parentId = await db.insert(config.tb.parent, data);
     console.log(`Parent created with ID: ${parentId}`);
     return parentId;
   } catch (error) {
@@ -148,7 +152,7 @@ async function insertParent(data) {
 
 async function updateParent(id, newData) {
   try {
-    await db1.updateParent("Parent", newData, `id = ${id}`);
+    await db1.updateParent(config.tb.parent, newData, `id = ${id}`);
     console.log(`updated ${id}`);
   } catch (error) {
     console.error(`Error updating ID ${id}:`, error);
@@ -166,7 +170,7 @@ async function updateParent(id, newData) {
 // }
 async function deleteParent(idParentToDel) {
   try {
-    return db.update("Parent", { deleted: 1 }, { id: idParentToDel });
+    return db.update(config.tb.parent, { deleted: 1 }, { id: idParentToDel });
   } catch (error) {
     return {
       code: error.code,
