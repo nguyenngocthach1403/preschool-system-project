@@ -4,6 +4,7 @@ export default {
   search,
   countParent,
   getParent,
+  getParentById,
 };
 
 function search(txtSearch, page, limit) {
@@ -18,4 +19,8 @@ function countParent() {
 
 function getParent(page, limit) {
   return api().get(`/parents?limit=${limit}&page=${page}`);
+}
+
+function getParentById(id) {
+  return api().get(`/parents/get/id/${id}`);
 }
