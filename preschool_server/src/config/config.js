@@ -6,7 +6,7 @@ const config = {
     account: "Accounts",
     class: "classes",
     relationship: "Relationship",
-    parent: "Parent",
+    parent: "Parents",
     levels: "levels",
     sysllabus: "syllabus",
   },
