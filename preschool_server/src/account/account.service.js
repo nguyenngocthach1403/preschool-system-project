@@ -20,7 +20,7 @@ async function createAccount(accountToCreate) {
 
 async function updateRegistration(id, username) {
   try {
-    return db.update(config.tb.register, { acountId: username }, { id: id });
+    return db.update(config.tb.register, { accountId: username }, { id: id });
   } catch (error) {
     return {
       code: error.code,
@@ -33,8 +33,8 @@ async function getAccount(limit, offset) {
   try {
     return await db.selectLimit(
       config.tb.account,
-      "id, username, phone, email, role",
-      "",
+      "*",
+      "WHERE deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );

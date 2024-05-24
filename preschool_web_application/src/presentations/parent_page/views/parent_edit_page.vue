@@ -1,77 +1,477 @@
 <template>
-  <div class="bg-white ml-4 rounded-3xl text-center text-3xl">
-    <div class="info-form">
-      <h1>Chi tiết phụ huynh</h1>
-      <div class="row">
-        <div class="form-group-row">
-          <div class="form-group">
-            <label for="name">Họ tên</label>
-            <input type="text" id="name" v-model="name" />
+  <div>
+    <form @submit.prevent="submitCreateStudent">
+      <div
+        class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-fit pb-[60px]"
+      >
+        <div id="head">Chi tiết phụ huynh</div>
+        <div id="site" class="flex px-[30px] py-[30px]">
+          <div class="add-avatar w-fit h-fit rounded-md">
+            <img
+              :src="studentAvatarPath"
+              class="w-[150px] h-[150px] object-cover bg-[#D9D9D9] rounded-md"
+            />
+            <div class="button-side flex my-4 gap-2">
+              <input
+                type="file"
+                class="w-[150px] file:w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#3B44D1] file:text-white hover:file:text-black hover:file:bg-violet-100"
+                accept=".png, .jpeg, .jpg"
+                @change="handleUploadStudentImg"
+              />
+              <button
+                class="w-[150px] border h-[35px] rounded-md hover:bg-red-100"
+              >
+                Xóa ảnh
+              </button>
+            </div>
           </div>
+          <div id="input-side" class="w-full pr-[20px]">
+            <div id="input-side-1" class="flex w-full gap-5 mx-[20px]">
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Họ và tên</span
+                ><span class="text-red-600"> * </span>
+                <input
+                  v-model="studentNameInput"
+                  type="text"
+                  placeholder="Họ và tên"
+                  class="h-[45px] rounded-md mb-[25px] my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                />
+              </label>
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Giới tính</span>
+                <SelectReturnNumComp
+                  @choose="gender = $event"
+                  :list-select="genderList"
+                  class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+                />
+              </label>
+            </div>
+            <div
+              id="input-side-2"
+              class="flex w-full gap-5 mx-[20px] mb-[20px]"
+            >
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Ngày sinh</span>
+                <input
+                  v-model="studentBirthDayInput"
+                  type="date"
+                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                />
+              </label>
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Nghề nghiệp</span>
+                <SelectReturnStringComp
+                  @choose="job = $event"
+                  :list-select="jobList"
+                  class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+                />
+              </label>
+            </div>
+            <div
+              id="input-side-3"
+              class="flex w-full gap-5 mx-[20px] mb-[20px]"
+            >
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Số điện thoại</span>
+                <input
+                  v-model="phone"
+                  type="text"
+                  placeholder="0xxxxxxxx"
+                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                />
+              </label>
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Email</span>
+                <input
+                  v-model="email"
+                  type="text"
+                  placeholder="abc@abc.com"
+                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                />
+              </label>
+            </div>
+            <div
+              id="input-side-4"
+              class="flex w-full gap-5 mx-[20px] mb-[20px]"
+            >
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Địa chỉ</span>
+                <input
+                  v-model="address"
+                  type="text"
+                  placeholder="23 abc/3123, Tp.Hồ Chí Minh, Việt Nam"
+                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                />
+              </label>
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Vai trò</span>
+                <SelectReturnNumComp
+                  class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+                  :list-select="roleList"
+                  @choose="role = $event"
+                />
+              </label>
+            </div>
+            <!-- <div class="text-gray-500 h-10">
+              <span>Thông tin tài khoản</span>
+            </div>
 
-          <div class="form-group">
-            <label for="gender">Giới tính</label>
-            <select id="gender" v-model="gender">
-              <option value="0">Nam</option>
-              <option value="1">Nữ</option>
-              <option value="2">Khác</option>
-            </select>
+             -->
+            <!-- <div class="text-gray-500 h-10">
+              <span>Thông tin đơn đăng ký</span>
+            </div> -->
           </div>
         </div>
+        <!-- <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
+        <button
+          @click.prevent="saveDrafValueInput"
+          class="h-[48px] border border-[#3B44D1] hover:bg-[#3B44D1] hover:text-white px-[25px] rounded-md text-[20px]"
+        >
+          Save to Draf
+        </button>
+        <button
+          v-if="status !== 'creating'"
+          type="submit"
+          class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
+        >
+          Save
+        </button>
+        <button
+          v-if="status === 'creating'"
+          type="button"
+          class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+          disabled
+        >
+          <svg
+            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Processing...
+        </button>
+      </div> -->
+      </div>
+    </form>
+    <div
+      class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-fit pb-[60px]"
+    >
+      <div id="head">Thông tin tài khoản</div>
 
-        <div class="form-group-row">
-          <div class="form-group">
-            <label for="birthday">Ngày sinh</label>
-            <input type="date" id="birthday" v-model="birthday" />
-          </div>
-          <div class="form-group">
-            <label for="address">Địa chỉ</label>
-            <input type="text" id="address" v-model="address" />
-          </div>
+      <!--Hiện thị khi người dùng chưa có tài khoản 
+            Nhập mã tài khoản để thêm
+          -->
+      <!-- <div>
+        <div class="text-start px-10 py-3 text-gray-500">
+          * Phụ huynh hiện tại chưa được thêm tài khoản
         </div>
-        <div class="form-group-row">
-          <div class="form-group">
-            <label for="job">Nghề nghiệp</label>
-            <input type="text" id="job" v-model="job" />
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" v-model="email" />
-          </div>
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px] py-5 items-center">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Tên tài khoản</span>
+            <div class="flex gap-5">
+              <input
+                type="text"
+                placeholder="Tên đăng nhập"
+                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              />
+              <div
+                id="button-side"
+                class="w-full flex text-start gap-5 my-[5px]"
+              >
+                <button
+                  v-if="status !== 'creating'"
+                  type="submit"
+                  class="h-[45px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
+                >
+                  Save
+                </button>
+                <button
+                  v-if="status === 'creating'"
+                  type="button"
+                  class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+                  disabled
+                >
+                  <svg
+                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Processing...
+                </button>
+              </div>
+            </div>
+          </label>
         </div>
+      </div> -->
 
-        <div class="form-group-row">
-          <div class="form-group">
-            <label for="phone">Số điện thoại</label>
-            <input type="tel" id="phone" v-model="phone" />
-          </div>
-          <div class="form-group">
-            <label for="role">Vai trò</label>
-            <select id="role" v-model="role" class="form-control">
-              <option value="0">Chọn mối quan hệ</option>
-              <option value="1">Bố</option>
-              <option value="2">Mẹ</option>
-              <option value="3">Anh, Chị</option>
-              <option value="4">Ông, Bà</option>
-              <option value="5">Người giám hộ</option>
-            </select>
-          </div>
+      <!-- Hiện thị khi người dùng đã có tài khoản -->
+      <div class="w-full px-40">
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px] py-5">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Tên tài khoản</span>
+            <input
+              disabled
+              type="text"
+              placeholder="Tên đăng nhập"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Số điện thoại</span>
+            <input
+              type="text"
+              placeholder="0xxxxxxxxx"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            />
+          </label>
         </div>
-        <div class="form-group">
-          <label for="status">Trạng thái hoạt động</label>
-          <div class="select-container">
-            <select id="role" v-model="status" class="form-control">
-              <option value="0">Không hoạt động</option>
-              <option value="1">Hoạt động</option>
-            </select>
-          </div>
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Trạng thái</span>
+            <SelectStatusComp
+              class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+              @choose="statusAccount = $event"
+              :active="1"
+            />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Email</span>
+            <input
+              type="text"
+              placeholder="abc@abc.com"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            />
+          </label>
         </div>
+        <div id="button-side" class="w-full flex text-start mx-5 gap-5">
+          <button
+            v-if="status !== 'creating'"
+            type="submit"
+            class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
+          >
+            Save
+          </button>
+          <button
+            v-if="status === 'creating'"
+            type="button"
+            class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+            disabled
+          >
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Processing...
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-fit pb-[60px]"
+    >
+      <div id="head">Thông tin đơn đăng ký</div>
 
-        <div class="container-btn">
-          <!-- <button class="btn-close" @click="cancel">Huỷ</button>
-          <button class="btn-save" @click="updateParent">Lưu</button> -->
-          <closeButton @click="cancel" />
-          <saveButton @click="updateParent" />
+      <!-- Hiện thị khi người dùng chưa có tài khoản có tài khoản -->
+      <!-- <div class="text-start px-10 py-3 text-gray-500">
+        * Phụ huynh hiện tại chưa được thêm tài khoản vui lòng thêm tài khoản
+      </div> -->
+
+      <!-- Hiện thị khi người dùng đã có tài khoản -->
+      <div class="w-full px-40 py-5">
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Tên người đăng ký</span>
+            <input
+              type="text"
+              placeholder="Tên đăng nhập"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Mã đơn</span>
+            <input
+              type="text"
+              placeholder="0xxxxxxxxx"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            />
+          </label>
+        </div>
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Số điện thoại đăng ký</span>
+            <input
+              type="text"
+              placeholder="0xxxxxxxxx"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Email đăng ký</span>
+            <input
+              type="text"
+              placeholder="abc@abc.com"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            />
+          </label>
+        </div>
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Chương trình đăng ký</span>
+            <SelectReturnNumComp
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Cấp độ đăng ký</span>
+            <SelectReturnNumComp
+              :list-select="levelsList"
+              :active="1"
+              @choose="levels = $event"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            />
+          </label>
+        </div>
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Xã/Thị Xã</span>
+            <SelectSearchComp
+              :list-select="townList"
+              @choose="town = $event"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Quận/Huyện</span>
+            <SelectSearchComp
+              :list-select="districtList"
+              @choose="district = $event"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            /> </label
+          ><label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Thành phố</span>
+            <SelectSearchComp
+              :list-select="cityList"
+              @choose="city = $event"
+              :active="'Hà Nội'"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            />
+          </label>
+        </div>
+        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Trạng thái hồ sơ</span>
+            <SelectReturnNumComp
+              :list-select="fileStatusList"
+              :active="fileStatus"
+              @choose="fileStatus = $event"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Trạng thái</span>
+            <SelectStatusComp
+              class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+              :select-list="registerStatusList"
+              @choose="statusAccount = $event"
+              :active="1"
+            />
+          </label>
+        </div>
+        <div class="text-start w-full gap-5 mx-[20px] mb-[20px]">
+          <span class="my-2">Hình ảnh đơn đăng ký</span>
+
+          <div
+            class="w-full my-3 border border-dotted border-2 border-gray-500 ob rounded-xl h-[500px] max-h-68"
+          >
+            <img
+              src="https://th.bing.com/th/id/OIP.pRc56eeZPk-f1ticsni6YwHaEK?w=326&h=183&c=7&r=0&o=5&pid=1.7"
+              alt=""
+              class="object-contain w-full h-full"
+            />
+          </div>
+          <input clas="mx-3" type="file" name="" id="" />
+        </div>
+        <div id="button-side" class="w-full flex text-start mx-5 gap-5">
+          <button
+            v-if="status !== 'creating'"
+            type="submit"
+            class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
+          >
+            Save
+          </button>
+          <button
+            v-if="status === 'creating'"
+            type="button"
+            class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+            disabled
+          >
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Processing...
+          </button>
         </div>
       </div>
     </div>
@@ -79,11 +479,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, onBeforeMount, computed } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import saveButton from "@/components/save_button.vue";
 import closeButton from "@/components/close_button.vue";
+import SelectReturnStringComp from "../../../components/select_return_string_comp.vue";
+import SelectReturnNumComp from "@/components/select_return_num_comp.vue";
+import SelectStatusComp from "../../../components/select_status_comp.vue";
+import SelectSearchComp from "../../../components/select_search_input.vue";
 
 const name = ref("");
 const gender = ref("");
@@ -96,6 +500,64 @@ const role = ref("");
 const status = ref("");
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
+const statusAccount = ref(1);
+
+//Registration
+const levels = ref(1);
+const registerNaem = ref("");
+const registerPhone = ref("");
+const registerEmail = ref("");
+const regiterStatus = ref(1);
+const fileStatus = ref(1);
+const city = ref("");
+const district = ref("");
+const town = ref("");
+
+const genderList = ref(["Nam", "Nữ"]);
+const roleList = ref(["Bố", "Mẹ", "Người giám hộ"]);
+const jobList = ref(["Giáo viên", "Sinh Viên"]);
+const levelsList = ref(["Mầm", "Chồi", "Lá"]);
+const fileStatusList = ref(["Chưa hoàn thành", "Đã hoàn thành", "Thiếu"]);
+const cityList = ref([]);
+const districtList = ref([]);
+const townList = ref([]);
+const addressList = ref([]);
+const registerStatusList = ref([
+  "Đơn mới",
+  "Chờ duyệt",
+  "Chờ liên hệ",
+  "Đã liên hệ",
+  "Hoàn thành",
+]);
+
+watch(city, () => {
+  if (addressList.value.some((e) => e.Name == city.value)) {
+    console.log("ýe");
+    const index = addressList.value.findIndex((e) => e.Name == city.value);
+    addressList.value[index].Districts.forEach((e) => {
+      districtList.value.push(e.Name);
+    });
+  }
+});
+
+watch(district, () => {
+  if (addressList.value.some((e) => e.Name == city.value)) {
+    const indexCity = addressList.value.findIndex((e) => e.Name == city.value);
+    console.log(indexCity);
+    if (
+      addressList.value[indexCity].Districts.some(
+        (districtItem) => districtItem.Name == district.value
+      )
+    ) {
+      const indexDistrict = addressList.value[indexCity].Districts.findIndex(
+        (e) => e.Name == district.value
+      );
+      addressList.value[indexCity].Districts[indexDistrict].Wards.forEach(
+        (ward) => townList.value.push(ward.Name)
+      );
+    }
+  }
+});
 
 const getParent = async () => {
   try {
@@ -162,82 +624,36 @@ const cancel = () => {
   router.push({ name: "ParentView" });
 };
 
-onMounted(() => {
+onMounted(async () => {
   getParent();
 });
+
+onBeforeMount(() => {
+  fetchData();
+});
+
+async function fetchData() {
+  axios
+    .get(
+      "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
+    )
+    .then((response) => {
+      addressList.value = response.data;
+      addressList.value.forEach((e) => cityList.value.push(e.Name));
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+}
 </script>
 
 <style scoped>
-h1 {
+#head {
   text-align: start;
-  padding-left: 15px;
-  padding-top: 10px;
-  border-bottom: 1px solid #ccc;
+  padding: 20px;
+  font-size: large;
+  font-weight: 600;
+  border-bottom: solid 1px rgb(221, 221, 221);
 }
-
-.info-form {
-  font-size: 20px;
-  height: 700px;
-  display: flex;
-  flex-direction: column;
-}
-.row {
-  margin-top: 20px;
-}
-.form-group-row {
-  display: flex;
-  justify-content: flex-start;
-}
-.form-group {
-  flex: 1;
-  margin-bottom: 15px;
-}
-.select-container {
-  display: flex;
-  justify-content: flex-start;
-  height: 48px;
-  margin-left: 30px;
-}
-
-label {
-  padding-left: 40px;
-  display: block;
-  margin-bottom: 5px;
-  text-align: left;
-  color: #3b44d1;
-}
-
-input,
-select {
-  width: 520px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-.container-btn {
-  width: 250px;
-  display: flex;
-  margin-left: auto;
-  margin-right: 10px;
-}
-/* .btn-save {
-  margin-right: 10px;
-  width: 80px;
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-} */
-/* .btn-close {
-  margin-left: auto;
-  width: 80px;
-  background-color: red;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-} */
 </style>

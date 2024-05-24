@@ -29,7 +29,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
           syllabus: element.syllabus,
           profileStatus:
             element.infomationState == 1 || element.file_paths ? 1 : 0,
-          user: element.acountId,
+          user: element.accountId,
         });
       }
       return registrations;

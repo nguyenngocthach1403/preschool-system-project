@@ -15,12 +15,11 @@ export const useAccountStore = defineStore("accountStore", {
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
         account.push({
-          id: element.id,
           username: element.username,
           phone: element.phone,
           role: element.role,
           email: element.email,
-          isOnline: 1,
+          status: element.status,
         });
       }
       return account;
@@ -87,6 +86,9 @@ export const useAccountStore = defineStore("accountStore", {
       this.account = this.formatData(data.data);
 
       this.status = "loaded";
+      return {
+        success: true,
+      };
     },
     changePage(page) {
       if (this.page !== page) {
