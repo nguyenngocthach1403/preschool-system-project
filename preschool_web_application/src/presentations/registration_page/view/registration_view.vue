@@ -17,9 +17,9 @@
     <!-- Search-->
     <div class="flex justify-between content-center mr-3">
       <SearchFormComp></SearchFormComp>
-      <!-- <router-link to="/students/create">
+      <router-link :to="{ name: 'RegisterAdditionView' }">
         <CreateButtonComp></CreateButtonComp>
-      </router-link> -->
+      </router-link>
     </div>
 
     <!--Show muc-->
@@ -48,6 +48,7 @@
     <TableComp
       :data="registrationStore.formatRegistration(registrations)"
       @click-create-acount="createAccountShow($event)"
+      @update-status="updateStatus($event)"
     ></TableComp>
     <div
       class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
@@ -82,6 +83,7 @@
 </template>
 
 <script setup>
+import CreateButtonComp from "../../../components/create_button.vue";
 import TableComp from "../components/table.vue";
 import CreateAccountView from "../../account_page/components/create_account_view.vue";
 import SearchFormComp from "../../../components/search_form_comp.vue";
@@ -108,6 +110,7 @@ watch(loading, () => {
   );
 });
 
+const emits = defineEmits(["add-toast"]);
 const showCreateAccountView = ref(false);
 
 const registerItem = ref(null);
@@ -138,6 +141,23 @@ const dataTable = ref([
     user: "NNTHACH",
   },
 ]);
+
+async function updateStatus(event) {
+  const result = await registrationStore.updateStatus(event.id, event.status);
+  if (!result) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      content: result.error,
+      type: 1,
+    });
+    return;
+  }
+  emits("add-toast", {
+    title: "Cập nhật thành công",
+    content: result.message,
+    type: 0,
+  });
+}
 function changePage(event) {
   registrationStore.changePage(event - 1);
 }

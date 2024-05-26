@@ -27,10 +27,12 @@ async function getClass(limit, offset) {
 
 async function countFindingUpcomingAndOngoingClasses(searchText) {
   try {
+    const now = new Date().toLocaleDateString();
+    const date = now.split("/");
     const resultCount = await db.select(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus = s.id`,
       "*",
-      `WHERE c.deleted = 0 AND c.className like '%${searchText}%' AND c.endDate > '${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}'`
+      `WHERE c.deleted = 0 AND c.className like '%${searchText}%' AND c.endDate > '${date[2]}-${date[0]}-${date[1]}'`
     );
 
     if (resultCount.length == 0) {
@@ -54,10 +56,12 @@ async function countFindingUpcomingAndOngoingClasses(searchText) {
 
 async function findUpcomingAndOngoingClasses(searchText, limit, offset) {
   try {
+    const now = new Date().toLocaleDateString();
+    const date = now.split("/");
     const classesData = await db.selectLimit(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus = s.id`,
       "c.*, l.levelsName, s.syllabusName",
-      `WHERE c.deleted = 0 AND c.className like '%${searchText}%' AND c.endDate > '${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}'`,
+      `WHERE c.deleted = 0 AND c.className like '%${searchText}%' AND c.endDate > '${date[2]}-${date[0]}-${date[1]}'`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );

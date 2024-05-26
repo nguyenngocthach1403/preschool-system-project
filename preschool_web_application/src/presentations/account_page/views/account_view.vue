@@ -75,7 +75,7 @@ const emits = defineEmits(["add-toast"]);
 onMounted(async () => {
   const res = await accountStore.getAccount();
 
-  if (res.success) {
+  if (!res.success) {
     emits("add-toast", {
       content: res.error,
       title: "Tải dữ liệu account thất bại!",

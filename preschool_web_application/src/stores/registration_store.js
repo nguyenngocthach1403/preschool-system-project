@@ -25,8 +25,9 @@ export const useRegistrionStore = defineStore("registrationStore", {
             element.district ? element.district + "," : ""
           } ${element.city ? element.city : ""}`,
           role: element.role,
-          levels: element.levels,
-          syllabus: element.syllabus,
+          levels: element.levelsName,
+          syllabus: element.syllabusName,
+          status: element.status,
           profileStatus:
             element.infomationState == 1 || element.file_paths ? 1 : 0,
           user: element.accountId,
@@ -42,6 +43,29 @@ export const useRegistrionStore = defineStore("registrationStore", {
       this.total = data.total;
 
       return data.total;
+    },
+    async updateStatus(id, status) {
+      const response = await registrationService.updateStatus(id, status);
+
+      if (response.status !== 200) {
+        return {
+          success: false,
+          error: response.data.message,
+        };
+      }
+
+      if (!response.data.success) {
+        return {
+          success: false,
+          error: response.data.message,
+        };
+      }
+
+      this.registrations.find((e) => e.id == id).status = status;
+      return {
+        success: true,
+        message: response.data.message,
+      };
     },
     async getRegistration() {
       this.status = "loading";
