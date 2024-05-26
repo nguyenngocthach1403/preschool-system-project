@@ -132,6 +132,7 @@
                 'status-2': item.status === 2,
                 'status-3': item.status === 3,
                 'status-4': item.status === 4,
+                'status-5': item.status === 5,
               }"
               class="hover:bg-gray-200 rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px]"
               @click="selectStatus($event, item.id)"
@@ -290,16 +291,11 @@ function classStatus(value) {
   border: solid 1px rgb(246, 213, 105);
 }
 .unfinished {
-  color: rgb(132, 33, 33) !important;
-  background-color: rgba(162, 7, 7, 0.116);
-  border: solid 1px rgb(246, 105, 105);
-}
-
-.status-3 {
-  background-color: rgb(254 202 202);
+  background-color: rgba(252, 165, 165, 0.3) !important;
   border: 1px solid rgb(252 165 165) !important;
   color: rgb(220 38 38);
 }
+
 .status-0 {
   background-color: rgb(186 230 253);
   border: 1px solid rgb(125 211 252) !important;
@@ -311,13 +307,23 @@ function classStatus(value) {
   color: rgb(139 92 246) !important;
 }
 .status-2 {
-  background-color: rgb(217 249 157);
-  border: 1px solid rgb(190 242 100) !important;
-  color: rgb(132 204 22);
+  color: rgb(142, 73, 8) !important;
+  background-color: rgba(162, 103, 7, 0.2);
+  border: solid 1px rgb(246, 199, 105);
+}
+.status-3 {
+  background-color: rgb(254, 254, 202);
+  border: 1px solid rgb(252, 230, 165) !important;
+  color: rgb(220, 162, 38);
 }
 .status-4 {
   background-color: rgb(217 249 157);
   border: 1px solid rgb(190 242 100) !important;
   color: rgb(132 204 22);
+}
+.status-5 {
+  background-color: rgba(252, 165, 165, 0.3) !important;
+  border: 1px solid rgb(252 165 165) !important;
+  color: rgb(220 38 38);
 }
 </style>
