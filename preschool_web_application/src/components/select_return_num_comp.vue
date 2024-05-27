@@ -1,5 +1,7 @@
 <template>
   <div id="list-box" class="relative">
+    <!-- {{ props.active }} -->
+    <!-- {{ props.listSelect }} -->
     <button
       @keydown.down="focusItem < list.length ? (focusItem += 1) : list.length"
       @keydown.up="focusItem > 1 ? (focusItem -= 1) : 0"
@@ -68,18 +70,9 @@
     </transition>
   </div>
 </template>
-  
-  <script setup>
-import { onMounted, ref } from "vue";
 
-const list = ref(["Nam", "Nữ"]);
-
-onMounted(() => {
-  if (props.active != undefined) {
-    value.value = props.listSelect[props.active];
-  }
-  list.value = props.listSelect;
-});
+<script setup>
+import { onBeforeMount, onMounted, ref, watch } from "vue";
 
 const props = defineProps({
   active: {
@@ -87,8 +80,24 @@ const props = defineProps({
   },
   listSelect: {
     type: Array,
+    require: true,
   },
 });
+const list = ref(["Nam", "Nữ"]);
+onMounted(() => {
+  list.value = props.listSelect;
+  // console.log("aactive", props.active);
+  // console.log("lisst", props.listSelect);
+  // console.log(props.listSelect[1]);
+  if (props.active != undefined) {
+    value.value = props.listSelect[props.active];
+    // console.log(list.value[props.active]);
+  }
+});
+watch(props.active, () => {
+  value.value = props.listSelect[props.active];
+});
+
 const show = ref(false);
 const value = ref("Choose item");
 
@@ -99,8 +108,8 @@ function closeList() {
   }, 50);
 }
 </script>
-  
-  <style scoped>
+
+<style scoped>
 .bg-focus {
   background-color: #3b44d1 !important;
   color: white;

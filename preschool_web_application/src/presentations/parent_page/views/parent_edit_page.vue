@@ -31,19 +31,23 @@
                 <span class="pl-4 text-blue-700">Họ và tên</span
                 ><span class="text-red-600"> * </span>
                 <input
-                  v-model="studentNameInput"
                   type="text"
                   placeholder="Họ và tên"
                   class="h-[45px] rounded-md mb-[25px] my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  v-model="name_parent"
                 />
               </label>
               <label class="w-full text-start">
                 <span class="pl-4 text-blue-700">Giới tính</span>
-                <SelectReturnNumComp
-                  @choose="gender = $event"
-                  :list-select="genderList"
-                  class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
-                />
+                <select
+                  id="gender"
+                  v-model="gender_parent"
+                  class="h-[45px] rounded-md mb-[25px] my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                >
+                  <option value="0">Nam</option>
+                  <option value="1">Nữ</option>
+                  <option value="2">Khác</option>
+                </select>
               </label>
             </div>
             <div
@@ -53,17 +57,18 @@
               <label class="w-full text-start">
                 <span class="pl-4 text-blue-700">Ngày sinh</span>
                 <input
-                  v-model="studentBirthDayInput"
+                  v-model="birthday"
                   type="date"
                   class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
                 />
               </label>
               <label class="w-full text-start">
                 <span class="pl-4 text-blue-700">Nghề nghiệp</span>
-                <SelectReturnStringComp
-                  @choose="job = $event"
-                  :list-select="jobList"
-                  class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+                <input
+                  type="text"
+                  placeholder="Nghề nghiệp"
+                  class="h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  v-model="job"
                 />
               </label>
             </div>
@@ -74,19 +79,19 @@
               <label class="w-full text-start">
                 <span class="pl-4 text-blue-700">Số điện thoại</span>
                 <input
-                  v-model="phone"
                   type="text"
                   placeholder="0xxxxxxxx"
                   class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  v-model="phone_parent"
                 />
               </label>
               <label class="w-full text-start">
                 <span class="pl-4 text-blue-700">Email</span>
                 <input
-                  v-model="email"
                   type="text"
                   placeholder="abc@abc.com"
                   class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  v-model="email_parent"
                 />
               </label>
             </div>
@@ -105,11 +110,18 @@
               </label>
               <label class="w-full text-start">
                 <span class="pl-4 text-blue-700">Vai trò</span>
-                <SelectReturnNumComp
-                  class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
-                  :list-select="roleList"
-                  @choose="role = $event"
-                />
+                <select
+                  id="role"
+                  v-model="role"
+                  class="h-[45px] rounded-md mb-[25px] my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                >
+                  <option value="">Chọn mối quan hệ</option>
+                  <option value="0">Bố</option>
+                  <option value="1">Mẹ</option>
+                  <option value="2">Anh, Chị</option>
+                  <option value="3">Ông, Bà</option>
+                  <option value="4">Người giám hộ</option>
+                </select>
               </label>
             </div>
             <!-- <div class="text-gray-500 h-10">
@@ -243,6 +255,7 @@
               type="text"
               placeholder="Tên đăng nhập"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="account"
             />
           </label>
           <label class="w-full text-start">
@@ -251,6 +264,7 @@
               type="text"
               placeholder="0xxxxxxxxx"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="phone_parent"
             />
           </label>
         </div>
@@ -269,6 +283,7 @@
               type="text"
               placeholder="abc@abc.com"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="email_parent"
             />
           </label>
         </div>
@@ -330,6 +345,7 @@
               type="text"
               placeholder="Tên đăng nhập"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="registerName"
             />
           </label>
           <label class="w-full text-start">
@@ -338,6 +354,7 @@
               type="text"
               placeholder="0xxxxxxxxx"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="registerId"
             />
           </label>
         </div>
@@ -348,6 +365,7 @@
               type="text"
               placeholder="0xxxxxxxxx"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="registerPhone"
             />
           </label>
           <label class="w-full text-start">
@@ -356,6 +374,7 @@
               type="text"
               placeholder="abc@abc.com"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="registerEmail"
             />
           </label>
         </div>
@@ -370,9 +389,9 @@
             <span class="pl-4 text-blue-700">Cấp độ đăng ký</span>
             <SelectReturnNumComp
               :list-select="levelsList"
-              :active="1"
               @choose="levels = $event"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+              :active="1"
             />
           </label>
         </div>
@@ -421,6 +440,14 @@
               :active="1"
             />
           </label>
+          <!-- <select_locantion
+        :selectedCity="city"
+        :selectedDistrict="district"
+        :selectedWard="town"
+        @update:selectedCity="handleCityChange"
+        @update:selectedDistrict="handleDistrictChange"
+        @update:selectedWard="handleWardChange"
+      /> -->
         </div>
         <div class="text-start w-full gap-5 mx-[20px] mb-[20px]">
           <span class="my-2">Hình ảnh đơn đăng ký</span>
@@ -441,6 +468,7 @@
             v-if="status !== 'creating'"
             type="submit"
             class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
+            @click="updateParent"
           >
             Save
           </button>
@@ -488,23 +516,26 @@ import SelectReturnStringComp from "../../../components/select_return_string_com
 import SelectReturnNumComp from "@/components/select_return_num_comp.vue";
 import SelectStatusComp from "../../../components/select_status_comp.vue";
 import SelectSearchComp from "../../../components/select_search_input.vue";
-
-const name = ref("");
-const gender = ref("");
+import select_locantion from "@/components/select_location.vue";
+const name_parent = ref("");
+const gender_parent = ref("");
 const birthday = ref("");
 const address = ref("");
 const job = ref("");
-const email = ref("");
-const phone = ref("");
+const email_parent = ref("");
+const phone_parent = ref("");
 const role = ref("");
 const status = ref("");
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
 const statusAccount = ref(1);
+const account = ref("");
 
 //Registration
-const levels = ref(1);
-const registerNaem = ref("");
+const levels = ref("");
+const syllabus = ref("");
+const registerId = ref("");
+const registerName = ref("");
 const registerPhone = ref("");
 const registerEmail = ref("");
 const regiterStatus = ref(1);
@@ -567,23 +598,32 @@ const getParent = async () => {
       `http://localhost:9000/parents/${parentId}`
     );
     const parents = response.data[0];
+    console.log(parents);
     const parsedBirthday = new Date(parents.birthday);
     const formattedBirthday = `${parsedBirthday.getFullYear()}-${String(
       parsedBirthday.getMonth() + 1
     ).padStart(2, "0")}-${String(parsedBirthday.getDate()).padStart(2, "0")}`;
     if (parents) {
-      name.value = parents.name;
-      gender.value = parents.gender;
+      name_parent.value = parents.name;
+      gender_parent.value = parents.gender;
       birthday.value = formattedBirthday;
       address.value = parents.address;
       job.value = parents.job;
-      email.value = parents.email;
-      phone.value = parents.phone;
+      email_parent.value = parents.email;
+      phone_parent.value = parents.PhoneParent;
       role.value = parents.role;
       status.value = parents.status;
-      // account_id.value = parents.account_id;
+      account.value = parents.account;
+      registerName.value = parents.your_name;
+      registerId.value = parents.id;
+      registerEmail.value = parents.email;
+      levels.value = parents.levels;
+      registerPhone.value = parents.phone;
+      genderList.value = parents.gender;
+      town.value = parents.town;
     }
-    console.log(birthday.value);
+    // console.log(birthday.value);
+    console.log(role.value);
   } catch (error) {
     console.error("Error fetching parents:", error);
   }
@@ -595,13 +635,13 @@ const updateParent = async () => {
     const response = await axios.put(
       `http://localhost:9000/parents/${parentId}`,
       {
-        name: name.value,
-        gender: gender.value,
+        name: name_parent.value,
+        gender: gender_parent.value,
         birthday: birthday.value,
         address: address.value,
         job: job.value,
-        email: email.value,
-        phone: phone.value,
+        email: email_parent.value,
+        phone: phone_parent.value,
         role: role.value,
         status: status.value,
       }
@@ -625,11 +665,12 @@ const cancel = () => {
 };
 
 onMounted(async () => {
-  getParent();
+  // await getParent();
 });
 
-onBeforeMount(() => {
-  fetchData();
+onBeforeMount(async () => {
+  await getParent();
+  await fetchData();
 });
 
 async function fetchData() {

@@ -26,18 +26,29 @@ async function getAll() {
     return error;
   }
 }
-
+// async function getByID(id) {
+//   try {
+//     return db1.select(
+//       config.tb.parent,
+//       "name, gender, birthday, address, job, email, phone, role, status",
+//       id !== undefined ? `Where id = ${id}` : ""
+//     );
+//   } catch (error) {
+//     return error;
+//   }
+// }
 async function getByID(id) {
   try {
     return db1.select(
-      config.tb.parent,
-      "name, gender, birthday, address, job, email, phone, role, status",
-      id !== undefined ? `Where id = ${id}` : ""
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account = a.username LEFT JOIN ${config.tb.register} r ON p.account = r.accountId`,
+      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, r.*, r.your_name, r.email, r.phone",
+      id !== undefined ? `Where p.id = ${id}` : ""
     );
   } catch (error) {
     return error;
   }
 }
+
 // async function getByID(id) {
 //   try {
 //     return db.select(
@@ -114,9 +125,9 @@ async function countSearchParent(txtSearch) {
 async function getPage(page, limit) {
   try {
     return db.selectLimit(
-      config.tb.parent,
-      "*",
-      "WHERE deleted = 0",
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} ac ON p.account = ac.username`,
+      "p.*,ac.username",
+      "WHERE p.deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
@@ -127,12 +138,12 @@ async function getPage(page, limit) {
     };
   }
 }
-async function isDuplicate(email, phone, account_id) {
+async function isDuplicate(email, phone, account) {
   try {
     const result = await db.select(
       config.tb.parent,
       "*",
-      `WHERE email = '${email}' OR phone = '${phone}' OR account_id = '${account_id}'`
+      `WHERE email = '${email}' OR phone = '${phone}' OR account = '${account} '`
     );
     return result.length > 0;
   } catch (error) {

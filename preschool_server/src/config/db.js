@@ -151,5 +151,5 @@ module.exports = new Database({
   host: "localhost",
   user: "root",
   password: "",
-  database: "pre_school",
+  database: "preschool_db",
 });

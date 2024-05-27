@@ -118,16 +118,16 @@ async function getParentSearch(req, res, next) {
 }
 async function isDuplicate(req, res, next) {
   try {
-    const { email, phone, account_id } = req.body;
+    const { email, phone, account } = req.body;
     const duplicateParent = await parentService.isDuplicate(
       email,
       phone,
-      account_id
+      account
     );
     if (duplicateParent) {
-      res.json({ message: "Email or phone or account_id already exists." });
+      res.json({ message: "Email or phone or account already exists." });
     } else {
-      res.json({ message: "Email, phone and account_id are unique." });
+      res.json({ message: "Email, phone and account are unique." });
     }
   } catch (error) {
     next(error);

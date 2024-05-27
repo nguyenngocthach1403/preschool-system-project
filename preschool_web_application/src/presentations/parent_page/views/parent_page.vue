@@ -6,6 +6,13 @@
       :content="showConfirmDialog"
       @confirm="getConfirm"
     />
+    <CreateAccountView
+      v-if="showCreateAccountView"
+      class="absolute top-0 left-0"
+      @close="showCreateAccountView = false"
+      :registration="parentItem"
+      @add-toast="$emit('add-toast', $event), close()"
+    />
     <div class="text-left px-[20px] text-[36px] font-bold">Parent</div>
     <div class="flex justify-between content-center mr-3">
       <SearchForm @passSearchText="getSearchText"></SearchForm>
@@ -34,6 +41,7 @@
     </div>
     <TableData
       :data-table="parents"
+      @click-create-acount="createAccountShow($event)"
       @delete-parent="deleteParentById"
     ></TableData>
     <div
@@ -75,12 +83,15 @@ import SearchForm from "../../../components/search_form_comp.vue";
 import CreateButtonComp from "../../../components/create_button.vue";
 import Pagination from "../../../components/pagination.vue";
 import ConfirmDialog from "@/components/confirm_dialog.vue";
+import CreateAccountView from "../../account_page/components/create_account_view.vue";
 import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useParentStore } from "../../../stores/parent_store";
 
 const parentStore = useParentStore();
 const showConfirmDialog = ref("");
+const showCreateAccountView = ref(false);
+const parentItem = ref(null);
 const { parents, page, limit, loading, total, status } =
   storeToRefs(parentStore);
 onMounted(async () => {
@@ -107,6 +118,14 @@ function changePage(event) {
 }
 function showParentNumSelectChange(event) {
   parentStore.changeLimit(parseInt(event.target.value));
+}
+function createAccountShow(event) {
+  showCreateAccountView.value = true;
+  parentItem.value = event;
+}
+function close() {
+  showCreateAccountView.value = false;
+  parentStore.getParent();
 }
 const getConfirm = (event) => {
   if (event) {

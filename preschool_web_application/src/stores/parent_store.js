@@ -50,7 +50,7 @@ export const useParentStore = defineStore("parentStore", {
 
     async getTotalParent() {
       const res = await parentService.countParent();
-      console.log(res);
+      // console.log(res);
       const numParent = res.data;
       this.total = numParent.data;
       // console.log(numParent.data);
