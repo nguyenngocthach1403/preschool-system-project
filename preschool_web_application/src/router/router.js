@@ -12,6 +12,7 @@ import RegistrationForm from "@/presentations/registration/view/registration-for
 import ParentEditView from "@/presentations/parent_page/views/parent_edit_page.vue";
 import RegistrationView from "@/presentations/registration_page/view/registration_view.vue";
 import AccountView from "@/presentations/account_page/views/account_view.vue";
+import RegisterAdditionView from "../presentations/registration_addition_page/views/registration_addition_page.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -86,6 +87,11 @@ function Router() {
             name: "ParentEditView",
             path: "/home-page/:username/parent-edit/:id",
             component: ParentEditView,
+          },
+          {
+            name: "RegisterAdditionView",
+            path: "/home-page/:username/registration-addition-admin",
+            component: RegisterAdditionView,
           },
         ],
       },

@@ -150,15 +150,12 @@
           leave-to-class="opacity-0"
         >
           <div
+            @mouseleave="closeChangeStatus"
             v-if="show"
             class="absolute mt-2 w-[150px] top-0 h-fit z-40 bg-white drop-shadow rounded-md z-30"
             :style="{ top: y + 'px', left: x + 'px' }"
           >
-            <ul
-              @focusout="closeChangeStatus"
-              @click="closeChangeStatus"
-              class="text-start"
-            >
+            <ul @click="closeChangeStatus" class="text-start">
               <li
                 @click="updateRegisterStatus(0)"
                 class="w-full py-1 hover:bg-gray-100 px-2"
