@@ -5,6 +5,8 @@ module.exports = {
   getTotalRegistration,
   getRegistrations,
   createRegister,
+  isExitsRegister,
+  updateStatus,
 };
 
 async function createRegister(data) {
@@ -20,6 +22,45 @@ async function createRegister(data) {
   }
 }
 
+async function updateStatus(id, status) {
+  try {
+    const result = await db.update(
+      config.tb.register,
+      {
+        status: status,
+      },
+      { id: id }
+    );
+
+    if (result != 1) {
+      return {
+        success: false,
+        message: "Cập nhật trang thái thất ại.",
+      };
+    }
+    return {
+      success: true,
+      message: "Cập nhật hoàn thành",
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function isExitsRegister(id) {
+  try {
+    const result = await db.select(config.tb.register, "*", `WHERE id = ${id}`);
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 async function getTotalRegistration() {
   try {
     console.log("  * Count registration:");

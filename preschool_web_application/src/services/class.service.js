@@ -8,6 +8,8 @@ function fetchClass(limit, offset) {
 
 function searchClass(searchText, limit, offset) {
   return api().get(
-    `/class/search/${searchText}?limit=${limit}&offset=${offset * limit}`
+    `/class/search?searchText=${searchText}&limit=${limit}&offset=${
+      offset * limit
+    }`
   );
 }

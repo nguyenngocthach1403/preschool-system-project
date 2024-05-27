@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden h-fit mr-[10px]">
+  <div class="overflow-hidden h-fit mr-[10px] z-20">
     <!--Table here-->
     <table class="h-fit w-full">
       <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
@@ -28,13 +28,14 @@
           <th class="px-3 text-left">Địa chỉ</th>
           <th class="px-3 text-left">Nội dung</th>
           <th class="px-3 text-left">Hồ sơ</th>
+          <th class="px-3 text-left">Trạng thái</th>
           <th class="px-3 text-left">Chức năng</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="item in drops.data"
-          :key="item.id"
+          v-for="(item, index) in drops.data"
+          :key="index"
           class="text-[14px] h-[60px] text-left even:bg-gray-50 border-b-[1px]"
         >
           <td class="px-3">
@@ -72,7 +73,7 @@
           <td class="hidden 2xl:table-cell px-3 w-[500px]">
             <span>{{ item.id }}</span>
           </td>
-          <td class="w-dvw px-3 py-2">
+          <td class="w-[1000px] px-3 py-2">
             <span>{{ item.name }}</span>
             <dd class="text-gray-500 text-[14px] my-[5px]">
               <span class="font-bold">Vai trò:</span> {{ checkRole(item.role) }}
@@ -123,10 +124,80 @@
               {{ checkStatus(item.profileStatus) }}
             </div>
           </td>
+          <td class="px-3 w-[600px] relative">
+            <button
+              :class="{
+                'status-0': item.status === 0,
+                'status-1': item.status === 1,
+                'status-2': item.status === 2,
+                'status-3': item.status === 3,
+                'status-4': item.status === 4,
+                'status-5': item.status === 5,
+              }"
+              class="hover:bg-gray-200 rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px]"
+              @click="selectStatus($event, item.id)"
+            >
+              {{ convertRegisterStatus(item.status) }}
+            </button>
+          </td>
           <td class="content-center px-3 cursor-default hover:text-blue-700">
             Edit
           </td>
         </tr>
+        <Transition
+          leave-active-class="transition ease-in duration-100"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
+          <div
+            v-if="show"
+            class="absolute mt-2 w-[150px] top-0 h-fit z-40 bg-white drop-shadow rounded-md z-30"
+            :style="{ top: y + 'px', left: x + 'px' }"
+          >
+            <ul
+              @focusout="closeChangeStatus"
+              @click="closeChangeStatus"
+              class="text-start"
+            >
+              <li
+                @click="updateRegisterStatus(0)"
+                class="w-full py-1 hover:bg-gray-100 px-2"
+              >
+                Đơn mới
+              </li>
+              <li
+                @click="updateRegisterStatus(1)"
+                class="w-full py-1 hover:bg-gray-100 px-2"
+              >
+                Chờ duyệt
+              </li>
+              <li
+                @click="updateRegisterStatus(2)"
+                class="w-full py-1 hover:bg-gray-100 px-2"
+              >
+                Chờ liên hệ
+              </li>
+              <li
+                @click="updateRegisterStatus(3)"
+                class="w-full py-1 hover:bg-gray-100 px-2"
+              >
+                Đã liên hệ
+              </li>
+              <li
+                @click="updateRegisterStatus(4)"
+                class="w-full py-1 hover:bg-gray-100 px-2"
+              >
+                Hoàn thành
+              </li>
+              <li
+                @click="updateRegisterStatus(5)"
+                class="w-full py-1 hover:bg-gray-100 px-2"
+              >
+                Hủy
+              </li>
+            </ul>
+          </div>
+        </Transition>
       </tbody>
     </table>
   </div>
@@ -135,13 +206,37 @@
 <script setup>
 import { ref } from "vue";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
+import { convertRegisterStatus } from "../../../utils/resources/converter";
+const showChangeStatusViewIndex = ref(null);
+
+const emits = defineEmits(["update-status"]);
 const drops = defineProps({
   data: {
     type: Object,
     require: true,
   },
 });
+const show = ref(false);
+function closeChangeStatus() {
+  setTimeout(() => {
+    show.value = false;
+  }, 50);
+}
 
+const x = ref();
+const y = ref();
+const registerId = ref();
+
+function selectStatus(event, id) {
+  show.value = !show.value;
+  showChangeStatusViewIndex.value = id;
+  registerId.value = id;
+  x.value = event.clientX;
+  y.value = event.clientY;
+}
+function updateRegisterStatus(status) {
+  emits("update-status", { id: registerId.value, status: status });
+}
 function checkStatus(value) {
   switch (value) {
     case 1:
@@ -196,8 +291,39 @@ function classStatus(value) {
   border: solid 1px rgb(246, 213, 105);
 }
 .unfinished {
-  color: rgb(132, 33, 33) !important;
-  background-color: rgba(162, 7, 7, 0.116);
-  border: solid 1px rgb(246, 105, 105);
+  background-color: rgba(252, 165, 165, 0.3) !important;
+  border: 1px solid rgb(252 165 165) !important;
+  color: rgb(220 38 38);
+}
+
+.status-0 {
+  background-color: rgb(186 230 253);
+  border: 1px solid rgb(125 211 252) !important;
+  color: rgb(14 165 233);
+}
+.status-1 {
+  background-color: rgb(221 214 254) !important;
+  border: 1px solid rgb(196 181 253) !important;
+  color: rgb(139 92 246) !important;
+}
+.status-2 {
+  color: rgb(142, 73, 8) !important;
+  background-color: rgba(162, 103, 7, 0.2);
+  border: solid 1px rgb(246, 199, 105);
+}
+.status-3 {
+  background-color: rgb(254, 254, 202);
+  border: 1px solid rgb(252, 230, 165) !important;
+  color: rgb(220, 162, 38);
+}
+.status-4 {
+  background-color: rgb(217 249 157);
+  border: 1px solid rgb(190 242 100) !important;
+  color: rgb(132 204 22);
+}
+.status-5 {
+  background-color: rgba(252, 165, 165, 0.3) !important;
+  border: 1px solid rgb(252 165 165) !important;
+  color: rgb(220 38 38);
 }
 </style>

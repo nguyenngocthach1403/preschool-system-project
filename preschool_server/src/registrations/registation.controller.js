@@ -8,6 +8,42 @@ router.get("/total", getTotalRegistration);
 
 router.get("/", getRegistration);
 
+router.get("/update/status/:id", updateStatus);
+
+async function updateStatus(req, res) {
+  const id = req.params.id;
+  const status = req.query.status;
+
+  const isExits = await registationService.isExitsRegister(id);
+
+  if (!isExits) {
+    return res.status(200).json({
+      success: false,
+      message: "Không tìm thấy đơn.",
+    });
+  }
+
+  //Cập nhật sau khi đã kiểm tra tồn tại
+  const resulstUpdate = await registationService.updateStatus(id, status);
+  if (resulstUpdate.code) {
+    return res.status(500).json({
+      success: false,
+      error: resulstUpdate.error,
+    });
+  }
+  if (!resulstUpdate.success) {
+    return res.status(200).json({
+      success: false,
+      message: resulstUpdate.message,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: resulstUpdate.message,
+  });
+}
+
 async function getTotalRegistration(req, res) {
   const resultTotal = await registationService.getTotalRegistration();
   res.send(

@@ -3,11 +3,10 @@ const express = require("express");
 const router = express.Router();
 const classService = require("./class.service");
 router.get("/", getClass);
-router.get("/search/:searchText", findClass);
+router.get("/search", findClass);
 
 async function findClass(req, res) {
-  const searchText = req.params.searchText;
-  const { limit, offset } = req.query;
+  const { searchText, limit, offset } = req.query;
 
   if (limit == undefined || offset == undefined) {
     return res.status(500).json({

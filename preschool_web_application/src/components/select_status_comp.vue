@@ -103,6 +103,7 @@ import { onMounted, ref } from "vue";
 const statusList = ref(["Đang khóa", "Đang hoạt động"]);
 
 onMounted(() => {
+  console.log(props.selectList);
   if (props.selectList != undefined) {
     statusList.value = props.selectList;
   }

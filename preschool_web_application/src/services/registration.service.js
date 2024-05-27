@@ -3,6 +3,7 @@ import { api } from "../services/Api";
 export default {
   getRegistrations,
   getRegistrationTotal,
+  updateStatus,
 };
 
 function getRegistrations(limit, page) {
@@ -13,4 +14,7 @@ function getRegistrations(limit, page) {
 function getRegistrationTotal() {
   console.log("/registrations/total");
   return api().get("/registrations/total");
+}
+function updateStatus(id, status) {
+  return api().get(`/registrations/update/status/${id}?status=${status}`);
 }

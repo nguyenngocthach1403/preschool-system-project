@@ -5,16 +5,7 @@
       <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
         <tr>
           <th class="px-3 py-3 text-left"></th>
-          <th class="px-3 text-left">
-            <div class="flex">
-              Mã tài khoản
-              <img
-                :src="sort_icon"
-                class="w-[20px] hover:bg-gray-200/25 rounded-full"
-              />
-            </div>
-          </th>
-          <th class="px-3 text-left">
+          <th class="px-3 text-left py-3">
             <div class="flex">
               Tên tài khoản
               <img
@@ -26,14 +17,14 @@
           <th class="px-3 text-left w-fit">Email</th>
           <th class="px-3 text-left">Phone</th>
           <th class="px-3 text-left">Chức vụ</th>
-          <th class="px-3 text-left">Chức vụ</th>
+          <th class="px-3 text-left">Trạng thái</th>
           <th class="px-3 text-left">Chức năng</th>
         </tr>
       </thead>
       <tbody>
         <tr
           v-for="item in drops.data"
-          :key="item.id"
+          :key="item"
           class="text-[14px] h-[60px] text-left even:bg-gray-50 border-b-[1px] hover:bg-gray-200"
         >
           <td class="px-3">
@@ -68,19 +59,29 @@
               </label>
             </div>
           </td>
-          <td class="hidden 2xl:table-cell px-3 w-[300px]">{{ item.id }}</td>
           <td class="hidden 2xl:table-cell px-3 w-[1000px]">
             {{ item.username }}
           </td>
           <td class="hidden 2xl:table-cell px-3 w-dvw">{{ item.email }}</td>
           <td class="hidden 2xl:table-cell px-3 w-[500px]">{{ item.phone }}</td>
-          <td class="hidden 2xl:table-cell px-3 w-[500px]">{{ item.role }}</td>
-          <td class="px-3 w-[200px]">
-            <div
-              class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border"
+          <td class="hidden 2xl:table-cell px-3 w-[500px]">
+            {{ convertRole(item.role) }}
+          </td>
+          <td class="px-3 w-[500px]">
+            <button
+              v-if="item.status == 1"
+              @click.prevent
+              class="hover:bg-green-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-green-300 text-[12px] border bg-green-200/25 text-green-600 cursor-default"
             >
-              {{ item.isOnline }}
-            </div>
+              {{ convertStatus(item.status) }}
+            </button>
+            <button
+              v-if="item.status == 0"
+              @click.prevent
+              class="hover:bg-red-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-red-300 text-[12px] border bg-red-200/25 text-red-600 cursor-default"
+            >
+              {{ convertStatus(item.status) }}
+            </button>
           </td>
           <td class="hidden 2xl:table-cell px-3 w-[500px]">{{ item.role }}</td>
         </tr>
@@ -91,8 +92,33 @@
 
 <script setup>
 import { ref } from "vue";
+import sort_icon from "../../../assets/icons/Sorting arrowheads.svg";
 
 const drops = defineProps(["data"]);
+
+function convertStatus(status) {
+  switch (status) {
+    case 1:
+      return "Đang hoạt động";
+    case 0:
+      return "Đang khóa";
+    default:
+      break;
+  }
+}
+
+function convertRole(role) {
+  switch (role) {
+    case 1:
+      return "Admin";
+    case 2:
+      return "Quản lý";
+    case 4:
+      return "Phụ huynh";
+    default:
+      break;
+  }
+}
 </script>
 
 <style scoped>
