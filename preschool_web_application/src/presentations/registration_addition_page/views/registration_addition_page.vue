@@ -451,14 +451,17 @@ const saveValueInput = async () => {
         },
       }
     );
-    if (response.status === 200) {
+    if (response.data.status === 400) {
+      emits("add-toast", {
+        title: "Đăng ký không thành công",
+        type: 1,
+      });
+    } else {
       emits("add-toast", {
         title: "Đăng ký thành công",
         type: 0,
       });
       router.push({ name: "RegistrationView" });
-    } else {
-      console.log("Fail");
     }
   } catch (e) {
     console.log(e);

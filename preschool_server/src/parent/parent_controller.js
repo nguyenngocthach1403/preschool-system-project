@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const parentService = require("./parent_service");
+const accountService = require("../account/account.service");
 
 router.get("/", getAll);
 router.post("/insert", insertParent);
 router.put("/:id", updateParent);
 // router.delete("/:id", deleteParent);
 router.post("/duplicate", isDuplicate);
+router.post("/duplicateAccount", isDuplicateAccount);
 router.get("/total", getTotalParent);
 router.get("/search", getParentSearch);
 router.get("/delete", deleteParent);
@@ -99,7 +101,7 @@ async function getParentSearch(req, res, next) {
     res.send(
       JSON.stringify({
         status: 404,
-        message: "Not found any student",
+        message: "Not found any parent",
       })
     );
     return;
@@ -125,9 +127,28 @@ async function isDuplicate(req, res, next) {
       account
     );
     if (duplicateParent) {
-      res.json({ message: "Email or phone or account already exists." });
+      res.json({
+        status: 400,
+        message: "Email or phone or account already exists.",
+      });
     } else {
-      res.json({ message: "Email, phone and account are unique." });
+      res.json({
+        status: 200,
+        message: "Email, phone and account are unique.",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+async function isDuplicateAccount(req, res, next) {
+  try {
+    const { account } = req.body;
+    const duplicateParent = await parentService.isDuplicateAccount(account);
+    if (duplicateParent) {
+      res.json({ status: 400, message: "account already exist" });
+    } else {
+      res.json({ status: 200, message: "success" });
     }
   } catch (error) {
     next(error);
@@ -137,6 +158,7 @@ async function isDuplicate(req, res, next) {
 async function insertParent(req, res, next) {
   try {
     const insertId = await parentService.insertParent(req.body);
+
     if (insertId) {
       res.status(200).json({ message: "success" });
     } else {
@@ -152,9 +174,15 @@ async function updateParent(req, res, next) {
     const parentId = req.params.id;
     const newData = req.body;
     await parentService.updateParent(parentId, newData);
-    res.json({ message: `Parent with ID ${parentId} updated successfully.` });
+    res.json({
+      status: 200,
+      message: `Parent with ID ${parentId} updated successfully.`,
+    });
   } catch (error) {
-    next(error);
+    res.json({
+      status: 400,
+      message: `updated fail.`,
+    });
   }
 }
 // async function deleteParent(req, res, next) {
