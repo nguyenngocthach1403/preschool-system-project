@@ -20,7 +20,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
         const element = data[index];
         registrations.push({
           id: element.id,
-          name: element.your_name,
+          name: element.name,
           phone: element.phone,
           email: element.email,
           address: `${element.town ? element.town + "," : ""} ${

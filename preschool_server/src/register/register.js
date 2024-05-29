@@ -60,6 +60,7 @@ router.post("/", upload.array("files"), async (req, res) => {
 
     return res.status(200).json({
       status: 400,
+      success: false,
       message: result.message,
       error: result.error,
     });
@@ -67,6 +68,7 @@ router.post("/", upload.array("files"), async (req, res) => {
 
   res.status(200).json({
     status: 200,
+    success: true,
     message: "Successful.",
     data: result,
   });

@@ -94,7 +94,7 @@
       </div>
       <Pagination
         :page-nums="round(registrationStore.total / registrationStore.limit)"
-        :page-active="page + 1"
+        :page-active="registrationStore.page + 1"
         @click-page="changePage($event)"
       ></Pagination>
     </div>
