@@ -83,12 +83,12 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="account_id">Account ID</label>
+          <label for="account_id">Account</label>
           <div class="account-container">
             <input
               type="text"
               id="account_id"
-              v-model="account_id"
+              v-model="account"
               placeholder="Nhập account id"
             />
           </div>
@@ -117,11 +117,11 @@ const gender = ref(0);
 const birthday = ref("");
 const address = ref("");
 const job = ref("");
-const email = ref("");
-const phone = ref("");
+const email = ref(null);
+const phone = ref(null);
 const role = ref(0);
 const status = ref(1);
-const account_id = ref("");
+const account = ref(null);
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
 
@@ -132,7 +132,7 @@ const checkDuplicate = async () => {
       {
         email: email.value,
         phone: phone.value,
-        account_id: account_id.value,
+        account: account.value,
       }
     );
     return checkDuplicateResponse.data;
@@ -143,18 +143,14 @@ const checkDuplicate = async () => {
 const saveData = async () => {
   try {
     const isDuplicate = await checkDuplicate();
-    if (
-      isDuplicate.message === "Email or phone or account_id already exists."
-    ) {
+    if (isDuplicate.message === "Email or phone or account already exists.") {
       emits("add-toast", {
         title:
-          "Email hoặc số điện thoại hoặc account_id đã tồn tại, vui lòng thử lại!",
+          "Email hoặc số điện thoại hoặc account đã tồn tại, vui lòng thử lại!",
         type: 1,
       });
       return;
-    } else if (
-      isDuplicate.message === "Email, phone and account_id are unique."
-    ) {
+    } else if (isDuplicate.message === "Email, phone and account are unique.") {
       const response = await axios.post(
         "http://localhost:9000/parents/insert",
         {
@@ -167,7 +163,7 @@ const saveData = async () => {
           phone: phone.value,
           role: role.value,
           status: status.value,
-          account_id: account_id.value,
+          account: account.value,
         }
       );
       if (response.status === 200) {

@@ -17,10 +17,11 @@
                   />
                 </div>
               </th>
-              <th>Giới tính</th>
+              <th>Tài khoản</th>
+              <!-- <th>Giới tính</th> -->
               <th>Ngày sinh</th>
               <th>Địa chỉ</th>
-              <th>Nghề nghiệp</th>
+              <!-- <th>Nghề nghiệp</th> -->
               <th>Email</th>
               <th>Số điện thoại</th>
               <th>Vai trò</th>
@@ -35,15 +36,31 @@
               :key="parent.id"
             >
               <td class="w-[300px]">{{ parent.name }}</td>
-              <td class="w-[300px]">
-                {{ parent.gender === 0 ? "Nam" : "Nữ" }}
+              <td class="px-3 w-[400px]">
+                <button
+                  @click.prevent
+                  v-if="parent.account == null"
+                  @click="$emit('click-create-acount', parent)"
+                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
+                >
+                  Tạo tài khoản
+                </button>
+                <dd class="text-gray-500 text-[14px] my-[5px]" v-else>
+                  <span>
+                    <span class="font-bold">Tài khoản:</span>
+                    {{ parent.account }}</span
+                  >
+                </dd>
               </td>
+              <!-- <td class="w-[300px]">
+                {{ parent.gender === 0 ? "Nam" : "Nữ" }}
+              </td> -->
               <td class="w-[300px]">
                 {{ new Date(parent.birthday).toLocaleDateString() }}
               </td>
 
               <td class="w-[300px]">{{ parent.address }}</td>
-              <td class="w-[700px]">{{ parent.job }}</td>
+              <!-- <td class="w-[700px]">{{ parent.job }}</td> -->
               <td class="w-[700px]">{{ parent.email }}</td>
               <td class="w-[700px]">{{ parent.phone }}</td>
               <td class="w-[700px]">{{ getRoleString(parent.role) }}</td>
