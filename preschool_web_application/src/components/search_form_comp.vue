@@ -21,9 +21,21 @@
 /* Inmport Icons */
 import search_white_icon from "@/assets/icons/search-white.svg";
 
-import { ref } from "vue";
-
 const searchText = ref("");
+
+import { onMounted, ref, watch } from "vue";
+
+const props = defineProps(["value"]);
+onMounted(() => {
+  searchText.value = props.value;
+});
+
+const emits = defineEmits(["passSearchText"]);
+watch(searchText, () => {
+  if (searchText.value == "") {
+    emits("passSearchText", searchText.value);
+  }
+});
 </script>
 
 <style scoped>

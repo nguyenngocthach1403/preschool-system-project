@@ -16,37 +16,54 @@
 
     <!-- Search-->
     <div class="flex justify-between content-center mr-3">
-      <SearchFormComp></SearchFormComp>
+      <SearchFormComp
+        @passSearchText="getSearchText($event)"
+        :value="searchText"
+      ></SearchFormComp>
       <router-link :to="{ name: 'RegisterAdditionView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
 
     <!--Show muc-->
-    <div class="my-2 w-full text-start px-6">
-      Hiển thị
-      <select
-        id="show-num-student"
-        class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
-        @change="showStudentNumSelectChange"
-      >
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-        <option value="50">50</option>
-        <option value="60">60</option>
-        <option value="70">70</option>
-        <option value="100">100</option>
-      </select>
-      Danh mục
+    <div class="flex items-center">
+      <div class="my-2 w-[400px] text-start px-6">
+        Hiển thị
+        <select
+          id="show-num-student"
+          class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
+          @change="showStudentNumSelectChange"
+        >
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="50">50</option>
+          <option value="60">60</option>
+          <option value="70">70</option>
+          <option value="100">100</option>
+        </select>
+        Danh mục
+      </div>
+      <div class="w-full flex gap-2">
+        <ItemCheckBox
+          v-for="item in statusList"
+          :key="item"
+          :content="item.name"
+          :checked="item.checked"
+          :id="item.id"
+          :total="item.total"
+          @change="changeChecked($event, item)"
+        >
+        </ItemCheckBox>
+      </div>
     </div>
 
     <!-- Quick search -->
 
     <!-- Table components -->
     <TableComp
-      :data="registrationStore.formatRegistration(registrations)"
+      :data="registrations"
       @click-create-acount="createAccountShow($event)"
       @update-status="updateStatus($event)"
     ></TableComp>
@@ -54,7 +71,9 @@
       class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
     >
       <div
-        v-if="status !== 'search_failed' && status !== 'load_failed'"
+        v-if="
+          status !== 'search_failed' && status !== 'load_failed' && total !== 0
+        "
         class="h-[37px] content-center mx-[20px]"
       >
         Hiển thị từ {{ page * limit + 1 }} đến
@@ -62,10 +81,10 @@
         {{ total }} danh mục
       </div>
       <div
-        v-if="status == 'search_failed'"
+        v-if="status == 'search_failed' || total == 0"
         class="h-[37px] content-center mx-[20px]"
       >
-        không tìm thấy danh mục nào!
+        Không tìm thấy danh mục nào!
       </div>
       <div
         v-if="status == 'load_failed'"
@@ -88,59 +107,99 @@ import TableComp from "../components/table.vue";
 import CreateAccountView from "../../account_page/components/create_account_view.vue";
 import SearchFormComp from "../../../components/search_form_comp.vue";
 import Pagination from "../../../components/pagination.vue";
+import ItemCheckBox from "../components/item_checkbox_filter.vue";
 import { storeToRefs, mapState } from "pinia";
 import { useRegistrionStore } from "../../../stores/registration_store";
 import { onMounted, ref, watch } from "vue";
 
 const registrationStore = useRegistrionStore();
-const { registrations, total, status, limit, page, loading } =
-  storeToRefs(registrationStore);
+const {
+  registrations,
+  total,
+  status,
+  statusIds,
+  searchText,
+  limit,
+  page,
+  loading,
+} = storeToRefs(registrationStore);
 
 onMounted(async () => {
-  await registrationStore.getRegistration();
+  const count = await registrationStore.countRegistration();
 
-  dataTable.value = registrationStore.formatRegistration(
-    registrationStore.registrations
-  );
+  if (
+    registrationStore.searchText !== "" &&
+    registrationStore.statusIds.length != 0
+  ) {
+    registrationStore.searchHasStatus();
+  } else if (registrationStore.searchText !== "") {
+    registrationStore.searchRegistration();
+  } else if (registrationStore.statusIds.length != 0) {
+    registrationStore.getRegistrationsWithStatus();
+  } else {
+    registrationStore.getRegistration();
+  }
+  fillStatusTotal(count);
+
+  hasCheckStatus();
 });
 
-watch(loading, () => {
-  dataTable.value = registrationStore.formatRegistration(
-    registrationStore.registrations
-  );
-});
+const statusList = ref([
+  { id: 0, name: "Đơn mới", checked: false, total: 0 },
+  { id: 1, name: "Chờ duyệt", checked: false, total: 0 },
+  { id: 2, name: "Chờ liên hệ", checked: false, total: 0 },
+  { id: 3, name: "Đã liên hệ", checked: false, total: 0 },
+  { id: 4, name: "Hoàn thành", checked: false, total: 0 },
+  { id: 5, name: "Đã hủy", checked: false, total: 0 },
+]);
+
+async function changeChecked(event, item) {
+  item.checked = event.target.checked;
+  if (event.target.checked) {
+    registrationStore.checkSatusIds(item.id);
+  } else {
+    if (registrationStore.statusIds.includes(item.id)) {
+      registrationStore.statusIds.splice(
+        registrationStore.statusIds.findIndex((e) => e == item.id),
+        1
+      );
+    }
+  }
+
+  if (registrationStore.searchText !== "") {
+    await registrationStore.searchHasStatus();
+  } else {
+    if (registrationStore.statusIds.length > 0) {
+      await registrationStore.getRegistrationsWithStatus();
+    } else {
+      await registrationStore.getRegistration();
+    }
+  }
+}
+
+function fillStatusTotal(statusTotal) {
+  // console.log("a", statusTotal[0]);
+  for (let index = 0; index < statusTotal.length; index++) {
+    const element = statusTotal[index];
+
+    const id = statusList.value.findIndex((e) => e.id == element.status);
+    statusList.value[id].total = element.total;
+  }
+}
+
+function hasCheckStatus() {
+  if (registrationStore.statusIds.length > 0) {
+    registrationStore.statusIds.forEach((e) => {
+      statusList.value[e].checked = true;
+    });
+  }
+}
+// const filterStatus = ref();
 
 const emits = defineEmits(["add-toast"]);
 const showCreateAccountView = ref(false);
 
 const registerItem = ref(null);
-
-const dataTable = ref([
-  {
-    id: 10,
-    name: "Nguyễn Ngọc Thạch",
-    phone: "0899982782",
-    email: "nguyenngocthach142003@gmail.com",
-    address: "Long Khê, Cần Đước, Long An",
-    role: 1,
-    levels: 1,
-    syllabus: 0,
-    profileStatus: 3,
-    user: "NNTHACH",
-  },
-  {
-    id: 9,
-    name: "Nguyễn Ngọc Thạch",
-    phone: "0899982782",
-    email: "nguyenngocthach142003@gmail.com",
-    address: "Long Khê, Cần Đước, Long An",
-    role: 1,
-    levels: 1,
-    syllabus: 0,
-    profileStatus: 3,
-    user: "NNTHACH",
-  },
-]);
 
 async function updateStatus(event) {
   const result = await registrationStore.updateStatus(event.id, event.status);
@@ -152,6 +211,8 @@ async function updateStatus(event) {
     });
     return;
   }
+  const count = await registrationStore.getTotalOfStatus();
+  fillStatusTotal(count);
   emits("add-toast", {
     title: "Cập nhật thành công",
     content: result.message,
@@ -174,5 +235,21 @@ function showStudentNumSelectChange(event) {
 function close() {
   showCreateAccountView.value = false;
   registrationStore.getRegistration();
+}
+async function getSearchText(event) {
+  registrationStore.searchText = event;
+
+  if (registrationStore.statusIds.length !== 0) {
+    const result = await registrationStore.searchHasStatus();
+    // if (!result.success) {
+    //   emits("add-toast", {
+    //     title: "Cập nhật thất bại",
+    //     content: result.error,
+    //     type: 1,
+    //   });
+    // }
+    return;
+  }
+  await registrationStore.searchRegistration(event);
 }
 </script>

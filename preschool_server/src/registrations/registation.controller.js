@@ -8,8 +8,123 @@ router.get("/total", getTotalRegistration);
 
 router.get("/", getRegistration);
 
+router.get("/search", searchRegistration);
+router.get("/search/status", getRegistrationWithStatusAndSearch);
+
 router.get("/update/status/:id", updateStatus);
 
+router.get("/status/total", getTotalOfStatus);
+
+router.get("/status", getRegistrationsWithStatus);
+async function getRegistrationsWithStatus(req, res) {
+  const { status, limit, offset } = req.query;
+  console.log(status);
+  const count = await registationService.getTotalWithStatus(status);
+  const result = await registationService.getRegistrationsWithStatus(
+    status,
+    limit,
+    offset
+  );
+  if (result.code) {
+    return res.status(400).json({ success: false, error: result.error });
+  }
+  if (!result.success) {
+    return res.status(200).json({ success: false, message: result.error });
+  }
+  res
+    .status(200)
+    .json({ success: true, total: count[0]["total"], data: result.data });
+}
+
+async function getRegistrationWithStatusAndSearch(req, res) {
+  const { searchText, status, limit, offset } = req.query;
+
+  const result = await registationService.getRegisterWithSearchAndStatus(
+    searchText,
+    status,
+    limit,
+    offset
+  );
+
+  const count = await registationService.countRegisterWithSearchAndStatus(
+    searchText,
+    status
+  );
+
+  if (result.code) {
+    return res.status(500).json({
+      success: false,
+      error: result.error,
+    });
+  }
+  if (!result.success) {
+    return res.status(200).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    total: count.data[0]["total"],
+    data: result.data,
+  });
+}
+
+async function searchRegistration(req, res) {
+  const { searchText, limit, offset } = req.query;
+
+  const count = await registationService.getTotalWithSearch(searchText);
+
+  const result = await registationService.searchRegisterWithSearch(
+    searchText,
+    limit,
+    offset
+  );
+
+  if (result.code) {
+    return res.status(400).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  if (!result.success) {
+    return res.status(200).json({
+      success: false,
+      message: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    total: count.data[0]["total"],
+    data: result.data,
+  });
+}
+
+async function getTotalOfStatus(req, res) {
+  const result = await registationService.getTotalOfStatus();
+
+  if (result.code) {
+    return res.status(400).json({
+      status: 400,
+      error: result.error,
+    });
+  }
+
+  if (!result.success) {
+    return res.status(500).json({
+      status: 500,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    status: 200,
+    data: result.data,
+  });
+}
 async function updateStatus(req, res) {
   const id = req.params.id;
   const status = req.query.status;
@@ -74,9 +189,12 @@ async function getRegistration(req, res) {
       message: result.message,
     });
   }
+  const count = await registationService.getTotalRegistration();
+
   res.status(200).json({
     status: 200,
     message: "Successful",
+    total: count[0]["total"],
     data: result,
   });
 }
