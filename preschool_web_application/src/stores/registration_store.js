@@ -9,6 +9,8 @@ export const useRegistrionStore = defineStore("registrationStore", {
     limit: 10,
     page: 0,
     loading: false,
+    searchText: "",
+    statusIds: [],
   }),
   actions: {
     formatRegistration(data) {
@@ -24,7 +26,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
           address: `${element.town ? element.town + "," : ""} ${
             element.district ? element.district + "," : ""
           } ${element.city ? element.city : ""}`,
-          role: element.role,
+          role: element.relationship,
           levels: element.levelsName,
           syllabus: element.syllabusName,
           status: element.status,
@@ -35,15 +37,31 @@ export const useRegistrionStore = defineStore("registrationStore", {
       }
       return registrations;
     },
-    async getRegistrationTotal() {
+
+    async countRegistration() {
       const response = await registrationService.getRegistrationTotal();
 
       const data = response.data;
 
       this.total = data.total;
 
-      return data.total;
+      const responseStatusTotal = await registrationService.getTotalOfStatus();
+
+      return responseStatusTotal.data.data;
     },
+
+    async getTotalOfStatus() {
+      const responseStatusTotal = await registrationService.getTotalOfStatus();
+
+      return responseStatusTotal.data.data;
+    },
+
+    checkSatusIds(id) {
+      if (!this.statusIds.includes(id)) {
+        this.statusIds.push(id);
+      }
+    },
+
     async updateStatus(id, status) {
       const response = await registrationService.updateStatus(id, status);
 
@@ -70,13 +88,6 @@ export const useRegistrionStore = defineStore("registrationStore", {
     async getRegistration() {
       this.status = "loading";
       this.loading = true;
-      if ((await this.getRegistrationTotal()) < 1) {
-        this.status = "load_failed";
-        return {
-          success: false,
-          message: "There is not something!",
-        };
-      }
 
       const response = await registrationService.getRegistrations(
         this.limit,
@@ -92,7 +103,8 @@ export const useRegistrionStore = defineStore("registrationStore", {
         };
       }
 
-      this.registrations = data.data;
+      this.registrations = this.formatRegistration(data.data);
+      this.total = data.total;
 
       this.status = "loaded";
       this.loading = false;
@@ -104,9 +116,105 @@ export const useRegistrionStore = defineStore("registrationStore", {
         message: "Load successful!",
       };
     },
+
+    async searchHasStatus() {
+      const response =
+        await registrationService.getRegistrationWithStatusAndSearch(
+          this.searchText,
+          this.statusIds,
+          this.page,
+          this.limit
+        );
+      console.log(response);
+      if (response.status !== 200) {
+        this.registrations = [];
+        this.total = 0;
+        return {
+          success: false,
+          message: "Tìm kiếm thất tại",
+        };
+      }
+
+      if (!response.data.success) {
+        this.registrations = [];
+        this.total = 0;
+        return {
+          success: false,
+          message: "Tìm kiếm thất tại",
+        };
+      }
+
+      this.registrations = this.formatRegistration(response.data.data);
+      this.total = response.data.total;
+      return {
+        success: true,
+      };
+    },
+
+    async getRegistrationsWithStatus() {
+      const response = await registrationService.getRegistrationsWithStatus(
+        this.statusIds,
+        this.page,
+        this.limit
+      );
+
+      console.log(response);
+      if (response.status !== 200) {
+        return {
+          success: false,
+          message: "Tìm kiếm thất tại",
+        };
+      }
+
+      if (!response.data.success) {
+        return {
+          success: false,
+          message: "Tìm kiếm thất tại",
+        };
+      }
+
+      this.registrations = this.formatRegistration(response.data.data);
+      this.total = response.data.total;
+      return {
+        success: true,
+      };
+    },
+
+    async searchRegistration() {
+      const response = await registrationService.searchRegister(
+        this.searchText,
+        this.page,
+        this.limit
+      );
+      console.log(response);
+      if (response.status !== 200) {
+        return {
+          success: false,
+          message: "Tìm kiếm thất tại",
+        };
+      }
+
+      if (!response.data.success) {
+        return {
+          success: false,
+          message: "Tìm kiếm thất tại",
+        };
+      }
+
+      this.registrations = this.formatRegistration(response.data.data);
+      this.total = response.data.total;
+      return {
+        success: true,
+      };
+    },
     async changePage(page) {
       if (page != this.page) {
         this.page = page;
+
+        if (this.searchText !== 0) {
+          this.searchRegistration();
+        }
+
         this.getRegistration();
       }
     },
@@ -114,7 +222,6 @@ export const useRegistrionStore = defineStore("registrationStore", {
       if (newVal >= this.total && this.page != 0) {
         this.page = 0;
       }
-      this.limit = newVal;
       this.getRegistration();
     },
   },
