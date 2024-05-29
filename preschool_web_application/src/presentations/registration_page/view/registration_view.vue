@@ -93,8 +93,8 @@
         Không có danh mục nào tồn tại!
       </div>
       <Pagination
-        :page-nums="round(registrationStore.total / registrationStore.limit)"
-        :page-active="registrationStore.page + 1"
+        :page-nums="round(total / limit)"
+        :page-active="page + 1"
         @click-page="changePage($event)"
       ></Pagination>
     </div>
@@ -117,11 +117,11 @@ const {
   registrations,
   total,
   status,
-  statusIds,
-  searchText,
   limit,
   page,
   loading,
+  searchText,
+  statusIds,
 } = storeToRefs(registrationStore);
 
 onMounted(async () => {
@@ -166,8 +166,13 @@ async function changeChecked(event, item) {
     }
   }
 
-  if (registrationStore.searchText !== "") {
+  if (
+    registrationStore.searchText !== "" &&
+    registrationStore.statusIds.length !== 0
+  ) {
     await registrationStore.searchHasStatus();
+  } else if (registrationStore.searchText !== "") {
+    registrationStore.searchRegistration();
   } else {
     if (registrationStore.statusIds.length > 0) {
       await registrationStore.getRegistrationsWithStatus();
