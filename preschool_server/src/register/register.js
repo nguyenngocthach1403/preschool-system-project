@@ -11,7 +11,7 @@ const { error } = require("console");
 
 router.post("/", upload.array("files"), async (req, res) => {
   const {
-    your_name,
+    name,
     email,
     phone,
     address,
@@ -21,12 +21,11 @@ router.post("/", upload.array("files"), async (req, res) => {
     levels,
     syllabus,
     relationship,
-    informationState,
     status,
   } = req.body;
 
   const data = {
-    your_name: your_name,
+    name: name,
     email: email,
     phone: phone,
     address: address,
@@ -36,7 +35,6 @@ router.post("/", upload.array("files"), async (req, res) => {
     levels: levels,
     syllabus: syllabus,
     relationship: relationship,
-    informationState: informationState,
     status: status,
   };
 
@@ -74,19 +72,19 @@ router.post("/", upload.array("files"), async (req, res) => {
   });
 });
 
-router.get("/images/:imageName", (req, res) => {
-  const imageName = req.params.imageName;
-  const imagePath = path.join(__dirname, "../uploads/", imageName);
+// router.get("/images/:imageName", (req, res) => {
+//   const imageName = req.params.imageName;
+//   const imagePath = path.join(__dirname, "../uploads/", imageName);
 
-  // Kiểm tra xem hình ảnh có tồn tại không
-  if (fs.existsSync(imagePath)) {
-    // res.status(200).send({ imagePath: imagePath });
-    const imageData = fs.readFileSync(imagePath);
-    res.writeHead(200, { "Content-Type": "image/jpeg" });
-    res.end(imageData, "binary");
-  } else {
-    res.status(404).send("Image not found");
-  }
-});
+//   // Kiểm tra xem hình ảnh có tồn tại không
+//   if (fs.existsSync(imagePath)) {
+//     // res.status(200).send({ imagePath: imagePath });
+//     const imageData = fs.readFileSync(imagePath);
+//     res.writeHead(200, { "Content-Type": "image/jpeg" });
+//     res.end(imageData, "binary");
+//   } else {
+//     res.status(404).send("Image not found");
+//   }
+// });
 
 module.exports = router;
