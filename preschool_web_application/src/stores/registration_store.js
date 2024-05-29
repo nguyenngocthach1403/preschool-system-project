@@ -20,7 +20,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
         const element = data[index];
         registrations.push({
           id: element.id,
-          name: element.your_name,
+          name: element.name,
           phone: element.phone,
           email: element.email,
           address: `${element.town ? element.town + "," : ""} ${
@@ -118,6 +118,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
     },
 
     async searchHasStatus() {
+      if (this.statusIds.length == 0) return;
       const response =
         await registrationService.getRegistrationWithStatusAndSearch(
           this.searchText,
@@ -152,6 +153,8 @@ export const useRegistrionStore = defineStore("registrationStore", {
     },
 
     async getRegistrationsWithStatus() {
+      if (this.statusIds.length == 0) return;
+      this.page = 0;
       const response = await registrationService.getRegistrationsWithStatus(
         this.statusIds,
         this.page,
@@ -211,7 +214,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
       if (page != this.page) {
         this.page = page;
 
-        if (this.searchText !== 0) {
+        if (this.searchText !== "") {
           this.searchRegistration();
         }
 

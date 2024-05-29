@@ -34,7 +34,7 @@ async function createRegister(data) {
 //     const result = await db.select(
 //       config.tb.register,
 //       "COUNT(*) as total, status",
-//       `WHERE status in (${status}) AND your_name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%' GROUP BY status`
+//       `WHERE status in (${status}) AND name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%' GROUP BY status`
 //     );
 
 //     if (result.length == 0) {
@@ -60,7 +60,7 @@ async function getTotalWithSearch(searchText) {
     const result = await db.select(
       config.tb.register,
       "COUNT(*) as total",
-      `WHERE your_name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%'`
+      `WHERE name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%'`
     );
 
     if (result[0]["total"] == 0) {
@@ -87,7 +87,7 @@ async function searchRegisterWithSearch(searchText, limit, offset) {
     const result = await db.selectLimit(
       `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
       "r.*, l.levelsName, s.syllabusName",
-      `WHERE your_name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%'`,
+      `WHERE name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );
@@ -156,7 +156,7 @@ async function countRegisterWithSearchAndStatus(searchText, status) {
     const result = await db.select(
       config.tb.register,
       "COUNT(*) as total",
-      `WHERE status in (${status}) AND your_name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%'`
+      `WHERE status in (${status}) AND name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%'`
     );
 
     if (result.length == 0) {
@@ -190,7 +190,7 @@ async function getRegisterWithSearchAndStatus(
     const result = await db.selectLimit(
       `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
       "r.*, l.levelsName, s.syllabusName",
-      `WHERE status in (${status}) AND (your_name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%')`,
+      `WHERE status in (${status}) AND (name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%')`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );

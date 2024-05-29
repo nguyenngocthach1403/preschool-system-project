@@ -16,7 +16,7 @@
       v-for="index in props.pageNums ?? 1"
       :key="index"
       @click="$emit('click-page', (pageActive = index))"
-      :class="{ 'current-page-active': pageActive === index }"
+      :class="{ 'current-page-active': props.pageActive === index }"
     >
       {{ index }}
     </button>
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 onMounted(() => {
   pageActive.value = props.pageActive;
