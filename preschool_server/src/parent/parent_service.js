@@ -9,6 +9,7 @@ module.exports = {
   searchParent,
   countSearchParent,
   isDuplicate,
+  isDuplicateAccount,
   insertParent,
   updateParent,
   deleteParent,
@@ -41,7 +42,7 @@ async function getByID(id) {
   try {
     return db1.select(
       `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account = a.username LEFT JOIN ${config.tb.register} r ON p.account = r.accountId`,
-      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, r.*, r.your_name, r.email, r.phone",
+      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, r.*, r.name, r.email, r.phone",
       id !== undefined ? `Where p.id = ${id}` : ""
     );
   } catch (error) {
@@ -96,7 +97,7 @@ async function searchParent(txtSearch, page, limit) {
     return db.selectLimit(
       config.tb.parent,
       "*",
-      `WHERE name LIKE "%${txtSearch}%"`,
+      `WHERE deleted = 0 AND name LIKE "%${txtSearch}%"`,
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
@@ -150,6 +151,19 @@ async function isDuplicate(email, phone, account) {
     throw error;
   }
 }
+async function isDuplicateAccount(account) {
+  try {
+    const result = await db.select(
+      config.tb.parent,
+      "*",
+      `WHERE account = '${account}'`
+    );
+    return result.length > 0;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function insertParent(data) {
   try {
     const parentId = await db.insert(config.tb.parent, data);
