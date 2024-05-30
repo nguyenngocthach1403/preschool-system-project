@@ -16,3 +16,8 @@ body{
     background-color: #ECECEC;
 
 }
+@layer components {
+    .input-text-default {
+        @apply mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4;
+    }
+}

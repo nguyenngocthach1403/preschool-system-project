@@ -47,7 +47,7 @@
                 @click.prevent
                 @choose-item="classInput = $event.id"
                 class="h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-                :option-list="data"
+                :option-list="classList"
                 :value-active="classInput"
               />
             </label>
@@ -220,6 +220,7 @@ import SaveButton from "../../../components/save_button.vue";
 
 import ListBox from "../../../components/select_comp.vue";
 import axios from "axios";
+import classSercive from "../../../services/class.service";
 
 onBeforeMount(() => {
   getDrafValue();
@@ -227,6 +228,7 @@ onBeforeMount(() => {
 });
 onMounted(async () => {
   studentAvatarPath.value = avatar_default;
+  fetchClass();
 });
 
 const studentStore = useStudentStore();
@@ -310,56 +312,7 @@ const forkList = ref([
   { name: "Thổ", id: 53 },
 ]);
 
-const data = ref([
-  {
-    name: "a",
-    id: 0,
-  },
-  {
-    name: "b",
-    id: 2,
-  },
-  {
-    name: "c",
-    id: 3,
-  },
-  {
-    name: "d",
-    id: 4,
-  },
-  {
-    name: "e",
-    id: 5,
-  },
-  {
-    name: "f",
-    id: 6,
-  },
-  {
-    name: "a",
-    id: 7,
-  },
-  {
-    name: "a",
-    id: 8,
-  },
-  {
-    name: "e",
-    id: 9,
-  },
-  {
-    name: "f",
-    id: 10,
-  },
-  {
-    name: "a",
-    id: 11,
-  },
-  {
-    name: "a",
-    id: 12,
-  },
-]);
+const data = ref([]);
 
 watch(studentNameInput, () => {
   if (studentNameInput.value !== "") {
@@ -465,6 +418,18 @@ function saveDrafValueInput() {
   emits("add-toast", {
     title: "Save student on draf successdfuly!",
     type: 0,
+  });
+}
+
+const classList = ref([]);
+async function fetchClass() {
+  classSercive.fetchClass(20, 0).then((value) => {
+    value.data.data.forEach((element) => {
+      classList.value.push({
+        id: element.classID,
+        name: element.className,
+      });
+    });
   });
 }
 
