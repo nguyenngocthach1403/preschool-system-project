@@ -19,7 +19,7 @@
               </th>
               <th>Tài khoản</th>
               <!-- <th>Giới tính</th> -->
-              <th>Ngày sinh</th>
+              <!-- <th>Ngày sinh</th> -->
               <th>Địa chỉ</th>
               <!-- <th>Nghề nghiệp</th> -->
               <th>Email</th>
@@ -40,10 +40,10 @@
                 <button
                   @click.prevent
                   v-if="parent.account == null"
-                  @click="$emit('click-create-acount', parent)"
+                  @click="editParent(parent.id)"
                   class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
                 >
-                  Tạo tài khoản
+                  Thêm tài khoản
                 </button>
                 <dd class="text-gray-500 text-[14px] my-[5px]" v-else>
                   <span>
@@ -55,9 +55,9 @@
               <!-- <td class="w-[300px]">
                 {{ parent.gender === 0 ? "Nam" : "Nữ" }}
               </td> -->
-              <td class="w-[300px]">
+              <!-- <td class="w-[300px]">
                 {{ new Date(parent.birthday).toLocaleDateString() }}
-              </td>
+              </td> -->
 
               <td class="w-[300px]">{{ parent.address }}</td>
               <!-- <td class="w-[700px]">{{ parent.job }}</td> -->
@@ -130,15 +130,15 @@ defineProps({
 // };
 const getRoleString = (role) => {
   switch (role) {
-    case 1:
+    case 0:
       return "Bố";
-    case 2:
+    case 1:
       return "Mẹ";
-    case 3:
+    case 2:
       return "Anh, chị";
-    case 4:
+    case 3:
       return "Ông, bà";
-    case 5:
+    case 4:
       return "Người giám hộ";
     default:
       return "Khác";

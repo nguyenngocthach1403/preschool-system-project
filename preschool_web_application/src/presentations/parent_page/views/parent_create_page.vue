@@ -12,6 +12,8 @@
               v-model="name"
               placeholder="Nhập họ tên"
             />
+
+            {{ messageOfParentName }}
           </div>
 
           <div class="form-group">
@@ -28,6 +30,9 @@
           <div class="form-group">
             <label for="birthday">Ngày sinh</label>
             <input type="date" id="birthday" v-model="birthday" />
+            <div class="h-5 valid">
+              {{ invalidBirthday }}
+            </div>
           </div>
           <div class="form-group">
             <label for="address">Địa chỉ</label>
@@ -124,6 +129,8 @@ const status = ref(1);
 const account = ref(null);
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
+const messageOfParentName = ref("");
+const invalidBirthday = ref("");
 
 const checkDuplicate = async () => {
   try {
@@ -140,17 +147,34 @@ const checkDuplicate = async () => {
     console.log(e);
   }
 };
+function checkVadlidInput() {
+  const invalid = ref(false);
+  if (name.value === null || name.value == "") {
+    messageOfParentName.value = "Không được bỏ trống tên.";
+    invalid.value = true;
+  }
+  if (birthday.value === null || birthday.value === "") {
+    invalidBirthday.value = "Không được bỏ trống ngày sinh.";
+    invalid.value = true;
+  }
+  return invalid.value;
+}
+
 const saveData = async () => {
   try {
+    if (checkVadlidInput()) {
+      return;
+    }
     const isDuplicate = await checkDuplicate();
-    if (isDuplicate.message === "Email or phone or account already exists.") {
+    if (isDuplicate.status === 400) {
       emits("add-toast", {
         title:
           "Email hoặc số điện thoại hoặc account đã tồn tại, vui lòng thử lại!",
         type: 1,
       });
       return;
-    } else if (isDuplicate.message === "Email, phone and account are unique.") {
+    } else if (isDuplicate.status === 200) {
+      const accountValue = account.value ? account.value : null;
       const response = await axios.post(
         "http://localhost:9000/parents/insert",
         {
@@ -163,7 +187,7 @@ const saveData = async () => {
           phone: phone.value,
           role: role.value,
           status: status.value,
-          account: account.value,
+          account: accountValue,
         }
       );
       if (response.status === 200) {

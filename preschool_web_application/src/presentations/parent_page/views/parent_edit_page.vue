@@ -187,7 +187,7 @@
       <!--Hiện thị khi người dùng chưa có tài khoản 
             Nhập mã tài khoản để thêm
           -->
-      <!-- <div>
+      <div v-if="account === null">
         <div class="text-start px-10 py-3 text-gray-500">
           * Phụ huynh hiện tại chưa được thêm tài khoản
         </div>
@@ -199,12 +199,14 @@
                 type="text"
                 placeholder="Tên đăng nhập"
                 class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                v-model="create_account"
               />
               <div
                 id="button-side"
                 class="w-full flex text-start gap-5 my-[5px]"
               >
                 <button
+                  @click.prevent="updateParent1"
                   v-if="status !== 'creating'"
                   type="submit"
                   class="h-[45px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -243,10 +245,10 @@
             </div>
           </label>
         </div>
-      </div> -->
+      </div>
 
       <!-- Hiện thị khi người dùng đã có tài khoản -->
-      <div class="w-full px-40">
+      <div class="w-full px-40" v-if="account !== null">
         <div class="flex w-full gap-5 mx-[20px] mb-[20px] py-5">
           <label class="w-full text-start">
             <span class="pl-4 text-blue-700">Tên tài khoản</span>
@@ -289,6 +291,7 @@
         </div>
         <div id="button-side" class="w-full flex text-start mx-5 gap-5">
           <button
+            @click.prevent="updateParent"
             v-if="status !== 'creating'"
             type="submit"
             class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -326,17 +329,11 @@
         </div>
       </div>
     </div>
-    <div
+    <!-- <div
       class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-fit pb-[60px]"
     >
       <div id="head">Thông tin đơn đăng ký</div>
-
-      <!-- Hiện thị khi người dùng chưa có tài khoản có tài khoản -->
-      <!-- <div class="text-start px-10 py-3 text-gray-500">
-        * Phụ huynh hiện tại chưa được thêm tài khoản vui lòng thêm tài khoản
-      </div> -->
-
-      <!-- Hiện thị khi người dùng đã có tài khoản -->
+      
       <div class="w-full px-40 py-5">
         <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
           <label class="w-full text-start">
@@ -440,14 +437,6 @@
               :active="1"
             />
           </label>
-          <!-- <select_locantion
-        :selectedCity="city"
-        :selectedDistrict="district"
-        :selectedWard="town"
-        @update:selectedCity="handleCityChange"
-        @update:selectedDistrict="handleDistrictChange"
-        @update:selectedWard="handleWardChange"
-      /> -->
         </div>
         <div class="text-start w-full gap-5 mx-[20px] mb-[20px]">
           <span class="my-2">Hình ảnh đơn đăng ký</span>
@@ -502,7 +491,7 @@
           </button>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -530,65 +519,66 @@ const emits = defineEmits(["add-toast"]);
 const router = useRouter();
 const statusAccount = ref(1);
 const account = ref("");
+const create_account = ref("");
 
 //Registration
-const levels = ref("");
-const syllabus = ref("");
-const registerId = ref("");
-const registerName = ref("");
-const registerPhone = ref("");
-const registerEmail = ref("");
-const regiterStatus = ref(1);
-const fileStatus = ref(1);
-const city = ref("");
-const district = ref("");
-const town = ref("");
+// const levels = ref("");
+// const syllabus = ref("");
+// const registerId = ref("");
+// const registerName = ref("");
+// const registerPhone = ref("");
+// const registerEmail = ref("");
+// const regiterStatus = ref(1);
+// const fileStatus = ref(1);
+// const city = ref("");
+// const district = ref("");
+// const town = ref("");
 
-const genderList = ref(["Nam", "Nữ"]);
-const roleList = ref(["Bố", "Mẹ", "Người giám hộ"]);
-const jobList = ref(["Giáo viên", "Sinh Viên"]);
-const levelsList = ref(["Mầm", "Chồi", "Lá"]);
-const fileStatusList = ref(["Chưa hoàn thành", "Đã hoàn thành", "Thiếu"]);
-const cityList = ref([]);
-const districtList = ref([]);
-const townList = ref([]);
-const addressList = ref([]);
-const registerStatusList = ref([
-  "Đơn mới",
-  "Chờ duyệt",
-  "Chờ liên hệ",
-  "Đã liên hệ",
-  "Hoàn thành",
-]);
+// const genderList = ref(["Nam", "Nữ"]);
+// const roleList = ref(["Bố", "Mẹ", "Người giám hộ"]);
+// const jobList = ref(["Giáo viên", "Sinh Viên"]);
+// const levelsList = ref(["Mầm", "Chồi", "Lá"]);
+// const fileStatusList = ref(["Chưa hoàn thành", "Đã hoàn thành", "Thiếu"]);
+// const cityList = ref([]);
+// const districtList = ref([]);
+// const townList = ref([]);
+// const addressList = ref([]);
+// const registerStatusList = ref([
+//   "Đơn mới",
+//   "Chờ duyệt",
+//   "Chờ liên hệ",
+//   "Đã liên hệ",
+//   "Hoàn thành",
+// ]);
 
-watch(city, () => {
-  if (addressList.value.some((e) => e.Name == city.value)) {
-    console.log("ýe");
-    const index = addressList.value.findIndex((e) => e.Name == city.value);
-    addressList.value[index].Districts.forEach((e) => {
-      districtList.value.push(e.Name);
-    });
-  }
-});
+// watch(city, () => {
+//   if (addressList.value.some((e) => e.Name == city.value)) {
+//     console.log("ýe");
+//     const index = addressList.value.findIndex((e) => e.Name == city.value);
+//     addressList.value[index].Districts.forEach((e) => {
+//       districtList.value.push(e.Name);
+//     });
+//   }
+// });
 
-watch(district, () => {
-  if (addressList.value.some((e) => e.Name == city.value)) {
-    const indexCity = addressList.value.findIndex((e) => e.Name == city.value);
-    console.log(indexCity);
-    if (
-      addressList.value[indexCity].Districts.some(
-        (districtItem) => districtItem.Name == district.value
-      )
-    ) {
-      const indexDistrict = addressList.value[indexCity].Districts.findIndex(
-        (e) => e.Name == district.value
-      );
-      addressList.value[indexCity].Districts[indexDistrict].Wards.forEach(
-        (ward) => townList.value.push(ward.Name)
-      );
-    }
-  }
-});
+// watch(district, () => {
+//   if (addressList.value.some((e) => e.Name == city.value)) {
+//     const indexCity = addressList.value.findIndex((e) => e.Name == city.value);
+//     console.log(indexCity);
+//     if (
+//       addressList.value[indexCity].Districts.some(
+//         (districtItem) => districtItem.Name == district.value
+//       )
+//     ) {
+//       const indexDistrict = addressList.value[indexCity].Districts.findIndex(
+//         (e) => e.Name == district.value
+//       );
+//       addressList.value[indexCity].Districts[indexDistrict].Wards.forEach(
+//         (ward) => townList.value.push(ward.Name)
+//       );
+//     }
+//   }
+// });
 
 const getParent = async () => {
   try {
@@ -604,25 +594,17 @@ const getParent = async () => {
       parsedBirthday.getMonth() + 1
     ).padStart(2, "0")}-${String(parsedBirthday.getDate()).padStart(2, "0")}`;
     if (parents) {
-      name_parent.value = parents.name;
+      name_parent.value = parents.NameParent;
       gender_parent.value = parents.gender;
       birthday.value = formattedBirthday;
-      address.value = parents.address;
+      address.value = parents.AddressParent;
       job.value = parents.job;
-      email_parent.value = parents.email;
+      email_parent.value = parents.EmailParent;
       phone_parent.value = parents.PhoneParent;
       role.value = parents.role;
       status.value = parents.status;
       account.value = parents.account;
-      registerName.value = parents.your_name;
-      registerId.value = parents.id;
-      registerEmail.value = parents.email;
-      levels.value = parents.levels;
-      registerPhone.value = parents.phone;
-      genderList.value = parents.gender;
-      town.value = parents.town;
     }
-    // console.log(birthday.value);
     console.log(role.value);
   } catch (error) {
     console.error("Error fetching parents:", error);
@@ -646,7 +628,7 @@ const updateParent = async () => {
         status: status.value,
       }
     );
-    if (response.status === 200) {
+    if (response.data.status === 200) {
       emits("add-toast", {
         title: "Update Successfully!",
         type: 0,
@@ -660,33 +642,89 @@ const updateParent = async () => {
   }
 };
 
-const cancel = () => {
-  router.push({ name: "ParentView" });
+const checkDuplicate = async () => {
+  try {
+    const checkDuplicateResponse = await axios.post(
+      "http://localhost:9000/parents/duplicateAccount",
+      {
+        account: create_account.value,
+      }
+    );
+    return checkDuplicateResponse.data;
+  } catch (error) {
+    console.log(e);
+  }
 };
 
-onMounted(async () => {
-  // await getParent();
-});
+const updateParent1 = async () => {
+  try {
+    const isDuplicate = await checkDuplicate();
+    if (isDuplicate.status === 400) {
+      emits("add-toast", {
+        title: "Account đã tồn tại, hãy kiểm tra lại!",
+        type: 1,
+      });
+      return;
+    } else if (isDuplicate.status === 200) {
+      const parentId = router.currentRoute.value.params.id;
+      const response = await axios.put(
+        `http://localhost:9000/parents/${parentId}`,
+        {
+          name: name_parent.value,
+          gender: gender_parent.value,
+          birthday: birthday.value,
+          address: address.value,
+          job: job.value,
+          email: email_parent.value,
+          phone: phone_parent.value,
+          role: role.value,
+          status: status.value,
+          account: create_account.value,
+        }
+      );
+      if (response.data.status === 200) {
+        emits("add-toast", {
+          title: "Cập nhật thành công!",
+          type: 0,
+        });
+        router.push({ name: "ParentView" });
+      } else if (response.data.status === 400) {
+        emits("add-toast", {
+          title: "Hãy kiểm tra lại thông tin!",
+          type: 1,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error updating parent:", error);
+  }
+};
+// const cancel = () => {
+//   router.push({ name: "ParentView" });
+// };
+
+// onMounted(async () => {
+//   await getParent();
+// });
 
 onBeforeMount(async () => {
   await getParent();
-  await fetchData();
 });
 
-async function fetchData() {
-  axios
-    .get(
-      "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
-    )
-    .then((response) => {
-      addressList.value = response.data;
-      addressList.value.forEach((e) => cityList.value.push(e.Name));
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-}
+// async function fetchData() {
+//   axios
+//     .get(
+//       "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
+//     )
+//     .then((response) => {
+//       addressList.value = response.data;
+//       addressList.value.forEach((e) => cityList.value.push(e.Name));
+//       console.log(response.data);
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching data:", error);
+//     });
+// }
 </script>
 
 <style scoped>
