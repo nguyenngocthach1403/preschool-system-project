@@ -9,6 +9,9 @@ router.get("/", getAccont);
 router.get("/total", getAccountTotal);
 
 router.post("/create", createAccount);
+
+router.put("/update/:username", updateAccountByUsername);
+
 async function createAccount(req, res) {
   const data = req.body;
 
@@ -111,6 +114,26 @@ async function getAccont(req, res) {
     status: 200,
     message: "Successful!",
     data: result,
+  });
+}
+
+async function updateAccountByUsername(req, res) {
+  const username = req.params.username;
+  const newData = req.body;
+
+  const result = await accountService.updateByUsername(username, newData);
+
+  if (result.code) {
+    return res.status(400).json({
+      status: 404,
+      message: result.message,
+      error: result.code,
+    });
+  }
+
+  res.status(200).json({
+    status: 200,
+    message: "Update successful.",
   });
 }
 

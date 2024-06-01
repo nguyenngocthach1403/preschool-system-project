@@ -38,29 +38,28 @@ async function getAll() {
 //     return error;
 //   }
 // }
+// async function getByID(id) {
+//   try {
+//     return db1.select(
+//       `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account = a.username LEFT JOIN ${config.tb.register} r ON p.account = r.accountId`,
+//       "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, r.*, r.name, r.email, r.phone",
+//       id !== undefined ? `Where p.id = ${id}` : ""
+//     );
+//   } catch (error) {
+//     return error;
+//   }
+// }
 async function getByID(id) {
   try {
     return db1.select(
-      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account = a.username LEFT JOIN ${config.tb.register} r ON p.account = r.accountId`,
-      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, r.*, r.name, r.email, r.phone",
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account = a.username`,
+      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount",
       id !== undefined ? `Where p.id = ${id}` : ""
     );
   } catch (error) {
     return error;
   }
 }
-
-// async function getByID(id) {
-//   try {
-//     return db.select(
-//       "Parent",
-//       "name, gender, birthday, address, job, email, phone, role, status, account_id",
-//       id !== undefined ? `Where Parent = ${id}` : ""
-//     );
-//   } catch (error) {
-//     db.disconnect();
-//   }
-// }
 
 async function getParentById(id) {
   try {
@@ -97,7 +96,7 @@ async function searchParent(txtSearch, page, limit) {
     return db.selectLimit(
       config.tb.parent,
       "*",
-      `WHERE deleted = 0 AND name LIKE "%${txtSearch}%"`,
+      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account LIKE '%${txtSearch}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
@@ -114,7 +113,7 @@ async function countSearchParent(txtSearch) {
     return db.select(
       config.tb.parent,
       "Count(*) AS total",
-      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%'`
+      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account LIKE '%${txtSearch}%'`
     );
   } catch (error) {
     return {
