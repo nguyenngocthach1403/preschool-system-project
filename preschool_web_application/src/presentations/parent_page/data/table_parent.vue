@@ -20,7 +20,7 @@
               <th>Tài khoản</th>
               <!-- <th>Giới tính</th> -->
               <!-- <th>Ngày sinh</th> -->
-              <th>Địa chỉ</th>
+              <!-- <th>Địa chỉ</th> -->
               <!-- <th>Nghề nghiệp</th> -->
               <th>Email</th>
               <th>Số điện thoại</th>
@@ -59,7 +59,7 @@
                 {{ new Date(parent.birthday).toLocaleDateString() }}
               </td> -->
 
-              <td class="w-[300px]">{{ parent.address }}</td>
+              <!-- <td class="w-[300px]">{{ parent.address }}</td> -->
               <!-- <td class="w-[700px]">{{ parent.job }}</td> -->
               <td class="w-[700px]">{{ parent.email }}</td>
               <td class="w-[700px]">{{ parent.phone }}</td>
@@ -130,15 +130,15 @@ defineProps({
 // };
 const getRoleString = (role) => {
   switch (role) {
-    case 0:
-      return "Bố";
     case 1:
-      return "Mẹ";
+      return "Bố";
     case 2:
-      return "Anh, chị";
+      return "Mẹ";
     case 3:
-      return "Ông, bà";
+      return "Anh, chị";
     case 4:
+      return "Ông, bà";
+    case 5:
       return "Người giám hộ";
     default:
       return "Khác";
