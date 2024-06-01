@@ -115,12 +115,12 @@
                   v-model="role"
                   class="h-[45px] rounded-md mb-[25px] my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
                 >
-                  <option value="">Chọn mối quan hệ</option>
-                  <option value="0">Bố</option>
-                  <option value="1">Mẹ</option>
-                  <option value="2">Anh, Chị</option>
-                  <option value="3">Ông, Bà</option>
-                  <option value="4">Người giám hộ</option>
+                  <option value="0">Chọn mối quan hệ</option>
+                  <option value="1">Bố</option>
+                  <option value="2">Mẹ</option>
+                  <option value="3">Anh, Chị</option>
+                  <option value="4">Ông, Bà</option>
+                  <option value="5">Người giám hộ</option>
                 </select>
               </label>
             </div>
@@ -134,49 +134,44 @@
             </div> -->
           </div>
         </div>
-        <!-- <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
-        <button
-          @click.prevent="saveDrafValueInput"
-          class="h-[48px] border border-[#3B44D1] hover:bg-[#3B44D1] hover:text-white px-[25px] rounded-md text-[20px]"
-        >
-          Save to Draf
-        </button>
-        <button
-          v-if="status !== 'creating'"
-          type="submit"
-          class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
-        >
-          Save
-        </button>
-        <button
-          v-if="status === 'creating'"
-          type="button"
-          class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
-          disabled
-        >
-          <svg
-            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
+        <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
+          <button
+            @click.prevent="updateParent"
+            v-if="status !== 'creating'"
+            type="submit"
+            class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
           >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-          Processing...
-        </button>
-      </div> -->
+            Save
+          </button>
+          <button
+            v-if="status === 'creating'"
+            type="button"
+            class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+            disabled
+          >
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Processing...
+          </button>
+        </div>
       </div>
     </form>
     <div
@@ -266,7 +261,7 @@
               type="text"
               placeholder="0xxxxxxxxx"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              v-model="phone_parent"
+              v-model="phone_account"
             />
           </label>
         </div>
@@ -285,13 +280,13 @@
               type="text"
               placeholder="abc@abc.com"
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              v-model="email_parent"
+              v-model="email_account"
             />
           </label>
         </div>
         <div id="button-side" class="w-full flex text-start mx-5 gap-5">
           <button
-            @click.prevent="updateParent"
+            @click.prevent="updateAccount"
             v-if="status !== 'creating'"
             type="submit"
             class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -521,64 +516,8 @@ const statusAccount = ref(1);
 const account = ref("");
 const create_account = ref("");
 
-//Registration
-// const levels = ref("");
-// const syllabus = ref("");
-// const registerId = ref("");
-// const registerName = ref("");
-// const registerPhone = ref("");
-// const registerEmail = ref("");
-// const regiterStatus = ref(1);
-// const fileStatus = ref(1);
-// const city = ref("");
-// const district = ref("");
-// const town = ref("");
-
-// const genderList = ref(["Nam", "Nữ"]);
-// const roleList = ref(["Bố", "Mẹ", "Người giám hộ"]);
-// const jobList = ref(["Giáo viên", "Sinh Viên"]);
-// const levelsList = ref(["Mầm", "Chồi", "Lá"]);
-// const fileStatusList = ref(["Chưa hoàn thành", "Đã hoàn thành", "Thiếu"]);
-// const cityList = ref([]);
-// const districtList = ref([]);
-// const townList = ref([]);
-// const addressList = ref([]);
-// const registerStatusList = ref([
-//   "Đơn mới",
-//   "Chờ duyệt",
-//   "Chờ liên hệ",
-//   "Đã liên hệ",
-//   "Hoàn thành",
-// ]);
-
-// watch(city, () => {
-//   if (addressList.value.some((e) => e.Name == city.value)) {
-//     console.log("ýe");
-//     const index = addressList.value.findIndex((e) => e.Name == city.value);
-//     addressList.value[index].Districts.forEach((e) => {
-//       districtList.value.push(e.Name);
-//     });
-//   }
-// });
-
-// watch(district, () => {
-//   if (addressList.value.some((e) => e.Name == city.value)) {
-//     const indexCity = addressList.value.findIndex((e) => e.Name == city.value);
-//     console.log(indexCity);
-//     if (
-//       addressList.value[indexCity].Districts.some(
-//         (districtItem) => districtItem.Name == district.value
-//       )
-//     ) {
-//       const indexDistrict = addressList.value[indexCity].Districts.findIndex(
-//         (e) => e.Name == district.value
-//       );
-//       addressList.value[indexCity].Districts[indexDistrict].Wards.forEach(
-//         (ward) => townList.value.push(ward.Name)
-//       );
-//     }
-//   }
-// });
+const email_account = ref("");
+const phone_account = ref("");
 
 const getParent = async () => {
   try {
@@ -604,6 +543,8 @@ const getParent = async () => {
       role.value = parents.role;
       status.value = parents.status;
       account.value = parents.account;
+      email_account.value = parents.EmailAccount;
+      phone_account.value = parents.PhoneAccount;
     }
     console.log(role.value);
   } catch (error) {
@@ -630,12 +571,15 @@ const updateParent = async () => {
     );
     if (response.data.status === 200) {
       emits("add-toast", {
-        title: "Update Successfully!",
+        title: "Cập nhật thông tin phụ huynh thành công!",
         type: 0,
       });
       router.push({ name: "ParentView" });
-    } else {
-      console.log("Fail");
+    } else if (response.data.status === 400) {
+      emits("add-toast", {
+        title: "Cập nhật thông tin phụ huynh thất bại!!",
+        type: 1,
+      });
     }
   } catch (error) {
     console.error("Error updating parent:", error);
@@ -690,7 +634,7 @@ const updateParent1 = async () => {
         router.push({ name: "ParentView" });
       } else if (response.data.status === 400) {
         emits("add-toast", {
-          title: "Hãy kiểm tra lại thông tin!",
+          title: "Tài khoản chưa tồn tại, hãy kiểm tra lại!",
           type: 1,
         });
       }
@@ -699,32 +643,53 @@ const updateParent1 = async () => {
     console.error("Error updating parent:", error);
   }
 };
-// const cancel = () => {
-//   router.push({ name: "ParentView" });
-// };
+const updateAccount = async () => {
+  try {
+    const parentId = router.currentRoute.value.params.id;
+    const response = await axios.put(
+      `http://localhost:9000/parents/${parentId}`,
+      {
+        name: name_parent.value,
+        gender: gender_parent.value,
+        birthday: birthday.value,
+        address: address.value,
+        job: job.value,
+        email: email_parent.value,
+        phone: phone_parent.value,
+        role: role.value,
+        status: status.value,
+      }
+    );
+    const accountName = account.value;
+    // console.log(accountName);
+    const accountResponse = await axios.put(
+      `http://localhost:9000/account/update/${accountName}`,
+      {
+        email: email_account.value,
+        phone: phone_account.value,
+      }
+    );
 
-// onMounted(async () => {
-//   await getParent();
-// });
+    if (accountResponse.data.status === 200) {
+      emits("add-toast", {
+        title: "Cập nhật thông tin thành công!",
+        type: 0,
+      });
+      router.push({ name: "ParentView" });
+    } else if (accountResponse.data.status === 400) {
+      emits("add-toast", {
+        title: "Cập nhật thông tin thất bại!!",
+        type: 1,
+      });
+    }
+  } catch (error) {
+    console.error("Error updating parent:", error);
+  }
+};
 
 onBeforeMount(async () => {
   await getParent();
 });
-
-// async function fetchData() {
-//   axios
-//     .get(
-//       "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
-//     )
-//     .then((response) => {
-//       addressList.value = response.data;
-//       addressList.value.forEach((e) => cityList.value.push(e.Name));
-//       console.log(response.data);
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching data:", error);
-//     });
-// }
 </script>
 
 <style scoped>
