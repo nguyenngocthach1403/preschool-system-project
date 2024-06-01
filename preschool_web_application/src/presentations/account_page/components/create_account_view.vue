@@ -50,7 +50,7 @@
         </div>
         <div id="Email" class="w-full">
           <label for="">
-            <span class="pl-3">Email</span>
+            <span class="pl-3">Vai trò</span>
             <SelectComp
               :option-list="roleList"
               :value-active="drops.registration ? 4 : role"

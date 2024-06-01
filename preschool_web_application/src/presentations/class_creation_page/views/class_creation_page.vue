@@ -66,9 +66,12 @@
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
             >
               <option value="level1" selected disabled>Selected</option>
-              <option value="level1">Mầm</option>
+              <option v-for="item in levelList" :key="item" :value="item.value">
+                {{ item.name }}
+              </option>
+              <!-- <option value="level1">Mầm</option>
               <option value="level2">Chồi</option>
-              <option value="level3">Lá</option>
+              <option value="level3">Lá</option> -->
             </select>
             <div class="h-[20px] valid">
               <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
@@ -79,9 +82,16 @@
             <!-- <input v-model="nameClassInput" type="text" placeholder="Nhap ten lop hoc" class="mb-0 h-[40px] rounded-md w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : isStudentNameValid}"> -->
             <select @change="selectType" class="input-text-default">
               <option value="none" selected disabled>Selected</option>
-              <option value="0">Thường</option>
+              <option
+                v-for="item in syllabusList"
+                :key="item"
+                :value="item.value"
+              >
+                {{ item.name }}
+              </option>
+              <!-- <option value="0">Thường</option>
               <option value="1">Anh Ngữ</option>
-              <option value="2">Pháp Ngữ</option>
+              <option value="2">Pháp Ngữ</option> -->
             </select>
             <div class="h-[20px] valid">
               <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
@@ -149,10 +159,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useClassStore } from "@/stores/class_store.js";
 import Layout from "@/components/edit_and_create_layout.vue";
 import SaveButton from "@/components/save_button.vue";
+import LevelsService from "../../../services/levels.service";
+import SyllabusService from "../../../services/syllabus.service";
 
 const classNameInput = ref("");
 const dateBeginInput = ref(null);
@@ -162,11 +174,18 @@ const formTeacherInput = ref("");
 const classStore = useClassStore();
 const classLevelInput = ref(null);
 const classTypeInput = ref(null);
+const levelList = ref([]);
+const syllabusList = ref([]);
 
 const isLeave = ref(false);
 
 const avatarUpload = ref(null);
 const avatarPath = ref(null);
+
+onMounted(async () => {
+  await getLevels();
+  await getSyllabus();
+});
 
 // const emits = defineEmits(['close'])
 
@@ -222,6 +241,32 @@ const handleSubmitAddNewClass = () => {
     status: "Sắp bắt đầu",
   });
 };
+
+async function getLevels() {
+  const response = await LevelsService.getLevels();
+  if (response.status == 200 && response.data.success) {
+    for (let index = 0; index < response.data.data.length; index++) {
+      const element = response.data.data[index];
+      levelList.value.push({
+        name: element.levelsName,
+        value: element.id,
+      });
+    }
+  }
+}
+
+async function getSyllabus() {
+  const response = await SyllabusService.getSyllabus();
+  if (response.status == 200 && response.data.success) {
+    for (let index = 0; index < response.data.data.length; index++) {
+      const element = response.data.data[index];
+      syllabusList.value.push({
+        name: element.syllabusName,
+        value: element.id,
+      });
+    }
+  }
+}
 </script>
 
 <style scoped>
