@@ -13,7 +13,9 @@
               placeholder="Nhập họ tên"
             />
 
-            {{ messageOfParentName }}
+            <div class="text-base text-red-500">
+              {{ messageOfParentName }}
+            </div>
           </div>
 
           <div class="form-group">
@@ -30,7 +32,7 @@
           <div class="form-group">
             <label for="birthday">Ngày sinh</label>
             <input type="date" id="birthday" v-model="birthday" />
-            <div class="h-5 valid">
+            <div class="text-base text-red-500">
               {{ invalidBirthday }}
             </div>
           </div>
@@ -186,7 +188,7 @@ const saveData = async () => {
           email: email.value,
           phone: phone.value,
           role: role.value,
-          status: status.value,
+          status: 1,
           account: accountValue,
         }
       );

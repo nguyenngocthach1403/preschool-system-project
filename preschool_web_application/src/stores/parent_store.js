@@ -39,9 +39,6 @@ export const useParentStore = defineStore("parentStore", {
       // console.log(data.total);
       this.total = data.total;
 
-      // const parentResponse = data.data;
-      //   const studentFormated = this.formatDataStudent(studentResponse);
-      //   this.students = studentFormated;
       this.loading = false;
       this.status = "searched";
       this.parents = res.data.data;
@@ -90,9 +87,6 @@ export const useParentStore = defineStore("parentStore", {
         this.status = "load_failed";
         return;
       }
-      // const studentFormated = this.formatDataStudent(data);
-      // console.log(studentFormated);
-      // this.students = studentFormated;
       this.status = "loaded";
       this.loading = false;
       this.parents = dataRes.data;
