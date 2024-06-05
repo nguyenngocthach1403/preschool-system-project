@@ -7,6 +7,18 @@ module.exports = router;
 
 router.post("/", login);
 
+router.get("/isExist/:username", isExistUser);
+
+async function isExistUser(req, res) {
+  const username = req.params.username;
+
+  const result = await authService.isExistUser(username);
+
+  res.status(200).json({
+    isExist: result,
+  });
+}
+
 async function login(req, res) {
   const { username, password } = req.body;
 
@@ -21,14 +33,14 @@ async function login(req, res) {
 
   if (result.code) {
     return res.status(200).json({
-      status: 500,
+      success: false,
       error: result.error,
       message: "Logged in failed.",
     });
   }
 
   return res.status(200).json({
-    status: 200,
+    success: true,
     message: "Logged in successful.",
     data: result,
   });
