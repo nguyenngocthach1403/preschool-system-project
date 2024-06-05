@@ -14,6 +14,7 @@ module.exports = {
   countRegisterWithSearchAndStatus,
   getRegistrationsWithStatus,
   getTotalWithStatus,
+  isExistRegisterByPhone,
 };
 
 async function createRegister(data) {
@@ -79,6 +80,22 @@ async function getTotalWithSearch(searchText) {
       code: error.code,
       error: error.sqlMessage,
     };
+  }
+}
+
+async function isExistRegisterByPhone(phone) {
+  try {
+    const result = await db.select(
+      config.tb.register,
+      "*",
+      `WHERE phone = ${phone}`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
   }
 }
 

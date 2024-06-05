@@ -24,6 +24,12 @@ router.post("/", upload.array("files"), async (req, res) => {
     status,
   } = req.body;
 
+  //Kiểm tra tồn tại của đơn
+  if (await registerService.isExistRegisterByPhone(phone)) {
+    return res.status(200).json({
+      isExist: true,
+    });
+  }
   const data = {
     name: name,
     email: email,
