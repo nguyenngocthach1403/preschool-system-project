@@ -155,14 +155,74 @@ async function isDuplicateAccount(req, res, next) {
   }
 }
 
+// async function insertParent(req, res, next) {
+//   try {
+//     const { email, phone, account } = req.body;
+//     const duplicateCheck = await parentService.isDuplicate(
+//       email,
+//       phone,
+//       account
+//     );
+//     if (duplicateCheck) {
+//       return res.status(200).json({
+//         status: 400,
+//         message: "Email or phone or account already exists.",
+//       });
+//     }
+//     const insertId = await parentService.insertParent(req.body);
+
+//     if (insertId) {
+//       res.status(200).json({ status: 200, message: "success" });
+//     } else {
+//       res.status(200).json({ status: 500, message: "error add parent" });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 async function insertParent(req, res, next) {
   try {
-    const insertId = await parentService.insertParent(req.body);
-
-    if (insertId) {
-      res.status(200).json({ message: "success" });
+    const {
+      name,
+      gender,
+      birthday,
+      address,
+      job,
+      email,
+      phone,
+      role,
+      status,
+      account,
+    } = req.body;
+    const duplicateCheck = await parentService.isDuplicate(
+      email,
+      phone,
+      account
+    );
+    if (duplicateCheck) {
+      return res.status(200).json({
+        status: 400,
+        message: "Email or phone or account already exists.",
+      });
+    }
+    const data = {
+      name: name,
+      gender: gender,
+      birthday: birthday,
+      address: address,
+      job: job,
+      email: email,
+      phone: phone,
+      role: role,
+      status: status,
+      account: account,
+    };
+    const result = await parentService.insertParent(data);
+    console.log(result);
+    if (result) {
+      res.status(200).json({ status: 200, message: "success" });
     } else {
-      res.status(500).json({ message: "error add parent" });
+      res.status(200).json({ status: 500, message: "error add parent" });
     }
   } catch (error) {
     next(error);
@@ -172,15 +232,55 @@ async function insertParent(req, res, next) {
 async function updateParent(req, res, next) {
   try {
     const parentId = req.params.id;
-    const newData = req.body;
-    await parentService.updateParent(parentId, newData);
+    const {
+      name,
+      gender,
+      birthday,
+      address,
+      job,
+      email,
+      phone,
+      role,
+      status,
+      account,
+    } = req.body;
+    // const newData = req.body;
+    const duplicateAccountCheck = await parentService.isDuplicateAccount(
+      account
+    );
+    if (duplicateAccountCheck) {
+      return res
+        .status(200)
+        .json({ status: 400, message: "Account already exists." });
+    }
+    if (account !== undefined) {
+      const isExistAccount = await parentService.isExistAccount(account);
+
+      if (!isExistAccount) {
+        return res.status(200).json({
+          status: 404,
+          error: "Account không tồn tại",
+        });
+      }
+    }
+    await parentService.updateParent(parentId, {
+      name: name,
+      gender: gender,
+      birthday: birthday,
+      address: address,
+      job: job,
+      email: email,
+      phone: phone,
+      role: role,
+      status: status,
+    });
     res.json({
       status: 200,
       message: `Parent with ID ${parentId} updated successfully.`,
     });
   } catch (error) {
     res.json({
-      status: 400,
+      status: 500,
       message: `updated fail.`,
     });
   }

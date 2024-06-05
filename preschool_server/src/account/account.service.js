@@ -5,6 +5,7 @@ module.exports = {
   getAccountTotal,
   createAccount,
   updateRegistration,
+  updateByUsername,
 };
 
 async function createAccount(accountToCreate) {
@@ -53,6 +54,16 @@ async function getAccountTotal() {
     return {
       code: 1,
       message: "An error occurred while excuted querry.",
+    };
+  }
+}
+async function updateByUsername(username, newData) {
+  try {
+    return await db.update(config.tb.account, newData, { username: username });
+  } catch (error) {
+    return {
+      code: error.code,
+      message: error.sqlMessage,
     };
   }
 }

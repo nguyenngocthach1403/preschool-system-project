@@ -44,6 +44,28 @@ export const useAccountStore = defineStore("accountStore", {
       this.status = "created";
       return { success: true, message: "Create successful." };
     },
+    async updateAccount(username, dataToUpdate) {
+      this.status = "updating";
+      const response = await accountService.updateAccount(
+        username,
+        dataToUpdate
+      );
+      if (response.data.status === 400) {
+        this.status = "update_failed";
+        return {
+          status: 400,
+          success: false,
+          message: response.data.error,
+        };
+      }
+
+      this.getAccount();
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    },
+
     async getTotal() {
       const response = await accountService.getTotalAccount();
 
