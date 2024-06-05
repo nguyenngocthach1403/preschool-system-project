@@ -1,6 +1,6 @@
 import { api } from "../services/Api";
 
-export default { getTotalAccount, getAccount, createAccount };
+export default { getTotalAccount, getAccount, createAccount, updateAccount };
 
 function getTotalAccount() {
   return api().get("/account/total");
@@ -12,4 +12,7 @@ function getAccount(page, limit) {
 
 function createAccount(accountToCreate) {
   return api().post(`/account/create`, accountToCreate);
+}
+function updateAccount(username, dataToUpdate) {
+  return api().put(`/account/${username}`, dataToUpdate);
 }

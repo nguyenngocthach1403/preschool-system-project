@@ -15,6 +15,7 @@ module.exports = {
   deleteParent,
   getPage,
   getParentById,
+  isExistAccount,
 };
 
 async function getAll() {
@@ -53,7 +54,7 @@ async function getByID(id) {
   try {
     return db1.select(
       `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account = a.username`,
-      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount",
+      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
       id !== undefined ? `Where p.id = ${id}` : ""
     );
   } catch (error) {
@@ -163,10 +164,26 @@ async function isDuplicateAccount(account) {
   }
 }
 
-async function insertParent(data) {
+async function isExistAccount(username) {
   try {
-    const parentId = await db.insert(config.tb.parent, data);
-    console.log(`Parent created with ID: ${parentId}`);
+    const classData = await db.select(
+      config.tb.account,
+      "*",
+      `WHERE username = ${username}`
+    );
+
+    if (classData.length === 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function insertParent(dataToCreate) {
+  try {
+    const parentId = await db.insert(config.tb.parent, dataToCreate);
     return parentId;
   } catch (error) {
     console.error("Error inserting parent:", error);

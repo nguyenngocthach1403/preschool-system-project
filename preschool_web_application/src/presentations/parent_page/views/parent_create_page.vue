@@ -32,9 +32,6 @@
           <div class="form-group">
             <label for="birthday">Ngày sinh</label>
             <input type="date" id="birthday" v-model="birthday" />
-            <div class="text-base text-red-500">
-              {{ invalidBirthday }}
-            </div>
           </div>
           <div class="form-group">
             <label for="address">Địa chỉ</label>
@@ -64,6 +61,9 @@
               v-model="email"
               placeholder="Nhập email"
             />
+            <div class="text-base text-red-500">
+              {{ invalidEmail }}
+            </div>
           </div>
         </div>
 
@@ -76,6 +76,9 @@
               v-model="phone"
               placeholder="Nhập số điện thoại"
             />
+            <div class="text-base text-red-500">
+              {{ invalidPhone }}
+            </div>
           </div>
           <div class="form-group">
             <label for="role">Vai trò</label>
@@ -105,7 +108,7 @@
           <!-- <button class="btn-close" @click="cancel">Huỷ</button>
           <button class="btn-save" @click="saveData">Lưu</button> -->
           <closeButton @click="cancel" />
-          <saveButton @click="saveData" />
+          <saveButton @click="createParent" />
         </div>
       </div>
     </div>
@@ -115,10 +118,12 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useParentStore } from "../../../stores/parent_store";
+import { storeToRefs } from "pinia";
 import axios from "axios";
 import saveButton from "@/components/save_button.vue";
 import closeButton from "@/components/close_button.vue";
-
+const parentStore = useParentStore();
 const name = ref("");
 const gender = ref(0);
 const birthday = ref("");
@@ -127,86 +132,139 @@ const job = ref("");
 const email = ref(null);
 const phone = ref(null);
 const role = ref(0);
-const status = ref(1);
+// const status = ref(1);
 const account = ref(null);
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
 const messageOfParentName = ref("");
-const invalidBirthday = ref("");
-
-const checkDuplicate = async () => {
-  try {
-    const checkDuplicateResponse = await axios.post(
-      "http://localhost:9000/parents/duplicate",
-      {
-        email: email.value,
-        phone: phone.value,
-        account: account.value,
-      }
-    );
-    return checkDuplicateResponse.data;
-  } catch (error) {
-    console.log(e);
-  }
-};
+const invalidEmail = ref("");
+const invalidPhone = ref("");
+const { status } = storeToRefs(parentStore);
+// const checkDuplicate = async () => {
+//   try {
+//     const checkDuplicateResponse = await axios.post(
+//       "http://localhost:9000/parents/duplicate",
+//       {
+//         email: email.value,
+//         phone: phone.value,
+//         account: account.value,
+//       }
+//     );
+//     return checkDuplicateResponse.data;
+//   } catch (error) {
+//     console.log(e);
+//   }
+// };
 function checkVadlidInput() {
   const invalid = ref(false);
   if (name.value === null || name.value == "") {
     messageOfParentName.value = "Không được bỏ trống tên.";
     invalid.value = true;
   }
-  if (birthday.value === null || birthday.value === "") {
-    invalidBirthday.value = "Không được bỏ trống ngày sinh.";
+  if (email.value === null || email.value === "") {
+    invalidEmail.value = "Không được bỏ trống email.";
+    invalid.value = true;
+  }
+  if (phone.value === null || phone.value === "") {
+    invalidPhone.value = "Không được bỏ trống số điện thoại.";
     invalid.value = true;
   }
   return invalid.value;
 }
 
-const saveData = async () => {
+// const saveData = async () => {
+//   try {
+//     if (checkVadlidInput()) {
+//       return;
+//     }
+//     const isDuplicate = await checkDuplicate();
+//     if (isDuplicate.status === 400) {
+//       emits("add-toast", {
+//         title:
+//           "Email hoặc số điện thoại hoặc account đã tồn tại, vui lòng thử lại!",
+//         type: 1,
+//       });
+//       return;
+//     } else if (isDuplicate.status === 200) {
+//       const accountValue = account.value ? account.value : null;
+//       const response = await axios.post(
+//         "http://localhost:9000/parents/insert",
+//         {
+//           name: name.value,
+//           gender: gender.value,
+//           birthday: birthday.value,
+//           address: address.value,
+//           job: job.value,
+//           email: email.value,
+//           phone: phone.value,
+//           role: role.value,
+//           status: 1,
+//           account: accountValue,
+//         }
+//       );
+//       if (response.status === 200) {
+//         emits("add-toast", {
+//           title: "Create Successfully!",
+//           type: 0,
+//         });
+//         console.log("Success");
+//         router.push({ name: "ParentView" });
+//       } else {
+//         console.log("Fail");
+//       }
+//     }
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
+
+async function createParent() {
   try {
     if (checkVadlidInput()) {
       return;
     }
-    const isDuplicate = await checkDuplicate();
-    if (isDuplicate.status === 400) {
+    const accountValue = account.value ? account.value : null;
+    const ParentToCreate = {
+      name: name.value,
+      gender: gender.value,
+      birthday: birthday.value,
+      address: address.value,
+      job: job.value,
+      email: email.value,
+      phone: phone.value,
+      role: role.value,
+      status: 1,
+      account: accountValue,
+    };
+
+    const result = await parentStore.createParent(ParentToCreate);
+
+    if (result.status === 400) {
       emits("add-toast", {
-        title:
-          "Email hoặc số điện thoại hoặc account đã tồn tại, vui lòng thử lại!",
+        title: "Email hoặc số điện thoại hoặc account đã tồn tại!",
+        content: result.message,
         type: 1,
       });
       return;
-    } else if (isDuplicate.status === 200) {
-      const accountValue = account.value ? account.value : null;
-      const response = await axios.post(
-        "http://localhost:9000/parents/insert",
-        {
-          name: name.value,
-          gender: gender.value,
-          birthday: birthday.value,
-          address: address.value,
-          job: job.value,
-          email: email.value,
-          phone: phone.value,
-          role: role.value,
-          status: 1,
-          account: accountValue,
-        }
-      );
-      if (response.status === 200) {
-        emits("add-toast", {
-          title: "Create Successfully!",
-          type: 0,
-        });
-        console.log("Success");
-        router.push({ name: "ParentView" });
-      } else {
-        console.log("Fail");
-      }
     }
-  } catch (e) {
-    console.log(e);
+    if (result.status === 500) {
+      emits("add-toast", {
+        title: "Tạo phụ huynh thất bại, kiểm tra lại dữ liệu!",
+        content: result.message,
+        type: 1,
+      });
+      return;
+    }
+    emits("add-toast", {
+      title: "Create Successful!",
+      content: `Tạo phụ huynh thành công.`,
+      type: 0,
+    });
+    router.push({ name: "ParentView" });
+  } catch (error) {
+    console.log(error);
   }
-};
+}
 
 const cancel = () => {
   router.push({ name: "ParentView" });

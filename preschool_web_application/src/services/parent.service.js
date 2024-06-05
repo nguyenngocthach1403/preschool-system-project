@@ -6,6 +6,8 @@ export default {
   getParent,
   deleleParent,
   getParentById,
+  createParent,
+  updateParent,
 };
 
 function search(txtSearch, page, limit) {
@@ -26,4 +28,11 @@ function deleleParent(idParentToDel) {
 }
 function getParentById(id) {
   return api().get(`/parents/get/id/${id}`);
+}
+function createParent(dataToCreate) {
+  return api().post(`/parents/insert`, dataToCreate);
+}
+
+function updateParent(id, dataToUpdate) {
+  return api().put(`/parents/${id}`, dataToUpdate);
 }

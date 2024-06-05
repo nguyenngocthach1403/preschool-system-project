@@ -45,6 +45,68 @@ export const useParentStore = defineStore("parentStore", {
       // console.log(this.parents);
     },
 
+    async createParent(parentToCreate) {
+      this.status = "creating";
+      const res = await parentService.createParent(parentToCreate);
+      const data = res.data;
+      console.log(res.data);
+      if (data.status == 400) {
+        this.status = "Email or phone or account already exists.";
+        return {
+          status: 400,
+          success: false,
+          message: data.error,
+        };
+      }
+      if (data.status == 500) {
+        this.status = "created_fail!";
+        return {
+          status: 500,
+          success: false,
+          message: data.error,
+        };
+      }
+      this.status = "created";
+      return {
+        success: true,
+      };
+    },
+
+    async updateParent(idParent, dataToUpdate) {
+      this.status = "updating";
+      const response = await parentService.updateParent(idParent, dataToUpdate);
+      if (response.data.status === 500) {
+        this.status = "update_failed";
+        return {
+          status: 500,
+          success: false,
+          message: response.data.error,
+        };
+      }
+      if (response.data.status === 400) {
+        this.status = "Account already exists.";
+        return {
+          status: 400,
+          success: false,
+          message: response.data.error,
+        };
+      }
+      if (response.data.status === 404) {
+        this.status = "Account not already ";
+        return {
+          status: 404,
+          success: false,
+          message: response.data.error,
+        };
+      }
+
+      this.getParent();
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    },
+
     async getTotalParent() {
       const res = await parentService.countParent();
       // console.log(res);

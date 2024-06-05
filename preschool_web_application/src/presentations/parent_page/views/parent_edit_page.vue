@@ -201,7 +201,7 @@
                 class="w-full flex text-start gap-5 my-[5px]"
               >
                 <button
-                  @click.prevent="updateParent1"
+                  @click.prevent="updateParent"
                   v-if="status !== 'creating'"
                   type="submit"
                   class="h-[45px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -268,11 +268,20 @@
         <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
           <label class="w-full text-start">
             <span class="pl-4 text-blue-700">Trạng thái</span>
-            <SelectStatusComp
+            <!-- <SelectStatusComp
               class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
               @choose="statusAccount = $event"
               :active="1"
-            />
+              :choose="status_account"
+            /> -->
+            <select
+              id="status_account"
+              v-model="status_account"
+              class="h-[45px] rounded-md mb-[25px] my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            >
+              <option value="0">Đang khoá</option>
+              <option value="1">Đang hoạt động</option>
+            </select>
           </label>
           <label class="w-full text-start">
             <span class="pl-4 text-blue-700">Email</span>
@@ -501,6 +510,9 @@ import SelectReturnNumComp from "@/components/select_return_num_comp.vue";
 import SelectStatusComp from "../../../components/select_status_comp.vue";
 import SelectSearchComp from "../../../components/select_search_input.vue";
 import select_locantion from "@/components/select_location.vue";
+import { useParentStore } from "../../../stores/parent_store";
+import { useAccountStore } from "../../../stores/account_store";
+import { storeToRefs } from "pinia";
 const name_parent = ref("");
 const gender_parent = ref("");
 const birthday = ref("");
@@ -512,13 +524,13 @@ const role = ref("");
 const status = ref("");
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
-const statusAccount = ref(1);
 const account = ref("");
 const create_account = ref("");
-
 const email_account = ref("");
 const phone_account = ref("");
-
+const status_account = ref("");
+const parentStore = useParentStore();
+const accountStore = useAccountStore();
 const getParent = async () => {
   try {
     const parentId = router.currentRoute.value.params.id;
@@ -545,147 +557,215 @@ const getParent = async () => {
       account.value = parents.account;
       email_account.value = parents.EmailAccount;
       phone_account.value = parents.PhoneAccount;
+      status_account.value = parents.StatusAccount;
     }
-    console.log(role.value);
   } catch (error) {
     console.error("Error fetching parents:", error);
   }
 };
+async function updateParent() {
+  const parentId = router.currentRoute.value.params.id;
+  const ParentToUpdate = {
+    name: name_parent.value,
+    gender: gender_parent.value,
+    birthday: birthday.value,
+    address: address.value,
+    job: job.value,
+    email: email_parent.value,
+    phone: phone_parent.value,
+    role: role.value,
+    status: status.value,
+    account: create_account.value,
+  };
+  const result = await parentStore.updateParent(parentId, ParentToUpdate);
 
-const updateParent = async () => {
-  try {
-    const parentId = router.currentRoute.value.params.id;
-    const response = await axios.put(
-      `http://localhost:9000/parents/${parentId}`,
-      {
-        name: name_parent.value,
-        gender: gender_parent.value,
-        birthday: birthday.value,
-        address: address.value,
-        job: job.value,
-        email: email_parent.value,
-        phone: phone_parent.value,
-        role: role.value,
-        status: status.value,
-      }
-    );
-    if (response.data.status === 200) {
-      emits("add-toast", {
-        title: "Cập nhật thông tin phụ huynh thành công!",
-        type: 0,
-      });
-      router.push({ name: "ParentView" });
-    } else if (response.data.status === 400) {
-      emits("add-toast", {
-        title: "Cập nhật thông tin phụ huynh thất bại!!",
-        type: 1,
-      });
-    }
-  } catch (error) {
-    console.error("Error updating parent:", error);
+  if (result.status === 500) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      content: " Hãy kiểm tra lại thông tin!",
+      type: 1,
+    });
+    return;
   }
-};
+  if (result.status === 400) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      content: "Account đã tồn tại, kiểm tra lại!",
+      type: 1,
+    });
+    return;
+  }
+  if (result.status === 404) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      content: "Account không tồn tại, kiểm tra lại!",
+      type: 1,
+    });
+    return;
+  }
 
-const checkDuplicate = async () => {
-  try {
-    const checkDuplicateResponse = await axios.post(
-      "http://localhost:9000/parents/duplicateAccount",
-      {
-        account: create_account.value,
-      }
-    );
-    return checkDuplicateResponse.data;
-  } catch (error) {
-    console.log(e);
-  }
-};
+  emits("add-toast", {
+    title: "Cập nhật thành công",
+    content: `Cập nhật học sinh ${name_parent.value} thành công.`,
+    type: 0,
+  });
+}
 
-const updateParent1 = async () => {
-  try {
-    const isDuplicate = await checkDuplicate();
-    if (isDuplicate.status === 400) {
-      emits("add-toast", {
-        title: "Account đã tồn tại, hãy kiểm tra lại!",
-        type: 1,
-      });
-      return;
-    } else if (isDuplicate.status === 200) {
-      const parentId = router.currentRoute.value.params.id;
-      const response = await axios.put(
-        `http://localhost:9000/parents/${parentId}`,
-        {
-          name: name_parent.value,
-          gender: gender_parent.value,
-          birthday: birthday.value,
-          address: address.value,
-          job: job.value,
-          email: email_parent.value,
-          phone: phone_parent.value,
-          role: role.value,
-          status: status.value,
-          account: create_account.value,
-        }
-      );
-      if (response.data.status === 200) {
-        emits("add-toast", {
-          title: "Cập nhật thành công!",
-          type: 0,
-        });
-        router.push({ name: "ParentView" });
-      } else if (response.data.status === 400) {
-        emits("add-toast", {
-          title: "Tài khoản chưa tồn tại, hãy kiểm tra lại!",
-          type: 1,
-        });
-      }
-    }
-  } catch (error) {
-    console.error("Error updating parent:", error);
+async function updateAccount() {
+  const Username = account.value;
+  console.log(Username);
+  const AccountToUpdate = {
+    email: email_account.value,
+    phone: phone_account.value,
+    status: status_account.value,
+  };
+  const result = await accountStore.updateAccount(Username, AccountToUpdate);
+  if (result.status === 400) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      type: 1,
+    });
+    return;
   }
-};
-const updateAccount = async () => {
-  try {
-    const parentId = router.currentRoute.value.params.id;
-    const response = await axios.put(
-      `http://localhost:9000/parents/${parentId}`,
-      {
-        name: name_parent.value,
-        gender: gender_parent.value,
-        birthday: birthday.value,
-        address: address.value,
-        job: job.value,
-        email: email_parent.value,
-        phone: phone_parent.value,
-        role: role.value,
-        status: status.value,
-      }
-    );
-    const accountName = account.value;
-    // console.log(accountName);
-    const accountResponse = await axios.put(
-      `http://localhost:9000/account/update/${accountName}`,
-      {
-        email: email_account.value,
-        phone: phone_account.value,
-      }
-    );
+  emits("add-toast", {
+    title: "Cập nhật thành công",
+    type: 0,
+  });
+}
+// const updateParent = async () => {
+//   try {
+//     const parentId = router.currentRoute.value.params.id;
+//     const response = await axios.put(
+//       `http://localhost:9000/parents/${parentId}`,
+//       {
+//         name: name_parent.value,
+//         gender: gender_parent.value,
+//         birthday: birthday.value,
+//         address: address.value,
+//         job: job.value,
+//         email: email_parent.value,
+//         phone: phone_parent.value,
+//         role: role.value,
+//         status: status.value,
+//       }
+//     );
+//     if (response.data.status === 200) {
+//       emits("add-toast", {
+//         title: "Cập nhật thông tin phụ huynh thành công!",
+//         type: 0,
+//       });
+//       router.push({ name: "ParentView" });
+//     } else if (response.data.status === 400) {
+//       emits("add-toast", {
+//         title: "Cập nhật thông tin phụ huynh thất bại!!",
+//         type: 1,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error updating parent:", error);
+//   }
+// };
 
-    if (accountResponse.data.status === 200) {
-      emits("add-toast", {
-        title: "Cập nhật thông tin thành công!",
-        type: 0,
-      });
-      router.push({ name: "ParentView" });
-    } else if (accountResponse.data.status === 400) {
-      emits("add-toast", {
-        title: "Cập nhật thông tin thất bại!!",
-        type: 1,
-      });
-    }
-  } catch (error) {
-    console.error("Error updating parent:", error);
-  }
-};
+// const checkDuplicate = async () => {
+//   try {
+//     const checkDuplicateResponse = await axios.post(
+//       "http://localhost:9000/parents/duplicateAccount",
+//       {
+//         account: create_account.value,
+//       }
+//     );
+//     return checkDuplicateResponse.data;
+//   } catch (error) {
+//     console.log(e);
+//   }
+// };
+
+// const updateParent1 = async () => {
+//   try {
+//     const isDuplicate = await checkDuplicate();
+//     if (isDuplicate.status === 400) {
+//       emits("add-toast", {
+//         title: "Account đã tồn tại, hãy kiểm tra lại!",
+//         type: 1,
+//       });
+//       return;
+//     } else if (isDuplicate.status === 200) {
+//       const parentId = router.currentRoute.value.params.id;
+//       const response = await axios.put(
+//         `http://localhost:9000/parents/${parentId}`,
+//         {
+//           name: name_parent.value,
+//           gender: gender_parent.value,
+//           birthday: birthday.value,
+//           address: address.value,
+//           job: job.value,
+//           email: email_parent.value,
+//           phone: phone_parent.value,
+//           role: role.value,
+//           status: status.value,
+//           account: create_account.value,
+//         }
+//       );
+//       if (response.data.status === 200) {
+//         emits("add-toast", {
+//           title: "Cập nhật thành công!",
+//           type: 0,
+//         });
+//         router.push({ name: "ParentView" });
+//       } else if (response.data.status === 400) {
+//         emits("add-toast", {
+//           title: "Tài khoản chưa tồn tại, hãy kiểm tra lại!",
+//           type: 1,
+//         });
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error updating parent:", error);
+//   }
+// };
+// const updateAccount = async () => {
+//   try {
+//     const parentId = router.currentRoute.value.params.id;
+//     const response = await axios.put(
+//       `http://localhost:9000/parents/${parentId}`,
+//       {
+//         name: name_parent.value,
+//         gender: gender_parent.value,
+//         birthday: birthday.value,
+//         address: address.value,
+//         job: job.value,
+//         email: email_parent.value,
+//         phone: phone_parent.value,
+//         role: role.value,
+//         status: status.value,
+//       }
+//     );
+//     const accountName = account.value;
+//     // console.log(accountName);
+//     const accountResponse = await axios.put(
+//       `http://localhost:9000/account/update/${accountName}`,
+//       {
+//         email: email_account.value,
+//         phone: phone_account.value,
+//       }
+//     );
+
+//     if (accountResponse.data.status === 200) {
+//       emits("add-toast", {
+//         title: "Cập nhật thông tin thành công!",
+//         type: 0,
+//       });
+//       router.push({ name: "ParentView" });
+//     } else if (accountResponse.data.status === 400) {
+//       emits("add-toast", {
+//         title: "Cập nhật thông tin thất bại!!",
+//         type: 1,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error updating parent:", error);
+//   }
+// };
 
 onBeforeMount(async () => {
   await getParent();
