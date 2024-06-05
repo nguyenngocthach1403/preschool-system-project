@@ -3,7 +3,24 @@ const config = require("../../src/config/config");
 
 module.exports = {
   loginAdmin,
+  isExistUser,
 };
+
+async function isExistUser(username) {
+  try {
+    const resulst = await db.select(
+      config.tb.account,
+      "*",
+      `WHERE username = '${username}' AND role = 1`
+    );
+    if (resulst.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 async function loginAdmin(usename, password) {
   try {
@@ -29,7 +46,7 @@ async function loginAdmin(usename, password) {
     if (rightPassword[0]["account"] == 0) {
       return {
         code: 1,
-        error: "Password is wrong.",
+        error: "Mật khẩu không đúng.",
       };
     }
 

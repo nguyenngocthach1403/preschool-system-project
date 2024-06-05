@@ -1,12 +1,13 @@
 <template>
   <div class="w-full h-dvh flex align-center justify-center">
+    <Toast class="fixed top-5 right-10 z-30" :toast-list="toasts" />
     <section
       class="w-dvw bg-white rounded-tl-xl rounded-bl-xl hidden xl:table-cell content-center align-center"
     >
       <img src="/src/assets/img/1.png" class="h-full m-auto" alt="Hình ảnh" />
     </section>
     <section
-      class="w-[800px] rounded-tr-xl rounded-br-xl bg-[#3B44D1] content-center align-center px-[50px] md:px-[100px]"
+      class="w-[800px] rounded-tr-xl text-white rounded-br-xl bg-[#3B44D1] content-center align-center px-[50px] md:px-[100px]"
     >
       <!--Logo-->
       <div
@@ -18,7 +19,7 @@
         <span class="text-white text-[27px]">Preschool</span>
       </div>
       <div></div>
-      <form @submit.prevent="login">
+      <form>
         <!--Username-->
         <div class="my-3">
           <label for="" class="relative">
@@ -29,11 +30,10 @@
               type="text"
               class="w-full h-[48px] text-white rounded-md border-[0.1rem] focus:ring-1 ring-white focus:border-white border-gray-300 bg-[#3B44D1] outline-none px-5 text-[17px] placeholder:text-gray-300"
               id="username-input"
+              :class="{ valid: messageOfUsername }"
             />
             <div class="h-5 my-1">
-              <p v-if="inValidUsername" class="text-red-400">
-                Mật khẩu không được bỏ trống.
-              </p>
+              <p class="text-red-400">{{ messageOfUsername }}</p>
             </div>
             <!-- <img :src="account_icon" class="absolute top-2/3 left-2" /> -->
           </label>
@@ -49,10 +49,11 @@
               class="w-full h-[48px] text-white rounded-md border-[0.1rem] focus:ring-1 ring-white focus:border-white border-gray-300 bg-[#3B44D1] outline-none px-5 text-[17px] placeholder:text-gray-300"
               id="password-input"
               placeholder="Nhập mật khẩu"
+              :class="{ valid: messageOfPassword }"
             />
             <div class="h-5 my-1">
-              <p v-if="inValidPassword" class="text-red-400">
-                Mật khẩu không được bỏ trống.
+              <p class="text-red-400">
+                {{ messageOfPassword }}
               </p>
             </div>
           </label>
@@ -103,7 +104,9 @@
         <div
           class="w-full bg-white my-6 h-[48px] content-center text-[#3B44D1] rounded-md active:scale-[98%] hover:bg-gray-200"
         >
-          <button type="submit" class="w-full h-full">Đăng nhập</button>
+          <button type="button" @click="login()" class="w-full h-full">
+            Đăng nhập
+          </button>
         </div>
       </form>
     </section>
@@ -111,40 +114,87 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import Toast from "../../../components/toast_list.vue";
 import { useRouter, useRoute } from "vue-router";
 import account_icon from "../../../assets/icons/account.svg";
 import authService from "../../../services/authentication.service";
+import { isEmpty } from "../../../utils/resources/check_valid";
 
 const router = useRouter();
 const route = useRoute();
 const rememberPassword = ref(false);
 const username = ref("");
 const password = ref("");
-const inValidUsername = ref(false);
-const inValidPassword = ref(false);
+const messageOfUsername = ref("");
+const messageOfPassword = ref("");
+const toasts = ref([]);
+
+watch(username, () => {
+  if (!isEmpty(username.value)) {
+    messageOfUsername.value = "";
+  }
+});
+
+watch(password, () => {
+  if (!isEmpty(password.value)) {
+    messageOfPassword.value = "";
+  }
+});
+
+function checkVadid() {
+  let valid = false;
+
+  if (isEmpty(username.value)) {
+    messageOfUsername.value = "Tài khoản không được phép để trống.";
+    valid = true;
+  }
+
+  if (isEmpty(password.value)) {
+    messageOfPassword.value = "Mật khẩu không được phép để trống.";
+    valid = true;
+  }
+
+  return valid;
+}
 async function login() {
-  if (username.value.trim() == "") {
-    inValidUsername.value = true;
-  } else {
-    inValidUsername.value = false;
+  if (checkVadid()) {
+    return;
   }
+  const isExistUser = await authService.isExistUser(username.value);
 
-  if (password.value.trim() == "") {
-    inValidPassword.value = true;
-  } else {
-    inValidPassword.value = false;
-  }
-
-  if (inValidPassword.value || inValidUsername.value) {
+  if (!isExistUser.data.isExist) {
+    toasts.value.push({
+      title: "Tài khoản không tồn tại.",
+      content: `Tài khoản '${username.value}' không tồn tại.`,
+      type: 1,
+    });
     return;
   }
 
   const response = await authService.login(username.value, password.value);
 
+  if (response.status !== 200) {
+    toasts.value.push({
+      title: "Đăng nhập thất bại.",
+      content: "Quá trình đăng nhập thất bại. Hãy thử lại.",
+      type: 1,
+    });
+    return;
+  }
+
   const data = response.data;
 
-  if (data.status == 200) {
+  if (!data.success) {
+    toasts.value.push({
+      title: "Đăng nhập thất bại.",
+      content: data.error,
+      type: 1,
+    });
+    return;
+  }
+
+  if (data.success) {
     if (rememberPassword) {
       localStorage.setItem("user", data.data[0]["username"]);
     }
@@ -160,4 +210,7 @@ async function login() {
 </script>
 
 <style  scoped>
+.valid {
+  border: solid 1px red;
+}
 </style>
