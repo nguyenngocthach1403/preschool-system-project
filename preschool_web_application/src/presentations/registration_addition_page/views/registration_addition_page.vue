@@ -198,6 +198,7 @@
                   'Hoàn thành',
                   'Đã hủy',
                 ]"
+                @choose="status = $event"
                 :active="0"
                 class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
               />
@@ -297,23 +298,14 @@ import SelectSearchComp from "../../../components/select_search_input.vue";
 import SelectStatusComp from "../../../components/select_status_comp.vue";
 import axios from "axios";
 import delete_icon from "@/assets/icons/delete.svg";
+import RegistrationService from "../../../services/registration.service";
 import { useRouter } from "vue-router";
-// const roleList = ref(["Bố", "Mẹ", "Người giám hộ"]);
-// const cityList = ref([]);
-// const districtList = ref([]);
-// const townList = ref([]);
-// const addressList = ref([]);
-// const levelList = ref(["Mầm", "Chồi", "Lá"]);
-// const syllabusList = ref(["Phổ thông", "Nâng cao"]);
 
 const role = ref(0);
 const name = ref(null);
 const phone = ref(null);
 const email = ref(null);
 const address = ref(null);
-// const city = ref(null);
-// const district = ref(null);
-// const town = ref(null);
 const cities = ref([]);
 const districts = ref([]);
 const wards = ref([]);
@@ -327,52 +319,9 @@ const status = ref(null);
 const uploadedFiles = ref([]);
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
-// watch(city, () => {
-//   if (addressList.value.some((e) => e.Name == city.value)) {
-//     console.log("ýe");
-//     const index = addressList.value.findIndex((e) => e.Name == city.value);
-//     addressList.value[index].Districts.forEach((e) => {
-//       districtList.value.push(e.Name);
-//     });
-//   }
-// });
-
-// watch(district, () => {
-//   if (addressList.value.some((e) => e.Name == city.value)) {
-//     const indexCity = addressList.value.findIndex((e) => e.Name == city.value);
-//     console.log(indexCity);
-//     if (
-//       addressList.value[indexCity].Districts.some(
-//         (districtItem) => districtItem.Name == district.value
-//       )
-//     ) {
-//       const indexDistrict = addressList.value[indexCity].Districts.findIndex(
-//         (e) => e.Name == district.value
-//       );
-//       addressList.value[indexCity].Districts[indexDistrict].Wards.forEach(
-//         (ward) => townList.value.push(ward.Name)
-//       );
-//     }
-//   }
-// });
 onMounted(() => {
   fetchData();
 });
-
-// async function fetchData() {
-//   axios
-//     .get(
-//       "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
-//     )
-//     .then((response) => {
-//       addressList.value = response.data;
-//       addressList.value.forEach((e) => cityList.value.push(e.Name));
-//       console.log(response.data);
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching data:", error);
-//     });
-// }
 
 function fetchData() {
   axios
@@ -441,16 +390,16 @@ const saveValueInput = async () => {
     formData.append("levels", levels.value);
     formData.append("syllabus", syllabus.value);
     formData.append("relationship", relationship.value);
-    formData.append("status", 0);
-    const response = await axios.post(
-      "http://localhost:9000/register",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    formData.append("status", status.value);
+    //Kiểm tra đơn đăng ký đã tồn tại.
+
+    //Nếu đơn đã tồn tại thông báo 'Số điện thoại đã được đăng ký với tên ...'
+    //Thoát khỏi function
+
+    //Ngược lại tiếp tục.
+    //Tạo đơn đăng ký
+    const response = await RegistrationService.createRegister(formData);
+
     if (response.data.status === 400) {
       emits("add-toast", {
         title: "Đăng ký không thành công",

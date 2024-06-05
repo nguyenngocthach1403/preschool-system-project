@@ -8,7 +8,21 @@ export default {
   searchRegister,
   getRegistrationWithStatusAndSearch,
   getRegistrationsWithStatus,
+  createRegister,
+  isExistRegistration,
 };
+
+function createRegister(data) {
+  return api().post("/register", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
+function isExistRegistration(phone) {
+  return api().get(`/registrations?phone=${phone}`);
+}
 
 function getRegistrations(limit, page) {
   console.log(`/registrations?limit=${limit}&page=${page}`);

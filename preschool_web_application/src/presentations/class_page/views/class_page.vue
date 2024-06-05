@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white h-dvh ml-4 rounded-3xl text-center text-3xl pb-[200px] overflow-hidden"
+    class="bg-[#FFFFFF] h-dvh ml-4 rounded-3xl text-center pb-[200px] overflow-hidden"
   >
     <ClassCreationView
       class="w-screen h-screen bg-black absolute z-10 left-0 top-0"

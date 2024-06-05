@@ -1,182 +1,265 @@
 <template>
-  <div class="registration-form">
-    <p>Form đăng ký</p>
-
-    <form enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="name">Họ tên:</label>
-        <input
-          type="text"
-          id="name"
-          v-model="your_name"
-          class="form-control"
-          required
-          @blur="checkFilled"
-        />
-        <div v-if="!your_name && initialLoad" class="input-error">
-          Vui lòng nhập họ tên
-        </div>
+  <div class="bg-white w-full overflow-x-hidden xl:h-full relative">
+    <Toast class="fixed top-5 right-10 z-30" :toast-list="toasts" />
+    <div class="xl:m-auto mx-5 xl:w-[1000px] xl:py-10 py-10">
+      <div class="title w-full text-center text-4xl font-bold">Preschool</div>
+      <div class="title w-full text-center text-3xl font-bold">
+        Đăng ký nhập học
       </div>
-
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          v-model="email"
-          class="form-control"
-          required
-          @blur="checkFilled"
-        />
-        <div v-if="!email && initialLoad" class="input-error">
-          Vui lòng nhập email
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="phone">Số điện thoại:</label>
-        <input
-          type="phone"
-          id="phone"
-          v-model="phone"
-          class="form-control"
-          required
-          @blur="checkFilled"
-        />
-        <div v-if="!phone && initialLoad" class="input-error">
-          Vui lòng nhập số điện thoại
-        </div>
-        <div v-if="phone.length > 10 && initialLoad" class="input-error">
-          Số điện thoại không hợp lệ, vui lòng kiểm tra lại
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="address">Địa chỉ thường trú:</label>
-        <textarea
-          id="address"
-          v-model="address"
-          class="form-control"
-          rows="3"
-          required
-          @blur="checkFilled"
-        ></textarea>
-        <div v-if="!address && initialLoad" class="input-error">
-          Vui lòng nhập địa chỉ thường trú
-        </div>
-      </div>
-
-      <select_locantion
-        :selectedCity="city"
-        :selectedDistrict="district"
-        :selectedWard="town"
-        @update:selectedCity="handleCityChange"
-        @update:selectedDistrict="handleDistrictChange"
-        @update:selectedWard="handleWardChange"
-        @blur="checkFilled"
-      />
-      <div
-        v-if="(!city || !district || !town) && initialLoad"
-        class="input-error"
-      >
-        Vui lòng chọn đầy đủ
-      </div>
-      <div class="form-group">
-        <label for="levels">Cấp bậc học:</label>
-        <select
-          id="levels"
-          v-model="levels"
-          class="form-control"
-          required
-          @blur="checkFilled"
-        >
-          <option value="0">Chọn cấp bậc học</option>
-          <option value="1">Mầm</option>
-          <option value="2">Chồi</option>
-          <option value="3">Lá</option>
-        </select>
-        <div v-if="!levels && initialLoad" class="input-error">
-          Vui lòng chọn cấp bậc học
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="syllabus">Loại chương trình học:</label>
-        <select
-          id="syllabus"
-          v-model="syllabus"
-          class="form-control"
-          required
-          @blur="checkFilled"
-        >
-          <option value="0">Chọn loại chương trình học</option>
-          <option value="1">Chương trình chuẩn</option>
-          <option value="2">Chương trình nâng cao</option>
-          <option value="3">Chương trình quốc tế</option>
-        </select>
-        <div v-if="!syllabus && initialLoad" class="input-error">
-          Vui lòng chọn chương trình học
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="relationship">Mối quan hệ với học sinh:</label>
-        <select
-          id="relationship"
-          v-model="relationship"
-          class="form-control"
-          required
-          @blur="checkFilled"
-        >
-          <option value="0">Chọn mối quan hệ</option>
-          <option value="1">Bố</option>
-          <option value="2">Mẹ</option>
-          <option value="3">Anh, Chị</option>
-          <option value="4">Ông, Bà</option>
-          <option value="5">Người giám hộ</option>
-        </select>
-        <div v-if="!relationship && initialLoad" class="input-error">
-          Vui lòng chọn mối quan hệ
-        </div>
-      </div>
-
-      <label for="upload">Gửi hình ảnh</label>
-      <div class="file-uploader">
-        <div class="upload-area">
-          <div class="dropzone">
-            <h2>Choose files or drag and drop</h2>
+      <section class="md:flex gap-5 my-3">
+        <div class="w-full mt-3">
+          <label>
+            <span class="pl-5">Tên người đăng ký</span>
+            <span class="text-red-500"> * </span>
+            <input
+              type="text"
+              v-model="name"
+              placeholder="Nhập họ tên người đăng ký"
+              class="input-text-default"
+              :class="{ valid: messageOfName }"
+            />
+          </label>
+          <div class="px-3">
+            <p class="text-red-600 mt-1">{{ messageOfName }}</p>
           </div>
-          <input type="file" @change="handleFileSelect" multiple />
         </div>
-
-        <div class="uploaded-files">
-          <div v-for="file in uploadedFiles" :key="file.name">
-            <div class="file-info">
-              <span class="filename">{{ file.name }}</span>
-              <span
-                ><button @click="removeFile(file)">
-                  <img :src="delete_icon" alt="" /></button
-              ></span>
+        <div class="w-full my-3">
+          <label>
+            <span class="pl-5">Vai trò của người đăng ký</span>
+            <span class="text-red-500"> * </span>
+            <select
+              v-model="relationship"
+              class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            >
+              <option value="0">Bố</option>
+              <option value="1">Mẹ</option>
+              <option value="2">Người giám hộ</option>
+            </select>
+          </label>
+        </div>
+      </section>
+      <section class="md:flex gap-5">
+        <div class="w-full my-3">
+          <label>
+            <span class="pl-5">Số điện thoại</span>
+            <span class="text-red-500"> * </span>
+            <input
+              type="tel"
+              v-model="phone"
+              placeholder="0123456789"
+              class="input-text-default"
+              :class="{ valid: messageOfPhone }"
+            />
+          </label>
+          <div class="px-3">
+            <p class="text-red-600 mt-1">{{ messageOfPhone }}</p>
+          </div>
+        </div>
+        <div class="w-full my-3">
+          <label>
+            <span class="pl-5">Email</span>
+            <span class="italic"> (Nếu có)</span>
+            <input
+              type="email"
+              v-model="email"
+              placeholder="example@gmail.com"
+              class="input-text-default"
+              :class="{ valid: messageOfEmail }"
+            />
+          </label>
+          <div class="px-3">
+            <p class="text-red-600 mt-1">{{ messageOfEmail }}</p>
+          </div>
+        </div>
+      </section>
+      <section class="md:flex gap-5">
+        <div class="w-full my-3">
+          <label>
+            <span class="pl-5">Cấp độ</span>
+            <span class="text-red-500"> * </span>
+            <select
+              v-model="levels"
+              class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            >
+              <option v-for="item in levelList" :key="item" :value="item.value">
+                {{ item.name }}
+              </option>
+            </select>
+          </label>
+        </div>
+        <div class="w-full my-3">
+          <label>
+            <span class="pl-5">Chương trình</span>
+            <span class="text-red-500"> * </span>
+            <select
+              v-model="syllabus"
+              class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+            >
+              <option
+                v-for="item in syllabusList"
+                :key="item"
+                :value="item.value"
+              >
+                {{ item.name }}
+              </option>
+            </select>
+          </label>
+        </div>
+      </section>
+      <section class="">
+        <div class="md:flex w-full gap-5">
+          <div class="w-full my-3">
+            <label>
+              <span class="pl-5">Thành phố/Tỉnh</span>
+              <span class="text-red-500"> * </span>
+              <select
+                v-model="city"
+                class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                :class="{ valid: messageOfAddress }"
+              >
+                <option v-for="item in cities" :key="item" :value="item.Name">
+                  {{ item.Name }}
+                </option>
+              </select>
+            </label>
+          </div>
+          <div class="w-full my-3">
+            <label>
+              <span class="pl-5">Quận/Huyện</span>
+              <span class="text-red-500"> * </span>
+              <select
+                v-model="district"
+                class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                :class="{ valid: messageOfAddress }"
+              >
+                <option
+                  v-for="item in districts"
+                  :key="item"
+                  :value="item.Name"
+                >
+                  {{ item.Name }}
+                </option>
+              </select>
+            </label>
+          </div>
+          <div class="w-full my-3">
+            <label>
+              <span class="pl-5">Phường/Xã/Thị xã</span>
+              <span class="text-red-500"> * </span>
+              <select
+                v-model="town"
+                class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                :class="{ valid: messageOfAddress }"
+              >
+                <option v-for="item in towns" :key="item" :value="item.Name">
+                  {{ item.Name }}
+                </option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="px-3">
+          <p class="text-red-600">{{ messageOfAddress }}</p>
+        </div>
+      </section>
+      <section class="md:flex gap-5">
+        <div class="w-full my-3">
+          <label>
+            <span class="pl-5">Địa chỉ chi tiết</span>
+            <input
+              type="text"
+              v-model="address"
+              placeholder="Mô tả chi tiết địa chỉ"
+              class="input-text-default"
+            />
+          </label>
+        </div>
+      </section>
+      <section class="w-full">
+        <div class="w-full my-3">
+          <label>
+            <span class="pl-5">Hình ảnh đơn đăng ký</span>
+            <div
+              class="relative w-full content-center text-center gap-10 h-[300px] rounded-md border border-gray-400 border-dotted object-contain"
+            >
+              <img v-if="fileUpload" :src="imageUpload" class="h-full" />
+              <input
+                type="file"
+                class="absolute top-0 w-full h-full opacity-0"
+                @change="handleUploadFile($event)"
+              />
+              <div v-if="!fileUpload">
+                <img :src="image_default" class="w-10 m-auto my-5" />
+                <span class="text-blue-700">Click</span>
+                <span> để thêm ảnh</span>
+              </div>
             </div>
-            <!-- <div class="progress-bar">
-            <div class="progress" :style="{ width: file.progress + '%' }"></div>
-          </div> -->
-          </div>
+          </label>
         </div>
+        <div>Tải mẫu đơn đăng ký:</div>
+      </section>
+      <div id="button-side" class="w-full text-center my-5">
+        <button
+          type="submit"
+          @click="createRegister()"
+          class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
+        >
+          Gửi đăng ký
+        </button>
+        <!-- <button
+          type="button"
+          class="inline-flex h-[48px] items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+          disabled
+        >
+          <svg
+            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Processing...
+        </button> -->
       </div>
-      <div class="btn-submit">
-        <button class="btn-dangky" @click="register">Đăng ký</button>
-      </div>
-    </form>
+    </div>
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
+import Toast from "../../../components/toast_list.vue";
+import { onMounted, ref, watch } from "vue";
+import RegistrationService from "../../../services/registration.service";
+import image_default from "../../../assets/img/image-default.png";
+import levelService from "../../../services/levels.service";
+import syllabusService from "../../../services/syllabus.service";
+import {
+  isEmpty,
+  isEmailValid,
+  isPhoneValid,
+} from "../../../utils/resources/check_valid";
 import axios from "axios";
-import delete_icon from "@/assets/icons/delete.svg";
-import select_locantion from "@/components/select_location.vue";
-import router from "@/router/router";
-const your_name = ref("");
+
+const toasts = ref([]);
+
+const levelList = ref([]);
+const syllabusList = ref([]);
+const cities = ref([]);
+const districts = ref([]);
+const towns = ref([]);
+
+const name = ref("");
 const email = ref("");
 const phone = ref("");
 const address = ref("");
@@ -186,211 +269,201 @@ const town = ref("");
 const levels = ref(0);
 const syllabus = ref(0);
 const relationship = ref(0);
-const informationState = ref();
-const status = ref(0);
 const uploadedFiles = ref([]);
 const emits = defineEmits(["add-toast"]);
-const initialLoad = ref(false);
-const filled = ref(true);
 
-const handleCityChange = (selectedCity) => {
-  city.value = selectedCity;
-};
+const messageOfName = ref();
+const messageOfPhone = ref();
+const messageOfEmail = ref();
+const messageOfAddress = ref();
 
-const handleDistrictChange = (selectedDistrict) => {
-  district.value = selectedDistrict;
-};
+const fileUpload = ref(null);
+const imageUpload = ref(null);
 
-const handleWardChange = (selectedWard) => {
-  town.value = selectedWard;
-};
+onMounted(() => {
+  getLevel();
+  getSyllabus();
+  getAddress();
+});
 
-const handleFileSelect = (event) => {
-  const files = event.target.files;
-  for (const file of files) {
-    uploadedFiles.value.push(file);
+watch(city, () => {
+  districts.value = [];
+  towns.value = [];
+
+  if (city.value != undefined) {
+    districts.value = cities.value.find((e) =>
+      e.Name.match(city.value)
+    ).Districts;
   }
-};
-
-const removeFile = (file) => {
-  const index = uploadedFiles.value.indexOf(file);
-  if (index !== -1) {
-    uploadedFiles.value.splice(index, 1);
+});
+watch(district, () => {
+  if (district.value != undefined) {
+    towns.value = districts.value.find((e) =>
+      e.Name.match(district.value)
+    ).Wards;
   }
-};
+});
 
-const register = async () => {
+watch(name, () => {
+  if (!isEmpty(name.value)) {
+    messageOfName.value = "";
+  }
+});
+
+watch(city, () => {
+  if (!isEmpty(city.value)) {
+    messageOfAddress.value = "";
+  }
+});
+
+watch(phone, () => {
+  if (!isEmpty(phone.value) && isPhoneValid(phone.value)) {
+    messageOfPhone.value = "";
+  }
+});
+
+watch(email, () => {
+  if (isEmailValid(email.value) || isEmpty(email.value)) {
+    messageOfEmail.value = "";
+  }
+});
+
+function checkValid() {
+  let valid = false;
+  if (isEmpty(name.value)) {
+    valid = true;
+    messageOfName.value = "Họ tên không được để trống";
+  }
+
+  if (isEmpty(phone.value)) {
+    valid = true;
+    messageOfPhone.value = "Số điện thoại không được phép để trống.";
+  }
+
+  if (!isPhoneValid(phone.value) && !isEmpty(phone.value)) {
+    valid = true;
+    messageOfPhone.value = "Số điện thoại phải có 10 số.";
+  }
+
+  if (!isEmailValid(email.value) && !isEmpty(email.value)) {
+    valid = true;
+    messageOfEmail.value = "Email không hợp lệ.";
+  }
+
+  if (isEmpty(city.value) || isEmpty(district.value) || isEmpty(town.value)) {
+    valid = true;
+    messageOfAddress.value = "Vui lòng nhập địa chỉ thường trú";
+  }
+  return valid;
+}
+
+async function createRegister() {
+  if (checkValid()) return;
   try {
     const formData = new FormData();
     for (const file of uploadedFiles.value) {
       formData.append("files", file);
     }
-    formData.append("your_name", your_name.value);
-    formData.append("email", email.value);
+    formData.append("name", name.value);
+    if (isEmpty(email.value)) formData.append("email", email.value);
     formData.append("phone", phone.value);
-    formData.append("address", address.value);
+    if (isEmpty(address.value)) formData.append("address", address.value);
     formData.append("city", city.value);
     formData.append("district", district.value);
     formData.append("town", town.value);
-    formData.append("levels", levels.value);
-    formData.append("syllabus", syllabus.value);
+    if (!isEmpty(levels.value)) formData.append("levels", levels.value);
+    if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
     formData.append("relationship", relationship.value);
     formData.append("informationState", 0);
     formData.append("status", 0);
-    const response = await axios.post(
-      "http://localhost:9000/register",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+
+    const response = await RegistrationService.createRegister(formData);
+
+    if (response.data.isExist) {
+      toasts.value.push({
+        title: "Đơn đã tồn tại.",
+        content: "Số điện thoại đã được đăng ký.",
+        type: 1,
+      });
+      return;
+    }
     if (response.status === 200) {
-      emits("add-toast", {
+      toasts.value.push({
         title: "Đăng ký thành công",
         type: 0,
       });
     } else {
-      console.log("Fail");
+      toasts.value.push({
+        title: "Đăng ký không thành công.",
+        content: "Quá trình đăng ký bị lỗi. Thử lại sau.",
+        type: 1,
+      });
     }
   } catch (e) {
-    console.log(e);
+    toasts.value.push({
+      title: "Đăng ký không thành công.",
+      content: "Quá trình đăng ký bị lỗi. Thử lại sau.",
+      type: 1,
+    });
+    console.error(e);
   }
-};
-const checkFilled = () => {
-  filled.value =
-    your_name.value.trim() !== "" &&
-    email.value.trim() !== "" &&
-    phone.value.trim() !== "" &&
-    address.value.trim() !== "";
-  city.value !== 0 &&
-    district.value !== 0 &&
-    town.value !== 0 &&
-    levels.value !== 0 &&
-    syllabus.value !== 0 &&
-    relationship.value !== 0;
-  if (
-    your_name.value.trim() === "" ||
-    email.value.trim() === "" ||
-    address.value.trim() === "" ||
-    city.value === 0 ||
-    district.value === 0 ||
-    town.value === 0 ||
-    levels.value === 0 ||
-    syllabus.value === 0 ||
-    relationship.value === 0
-  ) {
-    initialLoad.value = true;
-  }
-};
+}
 
-window.onload = () => {
-  initialLoad.value = true;
-};
+async function getLevel() {
+  const response = await levelService.getLevels();
+  for (let index = 0; index < response.data.data.length; index++) {
+    const element = response.data.data[index];
+    levelList.value.push({
+      value: element.id,
+      name: element.levelsName,
+    });
+  }
+}
+
+async function getSyllabus() {
+  const response = await syllabusService.getSyllabus();
+  for (let index = 0; index < response.data.data.length; index++) {
+    const element = response.data.data[index];
+    syllabusList.value.push({
+      value: element.id,
+      name: element.syllabusName,
+    });
+  }
+}
+
+async function getAddress() {
+  axios
+    .get(
+      "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
+    )
+    .then((response) => {
+      cities.value = response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+}
+
+function handleUploadFile(event) {
+  //Lấy hình
+  fileUpload.value = event.target.files[0];
+
+  //Kiểm tra tồn tại
+  if (!fileUpload) return;
+
+  //Kiểm tra size
+  if (fileUpload.value.size / 1024 > 5120) {
+    //Bỏ nếu quá dung lượng cho phếp
+    fileUpload.value = null;
+    return;
+  }
+
+  //Tạo đường dẫn của ảnh
+  imageUpload.value = URL.createObjectURL(fileUpload.value);
+}
 </script>
 <style scoped>
-.registration-form {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-}
-
-.registration-form p {
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 20px;
-  font-size: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-.input-error {
-  color: red;
-  font-size: 14px;
-  margin-top: 5px;
-}
-label {
-  display: block;
-}
-
-input,
-textarea,
-select {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
-
-select {
-  font-size: 14px;
-  height: 40px;
-}
-
-.file-uploader {
-  width: 450px;
-  margin: 0 auto;
-  border: 1px solid #ccc;
-  padding: 20px;
-}
-
-.upload-area {
-  text-align: center;
-  padding: 10px;
-  border: 1px dashed #ccc;
-}
-
-.dropzone {
-  cursor: pointer;
-}
-
-.uploaded-files {
-  margin-top: 20px;
-}
-
-.file-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-/* .progress-bar {
-    background-color: #f0f0f0;
-    height: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .progress {
-    background-color: #4caf50;
-    height: 100%;
-    transition: width 0.5s ease;
-  } */
-
-.file-info img {
-  width: 20px;
-  height: 20px;
-}
-
-.btn-dangky {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #4caf50;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.btn-dangky:hover {
-  background-color: #45a049;
+.valid {
+  border: solid red 1px;
 }
 </style>
