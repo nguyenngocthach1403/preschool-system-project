@@ -361,8 +361,8 @@ async function createRegister() {
   if (checkValid()) return;
   try {
     const formData = new FormData();
-    for (const file of uploadedFiles.value) {
-      formData.append("files", file);
+    if (fileUpload.value) {
+      formData.append("files", fileUpload.value);
     }
     formData.append("name", name.value);
     if (isEmpty(email.value)) formData.append("email", email.value);
