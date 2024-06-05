@@ -124,14 +124,6 @@
                 </select>
               </label>
             </div>
-            <!-- <div class="text-gray-500 h-10">
-              <span>Thông tin tài khoản</span>
-            </div>
-
-             -->
-            <!-- <div class="text-gray-500 h-10">
-              <span>Thông tin đơn đăng ký</span>
-            </div> -->
           </div>
         </div>
         <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
@@ -333,186 +325,15 @@
         </div>
       </div>
     </div>
-    <!-- <div
-      class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-fit pb-[60px]"
-    >
-      <div id="head">Thông tin đơn đăng ký</div>
-      
-      <div class="w-full px-40 py-5">
-        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Tên người đăng ký</span>
-            <input
-              type="text"
-              placeholder="Tên đăng nhập"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              v-model="registerName"
-            />
-          </label>
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Mã đơn</span>
-            <input
-              type="text"
-              placeholder="0xxxxxxxxx"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              v-model="registerId"
-            />
-          </label>
-        </div>
-        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Số điện thoại đăng ký</span>
-            <input
-              type="text"
-              placeholder="0xxxxxxxxx"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              v-model="registerPhone"
-            />
-          </label>
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Email đăng ký</span>
-            <input
-              type="text"
-              placeholder="abc@abc.com"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              v-model="registerEmail"
-            />
-          </label>
-        </div>
-        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Chương trình đăng ký</span>
-            <SelectReturnNumComp
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-            />
-          </label>
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Cấp độ đăng ký</span>
-            <SelectReturnNumComp
-              :list-select="levelsList"
-              @choose="levels = $event"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-              :active="1"
-            />
-          </label>
-        </div>
-        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Xã/Thị Xã</span>
-            <SelectSearchComp
-              :list-select="townList"
-              @choose="town = $event"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-            />
-          </label>
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Quận/Huyện</span>
-            <SelectSearchComp
-              :list-select="districtList"
-              @choose="district = $event"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-            /> </label
-          ><label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Thành phố</span>
-            <SelectSearchComp
-              :list-select="cityList"
-              @choose="city = $event"
-              :active="'Hà Nội'"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-            />
-          </label>
-        </div>
-        <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Trạng thái hồ sơ</span>
-            <SelectReturnNumComp
-              :list-select="fileStatusList"
-              :active="fileStatus"
-              @choose="fileStatus = $event"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-            />
-          </label>
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Trạng thái</span>
-            <SelectStatusComp
-              class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
-              :select-list="registerStatusList"
-              @choose="statusAccount = $event"
-              :active="1"
-            />
-          </label>
-        </div>
-        <div class="text-start w-full gap-5 mx-[20px] mb-[20px]">
-          <span class="my-2">Hình ảnh đơn đăng ký</span>
-
-          <div
-            class="w-full my-3 border border-dotted border-2 border-gray-500 ob rounded-xl h-[500px] max-h-68"
-          >
-            <img
-              src="https://th.bing.com/th/id/OIP.pRc56eeZPk-f1ticsni6YwHaEK?w=326&h=183&c=7&r=0&o=5&pid=1.7"
-              alt=""
-              class="object-contain w-full h-full"
-            />
-          </div>
-          <input clas="mx-3" type="file" name="" id="" />
-        </div>
-        <div id="button-side" class="w-full flex text-start mx-5 gap-5">
-          <button
-            v-if="status !== 'creating'"
-            type="submit"
-            class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
-            @click="updateParent"
-          >
-            Save
-          </button>
-          <button
-            v-if="status === 'creating'"
-            type="button"
-            class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
-            disabled
-          >
-            <svg
-              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            Processing...
-          </button>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, onBeforeMount, computed } from "vue";
-import axios from "axios";
+import { ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
-import saveButton from "@/components/save_button.vue";
-import closeButton from "@/components/close_button.vue";
-import SelectReturnStringComp from "../../../components/select_return_string_comp.vue";
-import SelectReturnNumComp from "@/components/select_return_num_comp.vue";
-import SelectStatusComp from "../../../components/select_status_comp.vue";
-import SelectSearchComp from "../../../components/select_search_input.vue";
-import select_locantion from "@/components/select_location.vue";
+import parentService from "../../../services/parent.service";
 import { useParentStore } from "../../../stores/parent_store";
 import { useAccountStore } from "../../../stores/account_store";
-import { storeToRefs } from "pinia";
 const name_parent = ref("");
 const gender_parent = ref("");
 const birthday = ref("");
@@ -535,9 +356,7 @@ const getParent = async () => {
   try {
     const parentId = router.currentRoute.value.params.id;
     console.log(parentId);
-    const response = await axios.get(
-      `http://localhost:9000/parents/${parentId}`
-    );
+    const response = await parentService.getParentByIdParam(parentId);
     const parents = response.data[0];
     console.log(parents);
     const parsedBirthday = new Date(parents.birthday);
@@ -632,140 +451,6 @@ async function updateAccount() {
     type: 0,
   });
 }
-// const updateParent = async () => {
-//   try {
-//     const parentId = router.currentRoute.value.params.id;
-//     const response = await axios.put(
-//       `http://localhost:9000/parents/${parentId}`,
-//       {
-//         name: name_parent.value,
-//         gender: gender_parent.value,
-//         birthday: birthday.value,
-//         address: address.value,
-//         job: job.value,
-//         email: email_parent.value,
-//         phone: phone_parent.value,
-//         role: role.value,
-//         status: status.value,
-//       }
-//     );
-//     if (response.data.status === 200) {
-//       emits("add-toast", {
-//         title: "Cập nhật thông tin phụ huynh thành công!",
-//         type: 0,
-//       });
-//       router.push({ name: "ParentView" });
-//     } else if (response.data.status === 400) {
-//       emits("add-toast", {
-//         title: "Cập nhật thông tin phụ huynh thất bại!!",
-//         type: 1,
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error updating parent:", error);
-//   }
-// };
-
-// const checkDuplicate = async () => {
-//   try {
-//     const checkDuplicateResponse = await axios.post(
-//       "http://localhost:9000/parents/duplicateAccount",
-//       {
-//         account: create_account.value,
-//       }
-//     );
-//     return checkDuplicateResponse.data;
-//   } catch (error) {
-//     console.log(e);
-//   }
-// };
-
-// const updateParent1 = async () => {
-//   try {
-//     const isDuplicate = await checkDuplicate();
-//     if (isDuplicate.status === 400) {
-//       emits("add-toast", {
-//         title: "Account đã tồn tại, hãy kiểm tra lại!",
-//         type: 1,
-//       });
-//       return;
-//     } else if (isDuplicate.status === 200) {
-//       const parentId = router.currentRoute.value.params.id;
-//       const response = await axios.put(
-//         `http://localhost:9000/parents/${parentId}`,
-//         {
-//           name: name_parent.value,
-//           gender: gender_parent.value,
-//           birthday: birthday.value,
-//           address: address.value,
-//           job: job.value,
-//           email: email_parent.value,
-//           phone: phone_parent.value,
-//           role: role.value,
-//           status: status.value,
-//           account: create_account.value,
-//         }
-//       );
-//       if (response.data.status === 200) {
-//         emits("add-toast", {
-//           title: "Cập nhật thành công!",
-//           type: 0,
-//         });
-//         router.push({ name: "ParentView" });
-//       } else if (response.data.status === 400) {
-//         emits("add-toast", {
-//           title: "Tài khoản chưa tồn tại, hãy kiểm tra lại!",
-//           type: 1,
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error updating parent:", error);
-//   }
-// };
-// const updateAccount = async () => {
-//   try {
-//     const parentId = router.currentRoute.value.params.id;
-//     const response = await axios.put(
-//       `http://localhost:9000/parents/${parentId}`,
-//       {
-//         name: name_parent.value,
-//         gender: gender_parent.value,
-//         birthday: birthday.value,
-//         address: address.value,
-//         job: job.value,
-//         email: email_parent.value,
-//         phone: phone_parent.value,
-//         role: role.value,
-//         status: status.value,
-//       }
-//     );
-//     const accountName = account.value;
-//     // console.log(accountName);
-//     const accountResponse = await axios.put(
-//       `http://localhost:9000/account/update/${accountName}`,
-//       {
-//         email: email_account.value,
-//         phone: phone_account.value,
-//       }
-//     );
-
-//     if (accountResponse.data.status === 200) {
-//       emits("add-toast", {
-//         title: "Cập nhật thông tin thành công!",
-//         type: 0,
-//       });
-//       router.push({ name: "ParentView" });
-//     } else if (accountResponse.data.status === 400) {
-//       emits("add-toast", {
-//         title: "Cập nhật thông tin thất bại!!",
-//         type: 1,
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error updating parent:", error);
-//   }
-// };
 
 onBeforeMount(async () => {
   await getParent();
