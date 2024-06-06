@@ -393,9 +393,10 @@ function fetchData() {
 function onCityChange() {
   districts.value = [];
   wards.value = [];
-  const cityData = cities.value.find((city) => city.Name.match(city.value));
+  const cityData = cities.value.find((e) => e.Name.match(city.value));
   if (cityData) {
     districts.value = cityData.Districts;
+    console.log(districts.value);
   }
 }
 function onDistrictChange() {

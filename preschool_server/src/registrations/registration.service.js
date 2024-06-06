@@ -15,6 +15,7 @@ module.exports = {
   getRegistrationsWithStatus,
   getTotalWithStatus,
   isExistRegisterByPhone,
+  deleteRegistration,
 };
 
 async function createRegister(data) {
@@ -322,6 +323,32 @@ async function getRegistrations(page, limit) {
     return {
       code: error.code,
       message: "An error occurred while executing the query.",
+    };
+  }
+}
+
+async function deleteRegistration(id, phone) {
+  try {
+    const result = await db.deleteRow(
+      config.tb.register,
+      `WHERE id = ${id} OR phone = ${phone}`
+    );
+
+    if (result == 0) {
+      return {
+        success: false,
+        message: `Xóa đơn đăng ký ${phone} thất bại!`,
+      };
+    }
+    return {
+      success: true,
+      message: `Xóa đơn đăng ký ${phone} thành công.`,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      code: error.code,
+      error: error.sqlMessage,
     };
   }
 }

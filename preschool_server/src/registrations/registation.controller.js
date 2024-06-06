@@ -2,6 +2,8 @@ const express = require("express");
 
 const registationService = require("./registration.service");
 
+const checkService = require("../config/check.service");
+
 const router = express.Router();
 
 router.get("/total", getTotalRegistration);
@@ -16,6 +18,9 @@ router.get("/update/status/:id", updateStatus);
 router.get("/status/total", getTotalOfStatus);
 
 router.get("/status", getRegistrationsWithStatus);
+
+router.get("/delete", deleteRegistration);
+
 async function getRegistrationsWithStatus(req, res) {
   const { status, limit, offset } = req.query;
   console.log(status);
@@ -34,6 +39,38 @@ async function getRegistrationsWithStatus(req, res) {
   res
     .status(200)
     .json({ success: true, total: count[0]["total"], data: result.data });
+}
+
+async function deleteRegistration(req, res) {
+  const { id, phone } = req.query;
+
+  if (checkService.isEmpty(id) || checkService.isEmpty(phone)) {
+    return res.status(200).json({
+      success: false,
+      error: "Vui lòng nhập id và số diện thoại để xóa.",
+    });
+  }
+
+  //Call function delete
+  const result = await registationService.deleteRegistration(id, phone);
+
+  if (result.code) {
+    return res.status(200).json({
+      success: false,
+      error: result.error,
+    });
+  }
+  if (!result.success) {
+    return res.status(200).json({
+      success: false,
+      error: result.message,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    error: result.message,
+  });
 }
 
 async function getRegistrationWithStatusAndSearch(req, res) {

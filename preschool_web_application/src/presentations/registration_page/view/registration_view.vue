@@ -1,5 +1,12 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
+    <ConfirmDialog
+      v-if="showConfirmDialog"
+      class="absolute top-0 left-0"
+      :content="`Bạn có muốn xóa đơn đăng ký với số điện ${showConfirmDialog.phone} của người đăng ký tên ${showConfirmDialog.name} không?`"
+      @confirm="getConfirm($event)"
+      :value="showConfirmDialog"
+    />
     <CreateAccountView
       v-if="showCreateAccountView"
       class="absolute top-0 left-0"
@@ -64,9 +71,11 @@
     <!-- Table components -->
     <TableComp
       :data="registrations"
+      @delete-item="showConfirmDialog = $event"
       @click-create-acount="createAccountShow($event)"
       @update-status="updateStatus($event)"
     ></TableComp>
+    {{ showConfirmDialog }}
     <div
       class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
     >
@@ -103,6 +112,7 @@
 
 <script setup>
 import CreateButtonComp from "../../../components/create_button.vue";
+import ConfirmDialog from "../../../components/confirm_dialog.vue";
 import TableComp from "../components/table.vue";
 import CreateAccountView from "../../account_page/components/create_account_view.vue";
 import SearchFormComp from "../../../components/search_form_comp.vue";
@@ -111,6 +121,7 @@ import ItemCheckBox from "../components/item_checkbox_filter.vue";
 import { storeToRefs, mapState } from "pinia";
 import { useRegistrionStore } from "../../../stores/registration_store";
 import { onMounted, ref, watch } from "vue";
+import { isEmpty } from "../../../utils/resources/check_valid";
 
 const registrationStore = useRegistrionStore();
 const {
@@ -123,6 +134,8 @@ const {
   searchText,
   statusIds,
 } = storeToRefs(registrationStore);
+
+const showConfirmDialog = ref(null);
 
 onMounted(async () => {
   const count = await registrationStore.countRegistration();
@@ -223,6 +236,48 @@ async function updateStatus(event) {
     content: result.message,
     type: 0,
   });
+}
+
+async function getConfirm(event) {
+  if (!event) {
+    showConfirmDialog.value = null;
+    return;
+  }
+
+  //Call delete function
+  const result = await registrationStore.deleteRegistration(event);
+
+  if (!result.success) {
+    emits("add-toast", {
+      title: "Thất bại.",
+      content: result.message,
+      type: 1,
+    });
+    return;
+  }
+
+  emits("add-toast", {
+    title: "Thành công.",
+    content: result.message,
+    type: 0,
+  });
+
+  if (
+    registrationStore.statusIds.length != 0 &&
+    !isEmpty(registrationStore.searchText)
+  ) {
+    await registrationStore.searchHasStatus();
+  } else if (!isEmpty(registrationStore.searchText)) {
+    registrationStore.searchRegistration();
+  } else {
+    if (registrationStore.statusIds.length != 0) {
+      await registrationStore.getRegistrationsWithStatus();
+    } else {
+      await registrationStore.getRegistration();
+    }
+  }
+
+  showConfirmDialog.value = null;
 }
 function changePage(event) {
   registrationStore.changePage(event - 1);

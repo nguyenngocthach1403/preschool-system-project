@@ -3,7 +3,8 @@
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
-      :content="showConfirmDialog"
+      :content="`Bạn có muốn xóa bé ${showConfirmDialog.name} không?`"
+      :value="showConfirmDialog"
       @confirm="getConfirm($event)"
     />
     <EditStudentView
@@ -59,7 +60,7 @@
     <!-- Table components -->
     <TableComp
       :data-table="dataOfTable"
-      @delete-student="deleteStudentById"
+      @delete-student="showConfirmDialog = $event"
       @edit-student="editStudent"
       @sort-student-id="sortDataByID"
       @sort-student-name="sortDataByName"
@@ -171,25 +172,32 @@ const sortDataByClass = () => {
   dataOfTable.value.sort((a, b) => a.class.localeCompare(b.class));
 };
 
+// const getConfirm = (event) => {
+//   if (event) {
+//     const studentToDel = JSON.parse(localStorage.getItem("studentToDel") || {});
+
+//     deleteStudent(studentToDel);
+
+//     showConfirmDialog.value = null;
+//   } else {
+//     showConfirmDialog.value = null;
+//   }
+// };
 const getConfirm = (event) => {
-  if (event) {
-    const studentToDel = JSON.parse(localStorage.getItem("studentToDel") || {});
-
-    deleteStudent(studentToDel);
-
+  if (!event) {
     showConfirmDialog.value = null;
-  } else {
-    showConfirmDialog.value = null;
+    return;
   }
+
+  //Call delete function
+  deleteStudent(event);
+
+  showConfirmDialog.value = null;
 };
 const editStudent = (event) => {
   showStudentEdit.value = event;
 };
 const emits = defineEmits(["add-toast"]);
-const deleteStudentById = (event) => {
-  localStorage.setItem("studentToDel", JSON.stringify(event));
-  showConfirmDialog.value = "Bạn có muốn xóa bé " + event.name + " không?";
-};
 
 function round(value) {
   return Math.ceil(value);

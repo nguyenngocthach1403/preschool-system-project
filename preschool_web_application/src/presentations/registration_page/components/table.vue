@@ -141,9 +141,49 @@
             </button>
           </td>
           <td class="content-center px-3 cursor-default hover:text-blue-700">
-            Edit
+            <img
+              v-if="showMenu && showMenu.id == item.id"
+              :src="close_icon"
+              class="w-[20px]"
+              alt=""
+              @click="selectMenu($event)"
+            />
+            <img
+              v-else
+              :src="menu_icon"
+              class="w-[20px]"
+              alt=""
+              @click="selectMenu($event, item)"
+            />
           </td>
         </tr>
+        <Transition
+          leave-active-class="transition ease-in duration-100"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
+          <div
+            @mouseleave="closeMenu"
+            v-if="showMenu"
+            class="absolute mt-2 w-[150px] top-0 h-fit z-40 bg-white drop-shadow rounded-md z-30"
+            :style="{ top: y + 'px', left: x - 150 + 'px' }"
+          >
+            <ul @click="closeMenu" class="text-start cursor-default">
+              <li
+                @click="$emit('delete-item', showMenu)"
+                class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
+              >
+                <img :src="delete_icon" class="w-[15px]" /> Xóa
+              </li>
+              <li
+                @click="$emit('edit-item', item)"
+                class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
+              >
+                <img :src="edit_icon" class="w-[15px]" /> Sửa
+              </li>
+            </ul>
+          </div>
+        </Transition>
         <Transition
           leave-active-class="transition ease-in duration-100"
           leave-from-class="opacity-100"
@@ -204,7 +244,12 @@
 import { ref } from "vue";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
 import { convertRegisterStatus } from "../../../utils/resources/converter";
+import menu_icon from "../../../assets/icons/menu.svg";
+import close_icon from "../../../assets/icons/close.svg";
+import delete_icon from "../../../assets/icons/delete.svg";
+import edit_icon from "../../../assets/icons/edit.svg";
 const showChangeStatusViewIndex = ref(null);
+const showMenu = ref(false);
 
 const emits = defineEmits(["update-status"]);
 const drops = defineProps({
@@ -219,10 +264,23 @@ function closeChangeStatus() {
     show.value = false;
   }, 50);
 }
+function closeMenu() {
+  setTimeout(() => {
+    showMenu.value = null;
+  }, 50);
+}
 
 const x = ref();
 const y = ref();
 const registerId = ref();
+
+function selectMenu(event, register) {
+  showMenu.value == null
+    ? (showMenu.value = register)
+    : (showMenu.value = null);
+  x.value = event.clientX;
+  y.value = event.clientY;
+}
 
 function selectStatus(event, id) {
   show.value = !show.value;

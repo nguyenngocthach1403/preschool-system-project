@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import registrationService from "../services/registration.service";
+import { HttpStatusCode } from "axios";
 
 export const useRegistrionStore = defineStore("registrationStore", {
   state: () => ({
@@ -226,6 +227,32 @@ export const useRegistrionStore = defineStore("registrationStore", {
         this.page = 0;
       }
       this.getRegistration();
+    },
+
+    async deleteRegistration(register) {
+      const response = await registrationService.deleteRegistration(
+        register.id,
+        register.phone
+      );
+
+      if (response.status !== HttpStatusCode.Ok) {
+        return {
+          success: false,
+          message: "Tiến trình thực hiện bị lỗi. Vui lòng thử lại.",
+        };
+      }
+
+      if (!response.data.success) {
+        return {
+          success: false,
+          message: response.data.error,
+        };
+      }
+
+      return {
+        success: true,
+        message: response.data.message,
+      };
     },
   },
 });
