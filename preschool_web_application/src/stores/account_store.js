@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import accountService from "../services/account.service";
+import { HttpStatusCode } from "axios";
 
 export const useAccountStore = defineStore("accountStore", {
   state: () => ({

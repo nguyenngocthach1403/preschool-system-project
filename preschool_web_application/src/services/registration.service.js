@@ -10,6 +10,7 @@ export default {
   getRegistrationsWithStatus,
   createRegister,
   isExistRegistration,
+  deleteRegistration,
 };
 
 function createRegister(data) {
@@ -63,4 +64,8 @@ function getRegistrationWithStatusAndSearch(searchText, status, page, limit) {
       page * limit
     }`
   );
+}
+
+function deleteRegistration(id, phone) {
+  return api().get(`/registrations/delete?id=${id}&phone=${phone}`);
 }
