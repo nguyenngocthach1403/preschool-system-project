@@ -47,6 +47,7 @@ app.use("/class", require("./src/class/class.controller"));
 app.use("/image", require("./src/image/image.controller"));
 app.use("/levels", require("./src/levels/levels.controller"));
 app.use("/syllabus", require("./src/syllabus/syllabus.controller"));
+app.use("/relationship", require("./src/relationship/relationship.controller"));
 
 app.listen(port, () => {
   console.log(`listen port ${port}`);

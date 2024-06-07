@@ -9,6 +9,7 @@ export default {
   createParent,
   updateParent,
   getParentByIdParam,
+  searchParent,
 };
 
 function search(txtSearch, page, limit) {
@@ -39,4 +40,10 @@ function createParent(dataToCreate) {
 
 function updateParent(id, dataToUpdate) {
   return api().put(`/parents/${id}`, dataToUpdate);
+}
+
+function searchParent(searchText, page, limit) {
+  return api().get(
+    `/parents/search?text=${searchText}&page=${page}&limit=${limit}`
+  );
 }

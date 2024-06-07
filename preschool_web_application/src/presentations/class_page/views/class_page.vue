@@ -14,6 +14,7 @@
 
     <div class="my-3 flex justify-between content-center mr-3">
       <SearchFormComp
+        class="w-[400px] ml-[20px]"
         v-on:passSearchText="getSearchText($event)"
       ></SearchFormComp>
       <CreateButtonComp

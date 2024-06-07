@@ -14,7 +14,10 @@
     /> -->
     <div class="text-left px-[20px] text-[36px] font-bold">Parent</div>
     <div class="flex justify-between content-center mr-3">
-      <SearchForm @passSearchText="getSearchText"></SearchForm>
+      <SearchForm
+        @passSearchText="getSearchText"
+        class="w-[400px] ml-[20px]"
+      ></SearchForm>
 
       <router-link :to="{ name: 'ParentCreationView' }">
         <CreateButtonComp></CreateButtonComp>

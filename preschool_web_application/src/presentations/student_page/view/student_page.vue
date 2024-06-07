@@ -21,6 +21,13 @@
       @close="showPopUpAddClass = null"
       @add-toast="$emit('add-toast', $event)"
     />
+    <PopUpLinkParent
+      v-if="showPopUpLinkParent"
+      class="absolute top-0 left-0"
+      :student-data="showPopUpLinkParent ?? null"
+      @close="(showPopUpLinkParent = null), loadPage()"
+      @add-toast="$emit('add-toast', $event)"
+    />
 
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
@@ -29,7 +36,10 @@
 
     <!-- Search-->
     <div class="flex justify-between content-center mt-5 mr-3">
-      <SearchFormComp @passSearchText="getSearchText"></SearchFormComp>
+      <SearchFormComp
+        @passSearchText="getSearchText"
+        class="w-[400px] ml-[20px]"
+      ></SearchFormComp>
       <router-link :to="{ name: 'StudentCreationView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
@@ -66,6 +76,7 @@
       @sort-student-name="sortDataByName"
       @sort-student-class="sortDataByClass"
       @add-student-into-class="showAddClassFunction($event)"
+      @link-parent-with-student="showPopUpLinkParentFunction($event)"
     ></TableComp>
 
     <div
@@ -110,6 +121,7 @@ import ConfirmDialog from "@/components/confirm_dialog.vue";
 import EditStudentView from "./student_edition_view.vue";
 import Pagination from "../../../components/pagination.vue";
 import PopUpAddStudentIntoClass from "../components/popup_add_student_to_class.vue";
+import PopUpLinkParent from "../components/popup_linking_parent_with_student.vue";
 import { ref, computed, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useStudentStore } from "../../../stores/student_store";
@@ -122,6 +134,7 @@ const studentDel = ref(null);
 const showConfirmDialog = ref("");
 const showStudentEdit = ref(null);
 const showPopUpAddClass = ref(false);
+const showPopUpLinkParent = ref(null);
 
 const { students, page, limit, loading, total, status } =
   storeToRefs(studentStore);
@@ -133,6 +146,13 @@ onMounted(async () => {
 
   dataOfTable.value = studentStore.students;
 });
+function loadPage() {
+  if (searchText.value !== "") {
+    studentStore.searchStudent(searchText.value);
+  } else {
+    studentStore.getStudent();
+  }
+}
 
 watch(loading, () => {
   if (loading) {
@@ -233,6 +253,9 @@ function showStudentNumSelectChange(event) {
 }
 function showAddClassFunction(event) {
   showPopUpAddClass.value = event;
+}
+function showPopUpLinkParentFunction(event) {
+  showPopUpLinkParent.value = event;
 }
 </script>
 

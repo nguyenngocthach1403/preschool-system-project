@@ -25,6 +25,7 @@
     <div class="flex justify-between content-center mr-3">
       <SearchFormComp
         @passSearchText="getSearchText($event)"
+        class="w-[400px] ml-[20px]"
         :value="searchText"
       ></SearchFormComp>
       <router-link :to="{ name: 'RegisterAdditionView' }">

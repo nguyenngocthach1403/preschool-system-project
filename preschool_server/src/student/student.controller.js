@@ -8,6 +8,7 @@ const db = require("../config/db");
 const studentService = require("./student.service");
 const parentService = require("../parent/parent_service");
 const classService = require("../class/class.service");
+
 const { error } = require("console");
 
 router.get("/", getAll);
@@ -20,8 +21,38 @@ router.get("/delete", deleteStudent);
 
 router.post("/create", upload.array("files"), createStudent);
 
+router.get("/:id", getStudentById);
+
 router.post("/update/:id", upload.array("files"), updateStudent);
 
+async function getStudentById(req, res) {
+  const id = req.params.id;
+
+  const isExist = await studentService.isExistStudent(id);
+
+  if (!isExist) {
+    return res.status(200).json({
+      success: false,
+      message: "Không tìm thấy học sinh.",
+    });
+  }
+
+  const result = await studentService.getStudentByID(id);
+
+  if (result.code) {
+    return res.status(200).json({
+      success: false,
+      message: result.message,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Thành công.",
+    data: result[0],
+  });
+}
 async function updateStudent(req, res) {
   const id = req.params.id;
 
