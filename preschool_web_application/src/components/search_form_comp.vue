@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <div class="relative mb-[10px] ml-[20px] w-[400px]">
+    <div class="relative mb-[10px] w-full">
       <input
         type="text"
         v-model="searchText"

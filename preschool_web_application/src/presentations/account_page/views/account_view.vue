@@ -5,7 +5,7 @@
     >
       Account
     </div>
-    <SearchFormComp />
+    <SearchFormComp class="w-[400px] ml-[20px]" />
     <!--Show muc-->
     <div class="my-2 w-full text-start px-6">
       Hiển thị

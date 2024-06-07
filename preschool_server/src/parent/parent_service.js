@@ -16,6 +16,7 @@ module.exports = {
   getPage,
   getParentById,
   isExistAccount,
+  isExistParent,
 };
 
 async function getAll() {
@@ -106,6 +107,22 @@ async function searchParent(txtSearch, page, limit) {
       code: error.code,
       message: "An error occusred while excuted query",
     };
+  }
+}
+
+async function isExistParent(id) {
+  try {
+    const result = await db.select(
+      config.tb.parent,
+      "*",
+      `WHERE deleted = 0 AND id = ${id}`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
   }
 }
 

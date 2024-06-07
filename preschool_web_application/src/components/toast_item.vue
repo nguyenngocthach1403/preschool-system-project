@@ -48,6 +48,12 @@ onMounted(() => {
   if (drops.toastItemData.type === 1) {
     typeToast.value = "error";
   }
+  if (drops.toastItemData.type === 2) {
+    typeToast.value = "warning";
+  }
+  if (drops.toastItemData.type === 3) {
+    typeToast.value = "info";
+  }
   timeline();
 });
 
@@ -111,6 +117,12 @@ setTimeout(() => {
 }
 #error > #time-line {
   background-color: rgb(255, 0, 0) !important;
+}
+#warning > #time-line {
+  background-color: rgb(255, 255, 0) !important;
+}
+#info > #time-line {
+  background-color: rgb(0, 94, 255) !important;
 }
 .leave-active {
   animation: leave 0.2s forwards normal !important;
