@@ -72,6 +72,12 @@
     <TableComp
       :data="registrations"
       @delete-item="showConfirmDialog = $event"
+      @edit-item="
+        $router.push({
+          name: 'RegisterAdditionView',
+          query: { id: $event.id },
+        })
+      "
       @click-create-acount="createAccountShow($event)"
       @update-status="updateStatus($event)"
     ></TableComp>

@@ -51,7 +51,7 @@ router.post("/", upload.array("files"), async (req, res) => {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    const url = "http://localhost:9000/image/" + req.files[0].filename + ".jpg";
+    const url = config.baseUrl + "/image/" + req.files[0].filename + ".jpg";
 
     data.file_paths = url;
   }

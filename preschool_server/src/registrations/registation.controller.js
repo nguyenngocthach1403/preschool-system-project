@@ -1,8 +1,16 @@
 const express = require("express");
 
+const config = require("../config/config");
+
 const registationService = require("./registration.service");
 
+const fs = require("fs");
+
 const checkService = require("../config/check.service");
+
+const multer = require("multer");
+
+const upload = multer({ dest: "uploads/" });
 
 const router = express.Router();
 
@@ -11,15 +19,102 @@ router.get("/total", getTotalRegistration);
 router.get("/", getRegistration);
 
 router.get("/search", searchRegistration);
+
 router.get("/search/status", getRegistrationWithStatusAndSearch);
 
 router.get("/update/status/:id", updateStatus);
+
+router.post("/update/:id", upload.array("files"), updateRegister);
 
 router.get("/status/total", getTotalOfStatus);
 
 router.get("/status", getRegistrationsWithStatus);
 
 router.get("/delete", deleteRegistration);
+
+router.get("/id/:id", getRegisterByID);
+
+async function updateRegister(req, res) {
+  const id = req.params.id;
+
+  const {
+    name,
+    email,
+    phone,
+    address,
+    city,
+    district,
+    town,
+    levels,
+    syllabus,
+    relationship,
+    status,
+  } = req.body;
+
+  const isExist = await registationService.isExitsRegister(id);
+
+  if (!isExist) {
+    return res.status(200).json({
+      success: false,
+      message: "Đơn đăng ký không tồn tại",
+    });
+  }
+
+  const data = {
+    name: name,
+    email: email,
+    phone: phone,
+    address: address,
+    city: city,
+    district: district,
+    town: town,
+    levels: levels,
+    syllabus: syllabus,
+    relationship: relationship,
+    status: status,
+  };
+
+  if (req.files.length > 0) {
+    const filePath = req.files[0].path;
+
+    const file_path_with_extension = filePath + ".jpg";
+
+    fs.renameSync(filePath, file_path_with_extension);
+
+    const url = config.baseUrl + "/image/" + req.files[0].filename + ".jpg";
+
+    data.file_paths = url;
+  }
+
+  const result = await registationService.updateRegister(id, data);
+
+  if (result.code) {
+    if (req.files.length > 0) {
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+    }
+
+    return res.status(400).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  if (!result.success) {
+    if (req.files.length > 0) {
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+    }
+
+    return res.status(200).json({
+      success: false,
+      message: result.message,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: result.message,
+  });
+}
 
 async function getRegistrationsWithStatus(req, res) {
   const { status, limit, offset } = req.query;
@@ -39,6 +134,40 @@ async function getRegistrationsWithStatus(req, res) {
   res
     .status(200)
     .json({ success: true, total: count[0]["total"], data: result.data });
+}
+
+async function getRegisterByID(req, res) {
+  const id = req.params.id;
+
+  const isExist = await registationService.isExitsRegister(id);
+  if (!isExist) {
+    return res.status(200).json({
+      success: false,
+      message: "Đơn đăng ký không tồn tại.",
+    });
+  }
+
+  const register = await registationService.getRegisterByID(id);
+
+  if (register.code) {
+    return res.status(500).json({
+      success: false,
+      error: register.error,
+    });
+  }
+
+  if (!register.success) {
+    return res.status(200).json({
+      success: false,
+      error: register.message,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: register.message,
+    data: register.data,
+  });
 }
 
 async function deleteRegistration(req, res) {

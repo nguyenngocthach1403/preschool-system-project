@@ -18,4 +18,18 @@ function convertRegisterStatus(params) {
   }
 }
 
-export { convertRegisterStatus };
+function convertParentRole(role) {
+  switch (role) {
+    case 0:
+      return "Bố";
+    case 1:
+      return "Mẹ";
+
+    case 2:
+      return "Người giám hộ";
+    default:
+      return "None";
+  }
+}
+
+export { convertRegisterStatus, convertParentRole };
