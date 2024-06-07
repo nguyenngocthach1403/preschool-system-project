@@ -1,4 +1,5 @@
 const config = {
+  baseUrl: "http://localhost:9000",
   port: 9000,
   tb: {
     student: "students",

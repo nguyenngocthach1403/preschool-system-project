@@ -141,20 +141,18 @@
             </button>
           </td>
           <td class="content-center px-3 cursor-default hover:text-blue-700">
-            <img
-              v-if="showMenu && showMenu.id == item.id"
-              :src="close_icon"
-              class="w-[20px]"
-              alt=""
-              @click="selectMenu($event)"
-            />
-            <img
-              v-else
-              :src="menu_icon"
-              class="w-[20px]"
-              alt=""
+            <button
               @click="selectMenu($event, item)"
-            />
+              class="p-1 hover:bg-gray-300 rounded-md"
+            >
+              <img
+                v-if="showMenu && showMenu.id == item.id"
+                :src="close_icon"
+                class="w-[20px]"
+                alt=""
+              />
+              <img v-else :src="menu_icon" class="w-[20px]" alt="" />
+            </button>
           </td>
         </tr>
         <Transition
@@ -176,7 +174,7 @@
                 <img :src="delete_icon" class="w-[15px]" /> Xóa
               </li>
               <li
-                @click="$emit('edit-item', item)"
+                @click="$emit('edit-item', showMenu)"
                 class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
               >
                 <img :src="edit_icon" class="w-[15px]" /> Sửa

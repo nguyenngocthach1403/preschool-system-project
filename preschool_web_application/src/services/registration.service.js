@@ -11,6 +11,8 @@ export default {
   createRegister,
   isExistRegistration,
   deleteRegistration,
+  getRegisterByID,
+  updateRegister,
 };
 
 function createRegister(data) {
@@ -19,6 +21,9 @@ function createRegister(data) {
       "Content-Type": "multipart/form-data",
     },
   });
+}
+function getRegisterByID(id) {
+  return api().get(`/registrations/id/${id}`);
 }
 
 function isExistRegistration(phone) {
@@ -68,4 +73,11 @@ function getRegistrationWithStatusAndSearch(searchText, status, page, limit) {
 
 function deleteRegistration(id, phone) {
   return api().get(`/registrations/delete?id=${id}&phone=${phone}`);
+}
+function updateRegister(id, data) {
+  return api().post(`/registrations/update/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }

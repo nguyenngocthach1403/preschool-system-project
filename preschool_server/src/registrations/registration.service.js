@@ -16,6 +16,8 @@ module.exports = {
   getTotalWithStatus,
   isExistRegisterByPhone,
   deleteRegistration,
+  getRegisterByID,
+  updateRegister,
 };
 
 async function createRegister(data) {
@@ -26,6 +28,34 @@ async function createRegister(data) {
     return {
       code: error.code,
       message: "An error occurred while executing the query.",
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function updateRegister(id, data) {
+  try {
+    const keys = Object.keys(data);
+    for (let index = 0; index < keys.length; index++) {
+      const key = keys[index];
+      if (data[key] == undefined) {
+        delete data[key];
+      }
+    }
+    const result = await db.update(config.tb.register, data, { id: id });
+    if (result == 0) {
+      return {
+        success: false,
+        message: "Cập nhật đơn đăng ký thất bại.",
+      };
+    }
+    return {
+      success: true,
+      message: "Cập nhật đơn đăng ký thành công.",
+    };
+  } catch (error) {
+    return {
+      code: error.code,
       error: error.sqlMessage,
     };
   }
@@ -57,6 +87,33 @@ async function createRegister(data) {
 //     };
 //   }
 // }
+
+async function getRegisterByID(id) {
+  try {
+    const result = await db.select(
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
+      "r.*, l.levelsName, s.syllabusName",
+      `WHERE r.id = ${id}`
+    );
+
+    if (result.length == 0) {
+      return {
+        success: false,
+        message: "Quá trình lấy đơn đăng ký bị lỗi.",
+      };
+    }
+    return {
+      success: true,
+      message: "Thành công",
+      data: result[0],
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
 async function getTotalWithSearch(searchText) {
   try {
     const result = await db.select(
@@ -313,8 +370,8 @@ async function getTotalRegistration() {
 async function getRegistrations(page, limit) {
   try {
     const data = await db.selectLimit(
-      config.tb.register,
-      "*",
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
+      "r.*, l.levelsName, s.syllabusName",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
