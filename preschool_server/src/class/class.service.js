@@ -6,6 +6,8 @@ module.exports = {
   isExistClass,
   findUpcomingAndOngoingClasses,
   countFindingUpcomingAndOngoingClasses,
+  createClass,
+  isExistClassByName,
 };
 
 async function getClass(limit, offset) {
@@ -25,6 +27,21 @@ async function getClass(limit, offset) {
   }
 }
 
+async function isExistClassByName(className) {
+  try {
+    const result = await db.select(
+      config.tb.class,
+      "*",
+      `WHERE className = '${className}'`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 async function countFindingUpcomingAndOngoingClasses(searchText) {
   try {
     const now = new Date().toLocaleDateString();
@@ -89,5 +106,27 @@ async function isExistClass(classId) {
     return true;
   } catch (error) {
     return false;
+  }
+}
+
+async function createClass(data) {
+  try {
+    const result = await db.insert(config.tb.class, data);
+    if (result == 0) {
+      return {
+        success: false,
+        message: "Tạo lớp thất bại. Thử lại sau.",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Tạo lớp thành công.",
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
   }
 }

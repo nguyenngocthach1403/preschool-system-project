@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 const db = require("../config/db.service");
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/registration" });
 const path = require("path");
 const fs = require("fs");
 const config = require("../config/config");
@@ -51,7 +51,8 @@ router.post("/", upload.array("files"), async (req, res) => {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    const url = config.baseUrl + "/image/" + req.files[0].filename + ".jpg";
+    const url =
+      config.baseUrl + "/image/registration/" + req.files[0].filename + ".jpg";
 
     data.file_paths = url;
   }
@@ -61,7 +62,7 @@ router.post("/", upload.array("files"), async (req, res) => {
   console.log(result);
   if (result.code) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/registration/none");
     }
 
     return res.status(200).json({

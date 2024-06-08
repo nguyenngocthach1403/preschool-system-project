@@ -2,30 +2,8 @@
   <Popup :title="'Liên kết phụ huynh'" @close="$emit('close')">
     <template #content>
       <div id="input-side-1" class="text-start mx-[20px] flex gap-5">
-        <div
-          v-if="loading"
-          class="w-full h-[420px] rounded-md border p-2 content-center flex items-center justify-center"
-        >
-          <svg
-            class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
+        <div v-if="loading" class="w-full h-[420px] rounded-md border p-2">
+          <LoadingComp></LoadingComp>
         </div>
         <div
           v-if="!loading"
@@ -89,32 +67,13 @@
           ></SearchForm>
           <div
             v-if="loadingParent"
-            class="w-full h-[362px] rounded-md border p-2 content-center flex items-center justify-center"
+            class="w-full h-[362px] rounded-md border p-2"
           >
-            <svg
-              class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <LoadingComp></LoadingComp>
           </div>
           <ul
             v-if="!loadingParent"
-            class="w-full border h-[362px] rounded-md p-2 h-full overflow-y-auto"
+            class="w-full border h-[362px] rounded-md p-2 overflow-y-auto"
             @scrollend="handleScrollEnd()"
           >
             <li
@@ -158,27 +117,8 @@
                 {{ convertParentRole(parentItem.role) }}
               </div>
             </li>
-            <li v-if="hasParent" class="flex items-center justify-center">
-              <svg
-                class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
+            <li v-if="hasParent">
+              <LoadingComp></LoadingComp>
             </li>
           </ul>
           <div
@@ -244,6 +184,7 @@ import studentService from "../../../services/student.service";
 import { convertParentRole } from "../../../utils/resources/converter";
 import SearchForm from "../../../components/search_form_comp.vue";
 import relationshipService from "../../../services/relationship.service";
+import LoadingComp from "../../../components/loading_comp.vue";
 
 const loading = ref(true);
 const loadingParent = ref(true);
