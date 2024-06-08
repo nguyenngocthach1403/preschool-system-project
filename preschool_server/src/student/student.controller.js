@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/students" });
 const fs = require("fs");
 const db = require("../config/db");
 
@@ -10,6 +10,7 @@ const parentService = require("../parent/parent_service");
 const classService = require("../class/class.service");
 
 const { error } = require("console");
+const config = require("../config/config");
 
 router.get("/", getAll);
 // router.get("/:id", getByID);
@@ -119,7 +120,8 @@ async function updateStudent(req, res) {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    var url = "http://localhost:9000/image/" + req.files[0].filename + ".jpg";
+    var url =
+      config.baseUrl + "/image/students" + req.files[0].filename + ".jpg";
   }
   if (classId !== undefined) {
     const isExistClass = await classService.isExistClass(classId);
@@ -203,7 +205,7 @@ async function updateStudent(req, res) {
 
   if (result.code) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/students/none");
     }
     return res.status(500).json({
       status: 500,
@@ -212,7 +214,7 @@ async function updateStudent(req, res) {
   }
   if (!result) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/students/none");
     }
     return res.status(500).json({
       status: 500,
@@ -272,7 +274,8 @@ async function createStudent(req, res) {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    const url = "http://localhost:9000/image/" + req.files[0].filename + ".jpg";
+    const url =
+      config.baseUrl + "/image/students" + req.files[0].filename + ".jpg";
 
     data.avatarPath = url;
   }
@@ -282,7 +285,7 @@ async function createStudent(req, res) {
 
   if (result.code) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/students/none");
     }
     return res.status(200).json({
       status: 404,

@@ -10,7 +10,7 @@ const checkService = require("../config/check.service");
 
 const multer = require("multer");
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/registration" });
 
 const router = express.Router();
 
@@ -81,7 +81,8 @@ async function updateRegister(req, res) {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    const url = config.baseUrl + "/image/" + req.files[0].filename + ".jpg";
+    const url =
+      config.baseUrl + "/image/registration/" + req.files[0].filename + ".jpg";
 
     data.file_paths = url;
   }
@@ -90,7 +91,7 @@ async function updateRegister(req, res) {
 
   if (result.code) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/registration/none");
     }
 
     return res.status(400).json({
@@ -101,7 +102,7 @@ async function updateRegister(req, res) {
 
   if (!result.success) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/registration/none");
     }
 
     return res.status(200).json({

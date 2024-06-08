@@ -1,5 +1,5 @@
 <template>
-  <Layout :title="'Tạo lớp học mới'">
+  <Layout :title="'Tạo lớp học mới'" @close="$emit('close')">
     <template #content>
       <form
         @submit.prevent="handleSubmitAddNewClass"
@@ -21,67 +21,51 @@
             @change="handleUploadImg"
           />
         </div>
-        <p class="w-full text-center">Ảnh đại diện lớp</p>
-        <!--Name class input-->
-        <!-- <div id="input-side-4" class="flex w-full gap-5 mx-[20px] mb-[20px]">
-            <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Địa chỉ</span>
-              <input
-                v-model="addressInput"
-                type="text"
-                placeholder="23 abc/3123, Tp.Hồ Chí Minh, Việt Nam"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              />
-            </label>
-
-            <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Nguyên quân</span>
-              <input
-                v-model="placeOfOriginInput"
-                type="text"
-                placeholder="Việt Nam"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-              />
-            </label>
-          </div> -->
+        <p class="w-full text-center py-2">Ảnh đại diện lớp</p>
         <label class="w-full text-start">
-          <span class="pl-4">Tên lớp</span>
+          <span class="pl-4 text-[16px]">Tên lớp</span>
+          <span class="text-red-500"> *</span>
           <input
             v-model="classNameInput"
             type="text"
-            placeholder="Nhap ten lop hoc"
-            class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+            placeholder="Nhập tên lớp học"
+            class="input-text-default"
+            :class="{ invalid: messageOfClassName }"
           />
-          <div class="h-[20px] valid">
-            <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
+          <div class="h-[30px] pt-2">
+            <p class="invalid-text">
+              {{ messageOfClassName }}
+            </p>
           </div>
         </label>
         <!--Class type input-->
         <div class="flex justify-between w-full gap-4">
           <label class="w-full">
-            <span class="pl-4">Levels</span>
-            <!-- <input v-model="nameClassInput" type="text" placeholder="Nhap ten lop hoc" class="mb-0 h-[40px] rounded-md w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : isStudentNameValid}"> -->
+            <span class="pl-4 text-[16px]">Levels</span>
             <select
-              @change="selectLevels"
-              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="classLevelInput"
+              class="input-text-default"
+              :class="{ invalid: messageOfLevel }"
             >
-              <option value="level1" selected disabled>Selected</option>
+              <option value="null" selected disabled>Selected</option>
               <option v-for="item in levelList" :key="item" :value="item.value">
                 {{ item.name }}
               </option>
-              <!-- <option value="level1">Mầm</option>
-              <option value="level2">Chồi</option>
-              <option value="level3">Lá</option> -->
             </select>
-            <div class="h-[20px] valid">
-              <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfLevel }}
+              </p>
             </div>
           </label>
           <label class="w-full">
-            <span class="pl-4">Loại chương trình</span>
-            <!-- <input v-model="nameClassInput" type="text" placeholder="Nhap ten lop hoc" class="mb-0 h-[40px] rounded-md w-full outline-none border-2 focus:border-blue-500 px-4" :class="{'invalid-input' : isStudentNameValid}"> -->
-            <select @change="selectType" class="input-text-default">
-              <option value="none" selected disabled>Selected</option>
+            <span class="pl-4 text-[16px]">Loại chương trình</span>
+            <select
+              v-model="classTypeInput"
+              class="input-text-default"
+              :class="{ invalid: messageOfSyllabus }"
+            >
+              <option value="null" selected disabled>Selected</option>
               <option
                 v-for="item in syllabusList"
                 :key="item"
@@ -89,37 +73,42 @@
               >
                 {{ item.name }}
               </option>
-              <!-- <option value="0">Thường</option>
-              <option value="1">Anh Ngữ</option>
-              <option value="2">Pháp Ngữ</option> -->
             </select>
-            <div class="h-[20px] valid">
-              <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfSyllabus }}
+              </p>
             </div>
           </label>
         </div>
         <!--Time-->
         <div class="flex justify-between w-full gap-4">
           <label class="w-full">
-            <span class="pl-4">Ngày mở lớp</span>
+            <span class="pl-4 text-[16px]">Ngày mở lớp</span>
             <input
               v-model="dateBeginInput"
               type="date"
               class="input-text-default"
+              :class="{ invalid: messageOfBeginDate }"
             />
-            <div class="h-[20px] valid">
-              <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfBeginDate }}
+              </p>
             </div>
           </label>
           <label class="w-full">
-            <span class="pl-4">Kết thúc dự kiến</span>
+            <span class="pl-4 text-[16px]">Kết thúc dự kiến</span>
             <input
               v-model="dateFinishInput"
               type="date"
               class="input-text-default"
+              :class="{ invalid: messageOfEndDate }"
             />
-            <div class="h-[20px] valid">
-              <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfEndDate }}
+              </p>
             </div>
           </label>
         </div>
@@ -127,25 +116,59 @@
         <!--Limited member & Teacher-->
         <div class="flex justify-between w-full gap-4">
           <label class="w-full">
-            <span class="pl-4">Số lượng tối đa</span>
+            <span class="pl-4 text-[16px]">Số lượng tối đa</span>
             <input
               v-model="limitedStudent"
               type="number"
               class="input-text-default"
+              :class="{ invalid: messageOfLimit }"
             />
-            <div class="h-[20px] valid">
-              <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfLimit }}
+              </p>
             </div>
           </label>
           <label class="w-full">
-            <span class="pl-4">Giáo viên phụ trách</span>
-            <input
-              v-model="formTeacherInput"
-              type="text"
-              class="input-text-default"
-            />
-            <div class="h-[20px] valid">
-              <!-- <p v-if="messageOfStudentName" class="mb-4 text-red-300">{{ messageOfStudentName }}</p> -->
+            <span class="pl-4 text-[16px]">Giáo viên phụ trách</span>
+            <div class="relative">
+              <input
+                placeholder="Nhập mã giáo viên"
+                v-model="teacherInput"
+                type="text"
+                class="input-text-default"
+                :class="{ invalid: messageOfTeacher }"
+              />
+              <div v-if="loaddingTeacher" class="absolute right-0 top-1/3">
+                <LoadingComp />
+              </div>
+              <div
+                v-if="teacher"
+                class="w-full h-full absolute top-0 px-3 pt-2 pb-1"
+              >
+                <div
+                  class="w-full h-full bg-white relative flex items-center gap-5"
+                >
+                  <img
+                    :src="teacher.avatar"
+                    class="w-[30px] h-[30px] border rounded-full object-cover"
+                  />
+                  <div>
+                    <p>{{ teacher.name }}</p>
+                  </div>
+                  <button
+                    @click.prevent="teacher = null"
+                    class="hover:bg-gray-200 w-[25px] h-[22px] absolute right-0 top-1/4 content-center rounded-md"
+                  >
+                    <img :src="close_icon" class="w-[15px] m-auto" />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfTeacher }}
+              </p>
             </div>
           </label>
         </div>
@@ -153,29 +176,92 @@
       </form>
     </template>
     <template #bottom>
-      <SaveButton></SaveButton>
+      <div
+        id="button-side"
+        class="w-full flex my-2 justify-center gap-5 basis-1/6 text-[14px]"
+      >
+        <button
+          type="button"
+          @click="exit()"
+          class="h-[35px] my-[5px] border border-[#3B44D1] hover:bg-blue-400/50 hover:text-[#3B44D1] hover:border-white text-black px-[25px] rounded-md"
+        >
+          Hủy
+        </button>
+        <button
+          v-if="!creating"
+          @click="handleSubmitAddNewClass()"
+          type="button"
+          class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md ]"
+        >
+          Thêm
+        </button>
+
+        <button
+          v-if="creating"
+          type="button"
+          class="h-[35px] basis-1/11 rounded-md my-[5px] w-fit outline-none border-[0.12rem] focus:border-blue-500 px-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+          disabled
+        >
+          <svg
+            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Processing...
+        </button>
+      </div>
     </template>
   </Layout>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useClassStore } from "@/stores/class_store.js";
+import close_icon from "../../../assets/icons/close.svg";
 import Layout from "@/components/edit_and_create_layout.vue";
 import SaveButton from "@/components/save_button.vue";
 import LevelsService from "../../../services/levels.service";
 import SyllabusService from "../../../services/syllabus.service";
+import { isEmpty } from "../../../utils/resources/check_valid";
+import LoadingComp from "../../../components/loading_comp.vue";
+import classService from "../../../services/class.service";
 
 const classNameInput = ref("");
 const dateBeginInput = ref(null);
 const dateFinishInput = ref(null);
 const limitedStudent = ref(0);
-const formTeacherInput = ref("");
+const teacherInput = ref("");
 const classStore = useClassStore();
 const classLevelInput = ref(null);
 const classTypeInput = ref(null);
 const levelList = ref([]);
 const syllabusList = ref([]);
+const loaddingTeacher = ref(false);
+const creating = ref(false);
+const teacher = ref(null);
+
+const messageOfClassName = ref("");
+const messageOfLevel = ref("");
+const messageOfSyllabus = ref("");
+const messageOfBeginDate = ref("");
+const messageOfEndDate = ref("");
+const messageOfTeacher = ref("");
+const messageOfLimit = ref("");
 
 const isLeave = ref(false);
 
@@ -187,25 +273,55 @@ onMounted(async () => {
   await getSyllabus();
 });
 
-// const emits = defineEmits(['close'])
+watch(classNameInput, () => {
+  if (!isEmpty(classNameInput.value)) {
+    messageOfClassName.value = "";
+  }
+});
 
-// const closePage = () => {
+watch(classLevelInput, () => {
+  if (!isEmpty(classLevelInput.value)) {
+    messageOfLevel.value = "";
+  }
+});
 
-//     isLeave.value = true
+watch(classTypeInput, () => {
+  if (!isEmpty(classTypeInput.value)) {
+    messageOfSyllabus.value = "";
+  }
+});
 
-//     setTimeout(() => {
-//         emits('close')
-//         isLeave.value = false
-//     }, 200)
-// }
+watch(dateBeginInput, () => {
+  if (!isEmpty(dateBeginInput.value)) {
+    messageOfBeginDate.value = "";
+  }
+});
 
-const selectLevels = (event) => {
-  classLevelInput.value = event.target.value;
-};
+watch(dateFinishInput, () => {
+  if (!isEmpty(dateFinishInput.value)) {
+    messageOfEndDate.value = "";
+  }
+});
 
-const selectType = (event) => {
-  classTypeInput.value = event.target.value;
-};
+watch(limitedStudent, () => {
+  if (!isEmpty(limitedStudent.value)) {
+    messageOfLimit.value = "";
+  }
+});
+
+watch(teacherInput, () => {
+  //Loading teacher
+  if (!isEmpty(teacherInput.value)) {
+    loaddingTeacher.value = true;
+  } else {
+    loaddingTeacher.value = false;
+  }
+  setTimeout(() => {
+    // Load teacher in server
+  }, 1000);
+});
+
+const emits = defineEmits(["close", "add-toast"]);
 
 const handleUploadImg = (event) => {
   //Lấy hình
@@ -225,22 +341,103 @@ const handleUploadImg = (event) => {
   avatarPath.value = URL.createObjectURL(avatarUpload.value);
 };
 
-const handleSubmitAddNewClass = () => {
-  classStore.addClass({
-    avatar: "",
-    name: classNameInput.value,
-    teacher: formTeacherInput.value,
-    member: 0,
-    limitedMember: limitedStudent.value,
-    levels: classLevelInput.value,
-    type: classTypeInput.value,
-    dateBegin: dateBeginInput.value,
-    dateFinish: dateFinishInput.value,
-    session: "2020-2021",
-    created: new Date(),
-    status: "Sắp bắt đầu",
+async function handleSubmitAddNewClass() {
+  if (checkValid()) {
+    return;
+  }
+  creating.value = true;
+
+  const formData = new FormData();
+
+  if (avatarUpload.value) {
+    formData.append("files", avatarUpload.value);
+  }
+  formData.append("className", classNameInput.value);
+  formData.append("level", classLevelInput.value);
+  formData.append("syllabus", classTypeInput.value);
+  formData.append("startDate", dateBeginInput.value);
+  formData.append("endDate", dateFinishInput.value);
+  formData.append("limit", limitedStudent.value);
+  if (!isEmpty(teacherInput.value)) {
+    formData.append("teacher", teacherInput.value);
+  }
+
+  const response = await classService.createClass(formData);
+
+  creating.value = false;
+
+  if (response.status !== 200 && response.status !== 500) {
+    emits("add-toast", {
+      title: "Warnning !",
+      content: response.statusText,
+      type: 2,
+    });
+    return;
+  }
+
+  if (response.status === 500) {
+    emits("add-toast", {
+      title: "Error!",
+      content: response.data.error,
+      type: 1,
+    });
+    return;
+  }
+
+  if (!response.data.success) {
+    emits("add-toast", {
+      title: "Error!",
+      content: response.data.message,
+      type: 1,
+    });
+    return;
+  }
+
+  emits("add-toast", {
+    title: "Thành công !",
+    content: response.data.message,
+    type: 0,
   });
-};
+}
+
+function checkValid() {
+  let invalid = false;
+  if (isEmpty(classNameInput.value)) {
+    invalid = true;
+    messageOfClassName.value = "Tên lớp học không được để trống";
+  }
+  if (isEmpty(classLevelInput.value)) {
+    invalid = true;
+    messageOfLevel.value = "Vui lòng chọn cấp độ lớp.";
+  }
+  if (isEmpty(classTypeInput.value)) {
+    invalid = true;
+    messageOfSyllabus.value = "Vui lòng chọn chương trình.";
+  }
+  if (isEmpty(dateBeginInput.value)) {
+    invalid = true;
+    messageOfBeginDate.value = "Vui lòng chọn ngày mở lớp";
+  }
+  if (isEmpty(dateFinishInput.value)) {
+    invalid = true;
+    messageOfEndDate.value = "Vui lòng chọn ngày kết thúc lớp";
+  }
+  if (isEmpty(limitedStudent.value)) {
+    invalid = true;
+    messageOfLimit.value = "Vui lòng chọn số lượng";
+  }
+
+  return invalid;
+}
+
+function exit() {
+  isLeave.value = true;
+
+  setTimeout(() => {
+    emits("close");
+    isLeave.value = false;
+  }, 200);
+}
 
 async function getLevels() {
   const response = await LevelsService.getLevels();
@@ -270,33 +467,7 @@ async function getSyllabus() {
 </script>
 
 <style scoped>
-.view {
-  animation: enter 0.3s forwards normal;
-}
-
-@keyframes enter {
-  0% {
-    opacity: 0;
-    translate: -100px 0;
-  }
-  100% {
-    opacity: 1;
-    translate: 100px 0;
-  }
-}
-
-@keyframes leave {
-  0% {
-    opacity: 1;
-    translate: 100px 0;
-  }
-  100% {
-    opacity: 0;
-    translate: -100px 0;
-  }
-}
-
-.leave-active {
-  animation: leave 0.5s forwards normal !important;
+.invalid {
+  border: 1px solid red;
 }
 </style>

@@ -28,6 +28,8 @@ export const useClassStore = defineStore("classStore", {
           session: new Date(element.startDate).getFullYear(),
           status:
             new Date(element.startDate) > new Date()
+              ? "Sắp bắt đầu"
+              : new Date(element.endDate) > new Date()
               ? "Đang hoạt động"
               : "Kết thúc",
           levels: element.levelsName ?? "none",

@@ -5,7 +5,8 @@
     <ClassCreationView
       class="w-screen h-screen bg-black absolute z-10 left-0 top-0"
       v-if="showCreateClass"
-      @close="showCreateClass = false"
+      @close="(showCreateClass = false), loadClass()"
+      @add-toast="$emit('add-toast', $event)"
     />
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
@@ -72,6 +73,14 @@ const getSearchText = (event) => {
 const closeCreateClassPage = (event) => {
   showCreateClass.value = event;
 };
+
+function loadClass() {
+  if (searchText.value !== "") {
+    classStore.searchClasses(searchText.value);
+  } else {
+    classStore.fetchClass();
+  }
+}
 
 // const filteredClass = computed(() => {
 //   return classDataDemo.value.filter((e) => {

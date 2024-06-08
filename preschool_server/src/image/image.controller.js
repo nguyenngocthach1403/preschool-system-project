@@ -4,6 +4,50 @@ const path = require("path");
 const router = express.Router();
 
 router.get("/:image", getImage);
+router.get("/class/:image", getClassImage);
+router.get("/students/:image", getStudentImage);
+
+async function getStudentImage(req, res) {
+  const imageName = req.params.image;
+
+  if (!fs.existsSync(`uploads/students/${imageName}`)) {
+    return res.status(200).json({
+      status: 500,
+      error: "Not found image",
+    });
+  }
+  let imgDefault = await fs.readFileSync(`uploads/students/${imageName}`);
+
+  imgDefault = Buffer.from(imgDefault, "base64");
+
+  res.writeHead(200, {
+    "Content-Type": "image/jpg",
+    "Content-Length": imgDefault.byteLength,
+  });
+
+  res.end(imgDefault);
+}
+
+async function getClassImage(req, res) {
+  const imageName = req.params.image;
+
+  if (!fs.existsSync(`uploads/class/${imageName}`)) {
+    return res.status(200).json({
+      status: 500,
+      error: "Not found image",
+    });
+  }
+  let imgDefault = await fs.readFileSync(`uploads/class/${imageName}`);
+
+  imgDefault = Buffer.from(imgDefault, "base64");
+
+  res.writeHead(200, {
+    "Content-Type": "image/jpg",
+    "Content-Length": imgDefault.byteLength,
+  });
+
+  res.end(imgDefault);
+}
 
 async function getImage(req, res) {
   const imageName = req.params.image;
