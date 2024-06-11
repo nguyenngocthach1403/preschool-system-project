@@ -24,8 +24,28 @@
               <!-- <th>Nghề nghiệp</th> -->
               <th>Email</th>
               <th>Số điện thoại</th>
-              <th>Vai trò</th>
-              <th>Trạng thái</th>
+              <th class="px-3 py-3 text-left">
+                <div class="flex">
+                  Vai trò
+                  <img
+                    :src="sort_icon"
+                    @click="$emit('sort-parent-role')"
+                    class="w-[20px] hover:bg-gray-200/25 rounded-full"
+                  />
+                </div>
+              </th>
+              <th class="px-3 py-3 text-left">
+                <div class="flex">
+                  Trạng thái
+                  <img
+                    :src="sort_icon"
+                    @click="$emit('sort-parent-status')"
+                    class="w-[20px] hover:bg-gray-200/25 rounded-full"
+                  />
+                </div>
+              </th>
+              <!-- <th>Vai trò</th>
+              <th>Trạng thái</th> -->
               <th>Chức năng</th>
             </tr>
           </thead>
