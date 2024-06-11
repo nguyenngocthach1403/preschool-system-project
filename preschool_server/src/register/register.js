@@ -34,12 +34,12 @@ router.post("/", upload.array("files"), async (req, res) => {
     name: name,
     email: email,
     phone: phone,
-    address: address,
+    address_detail: address,
     city: city,
     district: district,
     town: town,
-    levels: levels,
-    syllabus: syllabus,
+    level_id: levels,
+    syllabus_id: syllabus,
     relationship: relationship,
     status: status,
   };
@@ -54,12 +54,11 @@ router.post("/", upload.array("files"), async (req, res) => {
     const url =
       config.baseUrl + "/image/registration/" + req.files[0].filename + ".jpg";
 
-    data.file_paths = url;
+    data.register_img = url;
   }
 
   const result = await registerService.createRegister(data);
 
-  console.log(result);
   if (result.code) {
     if (req.files.length > 0) {
       fs.renameSync(req.files[0].path + ".jpg", "uploads/registration/none");

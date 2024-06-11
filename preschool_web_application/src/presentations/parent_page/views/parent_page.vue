@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white ml-4 rounded-3xl text-center h-fit mb-20 py-3">
+  <div class="bg-white ml-4 h-fit rounded-3xl text-center mb-20 py-3">
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"

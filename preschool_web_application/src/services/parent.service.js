@@ -39,7 +39,11 @@ function createParent(dataToCreate) {
 }
 
 function updateParent(id, dataToUpdate) {
-  return api().put(`/parents/${id}`, dataToUpdate);
+  return api().post(`/parents/update/${id}`, dataToUpdate, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }
 
 function searchParent(searchText, page, limit) {

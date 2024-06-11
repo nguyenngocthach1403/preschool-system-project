@@ -25,7 +25,7 @@ export const useStudentStore = defineStore("studentStore", {
         const element = dataStudent[index];
         students.push({
           id: element.id,
-          avatar: element.avatarPath,
+          avatar: element.avatar,
           name: element.name,
           gender: element.gender,
           classId: element.classId,
@@ -35,8 +35,8 @@ export const useStudentStore = defineStore("studentStore", {
           parents: element.parents,
           fork: element.fork,
           address: element.address,
-          origin: element.placeOfOrigin,
-          placeOfBirth: element.placeOfBirth,
+          origin: element.place_of_origin,
+          placeOfBirth: element.place_of_birth,
           nation: element.nation,
           created: element.created,
         });

@@ -445,7 +445,7 @@ async function getLevels() {
     for (let index = 0; index < response.data.data.length; index++) {
       const element = response.data.data[index];
       levelList.value.push({
-        name: element.levelsName,
+        name: element.name,
         value: element.id,
       });
     }
@@ -458,7 +458,7 @@ async function getSyllabus() {
     for (let index = 0; index < response.data.data.length; index++) {
       const element = response.data.data[index];
       syllabusList.value.push({
-        name: element.syllabusName,
+        name: element.name,
         value: element.id,
       });
     }

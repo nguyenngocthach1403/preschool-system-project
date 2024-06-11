@@ -369,15 +369,15 @@ function fillValiable(register) {
   name.value = register.name;
   phone.value = register.phone;
   email.value = register.email;
-  address.value = register.address;
+  address.value = register.address_detail;
   city.value = register.city;
   district.value = register.district;
   town.value = register.town;
-  levels.value = register.levels;
-  syllabus.value = register.syllabus;
+  levels.value = register.level_id;
+  syllabus.value = register.syllabus_id;
   relationship.value = register.relationship;
   status.value = register.status;
-  imageUpload.value = register.file_paths;
+  imageUpload.value = register.register_img;
 }
 
 watch(city, () => {
@@ -492,7 +492,7 @@ async function updateRegister() {
       formData.append("files", fileUpload.value);
     }
     formData.append("name", name.value);
-    if (isEmpty(email.value)) formData.append("email", email.value);
+    if (!isEmpty(email.value)) formData.append("email", email.value);
     formData.append("phone", phone.value);
     if (isEmpty(address.value)) formData.append("address", address.value);
     formData.append("city", city.value);
@@ -624,7 +624,7 @@ async function getLevel() {
     const element = response.data.data[index];
     levelList.value.push({
       value: element.id,
-      name: element.levelsName,
+      name: element.name,
     });
   }
 }
@@ -635,7 +635,7 @@ async function getSyllabus() {
     const element = response.data.data[index];
     syllabusList.value.push({
       value: element.id,
-      name: element.syllabusName,
+      name: element.name,
     });
   }
 }

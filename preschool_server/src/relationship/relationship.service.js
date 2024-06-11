@@ -29,8 +29,8 @@ async function isExistRelationship(parentId, studentId, relationship) {
     const result = await db.select(
       config.tb.relationship,
       "*",
-      `WHERE (parentId = ${parentId} AND studentId = ${studentId})
-        OR (relationship = ${relationship} AND studentId = ${studentId}) OR (relationship = ${relationship} AND parentId = ${parentId} AND studentId = ${studentId})`
+      `WHERE (parent_id = ${parentId} AND student_id = ${studentId})
+        OR (relationship = ${relationship} AND student_id = ${studentId}) OR (relationship = ${relationship} AND parent_id = ${parentId} AND student_id = ${studentId})`
     );
     if (result.length == 0) {
       return false;

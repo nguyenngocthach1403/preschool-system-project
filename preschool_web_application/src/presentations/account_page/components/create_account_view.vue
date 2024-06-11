@@ -65,7 +65,7 @@
     <template #bottom>
       <div>
         <button
-          v-if="status !== 'creating'"
+          v-if="!creating"
           @click="createAccount"
           type="button"
           class="px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 active:scale-95"
@@ -73,7 +73,7 @@
           Save
         </button>
         <button
-          v-if="status == 'creating'"
+          v-if="creating"
           type="button"
           class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
           disabled
@@ -126,6 +126,8 @@ onMounted(() => {
   }
 });
 
+const creating = ref(false);
+
 const emits = defineEmits(["add-toast"]);
 
 const usernameInput = ref(null);
@@ -160,6 +162,7 @@ const drops = defineProps({
 });
 
 async function createAccount() {
+  creating.value = true;
   const accountToCreate = {
     username: usernameInput.value,
     password: passwordInput.value,
@@ -175,6 +178,8 @@ async function createAccount() {
   }
 
   const result = await accountStore.createAccount(accountToCreate);
+
+  creating.value = false;
 
   if (!result.success) {
     return emits("add-toast", {

@@ -15,12 +15,11 @@ async function createClass(req, res) {
     req.body;
 
   const data = {
-    className: className,
-    levels: level,
-    syllabus: syllabus,
-    startDate: startDate,
-    endDate: endDate,
-    teacherID: teacher,
+    name: className,
+    level_id: level,
+    syllabus_id: syllabus,
+    start_date: startDate,
+    end_date: endDate,
     limit: limit,
   };
   //Kiểm tra lớp có tồn tại hay chưa
@@ -42,7 +41,7 @@ async function createClass(req, res) {
     const url =
       config.baseUrl + "/image/class/" + req.files[0].filename + ".jpg";
 
-    data.imgPath = url;
+    data.class_img = url;
   }
 
   const result = await classService.createClass(data);

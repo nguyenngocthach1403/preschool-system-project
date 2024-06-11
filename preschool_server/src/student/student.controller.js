@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require("multer");
 const upload = multer({ dest: "uploads/students" });
 const fs = require("fs");
-const db = require("../config/db");
 
 const studentService = require("./student.service");
 const parentService = require("../parent/parent_service");
@@ -78,8 +77,6 @@ async function updateStudent(req, res) {
     address,
     placeOfbirth,
     status,
-    parents,
-    parentsRemove,
   } = req.body;
 
   //Kiểm tra tên
@@ -121,7 +118,7 @@ async function updateStudent(req, res) {
     fs.renameSync(filePath, file_path_with_extension);
 
     var url =
-      config.baseUrl + "/image/students" + req.files[0].filename + ".jpg";
+      config.baseUrl + "/image/students/" + req.files[0].filename + ".jpg";
   }
   if (classId !== undefined) {
     const isExistClass = await classService.isExistClass(classId);
@@ -134,71 +131,15 @@ async function updateStudent(req, res) {
     }
   }
 
-  if (parentsRemove !== undefined) {
-    const parentToRemove = JSON.parse(parentsRemove);
-    parentToRemove.forEach(async (element) => {
-      const isExistRelationship = await studentService.isExistRelationship(
-        id,
-        element.id
-      );
-      if (isExistRelationship) {
-        //Delete mối quan hệ
-        const relationshipDeleted = await studentService.deleteRelationship(
-          id,
-          element.id
-        );
-        if (!relationshipDeleted) {
-          return res.status(200).json({
-            status: 500,
-            error: "Xóa mối quan hệ thất bại.",
-          });
-        }
-      }
-    });
-  }
-
-  if (parents !== undefined) {
-    const parentObj = JSON.parse(parents);
-
-    //Kiểm tra mối quan hệ đã tồn tại
-    parentObj.forEach(async (element) => {
-      const isExistRelationship = await studentService.isExistRelationship(
-        id,
-        element.id
-      );
-      if (!isExistRelationship) {
-        //Tạo mối quan hệ
-        const relationshipCreated = await studentService.createRelatioship({
-          parentId: element.id,
-          studentId: id,
-          relationship: element.relationship ?? 1,
-        });
-
-        if (relationshipCreated.code) {
-          return res.status(500).json({
-            status: 500,
-            error: relationshipCreated.error,
-          });
-        }
-        if (!relationshipCreated) {
-          return res.status(200).json({
-            status: 500,
-            error: "Tạo mối quan hệ thất bại.",
-          });
-        }
-      }
-    });
-  }
-
   const result = await studentService.updateStudent(id, {
     name: name,
-    avatarPath: url,
-    classID: classId,
+    avatar: url,
+    class_id: classId,
     address: address,
     gender: gender,
     birthday: birthday,
-    placeOfOrigin: placeOfOrigin,
-    placeOfBirth: placeOfbirth,
+    place_of_origin: placeOfOrigin,
+    place_Of_birth: placeOfbirth,
     fork: fork,
     nation: nation,
   });
@@ -257,12 +198,12 @@ async function createStudent(req, res) {
     name: name,
     gender: gender,
     birthday: birthday,
-    classId: classId,
+    class_id: classId,
     nation: nation,
-    placeOfBirth: placeOfBirth,
+    place_of_birth: placeOfBirth,
     fork: fork,
     address: address,
-    placeOfOrigin: placeOfOrigin,
+    place_of_origin: placeOfOrigin,
     status: status,
   };
 
@@ -277,7 +218,7 @@ async function createStudent(req, res) {
     const url =
       config.baseUrl + "/image/students" + req.files[0].filename + ".jpg";
 
-    data.avatarPath = url;
+    data.avatar = url;
   }
 
   //Tạo học sinh
@@ -307,8 +248,6 @@ async function createStudent(req, res) {
     //Lấy thông tin phụ huynh
     const parent = await parentService.getParentById(parentId);
 
-    console.log(parent);
-
     if (parent.code) {
       return res.status(200).json({
         status: 500,
@@ -332,7 +271,6 @@ async function createStudent(req, res) {
       relationship: parent[0].role,
     };
 
-    console.log(relationship);
     const relationshipCreated = await studentService.createRelatioship(
       relationship
     );
@@ -383,8 +321,6 @@ async function deleteStudent(req, res, next) {
 
 async function getStudentSearch(req, res, next) {
   const { text, page, limit } = req.query;
-
-  console.log(text, page, limit);
 
   if (text == undefined || page == undefined || limit == undefined) {
     return res.status(200).json({
@@ -458,8 +394,6 @@ async function getAll(req, res, next) {
     });
   }
 
-  console.log(result);
-
   return res.status(200).json({
     status: 200,
     message: "Successful",
@@ -468,7 +402,6 @@ async function getAll(req, res, next) {
 }
 
 function getByID(req, res, next) {
-  console.log(req.params.id);
   studentService
     .getByID(req.params.id)
     .then((result) => res.send(result))

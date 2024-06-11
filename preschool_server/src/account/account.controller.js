@@ -62,7 +62,13 @@ async function createAccount(req, res) {
   // }
 
   if (Object.keys(data).includes("registrationId")) {
-    await accountService.updateRegistration(data.registrationId, data.username);
+    const accountCreated = await accountService.getAccountByUsername(
+      data.username
+    );
+    await accountService.updateRegistration(
+      data.registrationId,
+      accountCreated.id
+    );
   }
   res.send({
     status: 200,

@@ -33,7 +33,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
           status: element.status,
           profileStatus:
             element.infomationState == 1 || element.file_paths ? 1 : 0,
-          user: element.accountId,
+          user: element.username,
         });
       }
       return registrations;

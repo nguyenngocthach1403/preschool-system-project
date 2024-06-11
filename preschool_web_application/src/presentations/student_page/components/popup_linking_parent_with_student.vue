@@ -13,7 +13,7 @@
             class="absolute z-30 top-[-30px] flex items-center gap-4 text-[13px]"
           >
             <img
-              :src="student.avatarPath"
+              :src="student.avatar"
               class="w-[60px] h-[60px] object-cover rounded-full"
             />
             <p class="bg-white p-2 border rounded-md">
@@ -33,7 +33,7 @@
               class="w-full border relative h-fit py-2 rounded-md mb-3 flex items-center gap-4 px-3"
             >
               <img
-                :src="'https://th.bing.com/th/id/OIP.pGA6b14Td_m6jUuIuFEb0AHaG5?w=191&h=180&c=7&r=0&o=5&pid=1.7'"
+                :src="parentItem.avatar"
                 class="w-[45px] h-[45px] border object-cover rounded-full"
               />
               <div>
@@ -92,7 +92,7 @@
               @click.prevent="selectParent(parentItem)"
             >
               <img
-                :src="'https://th.bing.com/th/id/OIP.pGA6b14Td_m6jUuIuFEb0AHaG5?w=191&h=180&c=7&r=0&o=5&pid=1.7'"
+                :src="parentItem.avatar"
                 class="w-[45px] h-[45px] border object-cover rounded-full"
               />
               <div>
