@@ -132,89 +132,6 @@
             />
           </label>
         </div>
-        <div id="input-side-4" class="w-full mt-4">
-          <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Phụ huynh</span>
-            <div class="flex gap-5">
-              <div class="w-full">
-                <input
-                  v-model="parentIdInput"
-                  type="text"
-                  placeholder="Mã phụ huynh"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-                />
-                <div class="h-[20px] valid">
-                  <p v-if="messageGetParent" class="mb-4 text-red-300">
-                    {{ messageGetParent }}
-                  </p>
-                </div>
-              </div>
-              <div id="button-side" class="w-full flex basis-1/6">
-                <button
-                  v-if="statusGetParent !== 'getting'"
-                  type="button"
-                  @click="addParentInToUpdate"
-                  class="h-[45px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
-                >
-                  Thêm
-                </button>
-                <button
-                  v-if="statusGetParent == 'getting'"
-                  type="button"
-                  class="h-[45px] basis-1/11 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
-                  disabled
-                >
-                  <svg
-                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </button>
-              </div>
-            </div>
-          </label>
-          <div class="w-full mt-4 p-1 border-[0.12rem] rounded-md">
-            <div
-              v-for="parent in parentListForDisplay"
-              :key="parent"
-              class="flex justify-between hover:bg-gray-200 px-3 py-2 rounded-md items-center"
-            >
-              <div class="flex">
-                <img src="" alt="" class="w-10" />
-                <div>
-                  <p>{{ parent.name }}</p>
-                  <p class="text-[14px] text-gray-500">
-                    {{ returnRelation(parent.relationship) }}
-                  </p>
-                </div>
-              </div>
-              <button class="w-7 h-7 rounded-md hover:bg-red-500">
-                <img
-                  :src="close_icon"
-                  @click="deleteParentInList(parent)"
-                  class="w-[20px] h-[20px] m-auto"
-                  alt=""
-                />
-              </button>
-            </div>
-          </div>
-        </div>
       </form>
     </template>
     <template #bottom>
@@ -275,22 +192,17 @@
 import { ref, onMounted, watch } from "vue";
 
 import Layout from "@/components/edit_and_create_layout.vue";
-import SaveButton from "@/components/save_button.vue";
 import { useStudentStore } from "@/stores/student_store.js";
 import { yyyymmddDateString } from "..//..//..//utils//resources//format_date";
-import close_icon from "../../../assets/icons/close.svg";
-import parentService from "../../../services/parent.service";
 import { storeToRefs } from "pinia";
 
 const avatarPath = ref(null);
 const avatarUpload = ref(null);
 const nationInput = ref(null);
-const parentIdInput = ref(null);
+// const parentIdInput = ref(null);
 const forkInput = ref(null);
 const addressInput = ref(null);
 const placeOfOrginInput = ref(null);
-
-const parentListForDisplay = ref([]);
 
 const studentStore = useStudentStore();
 
@@ -323,9 +235,6 @@ onMounted(() => {
   placeOfBirthInput.value = studentData.studentData.placeOfBirth;
   statusInput.value = studentData.studentData.status;
   placeOfOrginInput.value = studentData.studentData.origin;
-  parentListForDisplay.value = studentData.studentData.parents;
-
-  console.log(studentData.studentData.placeOfOrgin);
 });
 
 const parentRemoved = ref([]);
@@ -348,53 +257,22 @@ const handleUploadImg = (event) => {
   avatarPath.value = URL.createObjectURL(avatarUpload.value);
 };
 
-function deleteParentInList(parent) {
-  const index = parentListForDisplay.value.findIndex((e) => e.id == parent.id);
-  parentRemoved.value.push(parentListForDisplay.value[index]);
-  parentListForDisplay.value.splice(index, 1);
-}
+// function deleteParentInList(parent) {
+//   const index = parentListForDisplay.value.findIndex((e) => e.id == parent.id);
+//   parentRemoved.value.push(parentListForDisplay.value[index]);
+//   parentListForDisplay.value.splice(index, 1);
+// }
 
-function returnRelation(rel) {
-  switch (rel) {
-    case 1:
-      return "Bố";
-    case 2:
-      return "Mẹ";
-    default:
-      break;
-  }
-}
-
-watch(parentIdInput, () => {
-  messageGetParent.value = null;
-});
-
-async function addParentInToUpdate() {
-  statusGetParent.value = "getting";
-  const response = await parentService.getParentById(parentIdInput.value);
-  console.log(response);
-  if (response.status !== 200) {
-    statusGetParent.value = "failed";
-    return;
-  }
-
-  if (response.data.status !== 200) {
-    statusGetParent.value = "failed";
-    messageGetParent.value = response.data.error;
-    return;
-  }
-
-  statusGetParent.value = "getted";
-
-  if (
-    parentListForDisplay.value.some((e) => e.id == response.data.data[0].id)
-  ) {
-    messageGetParent.value = "Phụ huynh đã tồn tại.";
-    return;
-  }
-
-  parentListForDisplay.value.push(response.data.data[0]);
-}
+// function returnRelation(rel) {
+//   switch (rel) {
+//     case 1:
+//       return "Bố";
+//     case 2:
+//       return "Mẹ";
+//     default:
+//       break;
+//   }
+// }
 
 async function updateStudent() {
   const formData = new FormData();
@@ -412,25 +290,25 @@ async function updateStudent() {
   formData.append("placeOfOrigin", placeOfOrginInput.value);
   formData.append("placeOfbirth", placeOfBirthInput.value);
 
-  let parentToUpdate = [];
-  parentListForDisplay.value.forEach((e) => {
-    parentToUpdate.push({
-      id: e.id,
-      relationship: e.role,
-    });
-  });
+  // let parentToUpdate = [];
+  // parentListForDisplay.value.forEach((e) => {
+  //   parentToUpdate.push({
+  //     id: e.id,
+  //     relationship: e.role,
+  //   });
+  // });
 
-  if (parentRemoved.value.length > 0) {
-    let parentToRemove = [];
-    parentListForDisplay.value.forEach((e) => {
-      parentToRemove.push({
-        id: e.id,
-      });
-    });
-    formData.append("parentsRemove", JSON.stringify(parentToRemove));
-  }
+  // if (parentRemoved.value.length > 0) {
+  //   let parentToRemove = [];
+  //   parentListForDisplay.value.forEach((e) => {
+  //     parentToRemove.push({
+  //       id: e.id,
+  //     });
+  //   });
+  //   formData.append("parentsRemove", JSON.stringify(parentToRemove));
+  // }
 
-  formData.append("parents", JSON.stringify(parentToUpdate));
+  // formData.append("parents", JSON.stringify(parentToUpdate));
 
   const result = await studentStore.updateStudent(
     studentData.studentData.id,
@@ -467,12 +345,12 @@ function exitUpdate() {
   placeOfBirthInput.value = studentData.studentData.placeOfBirth;
   statusInput.value = studentData.studentData.status;
 
-  parentListForDisplay.value = [
-    ...parentListForDisplay.value,
-    ...parentRemoved.value,
-  ];
-  studentData.studentData.parents = parentListForDisplay.value;
-  parentRemoved.value = [];
+  // parentListForDisplay.value = [
+  //   ...parentListForDisplay.value,
+  //   ...parentRemoved.value,
+  // ];
+  // studentData.studentData.parents = parentListForDisplay.value;
+  // parentRemoved.value = [];
   emits("close");
 }
 const studentData = defineProps(["studentData"]);

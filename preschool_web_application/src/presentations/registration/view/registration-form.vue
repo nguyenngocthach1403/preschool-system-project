@@ -365,9 +365,9 @@ async function createRegister() {
       formData.append("files", fileUpload.value);
     }
     formData.append("name", name.value);
-    if (isEmpty(email.value)) formData.append("email", email.value);
+    if (!isEmpty(email.value)) formData.append("email", email.value);
     formData.append("phone", phone.value);
-    if (isEmpty(address.value)) formData.append("address", address.value);
+    if (!isEmpty(address.value)) formData.append("address", address.value);
     formData.append("city", city.value);
     formData.append("district", district.value);
     formData.append("town", town.value);
@@ -415,7 +415,7 @@ async function getLevel() {
     const element = response.data.data[index];
     levelList.value.push({
       value: element.id,
-      name: element.levelsName,
+      name: element.name,
     });
   }
 }
@@ -426,7 +426,7 @@ async function getSyllabus() {
     const element = response.data.data[index];
     syllabusList.value.push({
       value: element.id,
-      name: element.syllabusName,
+      name: element.name,
     });
   }
 }

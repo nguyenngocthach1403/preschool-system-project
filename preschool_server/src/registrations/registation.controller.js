@@ -51,6 +51,8 @@ async function updateRegister(req, res) {
     status,
   } = req.body;
 
+  console.log(email);
+
   const isExist = await registationService.isExitsRegister(id);
 
   if (!isExist) {
@@ -64,12 +66,12 @@ async function updateRegister(req, res) {
     name: name,
     email: email,
     phone: phone,
-    address: address,
+    address_detail: address,
     city: city,
     district: district,
     town: town,
-    levels: levels,
-    syllabus: syllabus,
+    level_id: levels,
+    syllabus_id: syllabus,
     relationship: relationship,
     status: status,
   };
@@ -82,9 +84,9 @@ async function updateRegister(req, res) {
     fs.renameSync(filePath, file_path_with_extension);
 
     const url =
-      config.baseUrl + "/image/registration/" + req.files[0].filename + ".jpg";
+      config.baseUrl + "/image/registration/" + file_path_with_extension;
 
-    data.file_paths = url;
+    data.register_img = url;
   }
 
   const result = await registationService.updateRegister(id, data);
@@ -119,7 +121,7 @@ async function updateRegister(req, res) {
 
 async function getRegistrationsWithStatus(req, res) {
   const { status, limit, offset } = req.query;
-  console.log(status);
+
   const count = await registationService.getTotalWithStatus(status);
   const result = await registationService.getRegistrationsWithStatus(
     status,
@@ -350,7 +352,7 @@ async function getRegistration(req, res) {
 
   const result = await registationService.getRegistrations(page, limit);
   if (result.code) {
-    res.status(500).json({
+    return res.status(500).json({
       status: 500,
       code: result.code,
       message: result.message,

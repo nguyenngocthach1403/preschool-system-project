@@ -91,8 +91,8 @@ async function updateRegister(id, data) {
 async function getRegisterByID(id) {
   try {
     const result = await db.select(
-      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
-      "r.*, l.levelsName, s.syllabusName",
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus_id = s.id LEFT JOIN ${config.tb.account} a ON a.id = r.account_id`,
+      "r.*, l.name AS levelsName, s.name AS syllabusName, a.username",
       `WHERE r.id = ${id}`
     );
 
@@ -160,9 +160,9 @@ async function isExistRegisterByPhone(phone) {
 async function searchRegisterWithSearch(searchText, limit, offset) {
   try {
     const result = await db.selectLimit(
-      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
-      "r.*, l.levelsName, s.syllabusName",
-      `WHERE name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%'`,
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus_id = s.id LEFT JOIN ${config.tb.account} a ON a.id = r.account_id`,
+      "r.*, l.name AS levelsName, s.name AS syllabusName, a.username",
+      `WHERE r.name like '%${searchText}%' OR r.phone like '${searchText}%' OR r.email like '%${searchText}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );
@@ -201,9 +201,9 @@ async function getTotalWithStatus(status) {
 async function getRegistrationsWithStatus(status, limit, offset) {
   try {
     const result = await db.selectLimit(
-      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
-      "r.*, l.levelsName, s.syllabusName",
-      `WHERE status in (${status})`,
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus_id = s.id LEFT JOIN ${config.tb.account} a ON a.id = r.account_id`,
+      "r.*, l.name AS levelsName, s.name AS syllabusName, a.username",
+      `WHERE r.status in (${status})`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );
@@ -263,9 +263,9 @@ async function getRegisterWithSearchAndStatus(
       status = "0,1,2,3,4,5";
     }
     const result = await db.selectLimit(
-      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
-      "r.*, l.levelsName, s.syllabusName",
-      `WHERE status in (${status}) AND (name like '%${searchText}%' OR phone like '${searchText}%' OR email like '%${searchText}%')`,
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus_id = s.id LEFT JOIN ${config.tb.account} a ON a.id = r.account_id`,
+      "r.*, l.name AS levelsName, s.name AS syllabusName, a.username",
+      `WHERE r.status in (${status}) AND (r.name like '%${searchText}%' OR r.phone like '${searchText}%' OR r.email like '%${searchText}%')`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );
@@ -370,8 +370,8 @@ async function getTotalRegistration() {
 async function getRegistrations(page, limit) {
   try {
     const data = await db.selectLimit(
-      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.levels = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus = s.id `,
-      "r.*, l.levelsName, s.syllabusName",
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus_id = s.id LEFT JOIN ${config.tb.account} a ON a.id = r.account_id`,
+      "r.*, l.name AS levelsName, s.name AS syllabusName, a.username",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );

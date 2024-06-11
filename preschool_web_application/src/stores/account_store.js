@@ -16,6 +16,7 @@ export const useAccountStore = defineStore("accountStore", {
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
         account.push({
+          id: element.id,
           username: element.username,
           phone: element.phone,
           role: element.role,

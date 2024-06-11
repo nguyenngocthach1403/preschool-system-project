@@ -6,7 +6,26 @@ module.exports = {
   createAccount,
   updateRegistration,
   updateByUsername,
+  getAccountByUsername,
+  isExistAccountByUsername,
 };
+
+async function getAccountByUsername(username) {
+  try {
+    const result = await db.select(
+      config.tb.account,
+      "*",
+      `WHERE username like '${username}' AND deleted = 0`
+    );
+
+    return result[0];
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sql,
+    };
+  }
+}
 
 async function createAccount(accountToCreate) {
   try {
@@ -21,12 +40,29 @@ async function createAccount(accountToCreate) {
 
 async function updateRegistration(id, username) {
   try {
-    return db.update(config.tb.register, { accountId: username }, { id: id });
+    return db.update(config.tb.register, { account_id: username }, { id: id });
   } catch (error) {
     return {
       code: error.code,
       message: error.sqlMessage,
     };
+  }
+}
+
+async function isExistAccountByUsername(username) {
+  try {
+    const result = await db.select(
+      config.tb.account,
+      "*",
+      `WHERE username like '${username}' AND deleted = 0`
+    );
+
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
   }
 }
 

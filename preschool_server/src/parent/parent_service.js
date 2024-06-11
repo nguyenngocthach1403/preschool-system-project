@@ -1,5 +1,4 @@
 const db = require("../config/db.service");
-const db1 = require("../config/db");
 const config = require("../config/config");
 
 module.exports = {
@@ -53,8 +52,8 @@ async function getAll() {
 // }
 async function getByID(id) {
   try {
-    return db1.select(
-      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account = a.username`,
+    return db.select(
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account_id = a.id`,
       "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
       id !== undefined ? `Where p.id = ${id}` : ""
     );
@@ -66,8 +65,8 @@ async function getByID(id) {
 async function getParentById(id) {
   try {
     return await db.select(
-      `${config.tb.parent} AS p`,
-      "p.*",
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON a.id = p.account_id`,
+      "p.*,a.username, a.email AS account_email, a.phone AS account_phone, a.status AS account_status",
       `WHERE p.id = ${id}`
     );
   } catch (error) {
@@ -98,7 +97,7 @@ async function searchParent(txtSearch, page, limit) {
     return db.selectLimit(
       config.tb.parent,
       "*",
-      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account LIKE '%${txtSearch}%'`,
+      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account_id LIKE '%${txtSearch}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
@@ -131,7 +130,7 @@ async function countSearchParent(txtSearch) {
     return db.select(
       config.tb.parent,
       "Count(*) AS total",
-      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account LIKE '%${txtSearch}%'`
+      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account_id LIKE '%${txtSearch}%'`
     );
   } catch (error) {
     return {
@@ -143,8 +142,8 @@ async function countSearchParent(txtSearch) {
 async function getPage(page, limit) {
   try {
     return db.selectLimit(
-      `${config.tb.parent} p LEFT JOIN ${config.tb.account} ac ON p.account = ac.username`,
-      "p.*,ac.username",
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account_id = a.id`,
+      "p.*, a.username, a.username",
       "WHERE p.deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
@@ -161,7 +160,7 @@ async function isDuplicate(email, phone, account) {
     const result = await db.select(
       config.tb.parent,
       "*",
-      `WHERE email = '${email}' OR phone = '${phone}' OR account = '${account} '`
+      `WHERE email = '${email}' OR phone = '${phone}'`
     );
     return result.length > 0;
   } catch (error) {
@@ -186,7 +185,7 @@ async function isExistAccount(username) {
     const classData = await db.select(
       config.tb.account,
       "*",
-      `WHERE username = ${username}`
+      `WHERE username like '${username}'`
     );
 
     if (classData.length === 0) {
@@ -208,13 +207,34 @@ async function insertParent(dataToCreate) {
   }
 }
 
-async function updateParent(id, newData) {
+async function updateParent(id, dataToUpdate) {
   try {
-    await db1.updateParent(config.tb.parent, newData, `id = ${id}`);
-    console.log(`updated ${id}`);
+    //Xóa các key bị trống
+    const keys = Object.keys(dataToUpdate);
+    for (let index = 0; index < keys.length; index++) {
+      const key = keys[index];
+      if (dataToUpdate[key] == undefined) {
+        delete dataToUpdate[key];
+      }
+    }
+
+    const result = await db.update(config.tb.parent, dataToUpdate, { id: id });
+
+    if (result == 0) {
+      return {
+        success: false,
+        message: "Cập nhập phụ huynh thất bại. Hãy thử lại.",
+      };
+    }
+    return {
+      success: true,
+      message: "Cập nhập phụ huynh thành công",
+    };
   } catch (error) {
-    console.error(`Error updating ID ${id}:`, error);
-    throw error;
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
   }
 }
 // async function deleteParent(where) {

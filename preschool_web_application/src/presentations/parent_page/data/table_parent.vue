@@ -1,14 +1,15 @@
 <template>
-  <div class="dashboard text-[14px]">
+  <div class="text-[14px]">
     <main>
-      <div class="2xl:h-dvh mr-[10px]h-dvh">
+      <div class="mr-[10px]">
         <table class="h-fit w-full">
           <thead
             class="sticky w-full top-0 text-[15px] bg-[#3B44D1] text-white text-white z-10"
           >
             <tr>
               <th></th>
-              <th class="w-[300px]">ID</th>
+              <th class="w-[300px]">Avatar</th>
+
               <th class="px-3 py-3 text-left w-dvw">
                 <div class="flex">
                   Họ và tên
@@ -19,6 +20,7 @@
                   />
                 </div>
               </th>
+              <th class="w-[300px]">ID</th>
               <th class="w-[300px]">Tài khoản</th>
 
               <!-- <th>Địa chỉ</th> -->
@@ -36,8 +38,15 @@
               class="h-[60px] w-full text-left even:bg-gray-50 hover:bg-gray-200"
               v-for="parent in dataTable"
               :key="parent.id"
+              :class="{ 'empty-account': !parent.username }"
             >
-              <td class="px-3">
+              <td class="px-3 relative">
+                <div
+                  v-if="!parent.username"
+                  class="absolute top-0 left-5 text-red-500 text-[12px]"
+                >
+                  new
+                </div>
                 <div class="inline-flex items-center">
                   <label
                     class="relative flex items-center p-3 rounded-full cursor-pointer"
@@ -69,8 +78,14 @@
                 </div>
               </td>
               <td class="w-[300px]">
-                {{ parent.id }}
+                <div class="ml-[15px]">
+                  <img
+                    :src="parent.avatar"
+                    class="w-[40px] h-[40px] rounded-[50px] object-cover"
+                  />
+                </div>
               </td>
+
               <td class="w-dvw">
                 {{ parent.name }}
                 <dd>
@@ -80,19 +95,22 @@
                   }}</span>
                 </dd>
               </td>
-              <td class="px-3 w-[400px]">
+              <td class="w-[300px]">
+                {{ parent.id }}
+              </td>
+              <td class="px-3 w-[200px]">
                 <button
                   @click.prevent
-                  v-if="parent.account == null"
+                  v-if="parent.username == null"
                   @click="editParent(parent.id)"
                   class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
                 >
                   Thêm tài khoản
                 </button>
-                <dd class="text-gray-500 text-[14px] my-[5px] w-[300px]" v-else>
+                <dd class="text-gray-500 text-[14px] my-[5px] w-[200px]" v-else>
                   <span>
                     <span class="font-bold">Tài khoản:</span>
-                    {{ parent.account }}</span
+                    {{ parent.username }}</span
                   >
                 </dd>
               </td>
@@ -217,5 +235,8 @@ td {
 
 th {
   white-space: nowrap;
+}
+.empty-account {
+  background-color: rgba(59, 68, 209, 0.1);
 }
 </style>

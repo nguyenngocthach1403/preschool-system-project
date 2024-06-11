@@ -8,8 +8,6 @@ router.post("/add", createRelationship);
 
 async function createRelationship(req, res) {
   const { studentId, parentId, relationship } = req.body;
-
-  console.log(req.body);
   //Kiểm tra học sinh có tồn tạo không
   if (
     !(await studentService.isExistStudent(studentId)) ||
@@ -44,8 +42,8 @@ async function createRelationship(req, res) {
   }
 
   const result = await relationshipService.createRelationship({
-    parentId: parentId,
-    studentId: studentId,
+    parent_id: parentId,
+    student_id: studentId,
     relationship: relationship,
   });
 

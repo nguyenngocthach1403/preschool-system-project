@@ -17,19 +17,18 @@ export const useClassStore = defineStore("classStore", {
       for (let index = 0; index < data.length; index++) {
         const element = data[index];
         classes.push({
-          id: element.classID,
-          avatar: element.imgPath,
-          name: element.className,
-          start: element.startDate,
-          end: element.endDate,
-          teacher: element.teacherId,
+          id: element.id,
+          avatar: element.class_img,
+          name: element.name,
+          start: element.start_date,
+          end: element.end_date,
           member: element.members,
           limitedMember: element.limit,
-          session: new Date(element.startDate).getFullYear(),
+          session: new Date(element.start_date).getFullYear(),
           status:
-            new Date(element.startDate) > new Date()
+            new Date(element.start_date) > new Date()
               ? "Sắp bắt đầu"
-              : new Date(element.endDate) > new Date()
+              : new Date(element.end_date) > new Date()
               ? "Đang hoạt động"
               : "Kết thúc",
           levels: element.levelsName ?? "none",

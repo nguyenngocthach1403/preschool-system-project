@@ -143,6 +143,7 @@ export const useParentStore = defineStore("parentStore", {
       this.loading = true;
       this.status = "loading";
       const res = await parentService.getParent(this.page, this.limit);
+      console.log(res);
       const dataRes = res.data;
       const data = dataRes.data;
       if (data.status === 404) {
