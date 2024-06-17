@@ -111,7 +111,7 @@ export const useStudentStore = defineStore("studentStore", {
 
     async searchStudent(searchText) {
       this.loading = true;
-      this.status = "searching";
+      this.status = "loading";
 
       if (searchText !== this.txtSearch) {
         console.log("Reset page 0");
@@ -144,7 +144,7 @@ export const useStudentStore = defineStore("studentStore", {
       this.students = studentFormated;
 
       this.loading = false;
-      this.status = "searched";
+      this.status = "loaded";
     },
 
     async getTotalStudent() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white ml-4 h-fit rounded-3xl text-center mb-20 py-3">
+  <div class="bg-white ml-4 h-fit rounded-3xl text-center mb-20 mb-3">
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
@@ -12,8 +12,11 @@
       @close="showCreateAccountView = false"
       @add-toast="$emit('add-toast', $event), close()"
     /> -->
-    <div class="text-left px-[20px] text-[36px] font-bold">Parent</div>
-    <div class="flex justify-between content-center mr-3">
+    <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
+      Phụ huynh
+    </div>
+
+    <div class="flex justify-between content-center mr-3 mt-5">
       <SearchForm
         @passSearchText="getSearchText"
         class="w-[400px] ml-[20px]"
@@ -23,24 +26,10 @@
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
-    <div class="my-2 w-full text-start px-6">
-      Hiển thị
-      <select
-        id="show-num-parent"
-        class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
-        @change="showParentNumSelectChange"
-      >
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-        <option value="50">50</option>
-        <option value="60">60</option>
-        <option value="70">70</option>
-        <option value="100">100</option>
-      </select>
-      Phụ huynh
-    </div>
+    <ResultNumComp>{{ total }}</ResultNumComp>
+
+    <ShowNumberComp :numb-show="limit" @change-limit="changeLimit($event)" />
+
     <TableData
       :data-table="parents"
       @delete-parent="deleteParentById"
@@ -88,6 +77,8 @@ import ConfirmDialog from "@/components/confirm_dialog.vue";
 import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useParentStore } from "../../../stores/parent_store";
+import ResultNumComp from "../../../components/result_comp.vue";
+import ShowNumberComp from "../../../components/show_number_comp.vue";
 
 const parentStore = useParentStore();
 const showConfirmDialog = ref("");
@@ -117,8 +108,8 @@ function changePage(event) {
   const page = event - 1;
   parentStore.changePage(page);
 }
-function showParentNumSelectChange(event) {
-  parentStore.changeLimit(parseInt(event.target.value));
+function changeLimit(event) {
+  parentStore.changeLimit(event);
 }
 // function createAccountShow(parentId) {
 //   showCreateAccountView.value = true;

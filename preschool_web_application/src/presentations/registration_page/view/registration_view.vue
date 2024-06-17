@@ -1,11 +1,35 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
+    <div
+      v-if="showRegisterImg"
+      class="absolute w-full h-full bg-gray-500/75 left-0 top-0 z-20 content-center overflow-y-auto"
+    >
+      <button
+        class="w-[40px] h-[40px] absolute right-10 top-10"
+        @click="showRegisterImg = null"
+      >
+        <img :src="close_icon" alt="" />
+      </button>
+      <img
+        class="m-auto bg-white rounded-xl w-[1000px] object-contain"
+        :src="showRegisterImg"
+      />
+    </div>
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
       :content="`Bạn có muốn xóa đơn đăng ký với số điện ${showConfirmDialog.phone} của người đăng ký tên ${showConfirmDialog.name} không?`"
       @confirm="getConfirm($event)"
       :value="showConfirmDialog"
+    />
+    <ConfirmDialog
+      v-if="registerUpdateStatus"
+      class="absolute top-0 left-0"
+      :content="`Bạn có chắc chắn thay đổi trạng thái đơn mã ${
+        registerUpdateStatus.id
+      } thành '${convertRegisterStatus(registerUpdateStatus.status)}'  không?`"
+      @confirm="comfirmChangeRegisterStatus($event)"
+      :value="registerUpdateStatus"
     />
     <CreateAccountView
       v-if="showCreateAccountView"
@@ -18,7 +42,7 @@
     <div
       class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
     >
-      Registration
+      Đơn đăng ký
     </div>
 
     <!-- Search-->
@@ -32,27 +56,13 @@
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
-
+    <ResultNumComp>{{ total }}</ResultNumComp>
     <!--Show muc-->
     <div class="flex items-center">
-      <div class="my-2 w-[400px] text-start px-6">
-        Hiển thị
-        <select
-          id="show-num-student"
-          class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
-          @change="showStudentNumSelectChange"
-        >
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="100">100</option>
-        </select>
-        Danh mục
-      </div>
+      <ShowNumberComp
+        :numb-show="limit"
+        @change-limit="changeLimit($event)"
+      ></ShowNumberComp>
       <div class="w-full flex gap-2">
         <ItemCheckBox
           v-for="item in statusList"
@@ -70,7 +80,11 @@
     <!-- Quick search -->
 
     <!-- Table components -->
+    <LoadingComp
+      v-if="status === 'loading' || status === 'initial'"
+    ></LoadingComp>
     <TableComp
+      v-if="status == 'loaded' && status !== 'initial'"
       :data="registrations"
       @delete-item="showConfirmDialog = $event"
       @edit-item="
@@ -80,7 +94,8 @@
         })
       "
       @click-create-acount="createAccountShow($event)"
-      @update-status="updateStatus($event)"
+      @update-status="registerUpdateStatus = $event"
+      @show-register-img="showRegisterImg = $event"
     ></TableComp>
     {{ showConfirmDialog }}
     <div
@@ -94,19 +109,19 @@
       >
         Hiển thị từ {{ page * limit + 1 }} đến
         {{ (page + 1) * limit - (limit - registrations.length) }} trong
-        {{ total }} danh mục
+        {{ total }} đơn đăng ký
       </div>
       <div
         v-if="status == 'search_failed' || total == 0"
         class="h-[37px] content-center mx-[20px]"
       >
-        Không tìm thấy danh mục nào!
+        Không tìm thấy đơn đăng ký nào!
       </div>
       <div
         v-if="status == 'load_failed'"
         class="h-[37px] content-center mx-[20px]"
       >
-        Không có danh mục nào tồn tại!
+        Không có đơn đăng ký nào tồn tại!
       </div>
       <Pagination
         :page-nums="round(total / limit)"
@@ -129,20 +144,18 @@ import { storeToRefs, mapState } from "pinia";
 import { useRegistrionStore } from "../../../stores/registration_store";
 import { onMounted, ref, watch } from "vue";
 import { isEmpty } from "../../../utils/resources/check_valid";
+import LoadingComp from "../../../components/loading_comp.vue";
+import close_icon from "../../../assets/icons/close.svg";
+import ResultNumComp from "../../../components/result_comp.vue";
+import ShowNumberComp from "../../../components/show_number_comp.vue";
+import { convertRegisterStatus } from "../../../utils/resources/converter";
 
 const registrationStore = useRegistrionStore();
-const {
-  registrations,
-  total,
-  status,
-  limit,
-  page,
-  loading,
-  searchText,
-  statusIds,
-} = storeToRefs(registrationStore);
+const { registrations, total, status, limit, page, searchText, statusIds } =
+  storeToRefs(registrationStore);
 
 const showConfirmDialog = ref(null);
+const showRegisterImg = ref(null);
 
 onMounted(async () => {
   const count = await registrationStore.countRegistration();
@@ -151,13 +164,13 @@ onMounted(async () => {
     registrationStore.searchText !== "" &&
     registrationStore.statusIds.length != 0
   ) {
-    registrationStore.searchHasStatus();
+    await registrationStore.searchHasStatus();
   } else if (registrationStore.searchText !== "") {
-    registrationStore.searchRegistration();
+    await registrationStore.searchRegistration();
   } else if (registrationStore.statusIds.length != 0) {
-    registrationStore.getRegistrationsWithStatus();
+    await registrationStore.getRegistrationsWithStatus();
   } else {
-    registrationStore.getRegistration();
+    await registrationStore.getRegistration();
   }
   fillStatusTotal(count);
 
@@ -166,11 +179,11 @@ onMounted(async () => {
 
 const statusList = ref([
   { id: 0, name: "Đơn mới", checked: false, total: 0 },
-  { id: 1, name: "Chờ duyệt", checked: false, total: 0 },
-  { id: 2, name: "Chờ liên hệ", checked: false, total: 0 },
-  { id: 3, name: "Đã liên hệ", checked: false, total: 0 },
+  { id: 1, name: "Đã hẹn", checked: false, total: 0 },
+  { id: 2, name: "Liên hệ lại", checked: false, total: 0 },
+  { id: 3, name: "Đơn ảo", checked: false, total: 0 },
   { id: 4, name: "Hoàn thành", checked: false, total: 0 },
-  { id: 5, name: "Đã hủy", checked: false, total: 0 },
+  { id: 5, name: "Chờ hủy", checked: false, total: 0 },
 ]);
 
 async function changeChecked(event, item) {
@@ -192,7 +205,7 @@ async function changeChecked(event, item) {
   ) {
     await registrationStore.searchHasStatus();
   } else if (registrationStore.searchText !== "") {
-    registrationStore.searchRegistration();
+    await registrationStore.searchRegistration();
   } else {
     if (registrationStore.statusIds.length > 0) {
       await registrationStore.getRegistrationsWithStatus();
@@ -226,6 +239,8 @@ const showCreateAccountView = ref(false);
 
 const registerItem = ref(null);
 
+const registerUpdateStatus = ref(null);
+
 async function updateStatus(event) {
   const result = await registrationStore.updateStatus(event.id, event.status);
   if (!result) {
@@ -243,6 +258,16 @@ async function updateStatus(event) {
     content: result.message,
     type: 0,
   });
+}
+
+async function comfirmChangeRegisterStatus(event) {
+  if (!event) {
+    registerUpdateStatus.value = null;
+    return;
+  }
+
+  updateStatus(event);
+  registerUpdateStatus.value = null;
 }
 
 async function getConfirm(event) {
@@ -296,8 +321,8 @@ function createAccountShow(event) {
 function round(value) {
   return Math.ceil(value);
 }
-function showStudentNumSelectChange(event) {
-  registrationStore.changeLimit(parseInt(event.target.value));
+function changeLimit(event) {
+  registrationStore.changeLimit(event);
 }
 function close() {
   showCreateAccountView.value = false;
@@ -307,14 +332,7 @@ async function getSearchText(event) {
   registrationStore.searchText = event;
 
   if (registrationStore.statusIds.length !== 0) {
-    const result = await registrationStore.searchHasStatus();
-    // if (!result.success) {
-    //   emits("add-toast", {
-    //     title: "Cập nhật thất bại",
-    //     content: result.error,
-    //     type: 1,
-    //   });
-    // }
+    await registrationStore.searchHasStatus();
     return;
   }
   await registrationStore.searchRegistration(event);

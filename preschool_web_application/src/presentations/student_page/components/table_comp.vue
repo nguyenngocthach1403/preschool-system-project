@@ -6,7 +6,7 @@
         <tr>
           <th class="px-3 py-3 text-left"></th>
           <th class="px-7 py-3 text-left">Avatar</th>
-          <th class="px-3 text-left">
+          <th class="px-3 text-left hidden 2xl:table-cell">
             <div class="flex">
               ID
               <img

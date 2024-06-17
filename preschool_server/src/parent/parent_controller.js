@@ -9,7 +9,7 @@ const fs = require("fs");
 const config = require("../config/config");
 
 router.get("/", getAll);
-router.post("/insert", insertParent);
+router.post("/insert", upload.array("files"), insertParent);
 router.post("/update/:id", upload.array("files"), updateParent);
 // router.delete("/:id", deleteParent);
 router.post("/duplicate", isDuplicate);
@@ -19,6 +19,8 @@ router.get("/search", getParentSearch);
 router.get("/delete", deleteParent);
 router.get("/:id", getByID);
 router.get("/get/id/:id", getParentById);
+
+router.get("/add/account/:id", addAccountForParent);
 
 async function getAll(req, res, next) {
   const { limit, page } = req.query;
@@ -42,6 +44,53 @@ async function getAll(req, res, next) {
     status: 200,
     message: "Successful",
     data: result,
+  });
+}
+
+async function addAccountForParent(req, res) {
+  const id = req.params.id;
+  const username = req.query.username;
+
+  //Kiểm tra phụ huynh có tồn tại hay chưa
+  if (!(await parentService.isExistParent(id))) {
+    return res.status(200).json({
+      success: false,
+      message: "Phụ huynh không tồn tại.",
+    });
+  }
+
+  //Kiểm tra account có tồn tại hay không
+  if (!(await accountService.isExistAccountByUsername(username))) {
+    return res.status(200).json({
+      success: false,
+      message: "Tài khoản chưa tồn tại.",
+    });
+  }
+
+  //Lấy account id
+  const accountId = await accountService.getAccountByUsername(username);
+
+  const result = await parentService.updateParent(id, {
+    account_id: accountId !== undefined ? accountId.id : undefined,
+  });
+
+  if (result.code) {
+    return res.status(500).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  if (!result.success) {
+    return res.status(200).json({
+      success: false,
+      error: result.message,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    error: result.message,
   });
 }
 
@@ -185,53 +234,61 @@ async function isDuplicateAccount(req, res, next) {
 //   }
 // }
 async function insertParent(req, res, next) {
-  try {
-    const {
-      name,
-      gender,
-      birthday,
-      address,
-      job,
-      email,
-      phone,
-      role,
-      status,
-      account,
-    } = req.body;
-    const duplicateCheck = await parentService.isDuplicate(
-      email,
-      phone,
-      account
-    );
-    if (duplicateCheck) {
-      return res.status(200).json({
-        status: 400,
-        message: "Email or phone or account already exists.",
-      });
-    }
-    const data = {
-      name: name,
-      gender: gender,
-      birthday: birthday,
-      address: address,
-      job: job,
-      email: email,
-      phone: phone,
-      role: role,
-      status: status,
-      account_id: account,
-    };
+  const { name, gender, birthday, phone, email, job, role, address, status } =
+    req.body;
 
-    const result = await parentService.insertParent(data);
+  //Kiểm tra tải hình ảnh
+  if (req.files.length > 0) {
+    const filePath = req.files[0].path;
 
-    if (result) {
-      res.status(200).json({ status: 200, message: "success" });
-    } else {
-      res.status(200).json({ status: 500, message: "error add parent" });
-    }
-  } catch (error) {
-    next(error);
+    const file_path_with_extension = filePath + ".jpg";
+
+    fs.renameSync(filePath, file_path_with_extension);
+
+    var url =
+      config.baseUrl + "/image/parents/" + req.files[0].filename + ".jpg";
   }
+
+  console.log(url);
+
+  //Cập nhật phụ huynh
+  const result = await parentService.insertParent({
+    name: name,
+    gender: gender,
+    birthday: birthday,
+    phone: phone,
+    email: email,
+    job: job,
+    role: role,
+    address: address,
+    status: status,
+    avatar: url || undefined,
+  });
+
+  if (result.code) {
+    if (req.files.length > 0) {
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/parents/none");
+    }
+    return res.status(500).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  if (!result.success) {
+    if (req.files.length > 0) {
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/parents/none");
+    }
+    return res.status(200).json({
+      success: false,
+      error: result.message,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    error: result.message,
+  });
 }
 
 async function updateParent(req, res) {

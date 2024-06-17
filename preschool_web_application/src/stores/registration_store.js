@@ -17,8 +17,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
     formatRegistration(data) {
       let registrations = [];
 
-      for (let index = 0; index < data.length; index++) {
-        const element = data[index];
+      data.forEach((element) => {
         registrations.push({
           id: element.id,
           name: element.name,
@@ -32,10 +31,12 @@ export const useRegistrionStore = defineStore("registrationStore", {
           syllabus: element.syllabusName,
           status: element.status,
           profileStatus:
-            element.infomationState == 1 || element.file_paths ? 1 : 0,
+            element.infomationState == 1 || element.register_img ? 1 : 0,
           user: element.username,
+          register_img: element.register_img,
         });
-      }
+      });
+
       return registrations;
     },
 
@@ -120,6 +121,9 @@ export const useRegistrionStore = defineStore("registrationStore", {
 
     async searchHasStatus() {
       if (this.statusIds.length == 0) return;
+
+      this.status = "loading";
+
       const response =
         await registrationService.getRegistrationWithStatusAndSearch(
           this.searchText,
@@ -127,6 +131,9 @@ export const useRegistrionStore = defineStore("registrationStore", {
           this.page,
           this.limit
         );
+
+      this.status = "loaded";
+
       console.log(response);
       if (response.status !== 200) {
         this.registrations = [];
@@ -155,12 +162,17 @@ export const useRegistrionStore = defineStore("registrationStore", {
 
     async getRegistrationsWithStatus() {
       if (this.statusIds.length == 0) return;
+
+      this.status = "loading";
+
       this.page = 0;
       const response = await registrationService.getRegistrationsWithStatus(
         this.statusIds,
         this.page,
         this.limit
       );
+
+      this.status = "loaded";
 
       console.log(response);
       if (response.status !== 200) {
@@ -185,11 +197,13 @@ export const useRegistrionStore = defineStore("registrationStore", {
     },
 
     async searchRegistration() {
+      this.status = "loading";
       const response = await registrationService.searchRegister(
         this.searchText,
         this.page,
         this.limit
       );
+      this.status = "loaded";
       console.log(response);
       if (response.status !== 200) {
         return {
@@ -226,6 +240,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
       if (newVal >= this.total && this.page != 0) {
         this.page = 0;
       }
+      this.limit = newVal;
       this.getRegistration();
     },
 

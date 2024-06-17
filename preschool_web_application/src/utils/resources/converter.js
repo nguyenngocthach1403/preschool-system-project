@@ -3,16 +3,15 @@ function convertRegisterStatus(params) {
     case 0:
       return "Đơn mới";
     case 1:
-      return "Chờ duyệt";
-
+      return "Đã hẹn";
     case 2:
-      return "Chờ liên hệ";
+      return "Liên hệ lại";
     case 3:
-      return "Đã liên hệ";
+      return "Đơn ảo";
     case 4:
       return "Hoàn thành";
     case 5:
-      return "Hủy đơn";
+      return "Chờ hủy";
     default:
       return "none";
   }

@@ -31,7 +31,7 @@
 
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
-      Student
+      Học sinh
     </div>
 
     <!-- Search-->
@@ -44,31 +44,18 @@
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
+    <ResultNumComp class="w-fit ml-8">{{ total }}</ResultNumComp>
 
     <!--Show muc-->
-    <div class="my-2 w-full text-start px-6">
-      Hiển thị
-      <select
-        id="show-num-student"
-        class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
-        @change="showStudentNumSelectChange"
-      >
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-        <option value="50">50</option>
-        <option value="60">60</option>
-        <option value="70">70</option>
-        <option value="100">100</option>
-      </select>
-      học sinh
-    </div>
-
-    <!-- Quick search -->
+    <ShowNumberComp :numb-show="limit" @change-limit="changLimit($event)" />
 
     <!-- Table components -->
+    <LoadingComp
+      v-if="!dataOfTable || status == 'loading'"
+      class="w-full h-full"
+    ></LoadingComp>
     <TableComp
+      v-if="status == 'loaded'"
       :data-table="dataOfTable"
       @delete-student="showConfirmDialog = $event"
       @edit-student="editStudent"
@@ -125,7 +112,9 @@ import PopUpLinkParent from "../components/popup_linking_parent_with_student.vue
 import { ref, computed, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useStudentStore } from "../../../stores/student_store";
-
+import LoadingComp from "../../../components/loading_comp.vue";
+import ResultNumComp from "../../../components/result_comp.vue";
+import ShowNumberComp from "../../../components/show_number_comp.vue";
 const searchText = ref("");
 const studentStore = useStudentStore();
 /* Data demo of Student Table */
@@ -247,9 +236,8 @@ async function deleteStudent(studentToDel) {
     });
   }
 }
-
-function showStudentNumSelectChange(event) {
-  studentStore.changeLimit(parseInt(event.target.value));
+function changLimit(event) {
+  studentStore.changeLimit(event);
 }
 function showAddClassFunction(event) {
   showPopUpAddClass.value = event;
