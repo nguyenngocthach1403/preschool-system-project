@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="submitCreateStudent">
+    <form>
       <div
         class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-fit pb-[60px]"
       >
@@ -134,7 +134,11 @@
             </div>
           </div>
         </div>
-        <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
+        <div
+          v-if="$router.currentRoute.value.params.id"
+          id="button-side"
+          class="w-full flex text-start mx-[50px] gap-5"
+        >
           <button
             @click.prevent="updateParent()"
             v-if="!updating"
@@ -194,22 +198,26 @@
                 type="text"
                 placeholder="Tên đăng nhập"
                 class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-                v-model="create_account"
+                v-model="accountForParent"
+                :class="{ 'in-valid': messageOfAddAccountForParent }"
               />
+              <div class="mt-1 mb-2 h-[25px] text-red-500">
+                <span>{{ messageOfAddAccountForParent }}</span>
+              </div>
               <div
                 id="button-side"
                 class="w-full flex text-start gap-5 my-[5px]"
               >
                 <button
-                  @click.prevent="updateParent"
-                  v-if="status !== 'creating'"
+                  @click.prevent="addAccountForParent()"
+                  v-if="!addingAccountForParent"
                   type="submit"
                   class="h-[45px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
                 >
                   Save
                 </button>
                 <button
-                  v-if="status === 'creating'"
+                  v-if="addingAccountForParent"
                   type="button"
                   class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
                   disabled
@@ -337,11 +345,10 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, onMounted, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import parentService from "../../../services/parent.service";
 import { useAccountStore } from "../../../stores/account_store";
-import { yyyymmddDateString } from "../../../utils/resources/format_date";
 import {
   isEmpty,
   isEmailValid,
@@ -365,17 +372,20 @@ const phone_account = ref("");
 const status_account = ref("");
 const accountStore = useAccountStore();
 const updating = ref(false);
+const creating = ref(false);
+const addingAccountForParent = ref(false);
 const fileUpload = ref(null);
 const parentAvatarPath = ref(null);
+const accountForParent = ref("");
 
 const messageOfParentName = ref("");
 const messageOfParentPhone = ref("");
 const messageOfParentEmail = ref("");
 const messageOfParentRole = ref("");
-const messageOfUsername = ref("");
 const messageOfAccountPhone = ref("");
 const messageOfAccountEmail = ref("");
 const messageOfAccountStatus = ref("");
+const messageOfAddAccountForParent = ref("");
 
 async function getParent() {
   const parentId = router.currentRoute.value.params.id;
@@ -473,6 +483,12 @@ watch(role, () => {
   }
 });
 
+watch(accountForParent, () => {
+  if (!isEmpty(role.value)) {
+    messageOfAddAccountForParent.value = "";
+  }
+});
+
 async function updateParent() {
   if (checkValidParent()) {
     return;
@@ -527,9 +543,56 @@ async function updateParent() {
 
   emits("add-toast", {
     title: "Cập nhật thành công",
-    content: `Cập nhật học sinh ${name_parent.value} thành công.`,
+    content: `Cập nhật phụ huynh ${name_parent.value} thành công.`,
     type: 0,
   });
+}
+
+async function addAccountForParent() {
+  addingAccountForParent.value = true;
+  if (isEmpty(accountForParent.value)) {
+    messageOfAddAccountForParent.value = "Vui lòng nhập mã tài khoản.";
+    return;
+  }
+  const response = await parentService.addAccountForParent(
+    router.currentRoute.value.params.id,
+    accountForParent.value
+  );
+
+  addingAccountForParent.value = false;
+
+  if (response.status !== 500 && response.status != 200) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      content: response.data.error,
+      type: 1,
+    });
+    return;
+  }
+
+  if (response.status === 500) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      content: response.data.error,
+      type: 3,
+    });
+    return;
+  }
+  if (!response.data.success) {
+    emits("add-toast", {
+      title: "Cập nhật thất bại",
+      content: response.data.message,
+      type: 2,
+    });
+    return;
+  }
+
+  emits("add-toast", {
+    title: "Cập nhật thành công",
+    content: `Thêm account cho phụ huynh ${name_parent.value} thành công.`,
+    type: 0,
+  });
+  getParent();
 }
 
 async function updateAccount() {

@@ -19,7 +19,7 @@
         <span class="text-white text-[27px]">Preschool</span>
       </div>
       <div></div>
-      <form>
+      <form @submit.prevent="login()">
         <!--Username-->
         <div class="my-3">
           <label for="" class="relative">
@@ -104,9 +104,7 @@
         <div
           class="w-full bg-white my-6 h-[48px] content-center text-[#3B44D1] rounded-md active:scale-[98%] hover:bg-gray-200"
         >
-          <button type="button" @click="login()" class="w-full h-full">
-            Đăng nhập
-          </button>
+          <button type="submit" class="w-full h-full">Đăng nhập</button>
         </div>
       </form>
     </section>

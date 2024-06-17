@@ -10,10 +10,10 @@
     />
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
-      Class
+      Lớp học
     </div>
 
-    <div class="my-3 flex justify-between content-center mr-3">
+    <div class="mt-3 flex justify-between content-center mr-3">
       <SearchFormComp
         class="w-[400px] ml-[20px]"
         v-on:passSearchText="getSearchText($event)"
@@ -23,6 +23,7 @@
         @click="showCreateClass = !showCreateClass"
       />
     </div>
+    <ResultNumComp>{{ total }}</ResultNumComp>
 
     <div class="w-full h-fit flex flex-wrap content-start mx-[15px] pb-[20px]">
       <ClassCardComp
@@ -42,13 +43,14 @@ import ClassCardComp from "../components//class_card.vue";
 import SearchFormComp from "@/components/search_form_comp.vue";
 import CreateButtonComp from "@/components/create_button.vue";
 import ClassCreationView from "..//..//class_creation_page//views//class_creation_page.vue";
-import { useClassStore } from "@/stores//class_store.js";
+import ResultNumComp from "../../../components/result_comp.vue";
+import { useClassStore } from "../../../stores/class_store";
 import { storeToRefs } from "pinia";
 const searchText = ref("");
 const classStore = useClassStore();
 const showCreateClass = ref(false);
 
-const { classes, limit, page, status } = storeToRefs(classStore);
+const { classes, limit, page, status, total } = storeToRefs(classStore);
 
 onMounted(async () => {
   classDataDemo.value = classStore.classes;

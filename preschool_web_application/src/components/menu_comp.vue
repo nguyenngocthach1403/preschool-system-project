@@ -88,6 +88,7 @@ import extension from "@/assets/icons/ex.svg";
 import account from "@/assets/icons/account.svg";
 import registration from "@/assets/icons/Registration.svg";
 import logoutIcon from "@/assets/icons/Logout.svg";
+import category from "../assets/icons/Diversity.svg";
 
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -113,6 +114,7 @@ const managerItem = ref([
   { title: "Lớp học", name: "ClassView", icon: classes },
   // { title: "Nhân viên", name: "/ddd", icon: staff },
   { title: "Tài khoản", name: "AccountView", icon: account },
+  { title: "Danh mục", name: "CategoryView", icon: category },
   // { title: "Cài đặt", name: "/dddd", icon: setting },
   // { title: "Danh mục", name: "/dddd", icon: extension },
 ]);

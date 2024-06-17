@@ -117,12 +117,13 @@
             </dd>
           </td>
           <td class="px-3 w-[600px]">
-            <div
-              class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border"
+            <button
+              class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border relative"
               :class="classStatus(item.profileStatus)"
+              @click="$emit('show-register-img', item.register_img)"
             >
               {{ checkStatus(item.profileStatus) }}
-            </div>
+            </button>
           </td>
           <td class="px-3 w-[600px] relative">
             <button
@@ -195,6 +196,14 @@
           >
             <ul @click="closeChangeStatus" class="text-start">
               <li
+                v-for="(item, index) in registerStatusList"
+                :key="index"
+                class="w-full py-1 hover:bg-gray-100 px-2"
+                @click="updateRegisterStatus(index)"
+              >
+                {{ item }}
+              </li>
+              <!-- <li
                 @click="updateRegisterStatus(0)"
                 class="w-full py-1 hover:bg-gray-100 px-2"
               >
@@ -204,19 +213,19 @@
                 @click="updateRegisterStatus(1)"
                 class="w-full py-1 hover:bg-gray-100 px-2"
               >
-                Chờ duyệt
+                Đã hẹn
               </li>
               <li
                 @click="updateRegisterStatus(2)"
                 class="w-full py-1 hover:bg-gray-100 px-2"
               >
-                Chờ liên hệ
+                Liên hệ lại
               </li>
               <li
                 @click="updateRegisterStatus(3)"
                 class="w-full py-1 hover:bg-gray-100 px-2"
               >
-                Đã liên hệ
+                Đơn ảo
               </li>
               <li
                 @click="updateRegisterStatus(4)"
@@ -228,8 +237,8 @@
                 @click="updateRegisterStatus(5)"
                 class="w-full py-1 hover:bg-gray-100 px-2"
               >
-                Hủy
-              </li>
+                Chờ hủy
+              </li> -->
             </ul>
           </div>
         </Transition>
@@ -279,6 +288,15 @@ function selectMenu(event, register) {
   x.value = event.clientX;
   y.value = event.clientY;
 }
+
+const registerStatusList = ref([
+  "Đơn mới",
+  "Đã hẹn",
+  "Liên hệ lại",
+  "Đơn ảo",
+  "Hoàn thành",
+  "Chờ hủy",
+]);
 
 function selectStatus(event, id) {
   show.value = !show.value;
