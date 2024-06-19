@@ -83,6 +83,7 @@ app.use(
   "/addmission_period",
   require("./src/admission_period/admission_period.controller")
 );
+app.use("/teacher", require("./src/teacher/teacher.controller"));
 
 server.listen(port, () => {
   console.log(`listen port ${port}`);
