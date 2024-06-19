@@ -13,6 +13,7 @@ import ParentEditView from "@/presentations/parent_page/views/parent_edit_page.v
 import RegistrationView from "@/presentations/registration_page/view/registration_view.vue";
 import AccountView from "@/presentations/account_page/views/account_view.vue";
 import RegisterAdditionView from "../presentations/registration_addition_page/views/registration_addition_page.vue";
+import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";
 import CategoryView from "../presentations/category_page/views/category_page.vue";
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
 const router = Router();
@@ -59,6 +60,11 @@ function Router() {
             name: "ParentView",
             path: "/home-page/:username/parent",
             component: ParentView,
+          },
+          {
+            name: "TeacherView",
+            path: "/home-page/:username/teacher",
+            component: TeacherView,
           },
           {
             name: "DashBoardView",

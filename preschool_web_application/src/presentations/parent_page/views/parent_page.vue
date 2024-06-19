@@ -33,6 +33,9 @@
 
     <TableData
       :data-table="parents"
+      @sort-parent-name="sortDataByName"
+      @sort-parent-role="sortDataByRole"
+      @sort-parent-status="sortDataByStatus"
       @delete-parent="deleteParentById"
       @create-account-for-parent="showCreateAccountView = $event"
     ></TableData>
@@ -84,6 +87,7 @@ import ShowNumberComp from "../../../components/show_number_comp.vue";
 
 const parentStore = useParentStore();
 const showConfirmDialog = ref("");
+const dataOfTable = ref([]);
 const showCreateAccountView = ref(false);
 // const parentItem = ref(null);
 const { parents, page, limit, loading, total, status } =
@@ -92,6 +96,8 @@ onMounted(async () => {
   parentStore.getParent();
   //Get total
   parentStore.getTotalParent();
+  // dataOfTable.value = parentStore.parents;
+  console.log(parents.value);
 });
 const searchText = ref("");
 
@@ -170,6 +176,41 @@ async function deleteParent(parentToDel) {
     });
   }
 }
+const sortOrderName = ref(null);
+const sortOrderRole = ref(null);
+const sortOrderStatus = ref(null);
+const sortDataByName = () => {
+  // Nếu đang sắp xếp tăng dần, chuyển sang sắp xếp giảm dần
+  if (sortOrderName.value === "asc") {
+    parents.value.sort((a, b) =>
+      b.name.toLowerCase().localeCompare(a.name.toLowerCase())
+    );
+    sortOrderName.value = "desc";
+  } else {
+    parents.value.sort((a, b) =>
+      a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+    );
+    sortOrderName.value = "asc";
+  }
+};
+const sortDataByRole = () => {
+  if (sortOrderRole.value === "asc") {
+    parents.value.sort((a, b) => a.role - b.role);
+    sortOrderRole.value = "desc";
+  } else {
+    parents.value.sort((a, b) => b.role - a.role);
+    sortOrderRole.value = "asc";
+  }
+};
+const sortDataByStatus = () => {
+  if (sortOrderStatus.value === "asc") {
+    parents.value.sort((a, b) => a.status - b.status);
+    sortOrderStatus.value = "desc";
+  } else {
+    parents.value.sort((a, b) => b.status - a.status);
+    sortOrderStatus.value = "asc";
+  }
+};
 </script>
 
 <style scoped></style>

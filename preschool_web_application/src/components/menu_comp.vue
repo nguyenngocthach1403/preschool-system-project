@@ -123,6 +123,7 @@ const managerItem = ref([
   { title: "Lớp học", name: "ClassView", icon: classes },
   // { title: "Nhân viên", name: "/ddd", icon: staff },
   { title: "Tài khoản", name: "AccountView", icon: account },
+  { title: "Giáo viên", name: "TeacherView", icon: staff },
   { title: "Danh mục", name: "CategoryView", icon: category },
   // { title: "Cài đặt", name: "/dddd", icon: setting },
   // { title: "Danh mục", name: "/dddd", icon: extension },
