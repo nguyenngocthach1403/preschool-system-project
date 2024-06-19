@@ -9,6 +9,8 @@ export default {
   createParent,
   updateParent,
   getParentByIdParam,
+  searchParent,
+  addAccountForParent,
 };
 
 function search(txtSearch, page, limit) {
@@ -34,9 +36,27 @@ function getParentByIdParam(id) {
   return api().get(`/parents/${id}`);
 }
 function createParent(dataToCreate) {
-  return api().post(`/parents/insert`, dataToCreate);
+  return api().post(`/parents/insert`, dataToCreate, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }
 
 function updateParent(id, dataToUpdate) {
-  return api().put(`/parents/${id}`, dataToUpdate);
+  return api().post(`/parents/update/${id}`, dataToUpdate, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
+function searchParent(searchText, page, limit) {
+  return api().get(
+    `/parents/search?text=${searchText}&page=${page}&limit=${limit}`
+  );
+}
+
+function addAccountForParent(parentId, username) {
+  return api().get(`/parents/add/account/${parentId}?username=${username}`);
 }

@@ -14,6 +14,8 @@ import RegistrationView from "@/presentations/registration_page/view/registratio
 import AccountView from "@/presentations/account_page/views/account_view.vue";
 import RegisterAdditionView from "../presentations/registration_addition_page/views/registration_addition_page.vue";
 import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";
+import CategoryView from "../presentations/category_page/views/category_page.vue";
+import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -48,6 +50,11 @@ function Router() {
             name: "StudentView",
             path: "/home-page/:username/students",
             component: StudentView,
+          },
+          {
+            name: "ParentStudentCreationView",
+            path: "/home-page/:username/registration/create_parent_student",
+            component: ParentStudentCreationView,
           },
           {
             name: "ParentView",
@@ -98,6 +105,11 @@ function Router() {
             name: "RegisterAdditionView",
             path: "/home-page/:username/registration-addition-admin",
             component: RegisterAdditionView,
+          },
+          {
+            name: "CategoryView",
+            path: "/home-page/:username/category",
+            component: CategoryView,
           },
         ],
       },

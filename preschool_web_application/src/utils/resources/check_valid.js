@@ -22,12 +22,12 @@ function isEmpty(text) {
 }
 
 function isEmailValid(email) {
-  if (REGEX_EMAIL.exec(email.trim())) return true;
+  if (REGEX_EMAIL.exec(email)) return true;
   return false;
 }
 
 function isPhoneValid(phone) {
-  if (REGEX_PHONE.exec(phone.trim())) return true;
+  if (REGEX_PHONE.exec(phone)) return true;
   return false;
 }
 

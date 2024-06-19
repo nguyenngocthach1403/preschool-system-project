@@ -1,4 +1,5 @@
 const config = {
+  baseUrl: "http://localhost:9000",
   port: 9000,
   tb: {
     student: "students",
@@ -9,6 +10,8 @@ const config = {
     parent: "Parents",
     levels: "levels",
     sysllabus: "syllabus",
+    approves: "approves",
+    addmission: "admission_periods",
   },
 };
 

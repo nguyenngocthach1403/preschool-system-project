@@ -1,5 +1,20 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
+    <div
+      v-if="showRegisterImg"
+      class="absolute w-full h-full bg-gray-500/75 left-0 top-0 z-20 content-center overflow-y-auto"
+    >
+      <button
+        class="w-[40px] h-[40px] absolute right-10 top-10"
+        @click="showRegisterImg = null"
+      >
+        <img :src="close_icon" />
+      </button>
+      <img
+        class="m-auto bg-white rounded-xl w-[1000px] object-contain"
+        :src="showRegisterImg"
+      />
+    </div>
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
@@ -7,105 +22,127 @@
       @confirm="getConfirm($event)"
       :value="showConfirmDialog"
     />
-    <CreateAccountView
-      v-if="showCreateAccountView"
+    <ConfirmDialog
+      v-if="registerUpdateStatus"
       class="absolute top-0 left-0"
-      @close="showCreateAccountView = false"
-      :registration="registerItem"
-      @add-toast="$emit('add-toast', $event), close()"
+      :content="`Bạn có chắc chắn thay đổi trạng thái đơn mã ${
+        registerUpdateStatus.id
+      } thành '${convertRegisterStatus(registerUpdateStatus.status)}'  không?`"
+      @confirm="comfirmChangeRegisterStatus($event)"
+      :value="registerUpdateStatus"
     />
     <!-- Header -->
     <div
       class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
     >
-      Registration
+      Đơn đăng ký
     </div>
 
     <!-- Search-->
     <div class="flex justify-between content-center mr-3">
       <SearchFormComp
         @passSearchText="getSearchText($event)"
+        class="w-[400px] ml-[20px]"
         :value="searchText"
       ></SearchFormComp>
       <router-link :to="{ name: 'RegisterAdditionView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
+    <ResultNumComp class="ml-8">{{ total }}</ResultNumComp>
 
-    <!--Show muc-->
-    <div class="flex items-center">
-      <div class="my-2 w-[400px] text-start px-6">
-        Hiển thị
-        <select
-          id="show-num-student"
-          class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
-          @change="showStudentNumSelectChange"
-        >
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="50">50</option>
-          <option value="60">60</option>
-          <option value="70">70</option>
-          <option value="100">100</option>
-        </select>
-        Danh mục
-      </div>
-      <div class="w-full flex gap-2">
-        <ItemCheckBox
-          v-for="item in statusList"
+    <div class="text-start mx-5 my-3">
+      <select
+        class="h-[35px] border-[2px] rounded-md w-[200px]"
+        @change="changeAdmissionPeriod()"
+        v-model="admissionPeriod"
+      >
+        <option value="null">Chọn đợt tuyển sinh</option>
+        <option
+          v-for="item in admissionPeriodList"
           :key="item"
-          :content="item.name"
-          :checked="item.checked"
-          :id="item.id"
-          :total="item.total"
-          @change="changeChecked($event, item)"
+          :value="item.id"
         >
-        </ItemCheckBox>
-      </div>
+          {{ item.name }}
+        </option>
+      </select>
     </div>
+    <!--Show muc-->
+    <div v-if="admissionPeriod != 'null' && admissionPeriod != null">
+      <div class="flex items-center">
+        <ShowNumberComp
+          :numb-show="limit"
+          @change-limit="changeLimit($event)"
+        ></ShowNumberComp>
+        <div class="w-full flex gap-2">
+          <ItemCheckBox
+            v-for="item in statusList"
+            :key="item"
+            :content="item.name"
+            :checked="item.checked"
+            :id="item.id"
+            :total="item.total"
+            @change="changeChecked($event, item)"
+          >
+          </ItemCheckBox>
+        </div>
+      </div>
 
-    <!-- Quick search -->
+      <!-- Quick search -->
 
-    <!-- Table components -->
-    <TableComp
-      :data="registrations"
-      @delete-item="showConfirmDialog = $event"
-      @click-create-acount="createAccountShow($event)"
-      @update-status="updateStatus($event)"
-    ></TableComp>
-    {{ showConfirmDialog }}
-    <div
-      class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
-    >
-      <div
-        v-if="
-          status !== 'search_failed' && status !== 'load_failed' && total !== 0
+      <!-- Table components -->
+      <LoadingComp
+        v-if="status === 'loading' || status === 'initial'"
+      ></LoadingComp>
+      <TableComp
+        v-if="status == 'loaded' && status !== 'initial'"
+        :data="registrations"
+        @delete-item="showConfirmDialog = $event"
+        @edit-item="
+          $router.push({
+            name: 'RegisterAdditionView',
+            query: { id: $event.id },
+          })
         "
-        class="h-[37px] content-center mx-[20px]"
-      >
-        Hiển thị từ {{ page * limit + 1 }} đến
-        {{ (page + 1) * limit - (limit - registrations.length) }} trong
-        {{ total }} danh mục
-      </div>
+        @create-new-student="createNewStudent($event)"
+        @update-status="registerUpdateStatus = $event"
+        @show-register-img="showRegisterImg = $event"
+        @create-parent="createParent($event)"
+      ></TableComp>
+      {{ showConfirmDialog }}
       <div
-        v-if="status == 'search_failed' || total == 0"
-        class="h-[37px] content-center mx-[20px]"
+        class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
       >
-        Không tìm thấy danh mục nào!
+        <div
+          v-if="
+            status !== 'search_failed' &&
+            status !== 'load_failed' &&
+            total !== 0
+          "
+          class="h-[37px] content-center mx-[20px]"
+        >
+          Hiển thị từ {{ page * limit + 1 }} đến
+          {{ (page + 1) * limit - (limit - registrations.length) }} trong
+          {{ total }} đơn đăng ký
+        </div>
+        <div
+          v-if="status == 'search_failed' || total == 0"
+          class="h-[37px] content-center mx-[20px]"
+        >
+          Không tìm thấy đơn đăng ký nào!
+        </div>
+        <div
+          v-if="status == 'load_failed'"
+          class="h-[37px] content-center mx-[20px]"
+        >
+          Không có đơn đăng ký nào tồn tại!
+        </div>
+        <Pagination
+          :page-nums="round(total / limit)"
+          :page-active="page + 1"
+          @click-page="changePage($event)"
+        ></Pagination>
       </div>
-      <div
-        v-if="status == 'load_failed'"
-        class="h-[37px] content-center mx-[20px]"
-      >
-        Không có danh mục nào tồn tại!
-      </div>
-      <Pagination
-        :page-nums="round(total / limit)"
-        :page-active="page + 1"
-        @click-page="changePage($event)"
-      ></Pagination>
     </div>
   </div>
 </template>
@@ -120,53 +157,117 @@ import Pagination from "../../../components/pagination.vue";
 import ItemCheckBox from "../components/item_checkbox_filter.vue";
 import { storeToRefs, mapState } from "pinia";
 import { useRegistrionStore } from "../../../stores/registration_store";
-import { onMounted, ref, watch } from "vue";
+import { onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { isEmpty } from "../../../utils/resources/check_valid";
+import LoadingComp from "../../../components/loading_comp.vue";
+import close_icon from "../../../assets/icons/close.svg";
+import ResultNumComp from "../../../components/result_comp.vue";
+import ShowNumberComp from "../../../components/show_number_comp.vue";
+import addmissionPeriodService from "../../../services/admission_period.service";
+import { convertRegisterStatus } from "../../../utils/resources/converter";
+import io from "socket.io-client";
+import { useRouter } from "vue-router";
 
 const registrationStore = useRegistrionStore();
-const {
-  registrations,
-  total,
-  status,
-  limit,
-  page,
-  loading,
-  searchText,
-  statusIds,
-} = storeToRefs(registrationStore);
+const { registrations, total, status, limit, page, searchText, statusIds } =
+  storeToRefs(registrationStore);
 
 const showConfirmDialog = ref(null);
+const showRegisterImg = ref(null);
+
+const admissionPeriodList = ref(null);
+
+const admissionPeriod = ref(null);
+
+const router = useRouter();
+
+async function changeAdmissionPeriod() {
+  registrationStore.admission_period_id = admissionPeriod.value;
+  registrationStore.page = 0;
+  registrationStore.limit = 10;
+  registrationStore.searchText = "";
+  registrationStore.statusIds = [];
+
+  const count = await registrationStore.countRegistration();
+  fillStatusTotal(count);
+  hasCheckStatus();
+  registrationStore.getRegistration();
+}
 
 onMounted(async () => {
+  if (!admissionPeriodList) {
+    return;
+  }
+
+  if (registrationStore.admission_period_id == null) return;
+
+  admissionPeriod.value = registrationStore.admission_period_id;
+
+  const socket = io("http://localhost:9000");
+
   const count = await registrationStore.countRegistration();
 
   if (
     registrationStore.searchText !== "" &&
     registrationStore.statusIds.length != 0
   ) {
-    registrationStore.searchHasStatus();
+    await registrationStore.searchHasStatus();
   } else if (registrationStore.searchText !== "") {
-    registrationStore.searchRegistration();
+    await registrationStore.searchRegistration();
   } else if (registrationStore.statusIds.length != 0) {
-    registrationStore.getRegistrationsWithStatus();
+    await registrationStore.getRegistrationsWithStatus();
   } else {
-    registrationStore.getRegistration();
+    await registrationStore.getRegistration();
   }
   fillStatusTotal(count);
 
   hasCheckStatus();
+
+  socket.on("changedRegisterStatus", async () => {
+    const count = await registrationStore.getTotalOfStatus();
+    fillStatusTotal(count);
+    if (
+      registrationStore.searchText !== "" &&
+      registrationStore.statusIds.length != 0
+    ) {
+      await registrationStore.searchHasStatus();
+    } else if (registrationStore.searchText !== "") {
+      await registrationStore.searchRegistration();
+    } else if (registrationStore.statusIds.length != 0) {
+      await registrationStore.getRegistrationsWithStatus();
+    } else {
+      await registrationStore.getRegistration();
+    }
+  });
 });
+onBeforeMount(() => {
+  getAddmissionPeriodOpenning();
+});
+
+onBeforeUnmount(() => {
+  const socket = io("http://localhost:9000");
+  socket.off("changedRegisterStatus");
+});
+
+async function getAddmissionPeriodOpenning() {
+  const response = await addmissionPeriodService.getAddmissionPeriod();
+
+  if (response.data.success) {
+    admissionPeriodList.value = response.data.data;
+  }
+}
 
 const statusList = ref([
   { id: 0, name: "Đơn mới", checked: false, total: 0 },
-  { id: 1, name: "Chờ duyệt", checked: false, total: 0 },
-  { id: 2, name: "Chờ liên hệ", checked: false, total: 0 },
-  { id: 3, name: "Đã liên hệ", checked: false, total: 0 },
+  { id: 1, name: "Đã hẹn", checked: false, total: 0 },
+  { id: 2, name: "Liên hệ lại", checked: false, total: 0 },
+  { id: 3, name: "Đơn ảo", checked: false, total: 0 },
   { id: 4, name: "Hoàn thành", checked: false, total: 0 },
-  { id: 5, name: "Đã hủy", checked: false, total: 0 },
+  { id: 5, name: "Chờ hủy", checked: false, total: 0 },
 ]);
 
 async function changeChecked(event, item) {
+  if (registrationStore.admission_period_id == null) return;
   item.checked = event.target.checked;
   if (event.target.checked) {
     registrationStore.checkSatusIds(item.id);
@@ -185,7 +286,7 @@ async function changeChecked(event, item) {
   ) {
     await registrationStore.searchHasStatus();
   } else if (registrationStore.searchText !== "") {
-    registrationStore.searchRegistration();
+    await registrationStore.searchRegistration();
   } else {
     if (registrationStore.statusIds.length > 0) {
       await registrationStore.getRegistrationsWithStatus();
@@ -210,17 +311,24 @@ function hasCheckStatus() {
     registrationStore.statusIds.forEach((e) => {
       statusList.value[e].checked = true;
     });
+  } else {
+    statusList.value.forEach((e) => {
+      e.checked = false;
+    });
   }
 }
 // const filterStatus = ref();
 
 const emits = defineEmits(["add-toast"]);
-const showCreateAccountView = ref(false);
 
-const registerItem = ref(null);
+const registerUpdateStatus = ref(null);
 
 async function updateStatus(event) {
-  const result = await registrationStore.updateStatus(event.id, event.status);
+  const result = await registrationStore.updateStatus(
+    event.id,
+    event.status,
+    event.status_before
+  );
   if (!result) {
     emits("add-toast", {
       title: "Cập nhật thất bại",
@@ -231,11 +339,28 @@ async function updateStatus(event) {
   }
   const count = await registrationStore.getTotalOfStatus();
   fillStatusTotal(count);
+  const socket = io("http://localhost:9000");
+  socket.emit("changeRegisterStatus");
+  if (searchText.value != "") {
+    registrationStore.searchHasStatus();
+  } else {
+    registrationStore.getRegistrationsWithStatus();
+  }
   emits("add-toast", {
     title: "Cập nhật thành công",
     content: result.message,
     type: 0,
   });
+}
+
+async function comfirmChangeRegisterStatus(event) {
+  if (!event) {
+    registerUpdateStatus.value = null;
+    return;
+  }
+
+  updateStatus(event);
+  registerUpdateStatus.value = null;
 }
 
 async function getConfirm(event) {
@@ -279,37 +404,38 @@ async function getConfirm(event) {
 
   showConfirmDialog.value = null;
 }
+
 function changePage(event) {
+  if (registrationStore.admission_period_id == null) return;
   registrationStore.changePage(event - 1);
 }
-function createAccountShow(event) {
-  showCreateAccountView.value = true;
-  registerItem.value = event;
-}
+
 function round(value) {
   return Math.ceil(value);
 }
-function showStudentNumSelectChange(event) {
-  registrationStore.changeLimit(parseInt(event.target.value));
+function changeLimit(event) {
+  if (registrationStore.admission_period_id == null) return;
+  registrationStore.changeLimit(event);
 }
 function close() {
   showCreateAccountView.value = false;
   registrationStore.getRegistration();
 }
 async function getSearchText(event) {
+  if (registrationStore.admission_period_id == null) return;
   registrationStore.searchText = event;
 
   if (registrationStore.statusIds.length !== 0) {
-    const result = await registrationStore.searchHasStatus();
-    // if (!result.success) {
-    //   emits("add-toast", {
-    //     title: "Cập nhật thất bại",
-    //     content: result.error,
-    //     type: 1,
-    //   });
-    // }
+    await registrationStore.searchHasStatus();
     return;
   }
   await registrationStore.searchRegistration(event);
+}
+
+function createNewStudent(event) {
+  router.push({
+    name: "ParentStudentCreationView",
+    query: { register_id: event.id },
+  });
 }
 </script>

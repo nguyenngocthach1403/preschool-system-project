@@ -1,13 +1,16 @@
 <template>
-  <div class="dashboard text-[14px]">
+  <div class="text-[14px]">
     <main>
-      <div class="2xl:h-dvh mr-[10px]h-dvh">
+      <div class="mr-[10px]">
         <table class="h-fit w-full">
           <thead
-            class="sticky top-0 text-[15px] bg-[#3B44D1] text-white text-white z-10"
+            class="sticky w-full top-0 text-[15px] bg-[#3B44D1] text-white text-white z-10"
           >
             <tr>
-              <th class="px-3 py-3 text-left">
+              <th></th>
+              <th class="w-[300px]">Avatar</th>
+
+              <th class="px-3 py-3 text-left w-dvw">
                 <div class="flex">
                   Họ và tên
                   <img
@@ -17,73 +20,120 @@
                   />
                 </div>
               </th>
-              <th>Tài khoản</th>
-              <!-- <th>Giới tính</th> -->
-              <!-- <th>Ngày sinh</th> -->
+              <th class="w-[300px]">ID</th>
+              <th class="w-[300px]">Tài khoản</th>
+
               <!-- <th>Địa chỉ</th> -->
-              <!-- <th>Nghề nghiệp</th> -->
-              <th>Email</th>
-              <th>Số điện thoại</th>
-              <th class="px-3 py-3 text-left">
-                <div class="flex">
-                  Vai trò
-                  <img
-                    :src="sort_icon"
-                    @click="$emit('sort-parent-role')"
-                    class="w-[20px] hover:bg-gray-200/25 rounded-full"
-                  />
-                </div>
-              </th>
-              <th class="px-3 py-3 text-left">
-                <div class="flex">
-                  Trạng thái
-                  <img
-                    :src="sort_icon"
-                    @click="$emit('sort-parent-status')"
-                    class="w-[20px] hover:bg-gray-200/25 rounded-full"
-                  />
-                </div>
-              </th>
-              <!-- <th>Vai trò</th>
-              <th>Trạng thái</th> -->
+              <th class="w-dvw">Liên hệ</th>
+              <th class="w-[400px]">Giới tính</th>
+              <th class="w-[400px]">Ngày sinh</th>
+              <th class="w-[700px]">Nghề nghiệp</th>
+              <!-- <th>Vai trò</th> -->
+              <th>Trạng thái</th>
               <th>Chức năng</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              class="h-[60px] text-left even:bg-gray-50 hover:bg-gray-200"
+              class="h-[60px] w-full text-left even:bg-gray-50 hover:bg-gray-200"
               v-for="parent in dataTable"
               :key="parent.id"
+              :class="{ 'empty-account': !parent.username }"
             >
-              <td class="w-[300px]">{{ parent.name }}</td>
-              <td class="px-3 w-[400px]">
+              <td class="px-3 relative">
+                <div
+                  v-if="!parent.username"
+                  class="absolute top-0 left-5 text-red-500 text-[12px]"
+                >
+                  new
+                </div>
+                <div class="inline-flex items-center">
+                  <label
+                    class="relative flex items-center p-3 rounded-full cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      class="before:content[''] hover:ring-2 peer relative h-4 w-4 cursor-pointer appearance-none rounded-[5px] border border-gray-500 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:bg-[#3B44D1] checked:border-none hover:before:opacity-10"
+                      id="check"
+                    />
+                    <span
+                      class="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-3.5 w-3.5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        stroke-width="1"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                    </span>
+                  </label>
+                </div>
+              </td>
+              <td class="w-[300px]">
+                <div class="ml-[15px]">
+                  <img
+                    :src="parent.avatar"
+                    class="w-[40px] h-[40px] rounded-[50px] object-cover"
+                  />
+                </div>
+              </td>
+
+              <td class="w-dvw">
+                {{ parent.name }}
+                <dd>
+                  <span class="text-gray-500">Vai trò: </span>
+                  <span class="text-gray-600">{{
+                    convertParentRole(parent.role)
+                  }}</span>
+                </dd>
+              </td>
+              <td class="w-[300px]">
+                {{ parent.id }}
+              </td>
+              <td class="px-3 w-[500px]">
                 <button
                   @click.prevent
-                  v-if="parent.account == null"
-                  @click="editParent(parent.id)"
+                  v-if="parent.username == null"
+                  @click="$emit('create-account-for-parent', parent)"
                   class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
                 >
                   Thêm tài khoản
                 </button>
-                <dd class="text-gray-500 text-[14px] my-[5px]" v-else>
+                <dd class="text-gray-500 text-[14px] my-[5px] w-[200px]" v-else>
                   <span>
                     <span class="font-bold">Tài khoản:</span>
-                    {{ parent.account }}</span
+                    {{ parent.username }}</span
                   >
                 </dd>
               </td>
-              <!-- <td class="w-[300px]">
-                {{ parent.gender === 0 ? "Nam" : "Nữ" }}
-              </td> -->
-              <!-- <td class="w-[300px]">
-                {{ new Date(parent.birthday).toLocaleDateString() }}
-              </td> -->
 
               <!-- <td class="w-[300px]">{{ parent.address }}</td> -->
-              <!-- <td class="w-[700px]">{{ parent.job }}</td> -->
-              <td class="w-[700px]">{{ parent.email }}</td>
-              <td class="w-[700px]">{{ parent.phone }}</td>
-              <td class="w-[700px]">{{ getRoleString(parent.role) }}</td>
+
+              <td class="w-dvw text-gray-400">
+                <dd>
+                  <span>Email: </span>
+                  <span class="text-gray-700">{{ parent.email }}</span>
+                </dd>
+                <dd>
+                  <span>Phone: </span>
+                  <span class="text-gray-700">{{ parent.phone }}</span>
+                </dd>
+              </td>
+              <td class="w-[400px]">
+                {{ parent.gender === 0 ? "Nam" : "Nữ" }}
+              </td>
+              <td class="w-[400px]">
+                {{ new Date(parent.birthday).toLocaleDateString() }}
+              </td>
+              <td class="w-[700px]">{{ parent.job }}</td>
               <td class="w-[700px]">
                 {{ parent.status === 1 ? "Hoạt động" : "Không hoạt động" }}
               </td>
@@ -120,6 +170,7 @@ import delete_icon from "@/assets/icons/delete.svg";
 import edit_icon from "@/assets/icons/edit.svg";
 import add_icon from "@/assets/icons/pls.svg";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
+import { convertParentRole } from "../../../utils/resources/converter";
 
 // const searchText = ref(props.searchText);
 // const searchtext = defineProps({
@@ -184,5 +235,8 @@ td {
 
 th {
   white-space: nowrap;
+}
+.empty-account {
+  background-color: rgba(59, 68, 209, 0.1);
 }
 </style>

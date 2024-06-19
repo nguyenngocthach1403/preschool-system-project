@@ -6,22 +6,52 @@ module.exports = {
   createAccount,
   updateRegistration,
   updateByUsername,
+  getAccountByUsername,
+  isExistAccountByUsername,
 };
 
-async function createAccount(accountToCreate) {
+async function getAccountByUsername(username) {
   try {
-    return db.insert(config.tb.account, accountToCreate);
+    const result = await db.select(
+      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
+      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
+      `WHERE a.username like '${username}' AND a.deleted = 0`
+    );
+
+    return result[0];
   } catch (error) {
     return {
       code: error.code,
-      message: error.sqlMessage,
+      error: error.sql,
+    };
+  }
+}
+
+async function createAccount(accountToCreate) {
+  try {
+    const result = await db.insert(config.tb.account, accountToCreate);
+    if (result == 0) {
+      return {
+        success: false,
+        message: "Tạo tài khoản thất bại. Hãy thử lại",
+      };
+    }
+
+    return {
+      success: true,
+      message: `Tạo tài khoản ${accountToCreate.username} thành công`,
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
     };
   }
 }
 
 async function updateRegistration(id, username) {
   try {
-    return db.update(config.tb.register, { accountId: username }, { id: id });
+    return db.update(config.tb.register, { account_id: username }, { id: id });
   } catch (error) {
     return {
       code: error.code,
@@ -30,12 +60,29 @@ async function updateRegistration(id, username) {
   }
 }
 
+async function isExistAccountByUsername(username) {
+  try {
+    const result = await db.select(
+      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
+      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
+      `WHERE a.username like '${username}' AND a.deleted = 0`
+    );
+
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 async function getAccount(limit, offset) {
   try {
     return await db.selectLimit(
-      config.tb.account,
-      "*",
-      "WHERE deleted = 0",
+      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
+      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
+      "WHERE a.deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );

@@ -17,6 +17,7 @@
           <th class="px-3 text-left w-fit">Email</th>
           <th class="px-3 text-left">Phone</th>
           <th class="px-3 text-left">Chức vụ</th>
+          <th class="px-3 text-left">Tạo bởi</th>
           <th class="px-3 text-left">Trạng thái</th>
           <th class="px-3 text-left">Chức năng</th>
         </tr>
@@ -66,6 +67,16 @@
           <td class="hidden 2xl:table-cell px-3 w-[500px]">{{ item.phone }}</td>
           <td class="hidden 2xl:table-cell px-3 w-[500px]">
             {{ convertRole(item.role) }}
+          </td>
+          <td class="hidden 2xl:table-cell px-3 w-[500px]">
+            <dd>
+              <span class="text-gray-400 text-[12px]">Username:</span>
+              {{ item.creater_username }}
+            </dd>
+            <dd>
+              <span class="text-gray-400 text-[12px]">Chức vụ:</span>
+              {{ convertRole(item.creater_role) }}
+            </dd>
           </td>
           <td class="px-3 w-[500px]">
             <button

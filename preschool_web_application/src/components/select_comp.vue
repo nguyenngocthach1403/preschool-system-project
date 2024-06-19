@@ -70,8 +70,6 @@
 import { ref, onMounted } from "vue";
 
 onMounted(() => {
-  console.log(drops.valueActive);
-
   if (drops.disable) {
     drops.optionList = [drops.valueActive];
   }
@@ -83,11 +81,8 @@ onMounted(() => {
       element.name.match(drops.valueActive)
     ) {
       value.value = element;
-
-      console.log(value.value);
     }
   }
-  console.log(drops.optionList);
 });
 
 const showList = ref(false);

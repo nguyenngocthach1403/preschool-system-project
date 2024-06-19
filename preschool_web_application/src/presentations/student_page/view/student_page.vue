@@ -21,44 +21,41 @@
       @close="showPopUpAddClass = null"
       @add-toast="$emit('add-toast', $event)"
     />
+    <PopUpLinkParent
+      v-if="showPopUpLinkParent"
+      class="absolute top-0 left-0"
+      :student-data="showPopUpLinkParent ?? null"
+      @close="(showPopUpLinkParent = null), loadPage()"
+      @add-toast="$emit('add-toast', $event)"
+    />
 
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
-      Student
+      Học sinh
     </div>
 
     <!-- Search-->
     <div class="flex justify-between content-center mt-5 mr-3">
-      <SearchFormComp @passSearchText="getSearchText"></SearchFormComp>
+      <SearchFormComp
+        @passSearchText="getSearchText"
+        class="w-[400px] ml-[20px]"
+      ></SearchFormComp>
       <router-link :to="{ name: 'StudentCreationView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
+    <ResultNumComp class="w-fit ml-8">{{ total }}</ResultNumComp>
 
     <!--Show muc-->
-    <div class="my-2 w-full text-start px-6">
-      Hiển thị
-      <select
-        id="show-num-student"
-        class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
-        @change="showStudentNumSelectChange"
-      >
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-        <option value="50">50</option>
-        <option value="60">60</option>
-        <option value="70">70</option>
-        <option value="100">100</option>
-      </select>
-      học sinh
-    </div>
-
-    <!-- Quick search -->
+    <ShowNumberComp :numb-show="limit" @change-limit="changLimit($event)" />
 
     <!-- Table components -->
+    <LoadingComp
+      v-if="!dataOfTable || status == 'loading'"
+      class="w-full h-full"
+    ></LoadingComp>
     <TableComp
+      v-if="status == 'loaded'"
       :data-table="dataOfTable"
       @delete-student="showConfirmDialog = $event"
       @edit-student="editStudent"
@@ -66,6 +63,7 @@
       @sort-student-name="sortDataByName"
       @sort-student-class="sortDataByClass"
       @add-student-into-class="showAddClassFunction($event)"
+      @link-parent-with-student="showPopUpLinkParentFunction($event)"
     ></TableComp>
 
     <div
@@ -110,10 +108,13 @@ import ConfirmDialog from "@/components/confirm_dialog.vue";
 import EditStudentView from "./student_edition_view.vue";
 import Pagination from "../../../components/pagination.vue";
 import PopUpAddStudentIntoClass from "../components/popup_add_student_to_class.vue";
+import PopUpLinkParent from "../components/popup_linking_parent_with_student.vue";
 import { ref, computed, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useStudentStore } from "../../../stores/student_store";
-
+import LoadingComp from "../../../components/loading_comp.vue";
+import ResultNumComp from "../../../components/result_comp.vue";
+import ShowNumberComp from "../../../components/show_number_comp.vue";
 const searchText = ref("");
 const studentStore = useStudentStore();
 /* Data demo of Student Table */
@@ -122,6 +123,7 @@ const studentDel = ref(null);
 const showConfirmDialog = ref("");
 const showStudentEdit = ref(null);
 const showPopUpAddClass = ref(false);
+const showPopUpLinkParent = ref(null);
 
 const { students, page, limit, loading, total, status } =
   storeToRefs(studentStore);
@@ -133,6 +135,13 @@ onMounted(async () => {
 
   dataOfTable.value = studentStore.students;
 });
+function loadPage() {
+  if (searchText.value !== "") {
+    studentStore.searchStudent(searchText.value);
+  } else {
+    studentStore.getStudent();
+  }
+}
 
 watch(loading, () => {
   if (loading) {
@@ -227,12 +236,14 @@ async function deleteStudent(studentToDel) {
     });
   }
 }
-
-function showStudentNumSelectChange(event) {
-  studentStore.changeLimit(parseInt(event.target.value));
+function changLimit(event) {
+  studentStore.changeLimit(event);
 }
 function showAddClassFunction(event) {
   showPopUpAddClass.value = event;
+}
+function showPopUpLinkParentFunction(event) {
+  showPopUpLinkParent.value = event;
 }
 </script>
 

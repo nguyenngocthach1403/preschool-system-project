@@ -1,6 +1,8 @@
 const express = require("express");
 
 const accountService = require("./account.service");
+const parentService = require("../parent/parent_service");
+const { isEmpty } = require("../config/check.service");
 
 const router = express.Router();
 
@@ -15,32 +17,19 @@ router.put("/:username", updateAccountByUsername);
 async function createAccount(req, res) {
   const data = req.body;
 
-  //Kiểm tra dữ liệu
-  for (let index = 0; index < Object.keys(data).length; index++) {
-    const key = Object.keys(data)[index];
-    const value = Object.values(data)[index];
-    if (
-      ![
-        "username",
-        "password",
-        "phone",
-        "email",
-        "role",
-        "registrationId",
-      ].includes(key)
-    ) {
-      return res.send({
-        status: 404,
-        error: `Invalid key '${key}' with value is '${data[key]}'`,
-      });
-    }
-
-    if (typeof value === "string" && value === "") {
-      return res.send({
-        status: 404,
-        error: `Invalid: key '${key}' isn't allowed empty`,
-      });
-    }
+  //Kiểm tra username rỗng
+  if (isEmpty(data.username)) {
+    return res.status(200).json({
+      success: false,
+      message: `Tạo tài khoản thất bại do username bị bỏ trống`,
+    });
+  }
+  //Kiểm tra tài khoản đã tồn tại chưa
+  if (await accountService.isExistAccountByUsername(data.username)) {
+    return res.status(200).json({
+      success: false,
+      message: `Tài khoản đã tồn tại với tên ${data.username}`,
+    });
   }
 
   const result = await accountService.createAccount({
@@ -48,25 +37,40 @@ async function createAccount(req, res) {
     password: data.password,
     phone: data.phone,
     email: data.email,
+    status: data.status,
     role: data.role,
+    created_by: data.created_by,
   });
 
-  console.log(result);
-
-  // if (Object.keys(result).includes("code")) {
-  //   return res.status(200).json({
-  //     status: 404,
-  //     message: "Create failed!",
-  //     error: result.message,
-  //   });
-  // }
-
-  if (Object.keys(data).includes("registrationId")) {
-    await accountService.updateRegistration(data.registrationId, data.username);
+  if (result.code) {
+    return res.status(500).json({
+      success: false,
+      error: result.error,
+    });
   }
-  res.send({
-    status: 200,
-    message: "Create account successful.",
+
+  if (!result.success) {
+    return res.status(200).json({
+      success: false,
+      error: result.message,
+    });
+  }
+
+  if (!isEmpty(data.parentId)) {
+    if (await accountService.isExistAccountByUsername(data.username)) {
+      const accountCreated = await accountService.getAccountByUsername(
+        data.username
+      );
+
+      await parentService.updateParent(data.parentId, {
+        account_id: accountCreated.id,
+      });
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    message: result.message,
   });
 }
 async function getAccountTotal(req, res) {

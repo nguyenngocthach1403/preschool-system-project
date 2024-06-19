@@ -1,49 +1,43 @@
 <template>
-  <div class="bg-white ml-4 rounded-3xl text-center h-fit mb-20 py-3">
+  <div class="bg-white ml-4 h-fit rounded-3xl text-center mb-20 mb-3">
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
       :content="showConfirmDialog"
       @confirm="getConfirm($event)"
     />
-    <!-- <CreateAccountView
+    <CreateAccountView
       v-if="showCreateAccountView"
       class="absolute top-0 left-0"
-      @close="showCreateAccountView = false"
-      @add-toast="$emit('add-toast', $event), close()"
-    /> -->
-    <div class="text-left px-[20px] text-[36px] font-bold">Parent</div>
-    <div class="flex justify-between content-center mr-3">
-      <SearchForm @passSearchText="getSearchText"></SearchForm>
+      :parent-id="showCreateAccountView"
+      @close="closeAccountCreationView()"
+      @add-toast="$emit('add-toast', $event)"
+    />
+    <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
+      Phụ huynh
+    </div>
+
+    <div class="flex justify-between content-center mr-3 mt-5">
+      <SearchForm
+        @passSearchText="getSearchText"
+        class="w-[400px] ml-[20px]"
+      ></SearchForm>
 
       <router-link :to="{ name: 'ParentCreationView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
     </div>
-    <div class="my-2 w-full text-start px-6">
-      Hiển thị
-      <select
-        id="show-num-parent"
-        class="w-fit h-[30px] border rounded-md outline-none border-black px-2"
-        @change="showParentNumSelectChange"
-      >
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
-        <option value="40">40</option>
-        <option value="50">50</option>
-        <option value="60">60</option>
-        <option value="70">70</option>
-        <option value="100">100</option>
-      </select>
-      Phụ huynh
-    </div>
+    <ResultNumComp>{{ total }}</ResultNumComp>
+
+    <ShowNumberComp :numb-show="limit" @change-limit="changeLimit($event)" />
+
     <TableData
       :data-table="parents"
       @sort-parent-name="sortDataByName"
       @sort-parent-role="sortDataByRole"
       @sort-parent-status="sortDataByStatus"
       @delete-parent="deleteParentById"
+      @create-account-for-parent="showCreateAccountView = $event"
     ></TableData>
     <div
       class="bottom-table-section flex justify-between h-[37px] content-center my-3"
@@ -84,15 +78,17 @@ import SearchForm from "../../../components/search_form_comp.vue";
 import CreateButtonComp from "../../../components/create_button.vue";
 import Pagination from "../../../components/pagination.vue";
 import ConfirmDialog from "@/components/confirm_dialog.vue";
-// import CreateAccountView from "../../parent_page/views/add_account.vue";
-import { ref, onMounted, onBeforeMount } from "vue";
+import CreateAccountView from "../../account_page/components/create_account_view.vue";
+import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useParentStore } from "../../../stores/parent_store";
+import ResultNumComp from "../../../components/result_comp.vue";
+import ShowNumberComp from "../../../components/show_number_comp.vue";
 
 const parentStore = useParentStore();
 const showConfirmDialog = ref("");
 const dataOfTable = ref([]);
-// const showCreateAccountView = ref(false);
+const showCreateAccountView = ref(false);
 // const parentItem = ref(null);
 const { parents, page, limit, loading, total, status } =
   storeToRefs(parentStore);
@@ -107,10 +103,14 @@ const searchText = ref("");
 
 const getSearchText = (event) => {
   searchText.value = event;
-  parentStore.txtSearch = searchText.value;
+
+  if (event != parentStore.txtSearch) {
+    parentStore.txtSearch = searchText.value;
+    parentStore.page = 0;
+  }
+
   // call Api search
-  parentStore.searchParent(event);
-  console.log(event);
+  parentStore.searchParent();
 };
 function round(value) {
   return Math.ceil(value);
@@ -120,17 +120,28 @@ function changePage(event) {
   const page = event - 1;
   parentStore.changePage(page);
 }
-function showParentNumSelectChange(event) {
-  parentStore.changeLimit(parseInt(event.target.value));
+function changeLimit(event) {
+  parentStore.changeLimit(event);
 }
 // function createAccountShow(parentId) {
-//   showCreateAccountView.value = true;
-//   parentItem.value = parentId;
+//   showCreateAccountView.value = parentId;
+//   alert(showCreateAccountView.value);
 // }
 // function close() {
 //   showCreateAccountView.value = false;
 //   parentStore.getParent();
 // }
+
+function closeAccountCreationView() {
+  showCreateAccountView.value = null;
+
+  if (parentStore.txtSearch != "") {
+    parentStore.searchParent(parentStore.txtSearch);
+    return;
+  }
+  parentStore.getParent();
+}
+
 const getConfirm = (event) => {
   if (event) {
     const parentToDel = JSON.parse(localStorage.getItem("parentToDel") || {});

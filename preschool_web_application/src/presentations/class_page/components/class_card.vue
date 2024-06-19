@@ -106,6 +106,8 @@ const status = (status) => {
       return "in-progress";
     case "Kết thúc":
       return "end";
+    case "Sắp bắt đầu":
+      return "in-comming";
     default:
       return "none";
   }
@@ -114,7 +116,7 @@ const status = (status) => {
 
 <style scoped>
 .in-progress {
-  background-color: rgba(187, 247, 208, 0.3);
+  background-color: rgba(187, 247, 208);
   border: 1px solid rgb(134 239 172) !important;
   color: rgb(22 163 74);
 }

@@ -12,13 +12,13 @@ export const useRegistrionStore = defineStore("registrationStore", {
     loading: false,
     searchText: "",
     statusIds: [],
+    admission_period_id: null,
   }),
   actions: {
     formatRegistration(data) {
       let registrations = [];
 
-      for (let index = 0; index < data.length; index++) {
-        const element = data[index];
+      data.forEach((element) => {
         registrations.push({
           id: element.id,
           name: element.name,
@@ -31,28 +31,35 @@ export const useRegistrionStore = defineStore("registrationStore", {
           levels: element.levelsName,
           syllabus: element.syllabusName,
           status: element.status,
-          profileStatus:
-            element.infomationState == 1 || element.file_paths ? 1 : 0,
-          user: element.accountId,
+          register_img: element.register_img,
+          student_name: element.student_name,
+          register_img: element.register_img,
         });
-      }
+      });
+
       return registrations;
     },
 
     async countRegistration() {
-      const response = await registrationService.getRegistrationTotal();
+      const response = await registrationService.getRegistrationTotal(
+        this.admission_period_id
+      );
 
       const data = response.data;
 
       this.total = data.total;
 
-      const responseStatusTotal = await registrationService.getTotalOfStatus();
+      const responseStatusTotal = await registrationService.getTotalOfStatus(
+        this.admission_period_id
+      );
 
       return responseStatusTotal.data.data;
     },
 
     async getTotalOfStatus() {
-      const responseStatusTotal = await registrationService.getTotalOfStatus();
+      const responseStatusTotal = await registrationService.getTotalOfStatus(
+        this.admission_period_id
+      );
 
       return responseStatusTotal.data.data;
     },
@@ -63,8 +70,15 @@ export const useRegistrionStore = defineStore("registrationStore", {
       }
     },
 
-    async updateStatus(id, status) {
-      const response = await registrationService.updateStatus(id, status);
+    async updateStatus(id, status, status_before) {
+      const response = await registrationService.updateStatus(
+        id,
+        status,
+        window.user.id,
+        status_before
+      );
+
+      console.log(response);
 
       if (response.status !== 200) {
         return {
@@ -89,8 +103,14 @@ export const useRegistrionStore = defineStore("registrationStore", {
     async getRegistration() {
       this.status = "loading";
       this.loading = true;
+      if (
+        this.admission_period_id == null ||
+        this.admission_period_id == "null"
+      )
+        return;
 
       const response = await registrationService.getRegistrations(
+        this.admission_period_id,
         this.limit,
         this.page
       );
@@ -120,14 +140,22 @@ export const useRegistrionStore = defineStore("registrationStore", {
 
     async searchHasStatus() {
       if (this.statusIds.length == 0) return;
+
+      this.status = "loading";
+
       const response =
         await registrationService.getRegistrationWithStatusAndSearch(
+          this.admission_period_id,
           this.searchText,
           this.statusIds,
           this.page,
           this.limit
         );
+
+      this.status = "loaded";
+
       console.log(response);
+
       if (response.status !== 200) {
         this.registrations = [];
         this.total = 0;
@@ -155,12 +183,19 @@ export const useRegistrionStore = defineStore("registrationStore", {
 
     async getRegistrationsWithStatus() {
       if (this.statusIds.length == 0) return;
+      if (this.admission_period_id == null) return;
+
+      this.status = "loading";
+
       this.page = 0;
       const response = await registrationService.getRegistrationsWithStatus(
+        this.admission_period_id,
         this.statusIds,
         this.page,
         this.limit
       );
+
+      this.status = "loaded";
 
       console.log(response);
       if (response.status !== 200) {
@@ -171,6 +206,8 @@ export const useRegistrionStore = defineStore("registrationStore", {
       }
 
       if (!response.data.success) {
+        this.registrations = [];
+        this.total = 0;
         return {
           success: false,
           message: "Tìm kiếm thất tại",
@@ -185,11 +222,14 @@ export const useRegistrionStore = defineStore("registrationStore", {
     },
 
     async searchRegistration() {
+      this.status = "loading";
       const response = await registrationService.searchRegister(
+        this.admission_period_id,
         this.searchText,
         this.page,
         this.limit
       );
+      this.status = "loaded";
       console.log(response);
       if (response.status !== 200) {
         return {
@@ -199,6 +239,8 @@ export const useRegistrionStore = defineStore("registrationStore", {
       }
 
       if (!response.data.success) {
+        this.registrations = [];
+        this.total = 0;
         return {
           success: false,
           message: "Tìm kiếm thất tại",
@@ -226,6 +268,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
       if (newVal >= this.total && this.page != 0) {
         this.page = 0;
       }
+      this.limit = newVal;
       this.getRegistration();
     },
 

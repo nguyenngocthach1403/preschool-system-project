@@ -1,14 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/students" });
 const fs = require("fs");
-const db = require("../config/db");
 
 const studentService = require("./student.service");
 const parentService = require("../parent/parent_service");
 const classService = require("../class/class.service");
+
 const { error } = require("console");
+const config = require("../config/config");
+const { isEmpty } = require("../config/check.service");
+const registrationService = require("../registrations/registration.service");
 
 router.get("/", getAll);
 // router.get("/:id", getByID);
@@ -20,8 +23,38 @@ router.get("/delete", deleteStudent);
 
 router.post("/create", upload.array("files"), createStudent);
 
+router.get("/:id", getStudentById);
+
 router.post("/update/:id", upload.array("files"), updateStudent);
 
+async function getStudentById(req, res) {
+  const id = req.params.id;
+
+  const isExist = await studentService.isExistStudent(id);
+
+  if (!isExist) {
+    return res.status(200).json({
+      success: false,
+      message: "Không tìm thấy học sinh.",
+    });
+  }
+
+  const result = await studentService.getStudentByID(id);
+
+  if (result.code) {
+    return res.status(200).json({
+      success: false,
+      message: result.message,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Thành công.",
+    data: result[0],
+  });
+}
 async function updateStudent(req, res) {
   const id = req.params.id;
 
@@ -46,8 +79,6 @@ async function updateStudent(req, res) {
     address,
     placeOfbirth,
     status,
-    parents,
-    parentsRemove,
   } = req.body;
 
   //Kiểm tra tên
@@ -88,7 +119,8 @@ async function updateStudent(req, res) {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    var url = "http://localhost:9000/image/" + req.files[0].filename + ".jpg";
+    var url =
+      config.baseUrl + "/image/students/" + req.files[0].filename + ".jpg";
   }
   if (classId !== undefined) {
     const isExistClass = await classService.isExistClass(classId);
@@ -101,78 +133,22 @@ async function updateStudent(req, res) {
     }
   }
 
-  if (parentsRemove !== undefined) {
-    const parentToRemove = JSON.parse(parentsRemove);
-    parentToRemove.forEach(async (element) => {
-      const isExistRelationship = await studentService.isExistRelationship(
-        id,
-        element.id
-      );
-      if (isExistRelationship) {
-        //Delete mối quan hệ
-        const relationshipDeleted = await studentService.deleteRelationship(
-          id,
-          element.id
-        );
-        if (!relationshipDeleted) {
-          return res.status(200).json({
-            status: 500,
-            error: "Xóa mối quan hệ thất bại.",
-          });
-        }
-      }
-    });
-  }
-
-  if (parents !== undefined) {
-    const parentObj = JSON.parse(parents);
-
-    //Kiểm tra mối quan hệ đã tồn tại
-    parentObj.forEach(async (element) => {
-      const isExistRelationship = await studentService.isExistRelationship(
-        id,
-        element.id
-      );
-      if (!isExistRelationship) {
-        //Tạo mối quan hệ
-        const relationshipCreated = await studentService.createRelatioship({
-          parentId: element.id,
-          studentId: id,
-          relationship: element.relationship ?? 1,
-        });
-
-        if (relationshipCreated.code) {
-          return res.status(500).json({
-            status: 500,
-            error: relationshipCreated.error,
-          });
-        }
-        if (!relationshipCreated) {
-          return res.status(200).json({
-            status: 500,
-            error: "Tạo mối quan hệ thất bại.",
-          });
-        }
-      }
-    });
-  }
-
   const result = await studentService.updateStudent(id, {
     name: name,
-    avatarPath: url,
-    classID: classId,
+    avatar: url,
+    class_id: classId,
     address: address,
     gender: gender,
     birthday: birthday,
-    placeOfOrigin: placeOfOrigin,
-    placeOfBirth: placeOfbirth,
+    place_of_origin: placeOfOrigin,
+    place_Of_birth: placeOfbirth,
     fork: fork,
     nation: nation,
   });
 
   if (result.code) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/students/none");
     }
     return res.status(500).json({
       status: 500,
@@ -181,7 +157,7 @@ async function updateStudent(req, res) {
   }
   if (!result) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/students/none");
     }
     return res.status(500).json({
       status: 500,
@@ -209,6 +185,7 @@ async function createStudent(req, res) {
     address,
     placeOfOrigin,
     status,
+    register_id,
   } = req.body;
 
   //Kiểm tra tên
@@ -224,12 +201,12 @@ async function createStudent(req, res) {
     name: name,
     gender: gender,
     birthday: birthday,
-    classId: classId,
+    class_id: classId,
     nation: nation,
-    placeOfBirth: placeOfBirth,
+    place_of_birth: placeOfBirth,
     fork: fork,
     address: address,
-    placeOfOrigin: placeOfOrigin,
+    place_of_origin: placeOfOrigin,
     status: status,
   };
 
@@ -241,9 +218,10 @@ async function createStudent(req, res) {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    const url = "http://localhost:9000/image/" + req.files[0].filename + ".jpg";
+    const url =
+      config.baseUrl + "/image/students" + req.files[0].filename + ".jpg";
 
-    data.avatarPath = url;
+    data.avatar = url;
   }
 
   //Tạo học sinh
@@ -251,7 +229,7 @@ async function createStudent(req, res) {
 
   if (result.code) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/students/none");
     }
     return res.status(200).json({
       status: 404,
@@ -273,8 +251,6 @@ async function createStudent(req, res) {
     //Lấy thông tin phụ huynh
     const parent = await parentService.getParentById(parentId);
 
-    console.log(parent);
-
     if (parent.code) {
       return res.status(200).json({
         status: 500,
@@ -293,12 +269,11 @@ async function createStudent(req, res) {
 
     //Tạo dữ liệu bảng relationship
     const relationship = {
-      studentId: result.studentCreated,
-      parentId: parent[0].id,
+      student_id: result.studentCreated,
+      parent_id: parent[0].id,
       relationship: parent[0].role,
     };
 
-    console.log(relationship);
     const relationshipCreated = await studentService.createRelatioship(
       relationship
     );
@@ -309,6 +284,13 @@ async function createStudent(req, res) {
         error: "Tạo Relationship thất bại",
       });
     }
+  }
+
+  if (!isEmpty(register_id)) {
+    console.log("a");
+    registrationService.updateRegister(register_id, {
+      student_id: result.studentCreated,
+    });
   }
 
   res.status(200).json({
@@ -349,8 +331,6 @@ async function deleteStudent(req, res, next) {
 
 async function getStudentSearch(req, res, next) {
   const { text, page, limit } = req.query;
-
-  console.log(text, page, limit);
 
   if (text == undefined || page == undefined || limit == undefined) {
     return res.status(200).json({
@@ -424,8 +404,6 @@ async function getAll(req, res, next) {
     });
   }
 
-  console.log(result);
-
   return res.status(200).json({
     status: 200,
     message: "Successful",
@@ -434,7 +412,6 @@ async function getAll(req, res, next) {
 }
 
 function getByID(req, res, next) {
-  console.log(req.params.id);
   studentService
     .getByID(req.params.id)
     .then((result) => res.send(result))

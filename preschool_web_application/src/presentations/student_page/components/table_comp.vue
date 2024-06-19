@@ -6,7 +6,7 @@
         <tr>
           <th class="px-3 py-3 text-left"></th>
           <th class="px-7 py-3 text-left">Avatar</th>
-          <th class="px-3 text-left">
+          <th class="px-3 text-left hidden 2xl:table-cell">
             <div class="flex">
               ID
               <img
@@ -105,9 +105,9 @@
               {{ item.birthday }}
             </dd>
           </td>
-          <td class="w-dvw px-3">
+          <td class="w-dvw px-3 relative">
             <button
-              @click.prevent
+              @click.prevent="$emit('link-parent-with-student', item)"
               v-if="item.parents.length === 0"
               class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
             >
@@ -115,7 +115,7 @@
             </button>
             <p v-for="parent in item.parents" :key="parent">
               <span class="font-bold">
-                {{ returnRelation(parent.relationship) }}:
+                {{ convertParentRole(parent.relationship) }}:
               </span>
               <span> {{ parent.name }}</span>
             </p>
@@ -154,44 +154,65 @@
               {{ checkStatusToContent(item.status) }}
             </div>
           </td>
-          <td class="content-center px-3">
-            <div class="hidden xl:flex">
-              <!-- <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#DE2E2E] mr-[3px] hover:bg-[rgb(206,44,44)]  content-center" @click="deleteStudent(item)" > <img :src="delete_icon" class="w-[14px] m-auto"></div>
-                            <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#3B44D1] mr-[3px] hover:bg-[rgb(53,61,186)]  content-center" @click="editStudent(item)"> <img :src="edit_icon" class="w-[14px] m-auto"> </div>
-                            <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#53808C] mr-[3px] hover:bg-[rgb(73,114,125)]  content-center"> <img :src="chat_icon" class="w-[14px] m-auto"> </div>
-                            <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#DB944B] mr-[3px] hover:bg-[rgb(198,134,68)]  content-center"> <img :src="eye_icon" class="w-[14px] m-auto"> </div>
-                             -->
-              <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
-                @click="deleteStudent(item)"
-              >
-                <img :src="delete_icon" class="w-[14px] m-auto" />
-              </div>
-              <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(53,61,186)] content-center"
-                @click="editStudent(item)"
-              >
-                <img :src="edit_icon" class="w-[14px] m-auto" />
-              </div>
-              <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(73,114,125)] content-center"
-              >
-                <img :src="chat_icon" class="w-[14px] m-auto" />
-              </div>
-              <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(198,134,68)] content-center"
-              >
-                <img :src="eye_icon" class="w-[14px] m-auto" />
-              </div>
-            </div>
-            <div
-              class="xl:hidden hover:bg-gray-400 w-[30px] rounded-[5px] active:scale-95"
+          <td class="content-center px-3 cursor-default hover:text-blue-700">
+            <button
+              @click="selectMenu($event, item)"
+              class="p-1 hover:bg-white rounded-md"
             >
-              <img :src="menu_vertical_icon" class="w-[30px] m-auto" />
-            </div>
+              <img
+                v-if="showMenu && showMenu.id == item.id"
+                :src="close_icon"
+                class="w-[20px]"
+                alt=""
+              />
+              <img v-else :src="menu_icon" class="w-[20px]" alt="" />
+            </button>
           </td>
         </tr>
       </tbody>
+      <Transition
+        leave-active-class="transition ease-in duration-100"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          @mouseleave="closeMenu"
+          v-if="showMenu"
+          class="absolute mt-2 w-[200px] top-0 h-fit z-40 bg-white drop-shadow rounded-md z-30"
+          :style="{ top: y + 'px', left: x - 200 + 'px' }"
+        >
+          <ul @click="closeMenu" class="text-start cursor-default">
+            <li
+              @click="deleteStudent(showMenu)"
+              class="w-full py-2 rounded-md hover:bg-gray-200 px-4 flex gap-3"
+            >
+              <img :src="delete_icon" class="w-[15px]" /> Xóa
+            </li>
+            <li
+              @click="editStudent(showMenu)"
+              class="w-full py-2 rounded-md hover:bg-gray-200 px-4 flex gap-3"
+            >
+              <img :src="edit_icon" class="w-[15px]" /> Sửa
+            </li>
+            <li
+              @click="$emit('link-parent-with-student', showMenu)"
+              class="w-full py-2 rounded-md hover:bg-gray-200 px-4 flex gap-3"
+            >
+              <img :src="link_icon" class="w-[22px]" /> Link phụ huynh
+            </li>
+            <li
+              class="w-full py-2 rounded-md hover:bg-gray-200 px-4 flex gap-3"
+            >
+              <img :src="change_gray_icon" class="w-[22px]" /> Chuyển lớp
+            </li>
+            <li
+              class="w-full py-2 rounded-md hover:bg-gray-200 px-4 flex gap-3"
+            >
+              <img :src="eye_icon" class="w-[22px]" /> Chi tiết
+            </li>
+          </ul>
+        </div>
+      </Transition>
     </table>
   </div>
 </template>
@@ -204,13 +225,29 @@ import { ref, watch, computed } from "vue";
 import delete_icon from "../../../assets/icons/delete.svg";
 import edit_icon from "../../../assets/icons/edit.svg";
 import chat_icon from "../../../assets/icons/chat.svg";
-import eye_icon from "../../../assets/icons/eye.svg";
-import menu_vertical_icon from "../../../assets/icons/menu-vertical.svg";
+import eye_icon from "../../../assets/icons/Eye-Gray.svg";
 import sort_icon from "../../../assets/icons/Sorting arrowheads.svg";
 import avatar from "../../../assets/img/avartar_default.jpg";
 import change_icon from "../../../assets/icons/Data Transfer.svg";
+import add_icon from "../../../assets/icons/pls.svg";
+import menu_icon from "../../../assets/icons/menu.svg";
+import close_icon from "../../../assets/icons/close.svg";
+import link_icon from "../../../assets/icons/Link.svg";
+import change_gray_icon from "../../../assets/icons/change-gray.svg";
+
 /* Import function */
 import convertNumToGender from "../../../utils/resources/convert_gender";
+import { convertParentRole } from "../../../utils/resources/converter";
+
+const showMenu = ref();
+const x = ref();
+const y = ref();
+
+function selectMenu(event, student) {
+  showMenu.value == null ? (showMenu.value = student) : (showMenu.value = null);
+  x.value = event.clientX;
+  y.value = event.clientY;
+}
 
 defineProps({
   dataTable: {
@@ -232,6 +269,11 @@ function deleteStudent(studentIdToDel) {
 
 function editStudent(student) {
   emits("edit-student", student);
+}
+function closeMenu() {
+  setTimeout(() => {
+    showMenu.value = null;
+  }, 50);
 }
 
 function checkStatusToContent(sts) {

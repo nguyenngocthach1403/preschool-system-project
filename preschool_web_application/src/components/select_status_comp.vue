@@ -16,15 +16,16 @@
       @click="show = !show"
       @focusout="closestatusList"
       :class="{
-        'active-status': statusList.indexOf(value) == 1,
-        'none-active': statusList.indexOf(value) == 0,
-        'active-2': statusList.indexOf(value) == 2,
-        'active-3': statusList.indexOf(value) == 3,
-        'active-4': statusList.indexOf(value) == 4,
+        'active-status': props.active == 1,
+        'none-active': props.active == 0,
+        'active-2': props.active == 2,
+        'active-3': props.active == 3,
+        'active-4': props.active == 4,
+        'active-5': props.active == 5,
       }"
       class="relative w-full cursor-default rounded-md bg-white h-full py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-inset ring-gray-300 focus:outline-none focus:ring-indigo-500 sm:text-sm sm:leading-6"
     >
-      <span>{{ value }}</span>
+      <span>{{ convertRegisterStatus(props.active) }}</span>
       <span
         class="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-3"
       >
@@ -56,11 +57,7 @@
           v-for="(item, index) in statusList"
           :key="index"
           class="text-gray-900 relative cursor-default select-none hover:bg-blue-200"
-          @click="
-            (value = item),
-              $emit('choose', statusList.indexOf(value)),
-              (show = false)
-          "
+          @click="$emit('choose', index), (show = false)"
         >
           <div
             v-if="item === value"
@@ -99,6 +96,7 @@
 */
 
 import { onMounted, ref } from "vue";
+import { convertRegisterStatus } from "../utils/resources/converter";
 
 const statusList = ref(["Đang khóa", "Đang hoạt động"]);
 
@@ -107,7 +105,6 @@ onMounted(() => {
   if (props.selectList != undefined) {
     statusList.value = props.selectList;
   }
-  if (props.active != undefined) value.value = statusList.value[props.active];
 });
 
 const props = defineProps({
@@ -126,6 +123,10 @@ function closestatusList() {
   setTimeout(() => {
     show.value = false;
   }, 50);
+}
+
+function select(event) {
+  alert(event);
 }
 </script>
   
@@ -158,5 +159,10 @@ function closestatusList() {
   background-color: rgb(217 249 157);
   border: 1px solid rgb(190 242 100) !important;
   color: rgb(132 204 22);
+}
+.active-5 {
+  background-color: rgb(254 202 202);
+  border: 1px solid rgb(252 165 165) !important;
+  color: rgb(220 38 38);
 }
 </style>

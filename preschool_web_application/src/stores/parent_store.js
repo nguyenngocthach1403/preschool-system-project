@@ -17,15 +17,15 @@ export const useParentStore = defineStore("parentStore", {
     resetPage() {
       if (this.page != 0) this.page = 0;
     },
-    async searchParent(searchText) {
+    async searchParent() {
       this.loading = true;
       this.status = "searching";
 
-      if (searchText !== this.txtSearch) {
-        console.log("Reset page 0");
-        this.resetPage();
-      }
-      const res = await parentService.search(searchText, this.page, this.limit);
+      const res = await parentService.search(
+        this.txtSearch,
+        this.page,
+        this.limit
+      );
       console.log(res);
       const data = res.data;
       if (data.status == 404) {
@@ -143,6 +143,7 @@ export const useParentStore = defineStore("parentStore", {
       this.loading = true;
       this.status = "loading";
       const res = await parentService.getParent(this.page, this.limit);
+      console.log(res);
       const dataRes = res.data;
       const data = dataRes.data;
       if (data.status === 404) {

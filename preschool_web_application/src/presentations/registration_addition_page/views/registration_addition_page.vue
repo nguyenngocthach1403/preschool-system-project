@@ -194,7 +194,7 @@
                   'Đã hủy',
                 ]"
                 @choose="status = $event"
-                :active="0"
+                :active="status"
                 class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none"
               />
             </label>
@@ -206,13 +206,17 @@
                 <div
                   class="relative w-full content-center text-center gap-10 h-[300px] rounded-md border border-gray-400 border-dotted object-contain"
                 >
-                  <img v-if="fileUpload" :src="imageUpload" class="h-full" />
+                  <img
+                    v-if="fileUpload || imageUpload"
+                    :src="imageUpload"
+                    class="h-full"
+                  />
                   <input
                     type="file"
                     class="absolute top-0 w-full h-full opacity-0"
                     @change="handleUploadFile($event)"
                   />
-                  <div v-if="!fileUpload">
+                  <div v-if="!fileUpload && !imageUpload">
                     <img :src="image_default" class="w-10 m-auto my-5" />
                     <span class="text-blue-700">Click</span>
                     <span> để thêm ảnh</span>
@@ -232,7 +236,7 @@
           Save to Draf
         </button>
         <button
-          @click.prevent="saveValueInput"
+          @click.prevent="handleSubmit"
           v-if="status !== 'creating'"
           type="submit"
           class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -280,13 +284,16 @@ import RegistrationService from "../../../services/registration.service";
 import image_default from "../../../assets/img/image-default.png";
 import levelService from "../../../services/levels.service";
 import syllabusService from "../../../services/syllabus.service";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { useRegistrionStore } from "../../../stores/registration_store";
 
 import {
   isEmpty,
   isEmailValid,
   isPhoneValid,
 } from "../../../utils/resources/check_valid";
+
+const registrationStore = useRegistrionStore();
 
 const fileUpload = ref();
 const imageUpload = ref();
@@ -309,19 +316,86 @@ const levels = ref(0);
 const syllabus = ref(0);
 const relationship = ref(0);
 const status = ref(0);
-const uploadedFiles = ref([]);
 const emits = defineEmits(["add-toast"]);
 const router = useRouter();
+const route = useRoute();
 
 const messageOfName = ref();
 const messageOfPhone = ref();
 const messageOfEmail = ref();
 const messageOfAddress = ref();
 
-onMounted(() => {
+onBeforeMount(() => {
   fetchData();
   getLevel();
   getSyllabus();
+});
+
+onMounted(async () => {
+  if (route.query.id) {
+    //get Registration
+    const response = await RegistrationService.getRegisterByID(route.query.id);
+    console.log(response);
+    if (response.status !== 200) {
+      emits("add-toast", {
+        title: "Thất bại.",
+        content: "Tải dữ liệu đơn đăng ký thất bại.",
+        type: 1,
+      });
+      return;
+    }
+    if (!response.data.success) {
+      emits("add-toast", {
+        title: "Thất bại.",
+        content: response.data.message,
+        type: 1,
+      });
+      return;
+    }
+    const register = response.data.data;
+    fillValiable(register);
+  }
+});
+
+function handleSubmit() {
+  if (route.query.id) {
+    updateRegister();
+  } else {
+    saveValueInput();
+  }
+}
+
+function fillValiable(register) {
+  name.value = register.name;
+  phone.value = register.phone;
+  email.value = register.email;
+  address.value = register.address_detail;
+  city.value = register.city;
+  district.value = register.district;
+  town.value = register.town;
+  levels.value = register.level_id;
+  syllabus.value = register.syllabus_id;
+  relationship.value = register.relationship;
+  status.value = register.status;
+  imageUpload.value = register.register_img;
+}
+
+watch(city, () => {
+  districts.value = [];
+  wards.value = [];
+
+  if (city.value != undefined) {
+    districts.value = cities.value.find((e) =>
+      e.Name.match(city.value)
+    ).Districts;
+  }
+});
+watch(district, () => {
+  if (district.value != undefined) {
+    wards.value = districts.value.find((e) =>
+      e.Name.match(district.value)
+    ).Wards;
+  }
 });
 
 function checkValid() {
@@ -409,6 +483,62 @@ function onDistrictChange() {
     wards.value = districtData.Wards;
   }
 }
+
+async function updateRegister() {
+  if (checkValid()) return;
+  try {
+    const formData = new FormData();
+    if (fileUpload.value) {
+      formData.append("files", fileUpload.value);
+    }
+    formData.append("name", name.value);
+    if (!isEmpty(email.value)) formData.append("email", email.value);
+    formData.append("phone", phone.value);
+    if (isEmpty(address.value)) formData.append("address", address.value);
+    formData.append("city", city.value);
+    formData.append("district", district.value);
+    formData.append("town", town.value);
+    if (!isEmpty(levels.value)) formData.append("levels", levels.value);
+    if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
+    formData.append("relationship", relationship.value);
+    formData.append("status", status.value);
+
+    const response = await RegistrationService.updateRegister(
+      route.query.id,
+      formData
+    );
+
+    if (response.status !== 200) {
+      emits("add-toast", {
+        title: "Cập nhật không thành công",
+        content: response.data.error,
+        type: 1,
+      });
+      return;
+    }
+
+    if (!response.data.success) {
+      emits("add-toast", {
+        title: "Cập nhật không thành công",
+        content: response.data.message,
+        type: 1,
+      });
+      return;
+    }
+
+    emits("add-toast", {
+      title: "Cập nhật thành công",
+      content: response.data.message,
+      type: 0,
+    });
+  } catch (e) {
+    emits("add-toast", {
+      title: "Cập nhật không thành công",
+      content: e,
+      type: 1,
+    });
+  }
+}
 const saveValueInput = async () => {
   if (checkValid()) return;
   try {
@@ -494,7 +624,7 @@ async function getLevel() {
     const element = response.data.data[index];
     levelList.value.push({
       value: element.id,
-      name: element.levelsName,
+      name: element.name,
     });
   }
 }
@@ -505,7 +635,7 @@ async function getSyllabus() {
     const element = response.data.data[index];
     syllabusList.value.push({
       value: element.id,
-      name: element.syllabusName,
+      name: element.name,
     });
   }
 }

@@ -23,11 +23,11 @@
               />
             </div>
           </th>
-          <th class="px-3 text-left w-fit">Tài khoản</th>
           <th class="px-3 text-left">Liên hệ</th>
           <th class="px-3 text-left">Địa chỉ</th>
           <th class="px-3 text-left">Nội dung</th>
-          <th class="px-3 text-left">Hồ sơ</th>
+          <th class="px-3 text-left">Ảnh đơn đăng ký</th>
+          <th class="px-3 text-left">Học sinh</th>
           <th class="px-3 text-left">Trạng thái</th>
           <th class="px-3 text-left">Chức năng</th>
         </tr>
@@ -36,7 +36,7 @@
         <tr
           v-for="(item, index) in drops.data"
           :key="index"
-          class="text-[14px] h-[60px] text-left even:bg-gray-50 border-b-[1px]"
+          class="text-[14px] text-left even:bg-gray-50 border-b-[1px]"
         >
           <td class="px-3">
             <div class="inline-flex items-center">
@@ -79,21 +79,6 @@
               <span class="font-bold">Vai trò:</span> {{ checkRole(item.role) }}
             </dd>
           </td>
-          <td class="px-3 w-[400px]">
-            <button
-              @click.prevent
-              v-if="item.user == null"
-              @click="$emit('click-create-acount', item)"
-              class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
-            >
-              Tạo tài khoản
-            </button>
-            <dd class="text-gray-500 text-[14px] my-[5px]" v-else>
-              <span>
-                <span class="font-bold">Tài khoản:</span> {{ item.user }}</span
-              >
-            </dd>
-          </td>
           <td class="hidden 2xl:table-cell px-3 w-[600px] text-blue-900">
             <dd class="text-gray-500 text-[14px] my-[5px]">
               <span class="font-bold">Email:</span> {{ item.email ?? "None" }}
@@ -107,7 +92,7 @@
             <span>{{ item.address }}</span>
             <!-- <span v-if="!item.class" class="italic">None</span> -->
           </td>
-          <td class="px-3 w-[600px]">
+          <td class="px-3 w-[1000px]">
             <dd class="text-gray-500 text-[14px] my-[5px]">
               <span class="font-bold">Cấp:</span> {{ item.levels ?? "None" }}
             </dd>
@@ -116,15 +101,35 @@
               {{ item.syllabus ?? "None" }}
             </dd>
           </td>
-          <td class="px-3 w-[600px]">
-            <div
-              class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border"
-              :class="classStatus(item.profileStatus)"
+          <td class="px-3 w-[500px]">
+            <button
+              v-if="item.register_img !== null"
+              class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border relative border-green-500 bg-green-200 text-green-600"
+              @click="$emit('show-register-img', item.register_img)"
             >
-              {{ checkStatus(item.profileStatus) }}
-            </div>
+              Xem
+            </button>
+            <button
+              v-if="item.register_img == null"
+              class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border relative border-red-500 bg-red-200 text-red-600"
+            >
+              Chưa có
+            </button>
           </td>
-          <td class="px-3 w-[600px] relative">
+          <td class="px-3 w-[500px]">
+            <button
+              v-if="item.student_name == null"
+              @click="$emit('create-new-student', item)"
+              class="rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px] border relative hover:bg-gray-200 active:scale-95"
+            >
+              Tạo học sinh
+            </button>
+            <dd v-if="item.student_name != null">
+              <span class="text-gray-500 text-[12px]">Họ tên: </span>
+              {{ item.student_name }}
+            </dd>
+          </td>
+          <td class="px-3 w-[400px] relative">
             <button
               :class="{
                 'status-0': item.status === 0,
@@ -135,26 +140,24 @@
                 'status-5': item.status === 5,
               }"
               class="hover:bg-gray-200 rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px]"
-              @click="selectStatus($event, item.id)"
+              @click="selectStatus($event, item.id, item.status)"
             >
               {{ convertRegisterStatus(item.status) }}
             </button>
           </td>
           <td class="content-center px-3 cursor-default hover:text-blue-700">
-            <img
-              v-if="showMenu && showMenu.id == item.id"
-              :src="close_icon"
-              class="w-[20px]"
-              alt=""
-              @click="selectMenu($event)"
-            />
-            <img
-              v-else
-              :src="menu_icon"
-              class="w-[20px]"
-              alt=""
+            <button
               @click="selectMenu($event, item)"
-            />
+              class="p-1 hover:bg-gray-300 rounded-md"
+            >
+              <img
+                v-if="showMenu && showMenu.id == item.id"
+                :src="close_icon"
+                class="w-[20px]"
+                alt=""
+              />
+              <img v-else :src="menu_icon" class="w-[20px]" alt="" />
+            </button>
           </td>
         </tr>
         <Transition
@@ -176,7 +179,7 @@
                 <img :src="delete_icon" class="w-[15px]" /> Xóa
               </li>
               <li
-                @click="$emit('edit-item', item)"
+                @click="$emit('edit-item', showMenu)"
                 class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
               >
                 <img :src="edit_icon" class="w-[15px]" /> Sửa
@@ -197,40 +200,12 @@
           >
             <ul @click="closeChangeStatus" class="text-start">
               <li
-                @click="updateRegisterStatus(0)"
+                v-for="(item, index) in registerStatusList"
+                :key="index"
                 class="w-full py-1 hover:bg-gray-100 px-2"
+                @click="updateRegisterStatus(index)"
               >
-                Đơn mới
-              </li>
-              <li
-                @click="updateRegisterStatus(1)"
-                class="w-full py-1 hover:bg-gray-100 px-2"
-              >
-                Chờ duyệt
-              </li>
-              <li
-                @click="updateRegisterStatus(2)"
-                class="w-full py-1 hover:bg-gray-100 px-2"
-              >
-                Chờ liên hệ
-              </li>
-              <li
-                @click="updateRegisterStatus(3)"
-                class="w-full py-1 hover:bg-gray-100 px-2"
-              >
-                Đã liên hệ
-              </li>
-              <li
-                @click="updateRegisterStatus(4)"
-                class="w-full py-1 hover:bg-gray-100 px-2"
-              >
-                Hoàn thành
-              </li>
-              <li
-                @click="updateRegisterStatus(5)"
-                class="w-full py-1 hover:bg-gray-100 px-2"
-              >
-                Hủy
+                {{ item }}
               </li>
             </ul>
           </div>
@@ -282,15 +257,28 @@ function selectMenu(event, register) {
   y.value = event.clientY;
 }
 
-function selectStatus(event, id) {
+const registerStatusList = ref([
+  "Đơn mới",
+  "Đã hẹn",
+  "Liên hệ lại",
+  "Đơn ảo",
+  "Hoàn thành",
+  "Chờ hủy",
+]);
+
+function selectStatus(event, id, status_before) {
   show.value = !show.value;
   showChangeStatusViewIndex.value = id;
-  registerId.value = id;
+  registerId.value = { id: id, status_before: status_before };
   x.value = event.clientX;
   y.value = event.clientY;
 }
 function updateRegisterStatus(status) {
-  emits("update-status", { id: registerId.value, status: status });
+  emits("update-status", {
+    id: registerId.value.id,
+    status: status,
+    status_before: registerId.value.status_before,
+  });
 }
 function checkStatus(value) {
   switch (value) {

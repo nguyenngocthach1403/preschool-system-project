@@ -19,8 +19,12 @@
       <div class="flex w-full content-center h-[50px] gap-3 my-3 relative">
         <div class="avatar rounded-full w-[50px] h-[50px] bg-blue-500"></div>
         <div class="user">
-          <p class="text-[16px]">{{ username }}</p>
-          <p class="text-gray-500 text-[14px]">Admin</p>
+          <p class="text-[16px]">
+            {{ user != null ? user["username"] : null }}
+          </p>
+          <p class="text-gray-500 text-[14px]">
+            {{ user != null ? convertAccountRole(user["role"]) : null }}
+          </p>
         </div>
         <!-- <div class="change-account h-5 w-5 bg-black"></div> -->
       </div>
@@ -88,14 +92,20 @@ import extension from "@/assets/icons/ex.svg";
 import account from "@/assets/icons/account.svg";
 import registration from "@/assets/icons/Registration.svg";
 import logoutIcon from "@/assets/icons/Logout.svg";
+import category from "../assets/icons/Diversity.svg";
+import { convertAccountRole } from "../utils/resources/converter";
 
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+
+onMounted(() => {
+  user.value = window.user;
+});
 
 const router = useRouter();
 const isMenuClose = ref(true);
 
-const username = ref(Window.user);
+const user = ref(null);
 
 function logout() {
   if (localStorage.getItem("user")) {
@@ -114,6 +124,7 @@ const managerItem = ref([
   // { title: "Nhân viên", name: "/ddd", icon: staff },
   { title: "Tài khoản", name: "AccountView", icon: account },
   { title: "Giáo viên", name: "TeacherView", icon: staff },
+  { title: "Danh mục", name: "CategoryView", icon: category },
   // { title: "Cài đặt", name: "/dddd", icon: setting },
   // { title: "Danh mục", name: "/dddd", icon: extension },
 ]);

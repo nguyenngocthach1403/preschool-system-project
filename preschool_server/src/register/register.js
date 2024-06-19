@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 const db = require("../config/db.service");
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: "uploads/registration" });
 const path = require("path");
 const fs = require("fs");
 const config = require("../config/config");
@@ -22,6 +22,7 @@ router.post("/", upload.array("files"), async (req, res) => {
     syllabus,
     relationship,
     status,
+    admission_period_id,
   } = req.body;
 
   //Kiểm tra tồn tại của đơn
@@ -34,13 +35,14 @@ router.post("/", upload.array("files"), async (req, res) => {
     name: name,
     email: email,
     phone: phone,
-    address: address,
+    address_detail: address,
     city: city,
     district: district,
     town: town,
-    levels: levels,
-    syllabus: syllabus,
+    level_id: levels,
+    syllabus_id: syllabus,
     relationship: relationship,
+    admission_period_id: admission_period_id,
     status: status,
   };
 
@@ -51,17 +53,17 @@ router.post("/", upload.array("files"), async (req, res) => {
 
     fs.renameSync(filePath, file_path_with_extension);
 
-    const url = "http://localhost:9000/image/" + req.files[0].filename + ".jpg";
+    const url =
+      config.baseUrl + "/image/registration/" + req.files[0].filename + ".jpg";
 
-    data.file_paths = url;
+    data.register_img = url;
   }
 
   const result = await registerService.createRegister(data);
 
-  console.log(result);
   if (result.code) {
     if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/none");
+      fs.renameSync(req.files[0].path + ".jpg", "uploads/registration/none");
     }
 
     return res.status(200).json({

@@ -3,19 +3,65 @@ function convertRegisterStatus(params) {
     case 0:
       return "Đơn mới";
     case 1:
-      return "Chờ duyệt";
-
+      return "Đã hẹn";
     case 2:
-      return "Chờ liên hệ";
+      return "Liên hệ lại";
     case 3:
-      return "Đã liên hệ";
+      return "Đơn ảo";
     case 4:
       return "Hoàn thành";
     case 5:
-      return "Hủy đơn";
+      return "Chờ hủy";
     default:
       return "none";
   }
 }
 
-export { convertRegisterStatus };
+function convertParentRole(role) {
+  switch (role) {
+    case 0:
+      return "Bố";
+    case 1:
+      return "Mẹ";
+    case 2:
+      return "Người giám hộ";
+    default:
+      return "None";
+  }
+}
+
+function convertAccountRole(role) {
+  switch (role) {
+    case 1:
+      return "Admin";
+    case 2:
+      return "Quản lý";
+
+    case 3:
+      return "Giáo viên";
+    case 4:
+      return "Phụ huynh";
+    case 5:
+      "Nhân viên";
+  }
+}
+
+function convertStudentStatus(status) {
+  switch (status) {
+    case 0:
+      return "Chờ xếp lớp";
+    case 1:
+      return "Đang học";
+    case 2:
+      return "Nghỉ";
+    case 3:
+      return "Tốt nghiệp";
+  }
+}
+
+export {
+  convertRegisterStatus,
+  convertParentRole,
+  convertAccountRole,
+  convertStudentStatus,
+};

@@ -7,6 +7,7 @@ export default {
   getStudent,
   deleleStudent,
   updateStudent,
+  getStudentById,
 };
 
 function createStudent(dataToCreate) {
@@ -41,4 +42,8 @@ function getStudent(page, limit) {
 
 function deleleStudent(idStudentToDel) {
   return api().get(`/students/delete?id=${idStudentToDel}`);
+}
+
+function getStudentById(id) {
+  return api().get(`/students/${id}`);
 }
