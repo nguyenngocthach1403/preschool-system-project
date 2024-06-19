@@ -6,6 +6,8 @@ const teacherService = require("./teacher.service");
 const checkService = require("../config/check.service");
 
 router.get("/", getTeacher);
+router.get("/total", getTotalTeacher);
+router.get("/search", getTeacherSearch);
 
 async function getTeacher(req, res) {
   const { limit, offset } = req.query;
@@ -46,5 +48,40 @@ async function getTeacher(req, res) {
     data: result,
   });
 }
+async function getTotalTeacher(req, res, next) {
+  console.log("Get total teacher in database");
 
+  const countTeacher = await teacherService.countTeacher();
+
+  res.send(
+    JSON.stringify({
+      status: 200,
+      message: "Successful",
+      data: countTeacher[0]["total"],
+    })
+  );
+}
+async function getTeacherSearch(req, res, next) {
+  const totalResult = await teacherService.countSearchTeacher(req.query.text);
+  if (totalResult[0]["total"] == 0) {
+    res.send(
+      JSON.stringify({
+        status: 404,
+        message: "Not found any teacher",
+      })
+    );
+    return;
+  }
+  const resultTeacherSearch = await teacherService.searchTeacher(
+    req.query.text,
+    req.query.page,
+    req.query.limit
+  );
+  res.send({
+    status: 200,
+    message: "Successful",
+    total: totalResult[0]["total"],
+    data: resultTeacherSearch,
+  });
+}
 module.exports = router;
