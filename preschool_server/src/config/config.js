@@ -12,6 +12,9 @@ const config = {
     sysllabus: "syllabus",
     approves: "approves",
     addmission: "admission_periods",
+    teacher: "teachers",
+    classManager: "class_managers",
+    managerRole: "class_manager_roles",
   },
 };
 
