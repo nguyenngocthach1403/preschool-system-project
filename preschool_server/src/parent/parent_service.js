@@ -16,6 +16,7 @@ module.exports = {
   getParentById,
   isExistAccount,
   isExistParent,
+  getParentByPhone,
 };
 
 async function getAll() {
@@ -59,6 +60,33 @@ async function getByID(id) {
     );
   } catch (error) {
     return error;
+  }
+}
+
+async function getParentByPhone(phone) {
+  try {
+    const result = await db.select(
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON a.id = p.account_id`,
+      "p.*,a.username, a.email AS account_email, a.phone AS account_phone, a.status AS account_status",
+      `WHERE p.phone = ${phone}`
+    );
+    if (result.length == 0) {
+      return {
+        success: false,
+        message: "Phụ huynh không tồn tại",
+      };
+    }
+
+    return {
+      success: true,
+      data: result[0],
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
   }
 }
 
@@ -242,6 +270,7 @@ async function updateParent(id, dataToUpdate) {
       message: "Cập nhập phụ huynh thành công",
     };
   } catch (error) {
+    console.error(error);
     return {
       code: error.code,
       error: error.sqlMessage,

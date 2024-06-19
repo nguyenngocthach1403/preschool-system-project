@@ -104,7 +104,12 @@
         <div
           class="w-full bg-white my-6 h-[48px] content-center text-[#3B44D1] rounded-md active:scale-[98%] hover:bg-gray-200"
         >
-          <button type="submit" class="w-full h-full">Đăng nhập</button>
+          <button type="submit" v-if="!loading" class="w-full h-full">
+            Đăng nhập
+          </button>
+          <button type="button" v-if="loading" class="w-full h-full">
+            <LoadingComp></LoadingComp>
+          </button>
         </div>
       </form>
     </section>
@@ -118,6 +123,7 @@ import { useRouter, useRoute } from "vue-router";
 import account_icon from "../../../assets/icons/account.svg";
 import authService from "../../../services/authentication.service";
 import { isEmpty } from "../../../utils/resources/check_valid";
+import LoadingComp from "../../../components/loading_comp.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -127,6 +133,7 @@ const password = ref("");
 const messageOfUsername = ref("");
 const messageOfPassword = ref("");
 const toasts = ref([]);
+const loading = ref(false);
 
 watch(username, () => {
   if (!isEmpty(username.value)) {
@@ -159,6 +166,9 @@ async function login() {
   if (checkVadid()) {
     return;
   }
+
+  loading.value = true;
+
   const isExistUser = await authService.isExistUser(username.value);
 
   if (!isExistUser.data.isExist) {
@@ -167,6 +177,7 @@ async function login() {
       content: `Tài khoản '${username.value}' không tồn tại.`,
       type: 1,
     });
+    loading.value = false;
     return;
   }
 
@@ -178,6 +189,7 @@ async function login() {
       content: "Quá trình đăng nhập thất bại. Hãy thử lại.",
       type: 1,
     });
+    loading.value = false;
     return;
   }
 
@@ -189,14 +201,20 @@ async function login() {
       content: data.error,
       type: 1,
     });
+    loading.value = false;
     return;
   }
 
   if (data.success) {
+    loading.value = false;
     if (rememberPassword) {
       localStorage.setItem("user", data.data[0]["username"]);
     }
-    window.user = data.data[0]["username"];
+    window.user = {
+      id: data.data[0]["id"],
+      username: data.data[0]["username"],
+      role: data.data[0]["role"],
+    };
     router.push({
       name: "DashBoardView",
       params: {

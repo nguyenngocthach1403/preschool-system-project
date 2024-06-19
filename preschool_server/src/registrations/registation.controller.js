@@ -14,21 +14,24 @@ const upload = multer({ dest: "uploads/registration" });
 
 const router = express.Router();
 
-router.get("/total", getTotalRegistration);
+router.get("/:admission_period_id/total", getTotalRegistration);
 
-router.get("/", getRegistration);
+router.get("/:admission_period_id/", getRegistration);
 
-router.get("/search", searchRegistration);
+router.get("/:admission_period_id/search", searchRegistration);
 
-router.get("/search/status", getRegistrationWithStatusAndSearch);
+router.get(
+  "/:admission_period_id/search/status",
+  getRegistrationWithStatusAndSearch
+);
 
 router.get("/update/status/:id", updateStatus);
 
 router.post("/update/:id", upload.array("files"), updateRegister);
 
-router.get("/status/total", getTotalOfStatus);
+router.get("/:admission_period_id/status/total", getTotalOfStatus);
 
-router.get("/status", getRegistrationsWithStatus);
+router.get("/:admission_period_id/status", getRegistrationsWithStatus);
 
 router.get("/delete", deleteRegistration);
 
@@ -51,7 +54,7 @@ async function updateRegister(req, res) {
     status,
   } = req.body;
 
-  console.log(email);
+  console.log(status);
 
   const isExist = await registationService.isExitsRegister(id);
 
@@ -80,11 +83,12 @@ async function updateRegister(req, res) {
     const filePath = req.files[0].path;
 
     const file_path_with_extension = filePath + ".jpg";
+    console.log(req.files[0]);
 
     fs.renameSync(filePath, file_path_with_extension);
 
     const url =
-      config.baseUrl + "/image/registration/" + file_path_with_extension;
+      config.baseUrl + "/image/registration/" + req.files[0].filename + ".jpg";
 
     data.register_img = url;
   }
@@ -122,8 +126,12 @@ async function updateRegister(req, res) {
 async function getRegistrationsWithStatus(req, res) {
   const { status, limit, offset } = req.query;
 
-  const count = await registationService.getTotalWithStatus(status);
+  const count = await registationService.getTotalWithStatus(
+    req.params.admission_period_id,
+    status
+  );
   const result = await registationService.getRegistrationsWithStatus(
+    req.params.admission_period_id,
     status,
     limit,
     offset
@@ -209,6 +217,7 @@ async function getRegistrationWithStatusAndSearch(req, res) {
   const { searchText, status, limit, offset } = req.query;
 
   const result = await registationService.getRegisterWithSearchAndStatus(
+    req.params.admission_period_id,
     searchText,
     status,
     limit,
@@ -216,6 +225,7 @@ async function getRegistrationWithStatusAndSearch(req, res) {
   );
 
   const count = await registationService.countRegisterWithSearchAndStatus(
+    req.params.admission_period_id,
     searchText,
     status
   );
@@ -243,9 +253,17 @@ async function getRegistrationWithStatusAndSearch(req, res) {
 async function searchRegistration(req, res) {
   const { searchText, limit, offset } = req.query;
 
-  const count = await registationService.getTotalWithSearch(searchText);
+  const admission_period_id = req.params.admission_period_id;
+
+  console.log(admission_period_id);
+
+  const count = await registationService.getTotalWithSearch(
+    admission_period_id,
+    searchText
+  );
 
   const result = await registationService.searchRegisterWithSearch(
+    admission_period_id,
     searchText,
     limit,
     offset
@@ -273,7 +291,9 @@ async function searchRegistration(req, res) {
 }
 
 async function getTotalOfStatus(req, res) {
-  const result = await registationService.getTotalOfStatus();
+  const result = await registationService.getTotalOfStatus(
+    req.params.admission_period_id
+  );
 
   if (result.code) {
     return res.status(400).json({
@@ -297,6 +317,8 @@ async function getTotalOfStatus(req, res) {
 async function updateStatus(req, res) {
   const id = req.params.id;
   const status = req.query.status;
+  const approve_by = req.query.by;
+  const status_before = req.query.status_before;
 
   const isExits = await registationService.isExitsRegister(id);
 
@@ -315,10 +337,40 @@ async function updateStatus(req, res) {
       error: resulstUpdate.error,
     });
   }
+
   if (!resulstUpdate.success) {
     return res.status(200).json({
       success: false,
       message: resulstUpdate.message,
+    });
+  }
+
+  const approve = await registationService.createApprove({
+    register_id: id,
+    account_id: approve_by,
+    status_before: status_before,
+    coming_status: status,
+  });
+
+  if (approve.code) {
+    const resulstUpdate = await registationService.updateStatus(
+      id,
+      status_before
+    );
+    return res.status(200).json({
+      success: false,
+      error: approve.error,
+    });
+  }
+
+  if (!approve.success) {
+    const resulstUpdate = await registationService.updateStatus(
+      id,
+      status_before
+    );
+    return res.status(200).json({
+      success: false,
+      message: approve.message,
     });
   }
 
@@ -329,7 +381,9 @@ async function updateStatus(req, res) {
 }
 
 async function getTotalRegistration(req, res) {
-  const resultTotal = await registationService.getTotalRegistration();
+  const resultTotal = await registationService.getTotalRegistration(
+    req.params.admission_period_id
+  );
   res.send(
     JSON.stringify({
       status: 200,
@@ -350,15 +404,21 @@ async function getRegistration(req, res) {
     });
   }
 
-  const result = await registationService.getRegistrations(page, limit);
+  const result = await registationService.getRegistrations(
+    req.params.admission_period_id,
+    page,
+    limit
+  );
   if (result.code) {
     return res.status(500).json({
       status: 500,
       code: result.code,
-      message: result.message,
+      error: result.error,
     });
   }
-  const count = await registationService.getTotalRegistration();
+  const count = await registationService.getTotalRegistration(
+    req.params.admission_period_id
+  );
 
   res.status(200).json({
     status: 200,

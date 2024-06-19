@@ -23,7 +23,6 @@ function convertParentRole(role) {
       return "Bố";
     case 1:
       return "Mẹ";
-
     case 2:
       return "Người giám hộ";
     default:
@@ -31,4 +30,38 @@ function convertParentRole(role) {
   }
 }
 
-export { convertRegisterStatus, convertParentRole };
+function convertAccountRole(role) {
+  switch (role) {
+    case 1:
+      return "Admin";
+    case 2:
+      return "Quản lý";
+
+    case 3:
+      return "Giáo viên";
+    case 4:
+      return "Phụ huynh";
+    case 5:
+      "Nhân viên";
+  }
+}
+
+function convertStudentStatus(status) {
+  switch (status) {
+    case 0:
+      return "Chờ xếp lớp";
+    case 1:
+      return "Đang học";
+    case 2:
+      return "Nghỉ";
+    case 3:
+      return "Tốt nghiệp";
+  }
+}
+
+export {
+  convertRegisterStatus,
+  convertParentRole,
+  convertAccountRole,
+  convertStudentStatus,
+};

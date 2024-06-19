@@ -6,12 +6,13 @@
       :content="showConfirmDialog"
       @confirm="getConfirm($event)"
     />
-    <!-- <CreateAccountView
+    <CreateAccountView
       v-if="showCreateAccountView"
       class="absolute top-0 left-0"
-      @close="showCreateAccountView = false"
-      @add-toast="$emit('add-toast', $event), close()"
-    /> -->
+      :parent-id="showCreateAccountView"
+      @close="closeAccountCreationView()"
+      @add-toast="$emit('add-toast', $event)"
+    />
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
       Phụ huynh
     </div>
@@ -33,6 +34,7 @@
     <TableData
       :data-table="parents"
       @delete-parent="deleteParentById"
+      @create-account-for-parent="showCreateAccountView = $event"
     ></TableData>
     <div
       class="bottom-table-section flex justify-between h-[37px] content-center my-3"
@@ -73,7 +75,7 @@ import SearchForm from "../../../components/search_form_comp.vue";
 import CreateButtonComp from "../../../components/create_button.vue";
 import Pagination from "../../../components/pagination.vue";
 import ConfirmDialog from "@/components/confirm_dialog.vue";
-// import CreateAccountView from "../../parent_page/views/add_account.vue";
+import CreateAccountView from "../../account_page/components/create_account_view.vue";
 import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useParentStore } from "../../../stores/parent_store";
@@ -82,7 +84,7 @@ import ShowNumberComp from "../../../components/show_number_comp.vue";
 
 const parentStore = useParentStore();
 const showConfirmDialog = ref("");
-// const showCreateAccountView = ref(false);
+const showCreateAccountView = ref(false);
 // const parentItem = ref(null);
 const { parents, page, limit, loading, total, status } =
   storeToRefs(parentStore);
@@ -95,10 +97,14 @@ const searchText = ref("");
 
 const getSearchText = (event) => {
   searchText.value = event;
-  parentStore.txtSearch = searchText.value;
+
+  if (event != parentStore.txtSearch) {
+    parentStore.txtSearch = searchText.value;
+    parentStore.page = 0;
+  }
+
   // call Api search
-  parentStore.searchParent(event);
-  console.log(event);
+  parentStore.searchParent();
 };
 function round(value) {
   return Math.ceil(value);
@@ -112,13 +118,24 @@ function changeLimit(event) {
   parentStore.changeLimit(event);
 }
 // function createAccountShow(parentId) {
-//   showCreateAccountView.value = true;
-//   parentItem.value = parentId;
+//   showCreateAccountView.value = parentId;
+//   alert(showCreateAccountView.value);
 // }
 // function close() {
 //   showCreateAccountView.value = false;
 //   parentStore.getParent();
 // }
+
+function closeAccountCreationView() {
+  showCreateAccountView.value = null;
+
+  if (parentStore.txtSearch != "") {
+    parentStore.searchParent(parentStore.txtSearch);
+    return;
+  }
+  parentStore.getParent();
+}
+
 const getConfirm = (event) => {
   if (event) {
     const parentToDel = JSON.parse(localStorage.getItem("parentToDel") || {});
