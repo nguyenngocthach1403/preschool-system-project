@@ -98,11 +98,11 @@
               <td class="w-[300px]">
                 {{ parent.id }}
               </td>
-              <td class="px-3 w-[200px]">
+              <td class="px-3 w-[500px]">
                 <button
                   @click.prevent
                   v-if="parent.username == null"
-                  @click="editParent(parent.id)"
+                  @click="$emit('create-account-for-parent', parent)"
                   class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
                 >
                   Thêm tài khoản

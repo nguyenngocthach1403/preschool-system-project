@@ -13,9 +13,9 @@ module.exports = {
 async function getAccountByUsername(username) {
   try {
     const result = await db.select(
-      config.tb.account,
-      "*",
-      `WHERE username like '${username}' AND deleted = 0`
+      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
+      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
+      `WHERE a.username like '${username}' AND a.deleted = 0`
     );
 
     return result[0];
@@ -29,11 +29,22 @@ async function getAccountByUsername(username) {
 
 async function createAccount(accountToCreate) {
   try {
-    return db.insert(config.tb.account, accountToCreate);
+    const result = await db.insert(config.tb.account, accountToCreate);
+    if (result == 0) {
+      return {
+        success: false,
+        message: "Tạo tài khoản thất bại. Hãy thử lại",
+      };
+    }
+
+    return {
+      success: true,
+      message: `Tạo tài khoản ${accountToCreate.username} thành công`,
+    };
   } catch (error) {
     return {
       code: error.code,
-      message: error.sqlMessage,
+      error: error.sqlMessage,
     };
   }
 }
@@ -52,9 +63,9 @@ async function updateRegistration(id, username) {
 async function isExistAccountByUsername(username) {
   try {
     const result = await db.select(
-      config.tb.account,
-      "*",
-      `WHERE username like '${username}' AND deleted = 0`
+      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
+      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
+      `WHERE a.username like '${username}' AND a.deleted = 0`
     );
 
     if (result.length == 0) {
@@ -69,9 +80,9 @@ async function isExistAccountByUsername(username) {
 async function getAccount(limit, offset) {
   try {
     return await db.selectLimit(
-      config.tb.account,
-      "*",
-      "WHERE deleted = 0",
+      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
+      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
+      "WHERE a.deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );

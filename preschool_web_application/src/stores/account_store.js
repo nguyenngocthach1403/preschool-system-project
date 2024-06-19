@@ -21,6 +21,8 @@ export const useAccountStore = defineStore("accountStore", {
           phone: element.phone,
           role: element.role,
           email: element.email,
+          creater_username: element.creater_username,
+          creater_role: element.creater_role,
           status: element.status,
         });
       }

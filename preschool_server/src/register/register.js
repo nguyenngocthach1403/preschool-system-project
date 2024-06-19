@@ -22,6 +22,7 @@ router.post("/", upload.array("files"), async (req, res) => {
     syllabus,
     relationship,
     status,
+    admission_period_id,
   } = req.body;
 
   //Kiểm tra tồn tại của đơn
@@ -41,6 +42,7 @@ router.post("/", upload.array("files"), async (req, res) => {
     level_id: levels,
     syllabus_id: syllabus,
     relationship: relationship,
+    admission_period_id: admission_period_id,
     status: status,
   };
 

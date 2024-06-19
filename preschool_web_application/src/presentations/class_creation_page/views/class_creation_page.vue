@@ -362,11 +362,12 @@ async function handleSubmitAddNewClass() {
     formData.append("teacher", teacherInput.value);
   }
 
+  formData.append("created_by", window.user.id);
   const response = await classService.createClass(formData);
 
   creating.value = false;
 
-  if (response.status !== 200 && response.status !== 500) {
+  if (response.status !== 200 && response.status !== 400) {
     emits("add-toast", {
       title: "Warnning !",
       content: response.statusText,
@@ -375,7 +376,7 @@ async function handleSubmitAddNewClass() {
     return;
   }
 
-  if (response.status === 500) {
+  if (response.status == 400) {
     emits("add-toast", {
       title: "Error!",
       content: response.data.error,

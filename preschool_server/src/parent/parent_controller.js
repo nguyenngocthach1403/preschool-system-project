@@ -285,9 +285,12 @@ async function insertParent(req, res, next) {
     });
   }
 
+  const parentCreated = await parentService.getParentByPhone(phone);
+
   res.status(200).json({
     success: true,
     error: result.message,
+    data: parentCreated.success ? parentCreated.data : undefined,
   });
 }
 

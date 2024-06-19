@@ -10,6 +10,8 @@ const config = {
     parent: "Parents",
     levels: "levels",
     sysllabus: "syllabus",
+    approves: "approves",
+    addmission: "admission_periods",
   },
 };
 

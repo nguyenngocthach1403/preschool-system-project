@@ -23,7 +23,7 @@ export const useClassStore = defineStore("classStore", {
           start: element.start_date,
           end: element.end_date,
           member: element.members,
-          limitedMember: element.limit,
+          limitedMember: element.member_limit,
           session: new Date(element.start_date).getFullYear(),
           status:
             new Date(element.start_date) > new Date()

@@ -11,8 +11,16 @@ router.post("/add", upload.array("files"), createClass);
 
 async function createClass(req, res) {
   //Valiable
-  const { className, level, syllabus, startDate, endDate, limit, teacher } =
-    req.body;
+  const {
+    className,
+    level,
+    syllabus,
+    startDate,
+    endDate,
+    limit,
+    teacher,
+    created_by,
+  } = req.body;
 
   const data = {
     name: className,
@@ -20,7 +28,8 @@ async function createClass(req, res) {
     syllabus_id: syllabus,
     start_date: startDate,
     end_date: endDate,
-    limit: limit,
+    member_limit: limit,
+    created_by: created_by,
   };
   //Kiểm tra lớp có tồn tại hay chưa
   // if (await classService.isExistClassByName(className)) {
@@ -47,7 +56,7 @@ async function createClass(req, res) {
   const result = await classService.createClass(data);
 
   if (result.code) {
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       error: result.error,
     });

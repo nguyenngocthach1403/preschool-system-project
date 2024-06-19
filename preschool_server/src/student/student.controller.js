@@ -10,6 +10,8 @@ const classService = require("../class/class.service");
 
 const { error } = require("console");
 const config = require("../config/config");
+const { isEmpty } = require("../config/check.service");
+const registrationService = require("../registrations/registration.service");
 
 router.get("/", getAll);
 // router.get("/:id", getByID);
@@ -183,6 +185,7 @@ async function createStudent(req, res) {
     address,
     placeOfOrigin,
     status,
+    register_id,
   } = req.body;
 
   //Kiểm tra tên
@@ -266,8 +269,8 @@ async function createStudent(req, res) {
 
     //Tạo dữ liệu bảng relationship
     const relationship = {
-      studentId: result.studentCreated,
-      parentId: parent[0].id,
+      student_id: result.studentCreated,
+      parent_id: parent[0].id,
       relationship: parent[0].role,
     };
 
@@ -281,6 +284,13 @@ async function createStudent(req, res) {
         error: "Tạo Relationship thất bại",
       });
     }
+  }
+
+  if (!isEmpty(register_id)) {
+    console.log("a");
+    registrationService.updateRegister(register_id, {
+      student_id: result.studentCreated,
+    });
   }
 
   res.status(200).json({

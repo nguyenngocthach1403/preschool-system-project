@@ -168,41 +168,6 @@
               <img v-else :src="menu_icon" class="w-[20px]" alt="" />
             </button>
           </td>
-          <!-- <td class="content-center px-3"> -->
-          <!-- <div class="hidden xl:flex"> -->
-          <!-- <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#DE2E2E] mr-[3px] hover:bg-[rgb(206,44,44)]  content-center" @click="deleteStudent(item)" > <img :src="delete_icon" class="w-[14px] m-auto"></div>
-                            <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#3B44D1] mr-[3px] hover:bg-[rgb(53,61,186)]  content-center" @click="editStudent(item)"> <img :src="edit_icon" class="w-[14px] m-auto"> </div>
-                            <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#53808C] mr-[3px] hover:bg-[rgb(73,114,125)]  content-center"> <img :src="chat_icon" class="w-[14px] m-auto"> </div>
-                            <div class="feature w-[35px] h-[30px] rounded-[50px] bg-[#DB944B] mr-[3px] hover:bg-[rgb(198,134,68)]  content-center"> <img :src="eye_icon" class="w-[14px] m-auto"> </div>
-                             -->
-          <!-- <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
-                @click="deleteStudent(item)"
-              >
-                <img :src="delete_icon" class="w-[14px] m-auto" />
-              </div>
-              <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(53,61,186)] content-center"
-                @click="editStudent(item)"
-              >
-                <img :src="edit_icon" class="w-[14px] m-auto" />
-              </div>
-              <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(73,114,125)] content-center"
-              >
-                <img :src="chat_icon" class="w-[14px] m-auto" />
-              </div>
-              <div
-                class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(198,134,68)] content-center"
-              >
-                <img :src="eye_icon" class="w-[14px] m-auto" />
-              </div>
-            </div>
-            -->
-          <!-- <div class="p-1 hover:bg-gray-300 rounded-md">
-              <img :src="menu_icon" class="w-[20px] m-auto" />
-            </div>
-          </td> -->
         </tr>
       </tbody>
       <Transition
