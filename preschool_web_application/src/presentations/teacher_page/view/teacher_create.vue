@@ -163,11 +163,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import parentService from "../../../services/parent.service";
-import {
-  isEmpty,
-  isNameValid,
-  isPhoneValid,
-} from "../../../utils/resources/check_valid";
+import { isEmpty, isPhoneValid } from "../../../utils/resources/check_valid";
 const name_parent = ref("");
 const gender_parent = ref("");
 const birthday = ref("");
