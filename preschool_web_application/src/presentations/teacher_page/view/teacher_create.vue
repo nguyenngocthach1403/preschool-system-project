@@ -7,7 +7,7 @@
       <div id="site" class="flex px-[30px] py-[30px]">
         <div class="add-avatar w-fit h-fit rounded-md">
           <img
-            :src="parentAvatarPath"
+            :src="teacherAvatarPath"
             class="w-[150px] h-[150px] object-cover bg-[#D9D9D9] rounded-md"
           />
           <div class="button-side flex my-4 gap-2">
@@ -15,7 +15,7 @@
               type="file"
               class="w-[150px] file:w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#3B44D1] file:text-white hover:file:text-black hover:file:bg-violet-100"
               accept=".png, .jpeg, .jpg"
-              @change="handleUploadParentImg"
+              @change="handleUploadTeacherImg"
             />
             <button
               class="w-[150px] border h-[35px] rounded-md hover:bg-red-100"
@@ -33,20 +33,16 @@
                 type="text"
                 placeholder="Họ và tên"
                 class="input-text-default"
-                v-model="name_parent"
-                :class="{ 'in-valid': messageOfParentName }"
+                v-model="name"
+                :class="{ 'in-valid': messageOfTeacherName }"
               />
               <div class="mt-1 mb-2 h-[25px] text-red-500">
-                <span>{{ messageOfParentName }}</span>
+                <span>{{ messageOfTeacherName }}</span>
               </div>
             </label>
             <label class="w-full text-start">
               <span class="pl-4 text-blue-700">Giới tính</span>
-              <select
-                id="gender"
-                v-model="gender_parent"
-                class="input-text-default"
-              >
+              <select id="gender" v-model="gender" class="input-text-default">
                 <option value="0">Nam</option>
                 <option value="1">Nữ</option>
                 <option value="2">Khác</option>
@@ -63,12 +59,12 @@
               />
             </label>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Nghề nghiệp</span>
+              <span class="pl-4 text-blue-700">Kinh nghiệm giảng dạy</span>
               <input
                 type="text"
-                placeholder="Nghề nghiệp"
-                class="h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-                v-model="job"
+                placeholder="1 năm kinh nghiệm, 2 năm kinh nghiệm,..."
+                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                v-model="experience"
               />
             </label>
           </div>
@@ -79,11 +75,11 @@
                 type="text"
                 placeholder="0xxxxxxxx"
                 class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-                v-model="phone_parent"
-                :class="{ 'in-valid': messageOfParentPhone }"
+                v-model="phone"
+                :class="{ 'in-valid': messageOfTeacherPhone }"
               />
               <div class="mt-1 mb-2 h-[25px] text-red-500">
-                <span>{{ messageOfParentPhone }}</span>
+                <span>{{ messageOfTeacherPhone }}</span>
               </div>
             </label>
             <label class="w-full text-start">
@@ -92,12 +88,8 @@
                 type="text"
                 placeholder="abc@abc.com"
                 class="input-text-default"
-                v-model="email_parent"
-                :class="{ 'in-valid': messageOfParentEmail }"
+                v-model="email"
               />
-              <div class="mt-1 mb-2 h-[25px] text-red-500">
-                <span>{{ messageOfParentEmail }}</span>
-              </div>
             </label>
           </div>
           <div id="input-side-4" class="flex w-full gap-5 mx-[20px]">
@@ -111,20 +103,16 @@
               />
             </label>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Vai trò</span>
-              <select
-                id="role"
-                v-model="role"
-                class="input-text-default"
-                :class="{ 'in-valid': messageOfParentRole }"
-              >
-                <option value="null">Chọn mối quan hệ</option>
-                <option value="0">Bố</option>
-                <option value="1">Mẹ</option>
-                <option value="2">Người giám hộ</option>
-              </select>
+              <span class="pl-4 text-blue-700">Account ID</span>
+              <input
+                type="text"
+                placeholder="Nhập id account"
+                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                v-model="account_id"
+                :class="{ 'in-valid': messageOfTeacherPhone }"
+              />
               <div class="mt-1 mb-2 h-[25px] text-red-500">
-                <span>{{ messageOfParentRole }}</span>
+                <span>{{ messageOfTeacherPhone }}</span>
               </div>
             </label>
           </div>
@@ -177,7 +165,7 @@ import { ref, watch } from "vue";
 import parentService from "../../../services/parent.service";
 import {
   isEmpty,
-  isEmailValid,
+  isNameValid,
   isPhoneValid,
 } from "../../../utils/resources/check_valid";
 const name_parent = ref("");
@@ -187,7 +175,7 @@ const address = ref("");
 const job = ref("");
 const email_parent = ref("");
 const phone_parent = ref("");
-const role = ref("");
+const role = ref(0);
 const emits = defineEmits(["add-toast"]);
 const creating = ref(false);
 const fileUpload = ref(null);
