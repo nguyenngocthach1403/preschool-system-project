@@ -89,7 +89,11 @@
                 placeholder="abc@abc.com"
                 class="input-text-default"
                 v-model="email"
+                :class="{ 'in-valid': messageOfTeacherEmail }"
               />
+              <div class="mt-1 mb-2 h-[25px] text-red-500">
+                <span>{{ messageOfTeacherEmail }}</span>
+              </div>
             </label>
           </div>
           <div id="input-side-4" class="flex w-full gap-5 mx-[20px]">
@@ -102,25 +106,12 @@
                 class="input-text-default"
               />
             </label>
-            <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Account ID</span>
-              <input
-                type="text"
-                placeholder="Nhập id account"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-                v-model="account_id"
-                :class="{ 'in-valid': messageOfTeacherPhone }"
-              />
-              <div class="mt-1 mb-2 h-[25px] text-red-500">
-                <span>{{ messageOfTeacherPhone }}</span>
-              </div>
-            </label>
           </div>
         </div>
       </div>
       <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
         <button
-          @click.prevent="createParent()"
+          @click.prevent="createTeacher()"
           v-if="!creating"
           type="submit"
           class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -162,84 +153,57 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import parentService from "../../../services/parent.service";
-import { isEmpty, isPhoneValid } from "../../../utils/resources/check_valid";
-const name_parent = ref("");
-const gender_parent = ref("");
+import teacherService from "../../../services/teacher.service";
+import {
+  isEmpty,
+  isPhoneValid,
+  isEmailValid,
+} from "../../../utils/resources/check_valid";
+const name = ref("");
+const gender = ref("");
 const birthday = ref("");
 const address = ref("");
-const job = ref("");
-const email_parent = ref("");
-const phone_parent = ref("");
-const role = ref(0);
+const email = ref("");
+const phone = ref("");
+const experience = ref("");
+const account_id = ref(null);
 const emits = defineEmits(["add-toast"]);
 const creating = ref(false);
 const fileUpload = ref(null);
-const parentAvatarPath = ref(null);
+const teacherAvatarPath = ref(null);
 
-const messageOfParentName = ref("");
-const messageOfParentPhone = ref("");
-const messageOfParentEmail = ref("");
-const messageOfParentRole = ref("");
+const messageOfTeacherName = ref("");
+const messageOfTeacherPhone = ref("");
+const messageOfTeacherEmail = ref("");
 
-function checkValidParent() {
+function checkValidTeacher() {
   let invalid = false;
 
-  if (isEmpty(phone_parent.value)) {
+  if (isEmpty(phone.value)) {
     invalid = true;
-    messageOfParentPhone.value = "Vui lòng nhập số điện thoại phụ huynh.";
+    messageOfTeacherPhone.value = "Vui lòng nhập số điện thoại giáo viên";
   }
 
-  if (!isEmpty(phone_parent.value) && !isPhoneValid(phone_parent.value)) {
+  if (!isEmpty(phone.value) && !isPhoneValid(phone.value)) {
     invalid = true;
-    messageOfParentPhone.value =
-      "Số điện thoại phụ huynh không đúng định dạng.";
+    messageOfTeacherPhone.value =
+      "Số điện thoại giáo viên không đúng định dạng.";
+  }
+  if (!isEmpty(email.value) && !isEmailValid(email.value)) {
+    invalid = true;
+    messageOfTeacherEmail.value = "Email giáo viên sai định dạng.";
   }
 
-  if (!isEmpty(email_parent.value) && !isEmailValid(email_parent.value)) {
+  if (isEmpty(name.value)) {
     invalid = true;
-    messageOfParentEmail.value = "Email phụ huynh sai định dạng.";
-  }
-
-  if (isEmpty(name_parent.value)) {
-    invalid = true;
-    messageOfParentName.value = "Không được đển trống tên phụ huynh.";
-  }
-
-  if (isEmpty(role.value)) {
-    invalid = true;
-    messageOfParentRole.value = "Vui lòng chọn vai trò của phụ huynh.";
+    messageOfTeacherName.value = "Không được đển trống tên giáo viên";
   }
 
   return invalid;
 }
 
-watch(name_parent, () => {
-  if (!isEmpty(name_parent.value)) {
-    messageOfParentName.value = "";
-  }
-});
-
-watch(phone_parent, () => {
-  if (!isEmpty(phone_parent.value) && isPhoneValid(phone_parent.value)) {
-    messageOfParentPhone.value = "";
-  }
-});
-
-watch(email_parent, () => {
-  if (!isEmpty(email_parent.value) && isEmailValid(email_parent.value)) {
-    messageOfParentEmail.value = "";
-  }
-});
-
-watch(role, () => {
-  if (!isEmpty(role.value)) {
-    messageOfParentRole.value = "";
-  }
-});
-
-async function createParent() {
-  if (checkValidParent()) {
+async function createTeacher() {
+  if (checkValidTeacher()) {
     return;
   }
   creating.value = true;
@@ -247,37 +211,20 @@ async function createParent() {
   if (fileUpload.value !== null) {
     formData.append("files", fileUpload.value);
   }
-  formData.append("name", name_parent.value);
-  formData.append("gender", gender_parent.value);
+  formData.append("name", name.value);
+  formData.append("gender", gender.value);
   if (!isEmpty(birthday.value)) formData.append("birthday", birthday.value);
   if (!isEmpty(address.value)) formData.append("address", address.value);
-  if (!isEmpty(job.value)) formData.append("job", job.value);
-  if (!isEmpty(email_parent.value))
-    formData.append("email", email_parent.value);
-  formData.append("phone", phone_parent.value);
-  formData.append("role", role.value);
+  if (!isEmpty(email.value)) formData.append("email", email.value);
+  if (!isEmpty(experience.value))
+    formData.append("experience", experience.value);
+  formData.append("phone", phone.value);
+  formData.append("account_id", account_id.value);
 
-  const response = await parentService.createParent(formData);
+  const response = await teacherService.createTeacher(formData);
 
   creating.value = false;
 
-  if (response.status !== 500 && response.status != 200) {
-    emits("add-toast", {
-      title: "Thất bại.",
-      content: response.data.error,
-      type: 1,
-    });
-    return;
-  }
-
-  if (response.status === 500) {
-    emits("add-toast", {
-      title: "Tạo thất bại",
-      content: response.data.error,
-      type: 3,
-    });
-    return;
-  }
   if (!response.data.success) {
     emits("add-toast", {
       title: "Tạo thất bại",
@@ -286,15 +233,23 @@ async function createParent() {
     });
     return;
   }
+  if (response.data.status === 400) {
+    emits("add-toast", {
+      title: "Emai hoặc số điện thoại đã tồn tại",
+      content: response.data.message,
+      type: 1,
+    });
+    return;
+  }
 
   emits("add-toast", {
     title: "Tạo thành công",
-    content: `Tạo phụ huynh ${name_parent.value} thành công.`,
+    content: `Tạo giáo viên ${name.value} thành công.`,
     type: 0,
   });
 }
 // Sử lý và ràn buộc lấy hình ảnh
-const handleUploadParentImg = (event) => {
+const handleUploadTeacherImg = (event) => {
   //Lấy hình
   fileUpload.value = event.target.files[0];
 
@@ -309,7 +264,7 @@ const handleUploadParentImg = (event) => {
   }
 
   //Tạo đường dẫn của ảnh
-  parentAvatarPath.value = URL.createObjectURL(fileUpload.value);
+  teacherAvatarPath.value = URL.createObjectURL(fileUpload.value);
   console.log(URL.createObjectURL(fileUpload.value));
 };
 </script>

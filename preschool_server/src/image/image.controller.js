@@ -8,6 +8,7 @@ router.get("/class/:image", getClassImage);
 router.get("/students/:image", getStudentImage);
 router.get("/registration/:image", getRegisterImage);
 router.get("/parents/:image", getParentImage);
+router.get("/teacher/:image", getTeacherImage);
 
 async function getStudentImage(req, res) {
   const imageName = req.params.image;
@@ -92,6 +93,26 @@ async function getRegisterImage(req, res) {
 
   res.end(imgDefault);
 }
+async function getTeacherImage(req, res) {
+  const imageName = req.params.image;
+
+  if (!fs.existsSync(`uploads/teacher/${imageName}`)) {
+    return res.status(200).json({
+      status: 500,
+      error: "Not found image",
+    });
+  }
+  let imgDefault = await fs.readFileSync(`uploads/teacher/${imageName}`);
+
+  imgDefault = Buffer.from(imgDefault, "base64");
+
+  res.writeHead(200, {
+    "Content-Type": "image/jpg",
+    "Content-Length": imgDefault.byteLength,
+  });
+
+  res.end(imgDefault);
+}
 
 async function getImage(req, res) {
   const imageName = req.params.image;
@@ -113,4 +134,5 @@ async function getImage(req, res) {
 
   res.end(imgDefault);
 }
+
 module.exports = router;

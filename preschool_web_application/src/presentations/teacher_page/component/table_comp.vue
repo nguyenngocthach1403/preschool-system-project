@@ -18,6 +18,7 @@
                   />
                 </div>
               </th>
+              <th>Tài khoản</th>
               <th>Giới tính</th>
               <th>Liên hệ</th>
               <!-- <th>Tên lớp</th>
@@ -41,10 +42,26 @@
                 </div>
               </td>
               <td class="w-[500px]">{{ teacher.name }}</td>
-              <td class="w-[200px]">
+              <td class="px-3 w-[300px]">
+                <button
+                  @click.prevent
+                  v-if="teacher.account_id == null"
+                  @click="$emit('create-account-for-teacher', teacher)"
+                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
+                >
+                  Thêm tài khoản
+                </button>
+                <dd class="text-gray-500 text-[14px] my-[5px] w-[200px]" v-else>
+                  <span>
+                    <span class="font-bold">Tài khoản:</span>
+                    {{ teacher.username }}</span
+                  >
+                </dd>
+              </td>
+              <td class="w-[100px]">
                 {{ teacher.gender === 0 ? "Nam" : "Nữ" }}
               </td>
-              <td class="w-[300px] text-gray-400">
+              <td class="w-[400px] text-gray-400">
                 <dd>
                   <span>Email: </span>
                   <span class="text-gray-700">{{ teacher.email }}</span>
@@ -54,7 +71,7 @@
                   <span class="text-gray-700">{{ teacher.phone }}</span>
                 </dd>
               </td>
-              <td class="w-[700px] text-gray-400">
+              <!-- <td class="w-[700px] text-gray-400">
                 <div
                   v-for="(classInfo, index) in teacher.class_managed"
                   :key="index"
@@ -62,6 +79,25 @@
                   <span>{{ classInfo.role_name }}</span>
                   <span class="text-gray-700"> của lớp </span>
                   <span>{{ classInfo.class_name }}</span>
+                </div>
+              </td> -->
+              <td class="w-[700px] text-gray-400">
+                <div
+                  v-if="teacher.class_managed.length === 0"
+                  @click.prevent="$emit('create-for-teacher', teacher)"
+                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
+                >
+                  Thêm lớp quản lý
+                </div>
+                <div v-else>
+                  <div
+                    v-for="(classInfo, index) in teacher.class_managed"
+                    :key="index"
+                  >
+                    <span>{{ classInfo.role_name }}</span>
+                    <span class="text-gray-700"> của lớp </span>
+                    <span>{{ classInfo.class_name }}</span>
+                  </div>
                 </div>
               </td>
               <td class="w-[200px]">

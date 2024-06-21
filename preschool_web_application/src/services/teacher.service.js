@@ -4,6 +4,7 @@ export default {
   getTeacher,
   countTeacher,
   search,
+  createTeacher,
 };
 
 function getTeacher(offset, limit) {
@@ -16,4 +17,11 @@ function search(txtSearch, page, limit) {
 }
 function countTeacher() {
   return api().get("/teacher/total");
+}
+function createTeacher(dataToCreate) {
+  return api().post(`/teacher/create`, dataToCreate, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 }

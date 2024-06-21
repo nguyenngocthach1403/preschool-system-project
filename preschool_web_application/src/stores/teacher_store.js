@@ -66,6 +66,24 @@ export const useTeacherStore = defineStore("teacherStore", {
       this.status = "searched";
       this.teachers = res.data.data;
     },
+    async createTeacher(teacherToCreate) {
+      this.status = "creating";
+      const res = await teacherService.createTeacher(teacherToCreate);
+      const data = res.data;
+      console.log(res.data);
+
+      if (data.status != 200) {
+        this.status = "create_failed";
+        return {
+          success: false,
+          message: data.error,
+        };
+      }
+      this.status = "created";
+      return {
+        success: true,
+      };
+    },
     async changePage(newVal) {
       this.page = newVal;
       if (this.txtSearch != "") {
