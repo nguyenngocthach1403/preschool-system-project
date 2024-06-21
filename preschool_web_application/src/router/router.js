@@ -16,6 +16,7 @@ import RegisterAdditionView from "../presentations/registration_addition_page/vi
 import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";
 import CategoryView from "../presentations/category_page/views/category_page.vue";
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
+import TeacherCreationView from "../presentations/teacher_page/view/teacher_create.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -110,6 +111,11 @@ function Router() {
             name: "CategoryView",
             path: "/home-page/:username/category",
             component: CategoryView,
+          },
+          {
+            name: "TeacherCreationView",
+            path: "/home-page/:username/teacher",
+            component: TeacherCreationView,
           },
         ],
       },
