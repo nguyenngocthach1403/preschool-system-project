@@ -32,7 +32,7 @@
               <select
                 id="relationship"
                 v-model="relationship"
-                class="h-[45px] mb-7 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                class="input-text-default"
               >
                 <option value="0">Bố</option>
                 <option value="1">Mẹ</option>
@@ -74,11 +74,7 @@
             <label class="w-full text-start">
               <span class="pl-4 text-blue-700">Cấp bậc</span
               ><span class="text-red-600"> * </span>
-              <select
-                id="levels"
-                v-model="levels"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-              >
+              <select id="levels" v-model="levels" class="input-text-default">
                 <option
                   v-for="item in levelList"
                   :key="item"
@@ -94,7 +90,7 @@
               <select
                 id="syllabus"
                 v-model="syllabus"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                class="input-text-default"
               >
                 <option
                   v-for="item in syllabusList"
@@ -114,7 +110,7 @@
                 <select
                   v-model="city"
                   @change="onCityChange"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                  class="input-text-default"
                   :class="{ valid: messageOfAddress }"
                 >
                   <option value="" selected>Chọn thành phố</option>
@@ -133,7 +129,7 @@
                 <select
                   v-model="district"
                   @change="onDistrictChange"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                  class="input-text-default"
                   :class="{ valid: messageOfAddress }"
                 >
                   <option value="" selected>Chọn quận/huyện</option>
@@ -152,7 +148,7 @@
                 <select
                   v-model="town"
                   @change="onWardChange"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                  class="input-text-default"
                   :class="{ valid: messageOfAddress }"
                 >
                   <option value="" selected>Chọn phường/xã</option>
@@ -177,7 +173,7 @@
                 v-model="address"
                 type="text"
                 placeholder="23 abc/3123, Tp.Hồ Chí Minh, Việt Nam"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                class="input-text-default"
               />
             </label>
 
@@ -195,7 +191,7 @@
                 ]"
                 @choose="status = $event"
                 :active="status"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none"
+                class="mb-0 h-[50px] rounded-md my-[5px] w-full outline-none"
               />
             </label>
           </div>
@@ -286,6 +282,7 @@ import levelService from "../../../services/levels.service";
 import syllabusService from "../../../services/syllabus.service";
 import { useRouter, useRoute } from "vue-router";
 import { useRegistrionStore } from "../../../stores/registration_store";
+import admissionService from "../../../services/admission_period.service";
 
 import {
   isEmpty,
@@ -294,6 +291,7 @@ import {
 } from "../../../utils/resources/check_valid";
 
 const registrationStore = useRegistrionStore();
+const admissionPeriodOpening = ref(null);
 
 const fileUpload = ref();
 const imageUpload = ref();
@@ -397,6 +395,35 @@ watch(district, () => {
     ).Wards;
   }
 });
+
+async function getAdmissionPeriodOpenning() {
+  const response = await admissionService.getAddmissionPeriodOpenning();
+
+  console.log(response);
+
+  if (response.status !== 200) {
+    emits("add-toast", {
+      title: "Cập nhật không thành công",
+      content: response.data.error,
+      type: 1,
+    });
+    return false;
+  }
+
+  if (!response.data.success) {
+    emits("add-toast", {
+      title: "Cập nhật không thành công",
+      content: response.data.message,
+      type: 1,
+    });
+    return false;
+  }
+
+  return {
+    success: true,
+    admission_id: response.data.data.id,
+  };
+}
 
 function checkValid() {
   let valid = false;
@@ -542,6 +569,8 @@ async function updateRegister() {
 const saveValueInput = async () => {
   if (checkValid()) return;
   try {
+    const hasAdmission = await getAdmissionPeriodOpenning();
+    if (!hasAdmission) return;
     const formData = new FormData();
     if (fileUpload.value) {
       formData.append("files", fileUpload.value);
@@ -556,6 +585,7 @@ const saveValueInput = async () => {
     if (!isEmpty(levels.value)) formData.append("levels", levels.value);
     if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
     formData.append("relationship", relationship.value);
+    formData.append("admission_period_id", hasAdmission.admission_id);
     formData.append("status", status.value);
 
     const response = await RegistrationService.createRegister(formData);

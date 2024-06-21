@@ -16,6 +16,8 @@ import RegisterAdditionView from "../presentations/registration_addition_page/vi
 import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";
 import CategoryView from "../presentations/category_page/views/category_page.vue";
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
+import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
+import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -55,6 +57,18 @@ function Router() {
             name: "ParentStudentCreationView",
             path: "/home-page/:username/registration/create_parent_student",
             component: ParentStudentCreationView,
+          },
+          {
+            name: "ProgramConfigurationView",
+            path: "/home-page/:username/program-configuration",
+            component: ProgramConfigurationView,
+            children: [
+              {
+                name: "AdmissionPeriodView",
+                path: "/home-page/:username/program-configuration/addmission-period",
+                component: AdmissionPeriodView,
+              },
+            ],
           },
           {
             name: "ParentView",

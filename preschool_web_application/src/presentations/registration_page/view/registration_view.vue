@@ -50,10 +50,9 @@
       </router-link>
     </div>
     <ResultNumComp class="ml-8">{{ total }}</ResultNumComp>
-
-    <div class="text-start mx-5 my-3">
+    <div class="text-start mx-5 my-3 flex">
       <select
-        class="h-[35px] border-[2px] rounded-md w-[200px]"
+        class="input-text-default w-[200px]"
         @change="changeAdmissionPeriod()"
         v-model="admissionPeriod"
       >
@@ -66,82 +65,97 @@
           {{ item.name }}
         </option>
       </select>
+      <VueDatePicker
+        v-model="date"
+        class="date-picker"
+        :enable-time-picker="false"
+        :range="{ partialRange: true }"
+      />
     </div>
-    <!--Show muc-->
-    <div v-if="admissionPeriod != 'null' && admissionPeriod != null">
-      <div class="flex items-center">
-        <ShowNumberComp
-          :numb-show="limit"
-          @change-limit="changeLimit($event)"
-        ></ShowNumberComp>
-        <div class="w-full flex gap-2">
-          <ItemCheckBox
-            v-for="item in statusList"
-            :key="item"
-            :content="item.name"
-            :checked="item.checked"
-            :id="item.id"
-            :total="item.total"
-            @change="changeChecked($event, item)"
-          >
-          </ItemCheckBox>
+    <div
+      v-if="registrations.length == 0 && status != 'loading'"
+      class="h-full py-20 w-full align-center py-10"
+    >
+      <img :src="empty_icon" class="m-auto" alt="" />
+      <span class="text-gray-500">Không có dữ liệu</span>
+    </div>
+    <div v-if="registrations.length !== 0">
+      <!--Show muc-->
+      <div v-if="admissionPeriod != 'null' && admissionPeriod != null">
+        <div class="flex items-center">
+          <ShowNumberComp
+            :numb-show="limit"
+            @change-limit="changeLimit($event)"
+          ></ShowNumberComp>
+          <div class="w-full flex gap-2">
+            <ItemCheckBox
+              v-for="item in statusList"
+              :key="item"
+              :content="item.name"
+              :checked="item.checked"
+              :id="item.id"
+              :total="item.total"
+              @change="changeChecked($event, item)"
+            >
+            </ItemCheckBox>
+          </div>
         </div>
-      </div>
 
-      <!-- Quick search -->
+        <!-- Quick search -->
 
-      <!-- Table components -->
-      <LoadingComp
-        v-if="status === 'loading' || status === 'initial'"
-      ></LoadingComp>
-      <TableComp
-        v-if="status == 'loaded' && status !== 'initial'"
-        :data="registrations"
-        @delete-item="showConfirmDialog = $event"
-        @edit-item="
-          $router.push({
-            name: 'RegisterAdditionView',
-            query: { id: $event.id },
-          })
-        "
-        @create-new-student="createNewStudent($event)"
-        @update-status="registerUpdateStatus = $event"
-        @show-register-img="showRegisterImg = $event"
-        @create-parent="createParent($event)"
-      ></TableComp>
-      {{ showConfirmDialog }}
-      <div
-        class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
-      >
-        <div
-          v-if="
-            status !== 'search_failed' &&
-            status !== 'load_failed' &&
-            total !== 0
+        <!-- Table components -->
+        <LoadingComp
+          v-if="status === 'loading' || status === 'initial'"
+        ></LoadingComp>
+        <TableComp
+          v-if="status == 'loaded' && status !== 'initial'"
+          :data="registrations"
+          @delete-item="showConfirmDialog = $event"
+          @edit-item="
+            $router.push({
+              name: 'RegisterAdditionView',
+              query: { id: $event.id },
+            })
           "
-          class="h-[37px] content-center mx-[20px]"
-        >
-          Hiển thị từ {{ page * limit + 1 }} đến
-          {{ (page + 1) * limit - (limit - registrations.length) }} trong
-          {{ total }} đơn đăng ký
-        </div>
+          @create-new-student="createNewStudent($event)"
+          @update-status="registerUpdateStatus = $event"
+          @show-register-img="showRegisterImg = $event"
+          @create-parent="createParent($event)"
+        ></TableComp>
+        {{ showConfirmDialog }}
         <div
-          v-if="status == 'search_failed' || total == 0"
-          class="h-[37px] content-center mx-[20px]"
+          class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
         >
-          Không tìm thấy đơn đăng ký nào!
+          <div
+            v-if="
+              status !== 'search_failed' &&
+              status !== 'load_failed' &&
+              total !== 0
+            "
+            class="h-[37px] content-center mx-[20px]"
+          >
+            Hiển thị từ {{ page * limit + 1 }} đến
+            {{ (page + 1) * limit - (limit - registrations.length) }} trong
+            {{ total }} đơn đăng ký
+          </div>
+          <div
+            v-if="status == 'search_failed' || total == 0"
+            class="h-[37px] content-center mx-[20px]"
+          >
+            Không tìm thấy đơn đăng ký nào!
+          </div>
+          <div
+            v-if="status == 'load_failed'"
+            class="h-[37px] content-center mx-[20px]"
+          >
+            Không có đơn đăng ký nào tồn tại!
+          </div>
+          <Pagination
+            :page-nums="round(total / limit)"
+            :page-active="page + 1"
+            @click-page="changePage($event)"
+          ></Pagination>
         </div>
-        <div
-          v-if="status == 'load_failed'"
-          class="h-[37px] content-center mx-[20px]"
-        >
-          Không có đơn đăng ký nào tồn tại!
-        </div>
-        <Pagination
-          :page-nums="round(total / limit)"
-          :page-active="page + 1"
-          @click-page="changePage($event)"
-        ></Pagination>
       </div>
     </div>
   </div>
@@ -163,6 +177,7 @@ import LoadingComp from "../../../components/loading_comp.vue";
 import close_icon from "../../../assets/icons/close.svg";
 import ResultNumComp from "../../../components/result_comp.vue";
 import ShowNumberComp from "../../../components/show_number_comp.vue";
+import empty_icon from "../../../assets/icons/Empty Box.svg";
 import addmissionPeriodService from "../../../services/admission_period.service";
 import { convertRegisterStatus } from "../../../utils/resources/converter";
 import io from "socket.io-client";
@@ -180,6 +195,8 @@ const admissionPeriodList = ref(null);
 const admissionPeriod = ref(null);
 
 const router = useRouter();
+
+const date = ref();
 
 async function changeAdmissionPeriod() {
   registrationStore.admission_period_id = admissionPeriod.value;
@@ -439,3 +456,13 @@ function createNewStudent(event) {
   });
 }
 </script>
+
+<style scoped>
+.dp__theme_light {
+  --dp-button-height: 35px;
+  --dp-border-radius: 5px;
+  --dp-input-padding: 12px 30px 11px 12px;
+  width: 300px;
+  margin: 5px 20px;
+}
+</style>

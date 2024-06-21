@@ -26,7 +26,9 @@ router.post("/", upload.array("files"), async (req, res) => {
   } = req.body;
 
   //Kiểm tra tồn tại của đơn
-  if (await registerService.isExistRegisterByPhone(phone)) {
+  if (
+    await registerService.isExistRegisterByPhone(admission_period_id, phone)
+  ) {
     return res.status(200).json({
       isExist: true,
     });

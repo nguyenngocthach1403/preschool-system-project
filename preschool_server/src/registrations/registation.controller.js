@@ -419,11 +419,17 @@ async function getRegistration(req, res) {
   const count = await registationService.getTotalRegistration(
     req.params.admission_period_id
   );
+  const statusCount = await registationService.getTotalOfStatus(
+    req.params.admission_period_id
+  );
+
+  console.log(statusCount);
 
   res.status(200).json({
     status: 200,
     message: "Successful",
     total: count[0]["total"],
+    status_count: statusCount.success ? statusCount.data : [],
     data: result,
   });
 }

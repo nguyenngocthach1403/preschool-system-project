@@ -6,8 +6,8 @@ module.exports = { getAddmissionPeriodOpenning, getAddmissionPeriod };
 async function getAddmissionPeriodOpenning() {
   try {
     const result = await db.select(
-      config.tb.addmission,
-      "*",
+      `${config.tb.addmission} ad LEFT JOIN ${config.tb.account} ac ON ad.created_by = ac.id`,
+      "ad.*, ac.username",
       "WHERE openning = 1 AND start_date <= CURRENT_DATE AND end_date >= CURRENT_DATE"
     );
 
@@ -31,7 +31,10 @@ async function getAddmissionPeriodOpenning() {
 
 async function getAddmissionPeriod() {
   try {
-    const result = await db.select(config.tb.addmission, "*");
+    const result = await db.select(
+      `${config.tb.addmission} ad LEFT JOIN ${config.tb.account} ac ON ad.created_by = ac.id`,
+      "ad.*, ac.username"
+    );
     return result;
   } catch (error) {
     return {

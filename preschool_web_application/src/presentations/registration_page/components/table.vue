@@ -1,7 +1,7 @@
 <template>
-  <div class="overflow-hidden h-fit mr-[10px] z-20">
+  <div class="overflow-hidden h-fit mr-[10px] z-20 relative">
     <!--Table here-->
-    <table class="h-fit w-full">
+    <table class="w-full relative">
       <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
         <tr>
           <th class="px-3 py-3 text-left"></th>
@@ -32,7 +32,7 @@
           <th class="px-3 text-left">Chức năng</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="relative">
         <tr
           v-for="(item, index) in drops.data"
           :key="index"
@@ -223,6 +223,7 @@ import menu_icon from "../../../assets/icons/menu.svg";
 import close_icon from "../../../assets/icons/close.svg";
 import delete_icon from "../../../assets/icons/delete.svg";
 import edit_icon from "../../../assets/icons/edit.svg";
+import empty_icon from "../../../assets/icons/Empty Box.svg";
 const showChangeStatusViewIndex = ref(null);
 const showMenu = ref(false);
 

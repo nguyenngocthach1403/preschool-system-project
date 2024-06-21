@@ -142,12 +142,12 @@ async function getTotalWithSearch(admission_period_id, searchText) {
   }
 }
 
-async function isExistRegisterByPhone(phone) {
+async function isExistRegisterByPhone(admission_id, phone) {
   try {
     const result = await db.select(
       config.tb.register,
       "*",
-      `WHERE phone = ${phone}`
+      `WHERE phone = ${phone} AND admission_period_id = ${admission_id}`
     );
     if (result.length == 0) {
       return false;

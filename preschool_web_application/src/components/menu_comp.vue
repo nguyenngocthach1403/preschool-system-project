@@ -93,6 +93,7 @@ import account from "@/assets/icons/account.svg";
 import registration from "@/assets/icons/Registration.svg";
 import logoutIcon from "@/assets/icons/Logout.svg";
 import category from "../assets/icons/Diversity.svg";
+import school from "../assets/icons/School.svg";
 import { convertAccountRole } from "../utils/resources/converter";
 
 import { onMounted, ref } from "vue";
@@ -115,7 +116,14 @@ function logout() {
   router.push({ path: "/" });
 }
 
-const menu = ref([{ title: "Thông kê", name: "DashBoardView", icon: dash }]);
+const menu = ref([
+  { title: "Thông kê", name: "DashBoardView", icon: dash },
+  {
+    title: "Cấu hình trường học",
+    name: "ProgramConfigurationView",
+    icon: school,
+  },
+]);
 const managerItem = ref([
   { title: "Khách hàng", name: "RegistrationView", icon: registration },
   { title: "Học sinh", name: "StudentView", icon: student },
