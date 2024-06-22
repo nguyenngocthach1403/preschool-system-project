@@ -19,6 +19,8 @@ module.exports = {
   getRegisterByID,
   updateRegister,
   createApprove,
+  getRegisterByPhone,
+  countSyllabusOfLevelByAdmission,
 };
 
 async function createRegister(data) {
@@ -31,6 +33,38 @@ async function createRegister(data) {
       message: "An error occurred while executing the query.",
       error: error.sqlMessage,
     };
+  }
+}
+
+async function countSyllabusOfLevelByAdmission(admission_period_id, level_id) {
+  try {
+    const result = await db.select(
+      `${config.tb.register} r LEFT JOIN ${config.tb.sysllabus} s ON s.id = r.syllabus_id `,
+      "Count(*) as total, s.name as syllabus_name, r.level_id, r.syllabus_id",
+      `WHERE level_id = ${level_id} and r.admission_period_id = ${admission_period_id} Group By syllabus_id;`
+    );
+    return result;
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function getRegisterByPhone(admission_period_id, phone) {
+  try {
+    const ressult = await db.select(
+      config.tb.register,
+      "*",
+      `WHERE phone = ${phone}`
+    );
+    if (ressult.length == 0) {
+      return false;
+    }
+    return ressult[0];
+  } catch (error) {
+    return false;
   }
 }
 
@@ -142,12 +176,12 @@ async function getTotalWithSearch(admission_period_id, searchText) {
   }
 }
 
-async function isExistRegisterByPhone(phone) {
+async function isExistRegisterByPhone(admission_id, phone) {
   try {
     const result = await db.select(
       config.tb.register,
       "*",
-      `WHERE phone = ${phone}`
+      `WHERE phone = ${phone} AND admission_period_id = ${admission_id}`
     );
     if (result.length == 0) {
       return false;

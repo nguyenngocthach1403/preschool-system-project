@@ -144,7 +144,7 @@
           </td>
 
           <td class="hidden xl:table-cell px-3 w-dvw">
-            <span>{{ new Date(item.birthday).toDateString() }}</span>
+            <span>{{ new Date(item.birthday).toLocaleDateString() }}</span>
           </td>
           <td class="px-3">
             <div
@@ -278,12 +278,10 @@ function closeMenu() {
 
 function checkStatusToContent(sts) {
   switch (sts) {
+    case 0:
+      return "Chờ duyệt";
     case 1:
-      return "Đang học";
-    case 2:
-      return "Bảo lưu";
-    default:
-      return "Chưa rõ";
+      return "Chính thức";
   }
 }
 

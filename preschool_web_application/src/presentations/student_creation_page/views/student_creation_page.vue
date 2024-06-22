@@ -24,16 +24,16 @@
             </button>
           </div>
         </div>
-        <div id="input-side" class="w-full pr-[20px]">
+        <div id="input-side" class="w-full pl-[100px] pr-[20px]">
           <div id="input-side-1" class="flex w-full gap-5 mx-[20px]">
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Họ và tên</span
+              <span class="pl-2 text-blue-800">Họ và tên</span
               ><span class="text-red-600"> * </span>
               <input
                 v-model="studentNameInput"
                 type="text"
                 placeholder="Họ và tên"
-                class="h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                class="input-text-default"
               />
               <div class="valid">
                 <p class="h-5 mb-4 text-red-300">
@@ -42,11 +42,11 @@
               </div>
             </label>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Lớp</span>
+              <span class="pl-2 text-blue-800">Lớp</span>
               <ListBox
                 @click.prevent
                 @choose-item="classInput = $event.id"
-                class="h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
+                class="h-[50px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
                 :option-list="classList"
                 :value-active="classInput"
               />
@@ -55,11 +55,10 @@
           <div id="input-side-2" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <div class="w-full flex gap-5">
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Ngày sinh</span>
-                <input
+                <span class="pl-2 text-blue-800">Ngày sinh</span>
+                <VueDatePicker
                   v-model="studentBirthDayInput"
-                  type="date"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  :enable-time-picker="false"
                 />
                 <div class="h-5 valid">
                   <p class="mb-4 text-red-300">
@@ -68,12 +67,12 @@
                 </div>
               </label>
               <label class="w-[200px] text-start">
-                <span class="pl-4 text-blue-700">Nơi sinh</span>
+                <span class="pl-2 text-blue-800">Nơi sinh</span>
                 <input
                   v-model="studentPlaceOfBirthInput"
                   type="text"
                   placeholder="TP HCM"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  class="input-text-default"
                 />
                 <!-- <div class="h-[20px] valid">
               <p v-if="messageOfStudentName" class="mb-4 text-red-300">
@@ -83,13 +82,13 @@
               </label>
             </div>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Giới tính</span>
+              <span class="pl-2 text-blue-800">Giới tính</span>
               <ListBox
                 @choose-item="studentGenderInput = $event.id"
                 :option-list="genderList"
                 :value-active="studentGenderInput"
                 @click.prevent
-                class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+                class="h-[50px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
               />
               <div class="h-5 valid">
                 <p class="mb-4 text-red-300">{{ invalidGender }}</p>
@@ -99,53 +98,53 @@
           <div id="input-side-3" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <div class="w-full flex gap-5">
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Dân tộc</span>
+                <span class="pl-2 text-blue-800">Dân tộc</span>
                 <ListBox
                   @click.prevent
                   @choose-item="studentForkInput = $event.name"
-                  class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
+                  class="h-[50px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
                   :option-list="forkList"
                   :value-active="studentForkInput"
                 />
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Quốc tịch</span>
+                <span class="pl-2 text-blue-800">Quốc tịch</span>
                 <input
                   v-model="nationInput"
                   type="text"
                   placeholder="Viet Nam"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  class="input-text-default"
                 />
               </label>
             </div>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Phụ huynh</span>
+              <span class="pl-2 text-blue-800">Phụ huynh</span>
               <input
                 v-model="parentIdInput"
                 type="text"
                 placeholder="Mã phụ huynh"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                class="input-text-default"
               />
             </label>
           </div>
           <div id="input-side-4" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Địa chỉ</span>
+              <span class="pl-2 text-blue-800">Địa chỉ</span>
               <input
                 v-model="addressInput"
                 type="text"
                 placeholder="23 abc/3123, Tp.Hồ Chí Minh, Việt Nam"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                class="input-text-default"
               />
             </label>
 
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Nguyên quân</span>
+              <span class="pl-2 text-blue-800">Nguyên quân</span>
               <input
                 v-model="placeOfOriginInput"
                 type="text"
                 placeholder="Việt Nam"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                class="input-text-default"
               />
             </label>
           </div>
@@ -193,18 +192,6 @@
           </svg>
           Processing...
         </button>
-        <!-- <button
-          v-if="status === 'created'"
-          type="button"
-          class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
-          disabled
-        >
-          <svg width="400" height="200">
-            <circle cx="200" cy="100" r="80" fill="red" />
-            <rect x="100" y="50" width="200" height="100" fill="blue" />
-          </svg>
-          Done
-        </button> -->
       </div>
     </div>
   </form>
@@ -221,6 +208,7 @@ import SaveButton from "../../../components/save_button.vue";
 import ListBox from "../../../components/select_comp.vue";
 import axios from "axios";
 import classSercive from "../../../services/class.service";
+import { yyyymmddDateString } from "../../../utils/resources/format_date";
 
 onBeforeMount(() => {
   getDrafValue();
@@ -370,10 +358,15 @@ async function submitCreateStudent() {
   formData.append("gender", studentGenderInput.value);
   formData.append("placeOfOrigin", placeOfOriginInput.value);
   formData.append("nation", nationInput.value);
-  formData.append("birthday", studentBirthDayInput.value);
+  formData.append(
+    "birthday",
+    yyyymmddDateString(
+      new Date(studentBirthDayInput.value).toLocaleDateString()
+    )
+  );
   formData.append("placeOfBirth", studentPlaceOfBirthInput.value);
   formData.append("fork", studentForkInput.value);
-  formData.append("status", classInput.value != undefined ? 1 : 0);
+  formData.append("status", 0);
   if (parentIdInput.value !== "") {
     formData.append("parentId", parentIdInput.value);
   }
@@ -492,5 +485,11 @@ function resetInput() {
   font-size: large;
   font-weight: 600;
   border-bottom: solid 1px rgb(221, 221, 221);
+}
+.dp__theme_light {
+  --dp-button-height: 35px;
+  --dp-border-radius: 5px;
+  --dp-input-padding: 11px 30px 10px 12px;
+  margin: 7px 0px;
 }
 </style>

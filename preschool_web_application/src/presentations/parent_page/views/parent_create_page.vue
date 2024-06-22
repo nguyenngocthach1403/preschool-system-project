@@ -78,7 +78,7 @@
               <input
                 type="text"
                 placeholder="0xxxxxxxx"
-                class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                class="input-text-default"
                 v-model="phone_parent"
                 :class="{ 'in-valid': messageOfParentPhone }"
               />
