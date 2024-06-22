@@ -18,7 +18,8 @@ body{
 }
 
 ::-webkit-scrollbar {
-    width: 5px; /* Width of the entire scrollbar */
+    width: 5px;
+    height: 5px; /* Width of the entire scrollbar */
   }
   
 ::-webkit-scrollbar-thumb {

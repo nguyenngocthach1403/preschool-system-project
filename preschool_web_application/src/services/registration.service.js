@@ -82,7 +82,7 @@ function getRegistrationWithStatusAndSearch(
 }
 
 function deleteRegistration(id, phone) {
-  return api().get(`/registrations/delete?id=${id}&phone=${phone}`);
+  return api().get(`/registrations/delete/id?id=${id}&phone=${phone}`);
 }
 function updateRegister(id, data) {
   return api().post(`/registrations/update/${id}`, data, {

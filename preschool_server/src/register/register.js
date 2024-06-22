@@ -76,11 +76,16 @@ router.post("/", upload.array("files"), async (req, res) => {
     });
   }
 
+  const registerCreated = await registerService.getRegisterByPhone(
+    admission_period_id,
+    phone
+  );
+
   res.status(200).json({
     status: 200,
     success: true,
     message: "Successful.",
-    data: result,
+    data: registerCreated !== false ? registerCreated : null,
   });
 });
 

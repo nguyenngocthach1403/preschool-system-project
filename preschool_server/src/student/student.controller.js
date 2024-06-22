@@ -188,6 +188,8 @@ async function createStudent(req, res) {
     register_id,
   } = req.body;
 
+  console.log(register_id);
+
   //Kiểm tra tên
   if (name == undefined || name == "") {
     return res.status(200).json({
@@ -233,6 +235,7 @@ async function createStudent(req, res) {
     }
     return res.status(200).json({
       status: 404,
+      success: false,
       error: result.message,
     });
   }
@@ -241,6 +244,7 @@ async function createStudent(req, res) {
   if (!result) {
     return res.status(200).json({
       status: 500,
+      success: false,
       error: "Lỗi khi đăng thêm dữ liệu.",
       message: "Tạo học sinh không thành công.",
     });
@@ -254,6 +258,7 @@ async function createStudent(req, res) {
     if (parent.code) {
       return res.status(200).json({
         status: 500,
+        success: false,
         error: "Phụ huynh không tồn tại.",
       });
     }
@@ -263,6 +268,7 @@ async function createStudent(req, res) {
       return res.status(200).json({
         status: 500,
         error: "Phụ huynh không tồn tại.",
+        success: false,
         message: "Chưa có phụ huynh trong hệ thống",
       });
     }
@@ -287,14 +293,14 @@ async function createStudent(req, res) {
   }
 
   if (!isEmpty(register_id)) {
-    console.log("a");
+    console.log("a", result.studentCreated);
     registrationService.updateRegister(register_id, {
       student_id: result.studentCreated,
     });
   }
 
   res.status(200).json({
-    status: 200,
+    success: true,
     message: "Tạo học sinh thành công.",
   });
 }
@@ -303,6 +309,7 @@ async function deleteStudent(req, res, next) {
   if (req.query.id === undefined) {
     res.send(
       JSON.stringify({
+        success: false,
         status: 404,
         message: "Resouse not found",
       })
@@ -315,6 +322,7 @@ async function deleteStudent(req, res, next) {
   if (result === 0) {
     res.send(
       JSON.stringify({
+        success: false,
         status: 404,
         message: "Resouse not found",
       })
@@ -322,6 +330,7 @@ async function deleteStudent(req, res, next) {
   } else {
     res.send(
       JSON.stringify({
+        success: true,
         status: 200,
         message: "Resouse delete Successful",
       })

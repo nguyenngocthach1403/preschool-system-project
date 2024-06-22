@@ -20,19 +20,19 @@ module.exports = {
 
 async function createNewStudent(studentToCreate) {
   try {
-    // Tao Id chho học sinh mới
-    const id = await createIDStudent();
-    studentToCreate.id = parseInt(id, 10);
-    //Tạo học sinh
+    // // Tao Id chho học sinh mới
+    // const id = await createIDStudent();
+    // studentToCreate.id = parseInt(id, 10);
+    // //Tạo học sinh
     const result = await db.insert(config.tb.student, studentToCreate);
 
-    if (result <= 0) {
+    if (result == 0) {
       return false;
     }
 
     return {
       success: true,
-      studentCreated: studentToCreate.id,
+      studentCreated: result,
     };
   } catch (error) {
     console.error(error);

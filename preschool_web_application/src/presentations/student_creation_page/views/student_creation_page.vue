@@ -208,6 +208,7 @@ import SaveButton from "../../../components/save_button.vue";
 import ListBox from "../../../components/select_comp.vue";
 import axios from "axios";
 import classSercive from "../../../services/class.service";
+import { yyyymmddDateString } from "../../../utils/resources/format_date";
 
 onBeforeMount(() => {
   getDrafValue();
@@ -357,10 +358,15 @@ async function submitCreateStudent() {
   formData.append("gender", studentGenderInput.value);
   formData.append("placeOfOrigin", placeOfOriginInput.value);
   formData.append("nation", nationInput.value);
-  formData.append("birthday", studentBirthDayInput.value);
+  formData.append(
+    "birthday",
+    yyyymmddDateString(
+      new Date(studentBirthDayInput.value).toLocaleDateString()
+    )
+  );
   formData.append("placeOfBirth", studentPlaceOfBirthInput.value);
   formData.append("fork", studentForkInput.value);
-  formData.append("status", classInput.value != undefined ? 1 : 0);
+  formData.append("status", 0);
   if (parentIdInput.value !== "") {
     formData.append("parentId", parentIdInput.value);
   }

@@ -33,7 +33,7 @@ router.get("/:admission_period_id/status/total", getTotalOfStatus);
 
 router.get("/:admission_period_id/status", getRegistrationsWithStatus);
 
-router.get("/delete", deleteRegistration);
+router.get("/delete/id", deleteRegistration);
 
 router.get("/id/:id", getRegisterByID);
 
@@ -183,13 +183,14 @@ async function getRegisterByID(req, res) {
 
 async function deleteRegistration(req, res) {
   const { id, phone } = req.query;
+  console.log(req.query.phone);
 
-  if (checkService.isEmpty(id) || checkService.isEmpty(phone)) {
-    return res.status(200).json({
-      success: false,
-      error: "Vui lòng nhập id và số diện thoại để xóa.",
-    });
-  }
+  // if (checkService.isEmpty(id) || checkService.isEmpty(phone)) {
+  //   return res.status(200).json({
+  //     success: false,
+  //     error: "Vui lòng nhập id và số diện thoại để xóa.",
+  //   });
+  // }
 
   //Call function delete
   const result = await registationService.deleteRegistration(id, phone);
@@ -400,6 +401,7 @@ async function getRegistration(req, res) {
   if (limit === undefined && page === undefined) {
     return res.status(400).json({
       status: 400,
+      success: false,
       error: "Invalid input: query must be has limit and page.",
     });
   }

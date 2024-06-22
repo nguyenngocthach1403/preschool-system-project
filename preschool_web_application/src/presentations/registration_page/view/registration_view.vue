@@ -2,7 +2,7 @@
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
     <div
       v-if="showRegisterImg"
-      class="absolute w-full h-full bg-gray-500/75 left-0 top-0 z-20 content-center overflow-y-auto"
+      class="absolute w-full h-full bg-gray-500/75 left-0 top-0 z-30 content-center overflow-y-auto"
     >
       <button
         class="w-[40px] h-[40px] absolute right-10 top-10"

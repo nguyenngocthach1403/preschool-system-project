@@ -1,8 +1,12 @@
 <template>
   <div class="h-full w-full mt-5">
     <!--a-->
-    <section class="w-full my-10 flex gap-5 rounded-xl">
-      <div class="w-[400px] h-[150px] rounded-md shadow p-5 text-start">
+    <CreateAdmissionPopUp
+      v-if="showCreateAdmissionPopup"
+      @close="showCreateAdmissionPopup = null"
+    />
+    <section class="w-full my-10 h-[170px] flex gap-5 rounded-xl">
+      <div class="w-[250px] h-full rounded-md shadow p-5 text-start">
         <div>
           <span class="text-gray-500 text-[13px]">Mã đợt:</span>
           {{ admissionSelected ? admissionSelected.id : "" }}
@@ -21,9 +25,9 @@
         </div>
       </div>
       <div
-        class="w-[400px] h-[150px] rounded-md content-center flex items-center gap-5 shadow p-5 align-center justify-center"
+        class="w-[280px] h-full rounded-md content-center flex items-center gap-5 shadow p-5 align-center justify-center"
       >
-        <div class="bg-blue-700 rounded-full w-[80px] h-[80px] content-center">
+        <div class="bg-blue-700 rounded-full w-[70px] h-[70px] content-center">
           <img :src="register_icon" class="w-[50px] m-auto" />
         </div>
         <div class="text-black h-full content-center">
@@ -34,7 +38,7 @@
         </div>
       </div>
       <div
-        class="w-[500px] h-[150px] rounded-md content-center flex text-[13px] gap-5 items-center"
+        class="w-[350px] h-full rounded-md content-center flex text-[13px] gap-5 items-center"
       >
         <div class="w-full">
           <div class="py-2">
@@ -103,6 +107,78 @@
           </div>
         </div>
       </div>
+
+      <div class="grow h-full border px-1 py-2 shadow">
+        <div class="w-full grow h-full rounded-md align-start flex">
+          <div class="w-[120px] overflow-y-auto">
+            <button
+              class="border py-1 h-fit w-full rounded-[3px] hover:bg-gray-200"
+              v-for="(level, index) in levelList"
+              :key="index"
+              :class="{ select: levelSelected == level.value }"
+              @click="
+                getTotalSyllabusOfLevelByAdmission(
+                  admissionSelected !== null ? admissionSelected.id : 0,
+                  level.value
+                ),
+                  (levelSelected = level.value)
+              "
+            >
+              {{ level.name }}
+            </button>
+          </div>
+          <div v-if="loadingTotalSyllabus" class="h-full grow">
+            <LoadingComp />
+          </div>
+          <div v-if="!loadingTotalSyllabus" class="h-full grow">
+            <div
+              class="border-b border-l border-gray-500 h-full rounded-[3px] mx-2 w-full flex items-end px-5 gap-5 span-1 overflow-x-auto"
+            >
+              <div
+                v-for="(item, index) in syllabusList"
+                :key="index"
+                class="text-center"
+              >
+                {{ returnSyllabus(item.value) }}
+                <div
+                  class="w-5"
+                  :class="{
+                    'bg-red': index == 0,
+                    'bg-blue': index == 1,
+                    'bg-green': index == 2,
+                    'bg-yellow': index == 3,
+                    'bg-black': index == 4,
+                  }"
+                  :style="{
+                    height:
+                      (100 / totalRegistration) * returnSyllabus(item.value) +
+                      'px',
+                  }"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div class="grow-1 h-full overflow-y-auto">
+            <div
+              v-for="(syllabus, index) in syllabusList"
+              :key="index"
+              class="text-center flex gap-5 mx-3 items-center"
+            >
+              <div
+                class="w-5 h-5 rounded-md"
+                :class="{
+                  'bg-red': index == 0,
+                  'bg-blue': index == 1,
+                  'bg-green': index == 2,
+                  'bg-yellow': index == 3,
+                  'bg-black': index == 4,
+                }"
+              ></div>
+              <span>{{ syllabus.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="w-full">
@@ -113,6 +189,10 @@
           :enable-time-picker="false"
           :range="{ partialRange: true }"
         />
+        <CreatButton
+          class="my-2"
+          @click="showCreateAdmissionPopup = true"
+        ></CreatButton>
       </div>
       <div class="flex h-[500px] mb-10 gap-5">
         <div class="w-[700px]">
@@ -136,7 +216,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import admissionService from "../../../services/admission_period.service";
 import registrationService from "../../../services/registration.service";
 import register_icon from "../../../assets/icons/Signing A Document.svg";
@@ -144,6 +224,12 @@ import AdmissionTable from "../components/admission_table.vue";
 import RegistrationTable from "../components/registration_table.vue";
 import Pagination from "../../../components/pagination.vue";
 import SearchForm from "../../../components/search_form_comp.vue";
+import syllabusService from "../../../services/syllabus.service";
+import levelService from "../../../services/levels.service";
+import CreatButton from "../../../components/create_button.vue";
+import CreateAdmissionPopUp from "../components/create_admission_period_popup.vue";
+import LoadingComp from "../../../components/loading_comp.vue";
+
 const admissionList = ref([1, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1231]);
 const showAdmissionList = ref(false);
 const registrationList = ref([]);
@@ -154,6 +240,13 @@ const statusCount = ref([]);
 const totalRegistration = ref(0);
 const loading = ref(false);
 const date = ref([]);
+const levelList = ref([]);
+const syllabusList = ref([]);
+const totalSyllabusByAdmission = ref([]);
+const levelSelected = ref(0);
+
+const showCreateAdmissionPopup = ref(false);
+const loadingTotalSyllabus = ref(false);
 
 function round(value) {
   return Math.ceil(value);
@@ -161,10 +254,18 @@ function round(value) {
 
 onMounted(() => {
   getAdmission();
+  getLevel();
+  getSyllabus();
+});
+
+watch(admissionSelected, () => {
+  getTotalSyllabusOfLevelByAdmission(
+    admissionSelected.value.id,
+    levelSelected.value
+  );
 });
 
 function returnStatusCount(status, statusList) {
-  console.log("statusList", statusList);
   if (statusList.length !== 0) {
     let hasStatus;
     statusList.forEach((element) => {
@@ -172,17 +273,9 @@ function returnStatusCount(status, statusList) {
         hasStatus = element;
       }
     });
-
-    console.log("a", hasStatus);
     if (hasStatus != undefined) return hasStatus.total;
     return 0;
   }
-}
-
-function closeAdmissionList() {
-  setTimeout(() => {
-    showAdmissionList.value = false;
-  }, 50);
 }
 
 async function getAdmission() {
@@ -222,6 +315,64 @@ async function getRegistrationByAdmission(admission_id) {
 
   registrationList.value = response.data.data;
 }
+async function getLevel() {
+  const response = await levelService.getLevels();
+  for (let index = 0; index < response.data.data.length; index++) {
+    const element = response.data.data[index];
+    levelList.value.push({
+      value: element.id,
+      name: element.name,
+    });
+  }
+  levelSelected.value = levelList.value[0].value;
+}
+
+async function getSyllabus() {
+  const response = await syllabusService.getSyllabus();
+  for (let index = 0; index < response.data.data.length; index++) {
+    const element = response.data.data[index];
+    syllabusList.value.push({
+      value: element.id,
+      name: element.name,
+    });
+  }
+}
+
+async function getTotalSyllabusOfLevelByAdmission(
+  admission_period_id,
+  level_id
+) {
+  loadingTotalSyllabus.value = true;
+  const response = await levelService.getTotalSyllabusByAdmission(
+    admission_period_id,
+    level_id
+  );
+
+  console.log(response);
+
+  if (response.status !== 200) {
+    totalSyllabusByAdmission.value = [];
+    loadingTotalSyllabus.value = false;
+    return;
+  }
+
+  if (!response.data.success) {
+    totalSyllabusByAdmission.value = [];
+    loadingTotalSyllabus.value = false;
+    return;
+  }
+
+  totalSyllabusByAdmission.value = response.data.data;
+  loadingTotalSyllabus.value = false;
+}
+function returnSyllabus(syllabus_id) {
+  return totalSyllabusByAdmission.value.find(
+    (e) => e.syllabus_id == syllabus_id
+  )
+    ? totalSyllabusByAdmission.value.find((e) => e.syllabus_id == syllabus_id)
+        .total
+    : 0;
+}
 </script>
 
 <style  scoped>
@@ -231,5 +382,23 @@ async function getRegistrationByAdmission(admission_id) {
   --dp-input-padding: 8px 30px 10px 12px;
   width: 300px;
   margin: 8px 0px;
+}
+.select {
+  background-color: rgb(232, 232, 232);
+}
+.bg-blue {
+  background-color: rgba(39, 39, 245, 0.824);
+}
+.bg-red {
+  background-color: rgba(245, 39, 39, 0.824);
+}
+.bg-yellow {
+  background-color: rgba(245, 242, 39, 0.824);
+}
+.bg-green {
+  background-color: rgba(46, 245, 39, 0.824);
+}
+.bg-black {
+  background-color: rgba(0, 0, 0, 0.726);
 }
 </style>

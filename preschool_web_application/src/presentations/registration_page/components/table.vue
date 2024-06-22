@@ -1,8 +1,8 @@
 <template>
-  <div class="overflow-hidden h-fit mr-[10px] z-20 relative">
+  <div class="overflow-hidden h-fit mr-[10px]">
     <!--Table here-->
-    <table class="w-full relative">
-      <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
+    <table class="w-full">
+      <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0">
         <tr>
           <th class="px-3 py-3 text-left"></th>
           <th class="px-3 text-left">
@@ -32,7 +32,7 @@
           <th class="px-3 text-left">Chức năng</th>
         </tr>
       </thead>
-      <tbody class="relative">
+      <tbody>
         <tr
           v-for="(item, index) in drops.data"
           :key="index"

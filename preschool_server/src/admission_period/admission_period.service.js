@@ -1,7 +1,11 @@
 const db = require("../config/db.service");
 const config = require("../config/config");
 
-module.exports = { getAddmissionPeriodOpenning, getAddmissionPeriod };
+module.exports = {
+  getAddmissionPeriodOpenning,
+  getAddmissionPeriod,
+  isExistAdmission,
+};
 
 async function getAddmissionPeriodOpenning() {
   try {
@@ -26,6 +30,23 @@ async function getAddmissionPeriodOpenning() {
       code: error.code,
       error: error.sqlMessage,
     };
+  }
+}
+
+async function isExistAdmission(admission_period_id) {
+  try {
+    const result = db.select(
+      config.tb.addmission,
+      "*",
+      `WHERE id = ${admission_period_id}`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 }
 

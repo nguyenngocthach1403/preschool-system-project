@@ -18,6 +18,7 @@ import CategoryView from "../presentations/category_page/views/category_page.vue
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
 import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
 import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
+import TeacherCreationView from "../presentations/teacher_page/view/teacher_create.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -26,7 +27,7 @@ function Router() {
     routes: [
       {
         name: "LoginView",
-        path: "/",
+        path: "/sign",
         component: LoginView,
         meta: {
           requireAuth: false,
@@ -124,6 +125,11 @@ function Router() {
             name: "CategoryView",
             path: "/home-page/:username/category",
             component: CategoryView,
+          },
+          {
+            name: "TeacherCreationView",
+            path: "/home-page/:username/teacher",
+            component: TeacherCreationView,
           },
         ],
       },

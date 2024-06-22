@@ -1,7 +1,15 @@
 const db = require("../config/db.service");
 const config = require("../config/config");
 
-module.exports = { getTeacher, getClassManagedByTeacher };
+module.exports = {
+  getTeacher,
+  getClassManagedByTeacher,
+  countTeacher,
+  countSearchTeacher,
+  searchTeacher,
+  isDuplicate,
+  createTeacher,
+};
 
 async function getTeacher(limit, offset) {
   try {
@@ -33,6 +41,83 @@ async function getClassManagedByTeacher(teacherId) {
     return data || [];
   } catch (error) {
     console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+async function countTeacher() {
+  try {
+    console.log("Count teacher:");
+    return await db.select(
+      config.tb.teacher,
+      "Count(*) AS total",
+      "WHERE deleted = 0"
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  }
+}
+async function countSearchTeacher(txtSearch) {
+  try {
+    return db.select(
+      config.tb.teacher,
+      "Count(*) AS total",
+      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%'`
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  }
+}
+async function searchTeacher(txtSearch, page, limit) {
+  try {
+    return db.selectLimit(
+      config.tb.teacher,
+      "*",
+      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%'`,
+      `LIMIT ${limit}`,
+      `OFFSET ${limit * page}`
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "An error occusred while excuted query",
+    };
+  }
+}
+async function isDuplicate(email, phone) {
+  try {
+    const result = await db.select(
+      config.tb.teacher,
+      "*",
+      `WHERE email = '${email}' OR phone = '${phone}'`
+    );
+    return result.length > 0;
+  } catch (error) {
+    throw error;
+  }
+}
+async function createTeacher(dataToCreate) {
+  try {
+    const data = await db.insert(config.tb.teacher, dataToCreate);
+    if (data == 0) {
+      return {
+        success: false,
+        message: "Quá trình thêm dữ liệu giáo viên thất bại. Hãy thử lại.",
+      };
+    }
+    return {
+      success: true,
+      message: "Tạo giáo viên thành công",
+    };
+  } catch (error) {
     return {
       code: error.code,
       error: error.sqlMessage,
