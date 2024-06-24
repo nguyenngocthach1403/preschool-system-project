@@ -2,6 +2,7 @@ const express = require("express");
 
 const accountService = require("./account.service");
 const parentService = require("../parent/parent_service");
+const teacherService = require("../teacher/teacher.service");
 const { isEmpty } = require("../config/check.service");
 
 const router = express.Router();
@@ -63,6 +64,17 @@ async function createAccount(req, res) {
       );
 
       await parentService.updateParent(data.parentId, {
+        account_id: accountCreated.id,
+      });
+    }
+  }
+  if (!isEmpty(data.teacherId)) {
+    if (await accountService.isExistAccountByUsername(data.username)) {
+      const accountCreated = await accountService.getAccountByUsername(
+        data.username
+      );
+
+      await teacherService.updateTeacher(data.teacherId, {
         account_id: accountCreated.id,
       });
     }

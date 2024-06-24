@@ -20,7 +20,7 @@ export const useTeacherStore = defineStore("teacherStore", {
       this.loading = true;
       this.status = "loading";
       const res = await teacherService.getTeacher(this.page, this.limit);
-      // console.log(res);
+      console.log(res);
       const dataRes = res.data;
       const data = dataRes.data;
       if (data.status === 404) {
@@ -30,7 +30,7 @@ export const useTeacherStore = defineStore("teacherStore", {
       this.status = "loaded";
       this.loading = false;
       this.teachers = dataRes.data;
-      // console.log(dataRes.data);
+      console.log(dataRes.data);
       // console.log(this.teachers);
     },
     async getTotalTeacher() {
@@ -83,6 +83,57 @@ export const useTeacherStore = defineStore("teacherStore", {
       return {
         success: true,
       };
+    },
+    async updateTeacher(idTeacher, dataToUpdate) {
+      this.status = "updating";
+      const response = await teacherService.updateTeacher(
+        idTeacher,
+        dataToUpdate
+      );
+      if (response.data.status === 500) {
+        this.status = "update_failed";
+        return {
+          status: 500,
+          success: false,
+          message: response.data.error,
+        };
+      }
+      if (response.data.status === 400) {
+        this.status = "Account already exists.";
+        return {
+          status: 400,
+          success: false,
+          message: response.data.error,
+        };
+      }
+      if (response.data.status === 404) {
+        this.status = "Account not already ";
+        return {
+          status: 404,
+          success: false,
+          message: response.data.error,
+        };
+      }
+
+      this.getTeacher();
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    },
+    async deleteTeacher(idTeacherToDel) {
+      this.loading = true;
+
+      const res = await teacherService.deleleTeacher(idTeacherToDel);
+
+      const data = res.data;
+
+      if (data.status == 200) {
+        this.deleteTeacher(idTeacherToDel);
+        this.loading = false;
+        return true;
+      }
+      return false;
     },
     async changePage(newVal) {
       this.page = newVal;

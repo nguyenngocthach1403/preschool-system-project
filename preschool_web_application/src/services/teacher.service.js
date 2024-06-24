@@ -5,10 +5,17 @@ export default {
   countTeacher,
   search,
   createTeacher,
+  updateTeacher,
+  getTeacherById,
+  addAccountForTeacher,
+  deleleTeacher,
 };
 
 function getTeacher(offset, limit) {
   return api().get(`/teacher?limit=${limit}&offset=${offset}`);
+}
+function getTeacherById(id) {
+  return api().get(`/teacher/get/id/${id}`);
 }
 function search(txtSearch, page, limit) {
   return api().get(
@@ -24,4 +31,17 @@ function createTeacher(dataToCreate) {
       "Content-Type": "multipart/form-data",
     },
   });
+}
+function updateTeacher(id, dataToUpdate) {
+  return api().post(`/teacher/update/${id}`, dataToUpdate, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+function addAccountForTeacher(teacherId, username) {
+  return api().get(`/teacher/add/account/${teacherId}?username=${username}`);
+}
+function deleleTeacher(idTeacherToDel) {
+  return api().get(`/teacher/delete?id=${idTeacherToDel}`);
 }
