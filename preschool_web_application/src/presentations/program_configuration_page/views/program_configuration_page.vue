@@ -26,7 +26,7 @@
     </section>
     <section class="px-5">
       <!--Router-->
-      <router-view></router-view>
+      <router-view @add-toast="$emit('add-toast', $event)"></router-view>
     </section>
   </div>
 </template>

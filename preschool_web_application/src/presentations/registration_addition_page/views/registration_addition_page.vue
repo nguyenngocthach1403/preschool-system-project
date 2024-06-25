@@ -362,7 +362,6 @@ function handleSubmit() {
     saveValueInput();
   }
 }
-
 function fillValiable(register) {
   name.value = register.name;
   phone.value = register.phone;

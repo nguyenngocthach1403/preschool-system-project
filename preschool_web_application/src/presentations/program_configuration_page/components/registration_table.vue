@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full border rounded-xl overflow-y-auto relative">
     <table class="w-full relative">
-      <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-30">
+      <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
         <th class="py-1 px-2 w-[30%] text-start">Tên người đăng ký</th>
         <th class="py-1 px-2 w-dvw text-start">Liên hệ</th>
         <th class="py-1 px-2 text-start w-[400px]">Status</th>

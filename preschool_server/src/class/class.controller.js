@@ -4,10 +4,14 @@ const upload = multer({ dest: "uploads/class" });
 const fs = require("fs");
 const router = express.Router();
 const classService = require("./class.service");
+const studentService = require("../student/student.service");
+const checkService = require("../config/check.service");
 const config = require("../config/config");
 router.get("/", getClass);
 router.get("/search", findClass);
 router.post("/add", upload.array("files"), createClass);
+router.get("/students/", getMembers);
+router.post("/add-students", addStudentIntoClass);
 
 async function createClass(req, res) {
   //Valiable
@@ -72,6 +76,78 @@ async function createClass(req, res) {
   res.status(200).json({
     success: true,
     message: result.message,
+  });
+}
+
+async function addStudentIntoClass(req, res) {
+  const { classID, accountID } = req.query;
+  const students = req.body;
+
+  if (checkService.isEmpty(classID) || !checkService.isNumber(classID)) {
+    return res.status(400).json({
+      success: false,
+      error: "invalid Class_Id",
+    });
+  }
+
+  if (students.length == undefined) {
+    return res.status(400).json({
+      success: false,
+      error: "students must []",
+    });
+  }
+
+  const studentEntered = [];
+
+  for (const element of students) {
+    try {
+      const result = await classService.addStudentIntoClasses({
+        class_id: classID,
+        student_id: element.id,
+        status: 0,
+        created_by: accountID,
+      });
+
+      if (result.success) {
+        console.log(element);
+        studentEntered.push(element);
+        await studentService.updateStudent(element.id, { class_id: classID });
+      }
+    } catch (error) {
+      console.error(`Failed to process student with id ${element.id}:`, error);
+    }
+  }
+
+  console.log(studentEntered);
+
+  if (studentEntered.length == 0) {
+    return res.status(400).json({
+      success: false,
+      error: "Không có học sinh vào được thêm vào",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: studentEntered,
+  });
+}
+
+async function getMembers(req, res) {
+  const class_id = req.query.classID;
+
+  if (checkService.isEmpty(class_id) || !checkService.isNumber(class_id)) {
+    return res.status(400).json({
+      success: false,
+      error: "invalid Class_Id",
+    });
+  }
+
+  const result = await classService.getMembers(class_id);
+
+  res.status(200).json({
+    success: true,
+    data: result,
   });
 }
 

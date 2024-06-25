@@ -15,6 +15,8 @@ const config = {
     teacher: "teachers",
     classManager: "class_managers",
     managerRole: "class_manager_roles",
+    classMembers: "class_members",
+    registerNotes: "register_notes",
   },
 };
 

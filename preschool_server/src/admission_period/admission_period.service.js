@@ -5,6 +5,7 @@ module.exports = {
   getAddmissionPeriodOpenning,
   getAddmissionPeriod,
   isExistAdmission,
+  createAdmissionPeriod,
 };
 
 async function getAddmissionPeriodOpenning() {
@@ -57,6 +58,27 @@ async function getAddmissionPeriod() {
       "ad.*, ac.username"
     );
     return result;
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function createAdmissionPeriod(dataToCreate) {
+  try {
+    const result = await db.insert(config.tb.addmission, dataToCreate);
+    if (result.affectedRows == 0) {
+      return {
+        success: false,
+        message: "Tạo thất bại hãy thử lại..",
+      };
+    }
+    return {
+      success: true,
+      data: result.insertId,
+    };
   } catch (error) {
     return {
       code: error.code,

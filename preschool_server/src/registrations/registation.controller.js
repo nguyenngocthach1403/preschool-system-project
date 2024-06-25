@@ -9,6 +9,7 @@ const fs = require("fs");
 const checkService = require("../config/check.service");
 
 const multer = require("multer");
+const { error } = require("console");
 
 const upload = multer({ dest: "uploads/registration" });
 
@@ -37,6 +38,42 @@ router.get("/delete/id", deleteRegistration);
 
 router.get("/id/:id", getRegisterByID);
 
+router.post("/note/add", addNoteByRegisterId);
+
+async function addNoteByRegisterId(req, res) {
+  const data = req.body;
+
+  const result = await registationService.createNotes(data);
+
+  if (result.code) {
+    return res.status(200).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  if (!result.success) {
+    return res.status(200).json({
+      success: false,
+      error: result.message,
+    });
+  }
+
+  const note = await registationService.getNoteById(result.insertId);
+
+  if (note.code) {
+    return res.status(200).json({
+      success: false,
+      error: note.error,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: note,
+  });
+}
+
 async function updateRegister(req, res) {
   const id = req.params.id;
 
@@ -52,9 +89,11 @@ async function updateRegister(req, res) {
     syllabus,
     relationship,
     status,
+    student_id,
   } = req.body;
 
-  console.log(status);
+  console.log(student_id);
+  console.log(req.body);
 
   const isExist = await registationService.isExitsRegister(id);
 
@@ -76,6 +115,7 @@ async function updateRegister(req, res) {
     level_id: levels,
     syllabus_id: syllabus,
     relationship: relationship,
+    student_id: student_id,
     status: status,
   };
 
@@ -100,7 +140,7 @@ async function updateRegister(req, res) {
       fs.renameSync(req.files[0].path + ".jpg", "uploads/registration/none");
     }
 
-    return res.status(400).json({
+    return res.status(200).json({
       success: false,
       error: result.error,
     });
@@ -113,7 +153,7 @@ async function updateRegister(req, res) {
 
     return res.status(200).json({
       success: false,
-      message: result.message,
+      error: result.message,
     });
   }
 

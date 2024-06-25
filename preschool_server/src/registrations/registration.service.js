@@ -21,7 +21,50 @@ module.exports = {
   createApprove,
   getRegisterByPhone,
   countSyllabusOfLevelByAdmission,
+  getApproveByRegisterId,
+  createNotes,
+  getNoteById,
 };
+
+async function createNotes(data) {
+  try {
+    const result = await db.insert(config.tb.registerNotes, data);
+    if (result.effectedRows == 0) {
+      return {
+        success: false,
+        message: "Không thêm được ghi chú",
+      };
+    }
+    return {
+      success: true,
+      insertId: result.insertId,
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function getNoteById(id) {
+  try {
+    const result = await db.select(
+      `${config.tb.registerNotes} n LEFT JOIN ${config.tb.account} ac ON ac.id = n.created_by`,
+      "n.*, ac.username, ac.role",
+      `WHERE n.id = ${id}`
+    );
+    if (result.length == 0) {
+      return undefined;
+    }
+    return result[0];
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
 
 async function createRegister(data) {
   try {
@@ -57,7 +100,7 @@ async function getRegisterByPhone(admission_period_id, phone) {
     const ressult = await db.select(
       config.tb.register,
       "*",
-      `WHERE phone = ${phone}`
+      `WHERE phone = ${phone} AND admission_period_id = ${admission_period_id}`
     );
     if (ressult.length == 0) {
       return false;
@@ -122,12 +165,28 @@ async function updateRegister(id, data) {
 //     };
 //   }
 // }
+async function getRegisterNotes(registerId) {
+  try {
+    const reulst = db.select(
+      `${config.tb.registerNotes} rn LEFT JOIN ${config.tb.account} acc ON acc.id = rn.created_by`,
+      "rn.*, acc.username, acc.role",
+      `WHERE rn.register_id = ${registerId}`
+    );
+
+    return reulst;
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
 
 async function getRegisterByID(id) {
   try {
     const result = await db.select(
-      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus_id = s.id LEFT JOIN ${config.tb.student} stu ON stu.id = r.student_id`,
-      "r.*, l.name AS levelsName, s.name AS syllabusName, stu.name AS student_name",
+      `${config.tb.register} r LEFT JOIN ${config.tb.levels} l ON r.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON r.syllabus_id = s.id LEFT JOIN ${config.tb.student} stu ON stu.id = r.student_id LEFT JOIN ${config.tb.addmission} admission ON admission.id = r.admission_period_id`,
+      "r.*,admission.name AS admission_name, admission.start_date, admission.end_date, l.name AS levelsName, s.name AS syllabusName, stu.name AS student_name, stu.fork AS student_fork, stu.nation AS student_nation, stu.place_of_birth, stu.birthday, stu.gender AS student_gender",
       `WHERE r.id = ${id}`
     );
 
@@ -137,6 +196,19 @@ async function getRegisterByID(id) {
         message: "Quá trình lấy đơn đăng ký bị lỗi.",
       };
     }
+
+    const approves = await getApproveByRegisterId(id);
+
+    if (!approves.code) {
+      result[0].approves = approves;
+    }
+
+    const notes = await getRegisterNotes(id);
+
+    if (!notes.code) {
+      result[0].notes = notes;
+    }
+
     return {
       success: true,
       message: "Thành công",
@@ -235,7 +307,7 @@ async function createApprove(approve_data) {
       coming_status: approve_data.coming_status,
     });
 
-    if (result == 0) {
+    if (result.effectedRows == 0) {
       return {
         success: false,
         message: "Duyệt thất bại.",
@@ -482,6 +554,23 @@ async function deleteRegistration(id, phone) {
   } catch (error) {
     return {
       success: false,
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function getApproveByRegisterId(registerId) {
+  try {
+    const reulst = db.select(
+      `${config.tb.approves} app LEFT JOIN ${config.tb.account} acc ON acc.id = app.account_id`,
+      "app.*, acc.username",
+      `WHERE app.register_id = ${registerId}`
+    );
+
+    return reulst;
+  } catch (error) {
+    return {
       code: error.code,
       error: error.sqlMessage,
     };

@@ -81,6 +81,8 @@ router.post("/", upload.array("files"), async (req, res) => {
     phone
   );
 
+  console.log(registerCreated);
+
   res.status(200).json({
     status: 200,
     success: true,

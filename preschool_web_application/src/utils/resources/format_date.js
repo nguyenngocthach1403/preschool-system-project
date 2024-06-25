@@ -16,10 +16,10 @@ function yyyymmddDateString(ddmmyyyyDate) {
 }
 
 function ddmmyyyyDateString(yyyymmddDate) {
-  var parts = yyyymmddDate.split("-");
-  var year = parts[0];
-  var month = parts[1];
-  var day = parts[2];
+  var parts = yyyymmddDate.split("/");
+  var year = parts[2];
+  var month = parts[0];
+  var day = parts[1];
 
   if (month.length === 1) {
     month = "0" + month;
@@ -32,4 +32,11 @@ function ddmmyyyyDateString(yyyymmddDate) {
   return formattedDate;
 }
 
-export { yyyymmddDateString, ddmmyyyyDateString };
+function formatTimeString(minute, hour) {
+  if (minute < 10) minute = "0" + minute;
+  if (hour < 10) hour = "0" + hour;
+
+  return hour + ":" + minute;
+}
+
+export { yyyymmddDateString, ddmmyyyyDateString, formatTimeString };

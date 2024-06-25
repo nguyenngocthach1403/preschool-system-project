@@ -33,7 +33,7 @@
           {{ new Date(addmisstionPeriod.start_date).toLocaleDateString() }} -
           {{ new Date(addmisstionPeriod.end_date).toLocaleDateString() }}
         </div>
-        <div class="w-full py-2 mt-5 bg-violet-600 text-white px-3">
+        <div class="w-full py-2 mt-5 bg-[#3b44d1] text-white px-3">
           Thông tin người đăng ký
         </div>
         <section class="md:flex gap-5 my-3">
@@ -102,7 +102,7 @@
             </div>
           </div>
         </section>
-        <div class="w-full py-2 mt-5 bg-violet-600 text-white px-3">
+        <div class="w-full py-2 mt-5 bg-[#3b44d1] text-white px-3">
           Thông tin học sinh
         </div>
         <section class="md:flex gap-5">
@@ -183,7 +183,7 @@
             </label>
           </div>
         </section>
-        <div class="w-full py-2 mt-5 bg-violet-600 text-white px-3">
+        <div class="w-full py-2 mt-5 bg-[#3b44d1] text-white px-3">
           Nhu cầu học
         </div>
         <section class="md:flex gap-5">
@@ -224,7 +224,7 @@
             </label>
           </div>
         </section>
-        <div class="w-full py-2 mt-5 bg-violet-600 text-white px-3">
+        <div class="w-full py-2 mt-5 bg-[#3b44d1] text-white px-3">
           Địa chỉ thường trú
         </div>
         <section class="">
@@ -610,7 +610,7 @@ function checkValid() {
   return valid;
 }
 
-async function createStudent(register_id) {
+async function createStudent() {
   const formData = new FormData();
   formData.append("name", studentName.value);
   formData.append(
@@ -623,7 +623,6 @@ async function createStudent(register_id) {
   formData.append("birthOfOrigin", studentBirthOfOrigin.value);
   formData.append("nation", studentNation.value);
   formData.append("status", 0);
-  formData.append("register_id", register_id);
 
   const response = await studentService.createStudent(formData);
   console.log("student", response);
@@ -644,7 +643,7 @@ async function createStudent(register_id) {
     return false;
   }
 
-  return true;
+  return response.data.data;
 }
 
 async function createRegister() {
@@ -676,7 +675,6 @@ async function createRegister() {
         title: "Đăng ký thất bại.",
         type: 1,
       });
-      return false;
     }
 
     if (response.data.isExist) {
@@ -685,7 +683,6 @@ async function createRegister() {
         content: "Số điện thoại đã được đăng ký.",
         type: 1,
       });
-      return false;
     }
 
     if (!response.data.success) {
@@ -693,7 +690,6 @@ async function createRegister() {
         title: "Đăng ký thất bại.",
         type: 1,
       });
-      return false;
     }
 
     return response.data.data;
@@ -704,7 +700,9 @@ async function createRegister() {
       type: 1,
     });
     console.error(e);
-    return false;
+    return {
+      success: false,
+    };
   }
 }
 
@@ -743,36 +741,6 @@ async function getAddress() {
     });
 }
 
-async function submit() {
-  if (checkValid()) return;
-
-  loading.value = true;
-  //Tạo đơn đăng ký
-  const register = await createRegister();
-
-  //Thất bại hủy
-  if (!register) return;
-
-  console.log(register.id);
-
-  //Tạo học sinh
-  const student = await createStudent(register.id);
-
-  if (!student) {
-    loading.value = false;
-    return;
-  }
-
-  emits("add-toast", {
-    title: "Đăng ký thành công.",
-    content: `Đã đăng ký với số điện thoại ${register.phone}`,
-  });
-  loading.value = false;
-  setTimeout(() => {
-    registerSuccess.value = true;
-  }, 500);
-}
-
 async function linkStudentWithRegister(register_id, student_id) {
   const formDataToUpDateRegister = new FormData();
   formDataToUpDateRegister.append("student_id", student_id);
@@ -799,6 +767,37 @@ async function linkStudentWithRegister(register_id, student_id) {
   }
 
   return true;
+}
+
+async function submit() {
+  if (checkValid()) return;
+
+  loading.value = true;
+  //Tạo đơn đăng ký
+  const register = await createRegister();
+
+  //Thất bại hủy
+  if (register == undefined) {
+    console.log("Tạo đơn đăng ký thất bại ");
+    return;
+  }
+
+  console.log("Tạo đơn đa ký thành công.", register.id);
+
+  //Tạo học sinh
+  const student = await createStudent();
+
+  const result = await linkStudentWithRegister(register.id, student.id);
+
+  loading.value = false;
+
+  if (result) {
+    toasts.value.push({
+      title: "Đăng ký thành công",
+      type: 0,
+    });
+  }
+  registerSuccess.value = true;
 }
 
 function handleUploadFile(event) {

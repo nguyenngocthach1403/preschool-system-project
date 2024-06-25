@@ -184,6 +184,12 @@
               >
                 <img :src="edit_icon" class="w-[15px]" /> Sửa
               </li>
+              <li
+                @click="$emit('view', showMenu)"
+                class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
+              >
+                <img :src="eye_icon" class="w-[15px]" /> Chi tiết
+              </li>
             </ul>
           </div>
         </Transition>
@@ -223,6 +229,7 @@ import menu_icon from "../../../assets/icons/menu.svg";
 import close_icon from "../../../assets/icons/close.svg";
 import delete_icon from "../../../assets/icons/delete.svg";
 import edit_icon from "../../../assets/icons/edit.svg";
+import eye_icon from "../../../assets/icons/eye.svg";
 import empty_icon from "../../../assets/icons/Empty Box.svg";
 const showChangeStatusViewIndex = ref(null);
 const showMenu = ref(false);

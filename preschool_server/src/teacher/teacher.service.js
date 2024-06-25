@@ -107,7 +107,7 @@ async function isDuplicate(email, phone) {
 async function createTeacher(dataToCreate) {
   try {
     const data = await db.insert(config.tb.teacher, dataToCreate);
-    if (data == 0) {
+    if (data.affectedRows == 0) {
       return {
         success: false,
         message: "Quá trình thêm dữ liệu giáo viên thất bại. Hãy thử lại.",

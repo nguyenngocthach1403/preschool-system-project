@@ -8,6 +8,8 @@ module.exports = {
   countFindingUpcomingAndOngoingClasses,
   createClass,
   isExistClassByName,
+  getMembers,
+  addStudentIntoClasses,
 };
 
 async function getClass(limit, offset) {
@@ -27,6 +29,22 @@ async function getClass(limit, offset) {
   }
 }
 
+async function getMembers(class_id) {
+  try {
+    const data = await db.select(
+      `${config.tb.classMembers} m LEFT JOIN ${config.tb.student} s ON s.id = m.student_id LEFT JOIN ${config.tb.account} a ON a.id = m.created_by`,
+      "s.id, s.name, s.gender, s.birthday, m.*, s.avatar, m.created_by, a.username, a.role, m.joined",
+      `WHERE s.deleted = 0 AND m.class_id = ${class_id}`
+    );
+
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 async function isExistClassByName(className) {
   try {
     const result = await db.select(
@@ -40,6 +58,30 @@ async function isExistClassByName(className) {
     return true;
   } catch (error) {
     return false;
+  }
+}
+
+async function addStudentIntoClasses(data) {
+  try {
+    const result = await db.insert(config.tb.classMembers, data);
+
+    if (result.effectedRows == 0) {
+      return {
+        success: false,
+        message: "Quá trình thêm vào lớp không thành công hãy thử lại.",
+      };
+    }
+
+    return {
+      success: true,
+      data: result,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
   }
 }
 async function countFindingUpcomingAndOngoingClasses(searchText) {
