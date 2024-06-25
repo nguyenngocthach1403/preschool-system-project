@@ -21,6 +21,7 @@ import AdmissionPeriodView from "../presentations/program_configuration_page/vie
 import TeacherCreationView from "../presentations/teacher_page/view/teacher_create.vue";
 import StudentDetailView from "../presentations/student_detail_page/views/student_detail_page.vue";
 import ClassDetailView from "../presentations/class_detail_page/views/class_detail_page.vue";
+import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -97,6 +98,11 @@ function Router() {
             name: "TeacherView",
             path: "/home-page/:username/teacher",
             component: TeacherView,
+          },
+          {
+            name: "TeacherEditView",
+            path: "/home-page/:username/teacher-edit/:id",
+            component: TeacherEditView,
           },
           {
             name: "DashBoardView",
