@@ -19,6 +19,7 @@ import ParentStudentCreationView from "../presentations/registration_page/view/p
 import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
 import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
 import TeacherCreationView from "../presentations/teacher_page/view/teacher_create.vue";
+import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -80,6 +81,11 @@ function Router() {
             name: "TeacherView",
             path: "/home-page/:username/teacher",
             component: TeacherView,
+          },
+          {
+            name: "TeacherEditView",
+            path: "/home-page/:username/teacher-edit/:id",
+            component: TeacherEditView,
           },
           {
             name: "DashBoardView",

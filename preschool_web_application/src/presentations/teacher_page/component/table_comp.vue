@@ -132,7 +132,7 @@ import delete_icon from "@/assets/icons/delete.svg";
 import edit_icon from "@/assets/icons/edit.svg";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
 
-const emits = defineEmits(["add-toast"]);
+const emits = defineEmits(["delete-teacher"]);
 
 defineProps({
   dataTable: {

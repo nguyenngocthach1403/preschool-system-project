@@ -9,6 +9,10 @@ module.exports = {
   searchTeacher,
   isDuplicate,
   createTeacher,
+  isExistTeacher,
+  updateTeacher,
+  getByID,
+  deleteTeacher,
 };
 
 async function getTeacher(limit, offset) {
@@ -45,6 +49,17 @@ async function getClassManagedByTeacher(teacherId) {
       code: error.code,
       error: error.sqlMessage,
     };
+  }
+}
+async function getByID(id) {
+  try {
+    return db.select(
+      `${config.tb.teacher} t LEFT JOIN ${config.tb.account} a ON t.account_id = a.id`,
+      "t.*, t.email AS EmailTeacher, t.phone AS PhoneTeacher , t.status AS StatusTeacher,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
+      id !== undefined ? `Where t.id = ${id}` : ""
+    );
+  } catch (error) {
+    return error;
   }
 }
 async function countTeacher() {
@@ -121,6 +136,63 @@ async function createTeacher(dataToCreate) {
     return {
       code: error.code,
       error: error.sqlMessage,
+    };
+  }
+}
+
+async function isExistTeacher(id) {
+  try {
+    const result = await db.select(
+      config.tb.teacher,
+      "*",
+      `WHERE deleted = 0 AND id = ${id}`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+async function updateTeacher(id, dataToUpdate) {
+  try {
+    //Xóa các key bị trống
+    const keys = Object.keys(dataToUpdate);
+    for (let index = 0; index < keys.length; index++) {
+      const key = keys[index];
+      if (dataToUpdate[key] == undefined) {
+        delete dataToUpdate[key];
+      }
+    }
+
+    const result = await db.update(config.tb.teacher, dataToUpdate, { id: id });
+
+    if (result == 0) {
+      return {
+        success: false,
+        message: "Cập nhập giáo viên thất bại. Hãy thử lại.",
+      };
+    }
+    return {
+      success: true,
+      message: "Cập nhập giáo viên thành công",
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+async function deleteTeacher(idTeacherToDel) {
+  try {
+    return db.update(config.tb.teacher, { deleted: 1 }, { id: idTeacherToDel });
+  } catch (error) {
+    return {
+      code: error.code,
+      message: "Delete Fail",
     };
   }
 }
