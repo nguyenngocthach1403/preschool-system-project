@@ -1,5 +1,6 @@
 const config = require("../../src/config/config");
 const db = require("../config/db.service");
+const checkService = require("../config/check.service");
 
 module.exports = {
   getAllStudents,
@@ -16,23 +17,21 @@ module.exports = {
   isExistStudent,
   isExistRelationship,
   deleteRelationship,
+  getStudentWithoutClass,
+  searchStudentWithoutClass,
 };
 
 async function createNewStudent(studentToCreate) {
   try {
-    // // Tao Id chho học sinh mới
-    // const id = await createIDStudent();
-    // studentToCreate.id = parseInt(id, 10);
-    // //Tạo học sinh
     const result = await db.insert(config.tb.student, studentToCreate);
 
-    if (result == 0) {
+    if (result.effectedRows == 0) {
       return false;
     }
 
     return {
       success: true,
-      studentCreated: result,
+      insertId: result.insertId,
     };
   } catch (error) {
     console.error(error);
@@ -59,6 +58,48 @@ async function deleteRelationship(studentId, parentId) {
   }
 }
 
+async function getStudentWithoutClass(limit, offset) {
+  try {
+    const data = await db.selectLimit(
+      config.tb.student,
+      "*",
+      "WHERE deleted = 0 AND class_id is NULL AND status = 1 AND study_status = 0",
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function searchStudentWithoutClass(searchText, limit, offset) {
+  try {
+    const data = await db.selectLimit(
+      config.tb.student,
+      "*",
+
+      checkService.isNumber(searchText)
+        ? `WHERE (id = ${searchText} OR name like '%${searchText}%') AND deleted = 0 AND class_id is NULL AND status = 1`
+        : `WHERE name like '%${searchText}%' AND deleted = 0 AND class_id is NULL AND status = 1 AND study_status = 0`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
 async function isExistRelationship(studentId, parentId) {
   try {
     const result = await db.select(
@@ -79,7 +120,7 @@ async function isExistRelationship(studentId, parentId) {
 async function createRelatioship(data) {
   try {
     const result = await db.insert(config.tb.relationship, data);
-    if (result === 0) {
+    if (result.effectedRows === 0) {
       return false;
     }
     return true;
@@ -255,7 +296,7 @@ async function getStudentByID(id) {
       data[0].parents = parents;
     }
 
-    return data;
+    return data[0];
   } catch (error) {
     return {
       code: error.code,

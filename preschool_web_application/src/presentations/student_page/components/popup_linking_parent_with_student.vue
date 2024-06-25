@@ -13,22 +13,22 @@
             class="absolute z-30 top-[-30px] flex items-center gap-4 text-[13px]"
           >
             <img
-              :src="student.avatar"
+              :src="student ? student.avatar || avatar_default : avatar_default"
               class="w-[60px] h-[60px] object-cover rounded-full"
             />
             <p class="bg-white p-2 border rounded-md">
               <span class="text-gray-400">Tên:</span>
-              {{ student.name }}
+              {{ student ? student.name : "unknown" }}
             </p>
             <p class="bg-white p-2 border rounded-md">
               <span class="text-gray-400">Lớp:</span>
-              {{ student.className }}
+              {{ student ? student.className : "unknown" }}
             </p>
           </div>
           <!--Parent list-->
           <div class="w-full h-full overflow-y-auto text-[12px]">
             <div
-              v-for="parentItem in student.parents"
+              v-for="parentItem in parentOfStudent"
               :key="parentItem"
               class="w-full border relative h-fit py-2 rounded-md mb-3 flex items-center gap-4 px-3"
             >
@@ -177,7 +177,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import Popup from "../../../components/edit_and_create_layout.vue";
 import parentService from "../../../services/parent.service";
 import studentService from "../../../services/student.service";
@@ -185,10 +185,12 @@ import { convertParentRole } from "../../../utils/resources/converter";
 import SearchForm from "../../../components/search_form_comp.vue";
 import relationshipService from "../../../services/relationship.service";
 import LoadingComp from "../../../components/loading_comp.vue";
+import avatar_default from "../../../assets/img/avartar_default.jpg";
 
 const loading = ref(true);
 const loadingParent = ref(true);
 const student = ref();
+const parentOfStudent = ref([]);
 const page = ref(0);
 const limit = ref(10);
 const hasParent = ref(true);
@@ -200,6 +202,10 @@ onMounted(() => {
     getStudent();
     getParents();
   }, 1000);
+});
+
+watch(student, () => {
+  parentOfStudent.value = student.parents;
 });
 
 const parentList = ref([]);
@@ -332,6 +338,8 @@ async function linkParentWithStudent() {
 
 async function getStudent() {
   const response = await studentService.getStudentById(props.studentData.id);
+
+  console.log(response);
 
   if (response.status !== 200) {
     emits("add-toast", {

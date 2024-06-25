@@ -15,6 +15,11 @@
         :src="showRegisterImg"
       />
     </div>
+    <RegisterDetailPopup
+      v-if="registerToViewDetail"
+      @close="closeRegisterDatailPopup"
+      :data="registerToViewDetail"
+    />
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
@@ -31,6 +36,7 @@
       @confirm="comfirmChangeRegisterStatus($event)"
       :value="registerUpdateStatus"
     />
+
     <!-- Header -->
     <div
       class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
@@ -117,6 +123,7 @@
               query: { id: $event.id },
             })
           "
+          @view="registerToViewDetail = $event"
           @create-new-student="createNewStudent($event)"
           @update-status="registerUpdateStatus = $event"
           @show-register-img="showRegisterImg = $event"
@@ -182,6 +189,7 @@ import addmissionPeriodService from "../../../services/admission_period.service"
 import { convertRegisterStatus } from "../../../utils/resources/converter";
 import io from "socket.io-client";
 import { useRouter } from "vue-router";
+import RegisterDetailPopup from "../components/popup_detail.vue";
 
 const registrationStore = useRegistrionStore();
 const { registrations, total, status, limit, page, searchText, statusIds } =
@@ -197,6 +205,8 @@ const admissionPeriod = ref(null);
 const router = useRouter();
 
 const date = ref();
+
+const registerToViewDetail = ref(null);
 
 async function changeAdmissionPeriod() {
   registrationStore.admission_period_id = admissionPeriod.value;
@@ -265,6 +275,10 @@ onBeforeUnmount(() => {
   const socket = io("http://localhost:9000");
   socket.off("changedRegisterStatus");
 });
+
+function closeRegisterDatailPopup() {
+  registerToViewDetail.value = null;
+}
 
 async function getAddmissionPeriodOpenning() {
   const response = await addmissionPeriodService.getAddmissionPeriod();

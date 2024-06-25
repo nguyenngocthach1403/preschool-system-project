@@ -207,6 +207,12 @@
             </li>
             <li
               class="w-full py-2 rounded-md hover:bg-gray-200 px-4 flex gap-3"
+              @click="
+                $router.push({
+                  name: 'StudentDetailView',
+                  query: { StudentID: showMenu.id },
+                })
+              "
             >
               <img :src="eye_icon" class="w-[22px]" /> Chi tiết
             </li>

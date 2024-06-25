@@ -19,6 +19,8 @@ import ParentStudentCreationView from "../presentations/registration_page/view/p
 import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
 import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
 import TeacherCreationView from "../presentations/teacher_page/view/teacher_create.vue";
+import StudentDetailView from "../presentations/student_detail_page/views/student_detail_page.vue";
+import ClassDetailView from "../presentations/class_detail_page/views/class_detail_page.vue";
 import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
 const router = Router();
 export default router;
@@ -56,9 +58,24 @@ function Router() {
             component: StudentView,
           },
           {
+            name: "StudentDetailView",
+            path: "/home-page/:username/students/detail",
+            component: StudentDetailView,
+          },
+          {
             name: "ParentStudentCreationView",
             path: "/home-page/:username/registration/create_parent_student",
             component: ParentStudentCreationView,
+          },
+          {
+            name: "ClassDetailView",
+            path: "/home-page/:username/classes/detail",
+            component: ClassDetailView,
+            beforeEnter(to, from) {
+              if (!to.query.classID) {
+                return from.path;
+              }
+            },
           },
           {
             name: "ProgramConfigurationView",
@@ -145,7 +162,7 @@ function Router() {
     if (localStorage.getItem("user") !== null) {
       if (to.meta.requireAuth && !window.user) {
         alert("You are not logged in");
-        return "/";
+        return "/sign";
       }
     }
   });

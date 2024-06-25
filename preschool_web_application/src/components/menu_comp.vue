@@ -33,9 +33,11 @@
     <div class="menu-list bg-white text-gray-600 py-1 px-3">
       <span class="text-[15px] text-gray-500">Trung tâm</span>
       <router-link
-        v-for="item in menu"
-        :key="item.name"
+        v-for="(item, index) in menu.filter((e) => e.type == 0)"
+        :key="index"
         :to="{ name: item.name }"
+        :class="{ active: item.active }"
+        @click="selectActive(item.id)"
       >
         <div class="menu-item h-50 pl-[25px]">
           <div><img :src="item.icon" class="w-[20px]" /></div>
@@ -49,9 +51,11 @@
     <div class="menu-list bg-white py-1 text-gray-600 pb-20 px-3">
       <span class="text-[15px] text-gray-500">Quản lý</span>
       <router-link
-        v-for="item in managerItem"
-        :key="item.name"
+        v-for="(item, index) in menu.filter((e) => e.type == 1)"
+        :key="index"
         :to="{ name: item.name }"
+        :class="{ active: item.active }"
+        @click="selectActive(item.id)"
       >
         <div class="menu-item h-[45px] pl-[25px]">
           <div><img :src="item.icon" class="w-[20px]" /></div>
@@ -117,22 +121,79 @@ function logout() {
 }
 
 const menu = ref([
-  { title: "Thông kê", name: "DashBoardView", icon: dash },
   {
+    id: 0,
+    title: "Thông kê",
+    name: "DashBoardView",
+    icon: dash,
+    active: true,
+    type: 0,
+  },
+  {
+    id: 1,
     title: "Cấu hình trường học",
     name: "ProgramConfigurationView",
     icon: school,
+    active: false,
+    type: 0,
   },
-]);
-const managerItem = ref([
-  { title: "Khách hàng", name: "RegistrationView", icon: registration },
-  { title: "Học sinh", name: "StudentView", icon: student },
-  { title: "Phụ huynh", name: "ParentView", icon: parent },
-  { title: "Lớp học", name: "ClassView", icon: classes },
+  {
+    id: 2,
+    title: "Khách hàng",
+    name: "RegistrationView",
+    icon: registration,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 3,
+    title: "Học sinh",
+    name: "StudentView",
+    icon: student,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 4,
+    title: "Phụ huynh",
+    name: "ParentView",
+    icon: parent,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 5,
+    title: "Lớp học",
+    name: "ClassView",
+    icon: classes,
+    active: false,
+    type: 1,
+  },
   // { title: "Nhân viên", name: "/ddd", icon: staff },
-  { title: "Tài khoản", name: "AccountView", icon: account },
-  { title: "Giáo viên", name: "TeacherView", icon: staff },
-  { title: "Danh mục", name: "CategoryView", icon: category },
+  {
+    id: 6,
+    title: "Tài khoản",
+    name: "AccountView",
+    icon: account,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 7,
+    title: "Giáo viên",
+    name: "TeacherView",
+    icon: staff,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 8,
+    title: "Danh mục",
+    name: "CategoryView",
+    icon: category,
+    active: false,
+    type: 1,
+  },
   // { title: "Cài đặt", name: "/dddd", icon: setting },
   // { title: "Danh mục", name: "/dddd", icon: extension },
 ]);
@@ -148,6 +209,10 @@ const drops = defineProps({
 //   isMenuClose.value = !isMenuClose.value;
 //   emits("close-menu", isMenuClose.value);
 // }
+function selectActive(index) {
+  menu.value.forEach((e) => (e.active = false));
+  menu.value.find((e) => e.id == index).active = true;
+}
 </script>
 
 <style scoped>
@@ -179,7 +244,7 @@ const drops = defineProps({
 }
 
 /* menu css */
-.router-link-active .menu-item {
+.active .menu-item {
   /* background-color: rgb(231, 231, 231); */
   /* background-color: #3b44d1; */
   transition: 0.18s ease-in;
@@ -191,7 +256,7 @@ const drops = defineProps({
   display: flex;
 }
 
-.router-link-active .menu-item::before {
+.active .menu-item::before {
   animation: active 0.5s forwards normal;
   content: "";
   background-color: #3b44d1;

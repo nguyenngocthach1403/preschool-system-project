@@ -33,9 +33,7 @@ async function insert(table, data) {
   try {
     const sql = `INSERT INTO ${table} SET ?`;
     const [result] = await dbPool.query(sql, data);
-
-    if (result.affectedRows == 0) return 0;
-    return result.insertId;
+    return result;
   } catch (error) {
     throw error;
   }

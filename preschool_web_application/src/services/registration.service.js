@@ -13,6 +13,7 @@ export default {
   deleteRegistration,
   getRegisterByID,
   updateRegister,
+  addNote,
 };
 
 function createRegister(data) {
@@ -90,4 +91,8 @@ function updateRegister(id, data) {
       "Content-Type": "multipart/form-data",
     },
   });
+}
+
+function addNote(data) {
+  return api().post(`/registrations/note/add`, data);
 }

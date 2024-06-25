@@ -7,6 +7,7 @@ const fs = require("fs");
 const studentService = require("./student.service");
 const parentService = require("../parent/parent_service");
 const classService = require("../class/class.service");
+const checkService = require("../config/check.service");
 
 const { error } = require("console");
 const config = require("../config/config");
@@ -23,9 +24,13 @@ router.get("/delete", deleteStudent);
 
 router.post("/create", upload.array("files"), createStudent);
 
-router.get("/:id", getStudentById);
+router.get("/id/:id", getStudentById);
 
 router.post("/update/:id", upload.array("files"), updateStudent);
+
+router.get("/without-class", getStudentWithoutClasses);
+
+router.get("/search/without-class", searchStudentWithoutClasses);
 
 async function getStudentById(req, res) {
   const id = req.params.id;
@@ -52,7 +57,75 @@ async function getStudentById(req, res) {
   res.status(200).json({
     success: true,
     message: "Thành công.",
-    data: result[0],
+    data: result,
+  });
+}
+
+async function getStudentWithoutClasses(req, res) {
+  const { limit, offset } = req.query;
+
+  if (checkService.isEmpty(limit) || checkService.isEmpty(offset)) {
+    return res.status(400).json({
+      success: false,
+      error: "Limit or offset is empty",
+    });
+  }
+
+  if (!checkService.isNumber(limit) || !checkService.isNumber(offset)) {
+    return res.status(400).json({
+      success: false,
+      error: "Limit or offset is not a number",
+    });
+  }
+
+  const result = await studentService.getStudentWithoutClass(limit, offset);
+
+  if (result.code) {
+    return res.status(400).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+}
+
+async function searchStudentWithoutClasses(req, res) {
+  const { searchText, limit, offset } = req.query;
+
+  if (checkService.isEmpty(limit) || checkService.isEmpty(offset)) {
+    return res.status(400).json({
+      success: false,
+      error: "Limit or offset is empty",
+    });
+  }
+
+  if (!checkService.isNumber(limit) || !checkService.isNumber(offset)) {
+    return res.status(400).json({
+      success: false,
+      error: "Limit or offset is not a number",
+    });
+  }
+
+  const result = await studentService.searchStudentWithoutClass(
+    searchText,
+    limit,
+    offset
+  );
+
+  if (result.code) {
+    return res.status(400).json({
+      success: false,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: result,
   });
 }
 async function updateStudent(req, res) {
@@ -185,10 +258,7 @@ async function createStudent(req, res) {
     address,
     placeOfOrigin,
     status,
-    register_id,
   } = req.body;
-
-  console.log(register_id);
 
   //Kiểm tra tên
   if (name == undefined || name == "") {
@@ -241,7 +311,7 @@ async function createStudent(req, res) {
   }
 
   //Kiểm tra thêm thành công
-  if (!result) {
+  if (!result.success) {
     return res.status(200).json({
       status: 500,
       success: false,
@@ -250,58 +320,12 @@ async function createStudent(req, res) {
     });
   }
 
-  //Kiểm tra nếu người dùng có nhập phụ huynh
-  if (parentId !== undefined) {
-    //Lấy thông tin phụ huynh
-    const parent = await parentService.getParentById(parentId);
-
-    if (parent.code) {
-      return res.status(200).json({
-        status: 500,
-        success: false,
-        error: "Phụ huynh không tồn tại.",
-      });
-    }
-
-    //Kiểm tra phụ huynh có tồn tại
-    if (parent.length == 0) {
-      return res.status(200).json({
-        status: 500,
-        error: "Phụ huynh không tồn tại.",
-        success: false,
-        message: "Chưa có phụ huynh trong hệ thống",
-      });
-    }
-
-    //Tạo dữ liệu bảng relationship
-    const relationship = {
-      student_id: result.studentCreated,
-      parent_id: parent[0].id,
-      relationship: parent[0].role,
-    };
-
-    const relationshipCreated = await studentService.createRelatioship(
-      relationship
-    );
-
-    if (!relationshipCreated) {
-      return res.status(200).json({
-        status: 500,
-        error: "Tạo Relationship thất bại",
-      });
-    }
-  }
-
-  if (!isEmpty(register_id)) {
-    console.log("a", result.studentCreated);
-    registrationService.updateRegister(register_id, {
-      student_id: result.studentCreated,
-    });
-  }
+  const studentCreated = await studentService.getStudentByID(result.insertId);
 
   res.status(200).json({
     success: true,
     message: "Tạo học sinh thành công.",
+    data: studentCreated.code ? null : studentCreated,
   });
 }
 

@@ -228,7 +228,7 @@ async function isExistAccount(username) {
 async function insertParent(dataToCreate) {
   try {
     const parentId = await db.insert(config.tb.parent, dataToCreate);
-    if (parentId == 0) {
+    if (parentId.effectedRows == 0) {
       return {
         success: false,
         message: "Quá trình thêm dữ liệu phụ huynh thất bại. Hãy thử lại.",

@@ -38,7 +38,7 @@ border-radius: 6px; /* Rounded corners */
 }
 @layer components {
     .input-text-default {
-        @apply mb-0 h-[50px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4;
+        @apply mb-0 h-[50px] bg-white rounded-md my-[5px] w-full outline-none border-[0.12rem] hover:border-gray-600 focus:border-blue-500 px-4;
     }
     .invalid-text {
         @apply text-[14px] text-red-500

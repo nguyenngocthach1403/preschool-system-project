@@ -16,6 +16,14 @@ function convertRegisterStatus(params) {
       return "none";
   }
 }
+function convertGender(gender) {
+  switch (gender) {
+    case 0:
+      return "Nam";
+    case 1:
+      return "Nữ";
+  }
+}
 
 function convertParentRole(role) {
   switch (role) {
@@ -64,4 +72,5 @@ export {
   convertParentRole,
   convertAccountRole,
   convertStudentStatus,
+  convertGender,
 };

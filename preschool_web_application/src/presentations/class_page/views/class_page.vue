@@ -31,6 +31,12 @@
         :key="item"
         :class-data="item"
         class="hover:bg-gray-200"
+        @click="
+          $router.push({
+            name: 'ClassDetailView',
+            query: { classID: item.id },
+          })
+        "
       />
     </div>
   </div>

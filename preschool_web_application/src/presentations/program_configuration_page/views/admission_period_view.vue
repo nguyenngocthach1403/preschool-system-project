@@ -3,7 +3,8 @@
     <!--a-->
     <CreateAdmissionPopUp
       v-if="showCreateAdmissionPopup"
-      @close="showCreateAdmissionPopup = null"
+      @close="closePopCreateAdmission()"
+      @add-toast="$emit('add-toast', $event)"
     />
     <section class="w-full my-10 h-[170px] flex gap-5 rounded-xl">
       <div class="w-[250px] h-full rounded-md shadow p-5 text-start">
@@ -21,7 +22,13 @@
         </div>
         <div>
           <span class="text-gray-500 text-[13px]">Tạo ngày:</span>
-          {{ admissionSelected ? admissionSelected.created : "" }}
+          {{
+            admissionSelected
+              ? ddmmyyyyDateString(
+                  new Date(admissionSelected.created).toLocaleDateString()
+                )
+              : ""
+          }}
         </div>
       </div>
       <div
@@ -224,11 +231,14 @@ import AdmissionTable from "../components/admission_table.vue";
 import RegistrationTable from "../components/registration_table.vue";
 import Pagination from "../../../components/pagination.vue";
 import SearchForm from "../../../components/search_form_comp.vue";
-import syllabusService from "../../../services/syllabus.service";
-import levelService from "../../../services/levels.service";
 import CreatButton from "../../../components/create_button.vue";
 import CreateAdmissionPopUp from "../components/create_admission_period_popup.vue";
 import LoadingComp from "../../../components/loading_comp.vue";
+
+//Service
+import syllabusService from "../../../services/syllabus.service";
+import levelService from "../../../services/levels.service";
+import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 
 const admissionList = ref([1, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1231]);
 const showAdmissionList = ref(false);
@@ -372,6 +382,11 @@ function returnSyllabus(syllabus_id) {
     ? totalSyllabusByAdmission.value.find((e) => e.syllabus_id == syllabus_id)
         .total
     : 0;
+}
+
+function closePopCreateAdmission() {
+  showCreateAdmissionPopup.value = null;
+  getAdmission();
 }
 </script>
 

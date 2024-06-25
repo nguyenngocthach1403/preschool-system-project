@@ -8,6 +8,7 @@ module.exports = {
   updateByUsername,
   getAccountByUsername,
   isExistAccountByUsername,
+  getAccountById,
 };
 
 async function getAccountByUsername(username) {
@@ -27,10 +28,27 @@ async function getAccountByUsername(username) {
   }
 }
 
+async function getAccountById(id) {
+  try {
+    const result = await db.select(
+      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
+      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
+      `WHERE a.id = '${id}' AND a.deleted = 0`
+    );
+
+    return result[0];
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sql,
+    };
+  }
+}
+
 async function createAccount(accountToCreate) {
   try {
     const result = await db.insert(config.tb.account, accountToCreate);
-    if (result == 0) {
+    if (result.effectedRows == 0) {
       return {
         success: false,
         message: "Tạo tài khoản thất bại. Hãy thử lại",

@@ -8,6 +8,8 @@ export default {
   deleleStudent,
   updateStudent,
   getStudentById,
+  getStudentsWithoutClass,
+  searchStudentsWithoutClass,
 };
 
 function createStudent(dataToCreate) {
@@ -45,5 +47,18 @@ function deleleStudent(idStudentToDel) {
 }
 
 function getStudentById(id) {
-  return api().get(`/students/${id}`);
+  return api().get(`/students/id/${id}`);
+}
+
+function getStudentsWithoutClass(limit, page) {
+  return api().get(
+    `/students/without-class?limit=${limit}&offset=${page * limit}`
+  );
+}
+function searchStudentsWithoutClass(searchText, limit, page) {
+  return api().get(
+    `/students/search/without-class?searchText=${searchText}&limit=${limit}&offset=${
+      page * limit
+    }`
+  );
 }
