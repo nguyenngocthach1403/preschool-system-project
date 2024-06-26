@@ -7,6 +7,10 @@ const path = require("path");
 const fs = require("fs");
 const config = require("../config/config");
 const registerService = require("../registrations/registration.service");
+const studentService = require("../student/student.service");
+const parentService = require("../parent/parent_service");
+const relationshipService = require("../relationship/relationship.service");
+
 const { error } = require("console");
 
 router.post("/", upload.array("files"), async (req, res) => {
@@ -23,6 +27,12 @@ router.post("/", upload.array("files"), async (req, res) => {
     relationship,
     status,
     admission_period_id,
+    studentName,
+    studentBirthday,
+    studentFork,
+    studentGender,
+    studentNation,
+    studentPlaceOfBirth,
   } = req.body;
 
   //Kiểm tra tồn tại của đơn
@@ -33,7 +43,33 @@ router.post("/", upload.array("files"), async (req, res) => {
       isExist: true,
     });
   }
-  const data = {
+
+  //create Student
+  const resultToCreateStudent = await studentService.createNewStudent({
+    name: studentName,
+    gender: studentGender,
+    birthday: studentBirthday,
+    fork: studentFork,
+    nation: studentNation,
+    place_of_birth: studentPlaceOfBirth,
+    status: 0,
+  });
+
+  if (resultToCreateStudent.code) {
+    return res(400).json({
+      success: false,
+      error: resultToCreateStudent.message,
+    });
+  }
+
+  if (!resultToCreateStudent.success) {
+    return res(400).json({
+      success: false,
+      error: resultToCreateStudent.message,
+    });
+  }
+
+  const dataToCreateRegister = {
     name: name,
     email: email,
     phone: phone,
@@ -46,6 +82,7 @@ router.post("/", upload.array("files"), async (req, res) => {
     relationship: relationship,
     admission_period_id: admission_period_id,
     status: status,
+    student_id: resultToCreateStudent.insertId,
   };
 
   if (req.files.length > 0) {
@@ -58,15 +95,20 @@ router.post("/", upload.array("files"), async (req, res) => {
     const url =
       config.baseUrl + "/image/registration/" + req.files[0].filename + ".jpg";
 
-    data.register_img = url;
+    dataToCreateRegister.register_img = url;
   }
 
-  const result = await registerService.createRegister(data);
+  const resultCreateRegister = await registerService.createRegister(
+    dataToCreateRegister
+  );
 
-  if (result.code) {
+  if (resultCreateRegister.code) {
     if (req.files.length > 0) {
       fs.renameSync(req.files[0].path + ".jpg", "uploads/registration/none");
     }
+    await studentService.deleteStudenPermanently(
+      resultToCreateStudent.insertId
+    );
 
     return res.status(200).json({
       status: 400,
@@ -76,12 +118,27 @@ router.post("/", upload.array("files"), async (req, res) => {
     });
   }
 
-  const registerCreated = await registerService.getRegisterByPhone(
-    admission_period_id,
-    phone
+  const registerCreated = await registerService.getRegisterByID(
+    resultCreateRegister
   );
 
-  console.log(registerCreated);
+  //Create parent
+  const resultCreateParent = await parentService.insertParent({
+    name: name,
+    phone: phone,
+    email: email,
+    role: relationship,
+    status: 0,
+  });
+
+  if (!resultCreateParent.code) {
+    if (resultCreateParent.success) {
+      await relationshipService.createRelationship({
+        student_id: resultToCreateStudent.insertId,
+        parent_id: resultCreateParent.id,
+      });
+    }
+  }
 
   res.status(200).json({
     status: 200,

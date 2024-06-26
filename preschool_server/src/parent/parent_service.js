@@ -237,6 +237,7 @@ async function insertParent(dataToCreate) {
     return {
       success: true,
       message: "Tạo phụ huynh thành công",
+      id: parentId.insertId,
     };
   } catch (error) {
     return {

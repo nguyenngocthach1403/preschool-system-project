@@ -30,17 +30,26 @@
         </div>
         <div class="timeline w-full text-center text-[15px]">
           Thời gian
-          {{ new Date(addmisstionPeriod.start_date).toLocaleDateString() }} -
-          {{ new Date(addmisstionPeriod.end_date).toLocaleDateString() }}
+          {{
+            ddmmyyyyDateString(
+              new Date(addmisstionPeriod.start_date).toLocaleDateString()
+            )
+          }}
+          -
+          {{
+            ddmmyyyyDateString(
+              new Date(addmisstionPeriod.end_date).toLocaleDateString()
+            )
+          }}
         </div>
         <div class="w-full py-2 mt-5 bg-[#3b44d1] text-white px-3">
-          Thông tin người đăng ký
+          Thông tin phụ huynh (hoặc người đăng ký)
         </div>
         <section class="md:flex gap-5 my-3">
           <div class="w-full mt-3">
             <label>
-              <span class="pl-5">Tên người đăng ký</span>
-              <span class="text-red-500"> * </span>
+              <span class="pl-5">Họ tên</span>
+              <span class="text-red-500"> (*) </span>
               <input
                 type="text"
                 v-model="name"
@@ -55,8 +64,8 @@
           </div>
           <div class="w-full my-3">
             <label>
-              <span class="pl-5">Vai trò của người đăng ký</span>
-              <span class="text-red-500"> * </span>
+              <span class="pl-5">Vai trò</span>
+              <span class="text-red-500"> (*) </span>
               <select
                 v-model="relationship"
                 class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
@@ -72,7 +81,7 @@
           <div class="w-full my-3">
             <label>
               <span class="pl-5">Số điện thoại</span>
-              <span class="text-red-500"> * </span>
+              <span class="text-red-500"> (*) </span>
               <input
                 type="tel"
                 v-model="phone"
@@ -109,7 +118,7 @@
           <div class="w-full mt-3">
             <label>
               <span class="pl-5">Tên học sinh</span>
-              <span class="text-red-500"> * </span>
+              <span class="text-red-500"> (*) </span>
               <input
                 v-model="studentName"
                 type="text"
@@ -125,7 +134,7 @@
           <div class="w-full my-3">
             <label>
               <span class="pl-5">Ngày sinh</span>
-              <span class="text-red-500"> * </span>
+              <span class="text-red-500"> (*) </span>
               <VueDatePicker
                 v-model="studentBirthday"
                 :enable-time-picker="false"
@@ -152,7 +161,7 @@
           <div class="w-full my-3">
             <label>
               <span class="pl-5">Giới tính</span>
-              <span class="text-red-500"> * </span>
+              <span class="text-red-500"> (*) </span>
               <select class="input-text-default" v-model="studentGender">
                 <option value="0">Nam</option>
                 <option value="1">Nữ</option>
@@ -190,7 +199,7 @@
           <div class="w-full my-3">
             <label>
               <span class="pl-5">Cấp độ</span>
-              <span class="text-red-500"> * </span>
+              <span class="text-red-500"> (*) </span>
               <select
                 v-model="levels"
                 class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
@@ -208,7 +217,7 @@
           <div class="w-full my-3">
             <label>
               <span class="pl-5">Chương trình</span>
-              <span class="text-red-500"> * </span>
+              <span class="text-red-500"> (*) </span>
               <select
                 v-model="syllabus"
                 class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
@@ -232,7 +241,7 @@
             <div class="w-full my-3">
               <label>
                 <span class="pl-5">Thành phố/Tỉnh</span>
-                <span class="text-red-500"> * </span>
+                <span class="text-red-500"> (*) </span>
                 <select
                   v-model="city"
                   class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
@@ -247,7 +256,7 @@
             <div class="w-full my-3">
               <label>
                 <span class="pl-5">Quận/Huyện</span>
-                <span class="text-red-500"> * </span>
+                <span class="text-red-500"> (*) </span>
                 <select
                   v-model="district"
                   class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
@@ -266,7 +275,7 @@
             <div class="w-full my-3">
               <label>
                 <span class="pl-5">Phường/Xã/Thị xã</span>
-                <span class="text-red-500"> * </span>
+                <span class="text-red-500"> (*) </span>
                 <select
                   v-model="town"
                   class="mb-0 h-[45px] px-2 rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
@@ -327,7 +336,7 @@
           <button
             v-if="!loading"
             type="submit"
-            @click="submit()"
+            @click="submitCreateRegister()"
             class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
           >
             Gửi đăng ký
@@ -397,8 +406,13 @@ import {
 import axios from "axios";
 import { useRouter } from "vue-router";
 import addmissionPeriodService from "../../../services/admission_period.service";
-import { yyyymmddDateString } from "../../../utils/resources/format_date";
+import {
+  yyyymmddDateString,
+  ddmmyyyyDateString,
+} from "../../../utils/resources/format_date";
 import registrationService from "../../../services/registration.service";
+import parentService from "../../../services/parent.service";
+import relationdshipService from "../../../services/relationship.service";
 
 const router = useRouter();
 const addmisstionPeriod = ref(null);
@@ -610,99 +624,49 @@ function checkValid() {
   return valid;
 }
 
-async function createStudent() {
+async function submitCreateRegister() {
+  if (checkValid()) return;
   const formData = new FormData();
-  formData.append("name", studentName.value);
-  formData.append(
-    "birthday",
-    yyyymmddDateString(new Date(studentBirthday.value).toLocaleDateString())
-  );
-  formData.append("fork", studentFork.value);
-  if (!isEmpty(studentGender.value))
-    formData.append("gender", studentGender.value);
-  formData.append("birthOfOrigin", studentBirthOfOrigin.value);
-  formData.append("nation", studentNation.value);
+  if (fileUpload.value) formData.append("files", fileUpload.value);
+  formData.append("admission_period_id", addmisstionPeriod.value.id);
+  formData.append("name", name.value);
+  if (!isEmpty(email.value)) formData.append("email", email.value);
+  formData.append("phone", phone.value);
+  if (!isEmpty(address.value)) formData.append("address", address.value);
+  formData.append("city", city.value);
+  formData.append("district", district.value);
+  formData.append("town", town.value);
+  if (!isEmpty(levels.value)) formData.append("levels", levels.value);
+  if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
+  formData.append("relationship", relationship.value);
+  formData.append("informationState", 0);
   formData.append("status", 0);
 
-  const response = await studentService.createStudent(formData);
-  console.log("student", response);
+  formData.append("studentName", studentName.value);
+  formData.append(
+    "studentBirthday",
+    yyyymmddDateString(new Date(studentBirthday.value).toLocaleDateString())
+  );
+  formData.append("studentFork", studentFork.value);
+  if (!isEmpty(studentGender.value))
+    formData.append("studentGender", studentGender.value);
+  formData.append("studentPlaceOfBirth", studentBirthOfOrigin.value);
+  formData.append("studentNation", studentNation.value);
 
-  if (response.status != 200) {
-    toasts.value.push({
-      title: "Đăng ký thất bại.",
-      type: 1,
-    });
-    return false;
-  }
-
-  if (!response.data.success) {
-    toasts.value.push({
-      title: "Đăng ký thất bại.",
-      type: 1,
-    });
-    return false;
-  }
-
-  return response.data.data;
-}
-
-async function createRegister() {
   try {
-    const formData = new FormData();
-    if (fileUpload.value) {
-      formData.append("files", fileUpload.value);
-    }
-    formData.append("admission_period_id", addmisstionPeriod.value.id);
-    formData.append("name", name.value);
-    if (!isEmpty(email.value)) formData.append("email", email.value);
-    formData.append("phone", phone.value);
-    if (!isEmpty(address.value)) formData.append("address", address.value);
-    formData.append("city", city.value);
-    formData.append("district", district.value);
-    formData.append("town", town.value);
-    if (!isEmpty(levels.value)) formData.append("levels", levels.value);
-    if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
-    formData.append("relationship", relationship.value);
-    formData.append("informationState", 0);
-    formData.append("status", 0);
-
-    const response = await RegistrationService.createRegister(formData);
-
-    console.log(response);
-
-    if (response.status != 200) {
-      toasts.value.push({
-        title: "Đăng ký thất bại.",
-        type: 1,
-      });
-    }
-
-    if (response.data.isExist) {
-      toasts.value.push({
-        title: "Đơn đã tồn tại.",
-        content: "Số điện thoại đã được đăng ký.",
-        type: 1,
-      });
-    }
+    loading.value = true;
+    const response = await registrationService.createRegister(formData);
 
     if (!response.data.success) {
-      toasts.value.push({
-        title: "Đăng ký thất bại.",
-        type: 1,
-      });
+      toasts.value.push({ title: "Thất bại!", type: 1 });
+      return;
     }
-
-    return response.data.data;
-  } catch (e) {
-    toasts.value.push({
-      title: "Đăng ký không thành công.",
-      content: "Quá trình đăng ký bị lỗi. Thử lại sau.",
-      type: 1,
-    });
-    console.error(e);
-    return {
-      success: false,
-    };
+    toasts.value.push({ title: "Thành công!", type: 0 });
+    registerSuccess.value = true;
+  } catch (error) {
+    toasts.value.push({ title: "Thất bại!", type: 1 });
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -739,65 +703,6 @@ async function getAddress() {
     .catch((error) => {
       console.error("Error fetching data:", error);
     });
-}
-
-async function linkStudentWithRegister(register_id, student_id) {
-  const formDataToUpDateRegister = new FormData();
-  formDataToUpDateRegister.append("student_id", student_id);
-  const response = await registrationService.updateRegister(
-    register_id,
-    formDataToUpDateRegister
-  );
-  console.log(response);
-
-  if (response.status != 200) {
-    toasts.value.push({
-      title: "Đăng ký thất bại.",
-      type: 1,
-    });
-    return false;
-  }
-
-  if (!response.data.success) {
-    toasts.value.push({
-      title: "Đăng ký thất bại.",
-      type: 1,
-    });
-    return false;
-  }
-
-  return true;
-}
-
-async function submit() {
-  if (checkValid()) return;
-
-  loading.value = true;
-  //Tạo đơn đăng ký
-  const register = await createRegister();
-
-  //Thất bại hủy
-  if (register == undefined) {
-    console.log("Tạo đơn đăng ký thất bại ");
-    return;
-  }
-
-  console.log("Tạo đơn đa ký thành công.", register.id);
-
-  //Tạo học sinh
-  const student = await createStudent();
-
-  const result = await linkStudentWithRegister(register.id, student.id);
-
-  loading.value = false;
-
-  if (result) {
-    toasts.value.push({
-      title: "Đăng ký thành công",
-      type: 0,
-    });
-  }
-  registerSuccess.value = true;
 }
 
 function handleUploadFile(event) {

@@ -39,6 +39,7 @@
           </th>
           <th class="px-3 text-left hidden 2xl:table-cell">Giới tính</th>
           <th class="px-3 text-left hidden xl:table-cell">Ngày sinh</th>
+          <th class="px-3 text-left">Trạng thái học</th>
           <th class="px-3 text-left">Trạng thái</th>
           <th class="px-3 text-left">Chức năng</th>
         </tr>
@@ -143,8 +144,15 @@
             <span>{{ convertNumToGender(item.gender) }}</span>
           </td>
 
-          <td class="hidden xl:table-cell px-3 w-dvw">
+          <td class="hidden xl:table-cell px-3 w-[700px]">
             <span>{{ new Date(item.birthday).toLocaleDateString() }}</span>
+          </td>
+          <td class="px-3 w-[400px]">
+            <div
+              class="rounded-[5px] h-[30px] text-black font-bold content-center text-center text-[12px]"
+            >
+              {{ convertStudentStatus(item.studyStatus) }}
+            </div>
           </td>
           <td class="px-3">
             <div
@@ -243,7 +251,10 @@ import change_gray_icon from "../../../assets/icons/change-gray.svg";
 
 /* Import function */
 import convertNumToGender from "../../../utils/resources/convert_gender";
-import { convertParentRole } from "../../../utils/resources/converter";
+import {
+  convertParentRole,
+  convertStudentStatus,
+} from "../../../utils/resources/converter";
 
 const showMenu = ref();
 const x = ref();

@@ -311,7 +311,7 @@ async function isExistStudent(id) {
     const student = await db.select(
       config.tb.student,
       "*",
-      `WHERE deleted = 0 AND id = ${id} `
+      `WHERE deleted = 0 AND id = ${id}`
     );
 
     if (student.length == 0) {
@@ -320,6 +320,7 @@ async function isExistStudent(id) {
 
     return true;
   } catch (error) {
+    console.error(error);
     return false;
   }
 }
@@ -361,6 +362,24 @@ async function deleteStudent(idStudentToDel) {
     return {
       code: error.code,
       message: "An error occusred while excuted query",
+    };
+  }
+}
+
+async function deleteStudenPermanently(idStudentToDel) {
+  try {
+    const result = await db.deleteRow(
+      config.tb.student,
+      `WHERE id = ${idStudentToDel}`
+    );
+    if (result == 0) {
+      return { success: false, message: "Xóa thất bại." };
+    }
+    return { success: true, message: "Xóa thành công." };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
     };
   }
 }

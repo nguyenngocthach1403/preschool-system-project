@@ -1,9 +1,10 @@
 <template>
   <div class="relative">
     <button
-      class="main w-full h-full overflow-hidden focus:ring-1 rounded-md border hover:border hover:border-gray-500 p-[1px] flex items-center relative"
-      @focus="showOption = true"
+      class="main w-full h-full overflow-hidden rounded-md border hover:border hover:border-gray-500 p-[1px] flex items-center relative"
       @focusout="closeOptionList"
+      @focus="showOption = true"
+      @click="open()"
     >
       <div
         class="w-full h-full content-center rounded-md"
@@ -27,7 +28,6 @@
       <ul
         v-show="showOption"
         ref="ListElemnt"
-        @scroll="handleScroll($event)"
         class="absolute z-10 mt-1 max-h-56 w-full overflow-y-scroll rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
       >
         <li
@@ -62,6 +62,10 @@ const props = defineProps({
     type: Array,
     require: false,
   },
+  value: {
+    type: Number,
+    require: false,
+  },
 });
 
 onMounted(() => {
@@ -70,6 +74,9 @@ onMounted(() => {
 
 watch(props, () => {
   options.value = props.options;
+  value.value = props.value
+    ? props.options.find((e) => e.id == props.value)
+    : null;
 });
 
 function getCurrentValue() {
@@ -82,6 +89,11 @@ function closeOptionList() {
   setTimeout(() => {
     showOption.value = false;
   }, 100);
+}
+function open() {
+  setTimeout(() => {
+    showOption.value = !showOption.value;
+  }, 50);
 }
 </script>
 

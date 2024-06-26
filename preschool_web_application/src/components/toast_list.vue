@@ -16,9 +16,11 @@ const drops = defineProps({
     type: Array,
   },
 });
+const emits = defineEmits(["delete-toast"]);
 
 const deleteToast = (toastID) => {
   drops.toastList.splice(toastID, 1);
+  emits("delete-toast", toastID);
 };
 </script>
 

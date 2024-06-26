@@ -139,7 +139,7 @@
                 'status-5': item.status === 5,
               }"
               class="hover:bg-gray-200 rounded-[5px] h-[30px] w-fit px-2 content-center text-center text-[12px]"
-              @click="selectStatus($event, item.id, item.status)"
+              @click="selectStatus($event, item)"
             >
               {{ convertRegisterStatus(item.status) }}
             </button>
@@ -203,7 +203,7 @@ import empty_icon from "../../../assets/icons/Empty Box.svg";
 const showChangeStatusViewIndex = ref(null);
 const showMenu = ref(false);
 
-const emits = defineEmits(["update-status"]);
+const emits = defineEmits(["update-status", "add-toast"]);
 const drops = defineProps({
   data: {
     type: Object,
@@ -224,15 +224,7 @@ function closeMenu() {
 
 const x = ref();
 const y = ref();
-const registerId = ref();
-
-function selectMenu(event, register) {
-  showMenu.value == null
-    ? (showMenu.value = register)
-    : (showMenu.value = null);
-  x.value = event.clientX;
-  y.value = event.clientY;
-}
+const register = ref();
 
 const registerStatusList = ref([
   "Đơn mới",
@@ -243,33 +235,27 @@ const registerStatusList = ref([
   "Chờ hủy",
 ]);
 
-function selectStatus(event, id, status_before) {
+function selectStatus(event, registerSelected) {
   show.value = !show.value;
-  showChangeStatusViewIndex.value = id;
-  registerId.value = { id: id, status_before: status_before };
+  showChangeStatusViewIndex.value = registerSelected.id;
+  register.value = registerSelected;
   x.value = event.clientX;
   y.value = event.clientY;
 }
 function updateRegisterStatus(status) {
-  emits("update-status", {
-    id: registerId.value.id,
-    status: status,
-    status_before: registerId.value.status_before,
-    student_id: status == 4 ? registerId.value.student_id || null : null,
-  });
-}
-function checkStatus(value) {
-  switch (value) {
-    case 1:
-      return "Hoàn thành";
-    case 0:
-      return "Chưa hoàn thành";
-    case 3:
-      return "Thiếu";
-
-    default:
-      return "None";
+  console.log(register.value);
+  if (register.value.student_id == null) {
+    emits("add-toast", {
+      title: "Đơn đăng ký chưa đủ thông tin về học sinh!",
+      type: 1,
+    });
+    return;
   }
+  emits("update-status", {
+    id: register.value.id,
+    status: status,
+    status_before: register.value.status,
+  });
 }
 
 function checkRole(value) {

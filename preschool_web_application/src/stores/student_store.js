@@ -32,6 +32,7 @@ export const useStudentStore = defineStore("studentStore", {
           class: element.className,
           birthday: new Date(element.birthday).toLocaleDateString(),
           status: element.status,
+          studyStatus: element.study_status,
           parents: element.parents,
           fork: element.fork,
           address: element.address,

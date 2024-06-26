@@ -120,7 +120,6 @@
                     ><span class="text-red-600"> (*) </span>
                     <select
                       v-if="disableInput"
-                      id="relationship"
                       disabled
                       v-model="registerRelationship"
                       class="input-text-default disable"
@@ -131,7 +130,6 @@
                     </select>
                     <select
                       v-if="!disableInput"
-                      id="relationship"
                       v-model="registerRelationship"
                       class="input-text-default"
                     >
@@ -206,7 +204,6 @@
                     <span class="text-red-600"> (*) </span>
                     <select
                       v-if="disableInput"
-                      type="text"
                       class="input-text-default disable"
                       disabled
                       v-model="registerLevel"
@@ -221,7 +218,6 @@
                     </select>
                     <select
                       v-if="!disableInput"
-                      type="text"
                       class="input-text-default"
                       v-model="registerLevel"
                     >
@@ -241,7 +237,6 @@
                     ><span class="text-red-600"> (*) </span>
                     <select
                       v-if="disableInput"
-                      id="relationship"
                       disabled
                       v-model="registerSyllabus"
                       class="input-text-default disable"
@@ -256,7 +251,6 @@
                     </select>
                     <select
                       v-if="!disableInput"
-                      id="relationship"
                       v-model="registerSyllabus"
                       class="input-text-default"
                     >
@@ -363,7 +357,6 @@
                     <select
                       v-if="!disableInput"
                       v-model="studentBirthOfOrigin"
-                      type="text"
                       class="input-text-default"
                     >
                       <option v-for="item in cities" :key="item" :value="item">
@@ -888,7 +881,7 @@ function initialInput(dataToFill) {
   studentGender.value = dataToFill.student_gender;
   studentBirthday.value = dataToFill.birthday;
   studentFork.value = dataToFill.student_fork;
-  studentBirthOfOrigin.value = dataToFill.place_of_origin;
+  studentBirthOfOrigin.value = dataToFill.place_of_birth;
   studentNation.value = dataToFill.student_nation;
   approves.value = dataToFill.approves;
   notes.value = dataToFill.notes;

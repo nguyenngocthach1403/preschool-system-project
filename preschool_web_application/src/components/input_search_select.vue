@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <button
-      class="main w-full h-full overflow-hidden focus:ring-1 rounded-md border hover:border hover:border-gray-500 p-[1px] flex items-center relative"
+      class="main w-full h-full bg-white overflow-hidden focus:ring-1 rounded-md border hover:border hover:border-gray-500 p-[1px] flex items-center relative"
       @focus="showOption = true"
       @focusout="closeOptionList"
     >

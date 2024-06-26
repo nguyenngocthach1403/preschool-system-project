@@ -177,7 +177,10 @@ async function addStudentIntoClass(req, res) {
       if (result.success) {
         console.log(element);
         studentEntered.push(element);
-        await studentService.updateStudent(element.id, { class_id: classID });
+        await studentService.updateStudent(element.id, {
+          class_id: classID,
+          study_status: 1,
+        });
       }
     } catch (error) {
       console.error(`Failed to process student with id ${element.id}:`, error);
@@ -185,6 +188,7 @@ async function addStudentIntoClass(req, res) {
   }
 
   console.log(studentEntered);
+  classService.updateClass(classID, { members: studentEntered.length });
 
   if (studentEntered.length == 0) {
     return res.status(400).json({
