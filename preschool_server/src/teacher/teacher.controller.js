@@ -50,6 +50,20 @@ async function getTeacher(req, res) {
     );
     element.class_managed = classManaged.code ? [] : classManaged;
   }
+  for (let index = 0; index < result.length; index++) {
+    const element = result[index];
+    const specialization = await teacherService.getSpecializationByTeacher(
+      element.id
+    );
+    element.specialization_managed = specialization.code ? [] : specialization;
+  }
+  for (let index = 0; index < result.length; index++) {
+    const element = result[index];
+    const certificate = await teacherService.getCertificateByTeacher(
+      element.id
+    );
+    element.certificate_managed = certificate.code ? [] : certificate;
+  }
 
   res.status(200).json({
     success: true,
@@ -146,8 +160,17 @@ async function isDuplicate(req, res, next) {
   }
 }
 async function createTeacher(req, res, next) {
-  const { name, gender, birthday, phone, email, address, status, experience } =
-    req.body;
+  const {
+    name,
+    gender,
+    birthday,
+    phone,
+    email,
+    address,
+    status,
+    experience,
+    seniority,
+  } = req.body;
 
   //Kiểm tra tải hình ảnh
   if (req.files.length > 0) {
@@ -179,6 +202,7 @@ async function createTeacher(req, res, next) {
     address: address,
     status: status,
     experience: experience,
+    seniority: seniority,
     avatar: url || undefined,
   });
 

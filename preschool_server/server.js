@@ -76,6 +76,19 @@ app.use("/images", express.static(path.join(__dirname, "uploads")));
 app.use("/account", require("./src/account/account.controller"));
 app.use("/class", require("./src/class/class.controller"));
 app.use("/image", require("./src/image/image.controller"));
+app.use(
+  "/specialization",
+  require("./src/specialization/specialization.controller")
+);
+app.use(
+  "/teacherSpecialization",
+  require("./src/teacher_specialization/teacher_specialization.controller")
+);
+app.use("/certificate", require("./src/certificate/certificate.controller"));
+app.use(
+  "/teacherCertificate",
+  require("./src/teacher_certificate/teacher_certificate.controller")
+);
 app.use("/levels", require("./src/levels/levels.controller"));
 app.use("/syllabus", require("./src/syllabus/syllabus.controller"));
 app.use("/relationship", require("./src/relationship/relationship.controller"));
