@@ -25,14 +25,17 @@ export const useClassStore = defineStore("classStore", {
           member: element.members,
           limitedMember: element.member_limit,
           session: new Date(element.start_date).getFullYear(),
+          type: element.type,
           status:
             new Date(element.start_date) > new Date()
               ? "Sắp bắt đầu"
               : new Date(element.end_date) > new Date()
               ? "Đang hoạt động"
               : "Kết thúc",
-          levels: element.levelsName ?? "none",
-          sysllabus: element.sysllabusName ?? "none",
+          levelName: element.levelsName ?? "none",
+          syllabusName: element.syllabusName ?? "none",
+          levelId: element.level_id,
+          syllabusId: element.syllabus_id,
         });
       }
       return classes;

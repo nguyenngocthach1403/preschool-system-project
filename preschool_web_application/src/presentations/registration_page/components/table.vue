@@ -24,12 +24,11 @@
             </div>
           </th>
           <th class="px-3 text-left">Liên hệ</th>
-          <th class="px-3 text-left">Địa chỉ</th>
           <th class="px-3 text-left">Nội dung</th>
           <th class="px-3 text-left">Ảnh đơn đăng ký</th>
           <th class="px-3 text-left">Học sinh</th>
           <th class="px-3 text-left">Trạng thái</th>
-          <th class="px-3 text-left">Chức năng</th>
+          <th class="px-3 text-left w-[300px]">Chức năng</th>
         </tr>
       </thead>
       <tbody>
@@ -88,10 +87,10 @@
             </dd>
           </td>
 
-          <td class="w-[1000px] px-3">
-            <span>{{ item.address }}</span>
-            <!-- <span v-if="!item.class" class="italic">None</span> -->
-          </td>
+          <!-- <td class="w-[1000px] px-3">
+            <span>{{ item.address }}</span> -->
+          <!-- <span v-if="!item.class" class="italic">None</span> -->
+          <!-- </td> -->
           <td class="px-3 w-[1000px]">
             <dd class="text-gray-500 text-[14px] my-[5px]">
               <span class="font-bold">Cấp:</span> {{ item.levels ?? "None" }}
@@ -145,54 +144,24 @@
               {{ convertRegisterStatus(item.status) }}
             </button>
           </td>
-          <td class="content-center px-3 cursor-default hover:text-blue-700">
-            <button
-              @click="selectMenu($event, item)"
-              class="p-1 hover:bg-gray-300 rounded-md"
-            >
-              <img
-                v-if="showMenu && showMenu.id == item.id"
-                :src="close_icon"
-                class="w-[20px]"
-                alt=""
-              />
-              <img v-else :src="menu_icon" class="w-[20px]" alt="" />
-            </button>
+          <td class="px-3 w-[300px] cursor-default hover:text-blue-700 gap-5">
+            <div class="flex items-center">
+              <button
+                class="p-1 hover:bg-gray-300 rounded-md"
+                @click="$emit('view', item)"
+              >
+                <img :src="eye_icon" class="w-[20px]" alt="" />
+              </button>
+              <button
+                class="p-1 hover:bg-gray-300 rounded-md"
+                @click="$emit('delete-item', item)"
+              >
+                <img :src="delete_icon" class="w-[20px]" alt="" />
+              </button>
+            </div>
           </td>
         </tr>
-        <Transition
-          leave-active-class="transition ease-in duration-100"
-          leave-from-class="opacity-100"
-          leave-to-class="opacity-0"
-        >
-          <div
-            @mouseleave="closeMenu"
-            v-if="showMenu"
-            class="absolute mt-2 w-[150px] top-0 h-fit z-40 bg-white drop-shadow rounded-md z-30"
-            :style="{ top: y + 'px', left: x - 150 + 'px' }"
-          >
-            <ul @click="closeMenu" class="text-start cursor-default">
-              <li
-                @click="$emit('delete-item', showMenu)"
-                class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
-              >
-                <img :src="delete_icon" class="w-[15px]" /> Xóa
-              </li>
-              <li
-                @click="$emit('edit-item', showMenu)"
-                class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
-              >
-                <img :src="edit_icon" class="w-[15px]" /> Sửa
-              </li>
-              <li
-                @click="$emit('view', showMenu)"
-                class="w-full py-2 rounded-md hover:bg-gray-100 px-2 flex gap-3"
-              >
-                <img :src="eye_icon" class="w-[15px]" /> Chi tiết
-              </li>
-            </ul>
-          </div>
-        </Transition>
+
         <Transition
           leave-active-class="transition ease-in duration-100"
           leave-from-class="opacity-100"
@@ -229,7 +198,7 @@ import menu_icon from "../../../assets/icons/menu.svg";
 import close_icon from "../../../assets/icons/close.svg";
 import delete_icon from "../../../assets/icons/delete.svg";
 import edit_icon from "../../../assets/icons/edit.svg";
-import eye_icon from "../../../assets/icons/eye.svg";
+import eye_icon from "../../../assets/icons/Eye-Gray.svg";
 import empty_icon from "../../../assets/icons/Empty Box.svg";
 const showChangeStatusViewIndex = ref(null);
 const showMenu = ref(false);
@@ -286,6 +255,7 @@ function updateRegisterStatus(status) {
     id: registerId.value.id,
     status: status,
     status_before: registerId.value.status_before,
+    student_id: status == 4 ? registerId.value.student_id || null : null,
   });
 }
 function checkStatus(value) {

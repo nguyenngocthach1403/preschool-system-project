@@ -6,6 +6,7 @@ export default {
   createClass,
   getMembers,
   addStudentIntoClass,
+  updateClass,
 };
 
 function fetchClass(limit, offset) {
@@ -21,6 +22,14 @@ function searchClass(searchText, limit, offset) {
 }
 function createClass(data) {
   return api().post("/class/add", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
+function updateClass(classID, data) {
+  return api().post(`/class/update?classId=${classID}`, data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

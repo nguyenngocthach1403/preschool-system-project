@@ -3,9 +3,10 @@
     <table class="w-full relative">
       <thead class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
         <th class="py-1 px-2 w-[30%] text-start">Tên người đăng ký</th>
-        <th class="py-1 px-2 w-dvw text-start">Liên hệ</th>
+        <th class="py-1 px-2 w-[600px] text-start">Liên hệ</th>
         <th class="py-1 px-2 text-start w-[400px]">Status</th>
         <th class="py-1 px-2 w-[15%] text-start">Ngày tạo</th>
+        <th class="py-1 px-2 w-[200px] text-start">Chức năng</th>
       </thead>
 
       <LoadinComp v-if="props.loading" class="absolute h-full w-full my-20" />
@@ -55,6 +56,14 @@
           </td>
           <td class="px-2">
             {{ new Date(item.created).toLocaleDateString() }}
+          </td>
+          <td class="px-2">
+            <button
+              class="px-2 py-1 border rounded-md hover:bg-white text-[13px]"
+              @click="$emit('view-detail', item)"
+            >
+              Xem
+            </button>
           </td>
         </tr>
       </tbody>

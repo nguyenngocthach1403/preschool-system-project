@@ -389,8 +389,9 @@ async function comfirmChangeRegisterStatus(event) {
     registerUpdateStatus.value = null;
     return;
   }
+  console.log(event);
 
-  updateStatus(event);
+  // updateStatus(event);
   registerUpdateStatus.value = null;
 }
 

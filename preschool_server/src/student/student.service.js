@@ -242,7 +242,7 @@ async function searchStudent(txtSearch, offset, limit) {
     const data = await db.selectLimit(
       `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.class_id = c.id`,
       "s.*, c.id AS classID, c.name AS className",
-      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id = '%${txtSearch}%'`,
+      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id = '%${txtSearch}%' AND s.status = 1`,
       `LIMIT ${limit}`,
       `OFFSET ${offset * limit}`
     );
@@ -271,7 +271,7 @@ async function countSearchStudent(txtSearch) {
     return await db.select(
       `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.class_id = c.id`,
       "Count(*) AS total",
-      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id = '%${txtSearch}%'`
+      `WHERE s.deleted = 0 AND s.name LIKE '%${txtSearch}%' OR s.id = '%${txtSearch}%' AND s.status = 1`
     );
   } catch (error) {
     return {
@@ -384,7 +384,7 @@ async function getStudent(offset, limit) {
     const data = await db.selectLimit(
       `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.class_id = c.id`,
       "s.*, s.place_of_origin, c.id AS classID, c.name AS className",
-      "WHERE s.deleted = 0",
+      "WHERE s.deleted = 0 AND s.status = 1",
       `LIMIT ${limit}`,
       `OFFSET ${offset * limit}`
     );

@@ -8,6 +8,13 @@
       @close="(showCreateClass = false), loadClass()"
       @add-toast="$emit('add-toast', $event)"
     />
+    <ClassEditPopup
+      class="w-screen h-screen bg-black absolute z-10 left-0 top-0"
+      v-if="showEditClass"
+      @close="(showEditClass = null), loadClass()"
+      :class-data="showEditClass"
+      @add-toast="$emit('add-toast', $event)"
+    />
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
       Lớp học
@@ -28,15 +35,10 @@
     <div class="w-full h-fit flex flex-wrap content-start mx-[15px] pb-[20px]">
       <ClassCardComp
         v-for="item in classes"
+        @edit-class="showEditClass = $event"
         :key="item"
         :class-data="item"
         class="hover:bg-gray-200"
-        @click="
-          $router.push({
-            name: 'ClassDetailView',
-            query: { classID: item.id },
-          })
-        "
       />
     </div>
   </div>
@@ -51,10 +53,12 @@ import CreateButtonComp from "@/components/create_button.vue";
 import ClassCreationView from "..//..//class_creation_page//views//class_creation_page.vue";
 import ResultNumComp from "../../../components/result_comp.vue";
 import { useClassStore } from "../../../stores/class_store";
+import ClassEditPopup from "../../class_creation_page/views/class_creation_page.vue";
 import { storeToRefs } from "pinia";
 const searchText = ref("");
 const classStore = useClassStore();
 const showCreateClass = ref(false);
+const showEditClass = ref(null);
 
 const { classes, limit, page, status, total } = storeToRefs(classStore);
 

@@ -1,6 +1,11 @@
 <template>
   <div class="h-full w-full mt-5">
     <!--a-->
+    <PopupRegisterDeTail
+      v-if="registerToViewDetail"
+      @close="closeRegisterDatailPopup"
+      :data="registerToViewDetail"
+    />
     <CreateAdmissionPopUp
       v-if="showCreateAdmissionPopup"
       @close="closePopCreateAdmission()"
@@ -209,7 +214,11 @@
           />
         </div>
         <div class="w-full">
-          <RegistrationTable :data="registrationList" :loading="loading" />
+          <RegistrationTable
+            :data="registrationList"
+            :loading="loading"
+            @view-detail="registerToViewDetail = $event"
+          />
           <Pagination
             :page-active="page"
             :page-nums="round(totalRegistration / limit)"
@@ -234,6 +243,7 @@ import SearchForm from "../../../components/search_form_comp.vue";
 import CreatButton from "../../../components/create_button.vue";
 import CreateAdmissionPopUp from "../components/create_admission_period_popup.vue";
 import LoadingComp from "../../../components/loading_comp.vue";
+import PopupRegisterDeTail from "../../registration_page/components/popup_detail.vue";
 
 //Service
 import syllabusService from "../../../services/syllabus.service";
@@ -257,6 +267,7 @@ const levelSelected = ref(0);
 
 const showCreateAdmissionPopup = ref(false);
 const loadingTotalSyllabus = ref(false);
+const registerToViewDetail = ref(null);
 
 function round(value) {
   return Math.ceil(value);
@@ -387,6 +398,10 @@ function returnSyllabus(syllabus_id) {
 function closePopCreateAdmission() {
   showCreateAdmissionPopup.value = null;
   getAdmission();
+}
+
+function closeRegisterDatailPopup() {
+  registerToViewDetail.value = null;
 }
 </script>
 

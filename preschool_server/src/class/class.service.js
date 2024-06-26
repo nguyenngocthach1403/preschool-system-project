@@ -10,6 +10,7 @@ module.exports = {
   isExistClassByName,
   getMembers,
   addStudentIntoClasses,
+  updateClass,
 };
 
 async function getClass(limit, offset) {
@@ -164,6 +165,38 @@ async function createClass(data) {
     return {
       success: true,
       message: "Tạo lớp thành công.",
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function updateClass(classID, dataToUpdate) {
+  try {
+    const keys = Object.keys(dataToUpdate);
+    for (let index = 0; index < keys.length; index++) {
+      const key = keys[index];
+      if (dataToUpdate[key] == undefined) {
+        delete dataToUpdate[key];
+      }
+    }
+    const result = await db.update(config.tb.class, dataToUpdate, {
+      id: classID,
+    });
+
+    if (result == 0) {
+      return {
+        success: false,
+        message: "Cập nhật không thành công. Hãy thử lại.",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Cập nhật thành công.",
     };
   } catch (error) {
     return {
