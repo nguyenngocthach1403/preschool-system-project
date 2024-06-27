@@ -13,6 +13,8 @@ module.exports = {
   updateTeacher,
   getByID,
   deleteTeacher,
+  getSpecializationByTeacher,
+  getCertificateByTeacher,
 };
 
 async function getTeacher(limit, offset) {
@@ -41,6 +43,38 @@ async function getClassManagedByTeacher(teacherId) {
       `${config.tb.classManager} claM LEFT JOIN ${config.tb.class} cla ON cla.id = claM.class_id LEFT JOIN ${config.tb.managerRole} magR ON magR.id = claM.role`,
       "claM.class_id, claM.role as role_id, cla.name AS class_name, magR.name AS role_name",
       `WHERE cla.deleted = 0 AND claM.teacher_id = ${teacherId}`
+    );
+    return data || [];
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+async function getSpecializationByTeacher(teacherId) {
+  try {
+    const data = await db.select(
+      `${config.tb.teacher} tea LEFT JOIN ${config.tb.teacher_specialization} teaSpe ON tea.id = teaSpe.teacher_id LEFT JOIN ${config.tb.specialization} spe ON spe.id = teaSpe.specialization_id`,
+      "tea.id as TeacherId, tea.name as TeacherName, spe.name AS SpecializationName",
+      `WHERE tea.deleted = 0 AND teaSpe.teacher_id = ${teacherId}`
+    );
+    return data || [];
+  } catch (error) {
+    console.error(error);
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+async function getCertificateByTeacher(teacherId) {
+  try {
+    const data = await db.select(
+      `${config.tb.teacher} tea LEFT JOIN ${config.tb.teacher_certificates} teaCer ON tea.id = teaCer.teacher_id LEFT JOIN ${config.tb.certificates} cer ON cer.id = teaCer.certificate_id`,
+      "tea.id as TeacherId, tea.name as TeacherName, cer.name AS SpecializationName",
+      `WHERE tea.deleted = 0 AND teaCer.teacher_id = ${teacherId}`
     );
     return data || [];
   } catch (error) {
