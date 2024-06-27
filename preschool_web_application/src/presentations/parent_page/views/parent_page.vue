@@ -3,7 +3,8 @@
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
-      :content="showConfirmDialog"
+      :content="`Bạn có muốn xóa phụ huynh ${showConfirmDialog.name} không?`"
+      :value="showConfirmDialog"
       @confirm="getConfirm($event)"
     />
     <CreateAccountView
@@ -36,7 +37,7 @@
       @sort-parent-name="sortDataByName"
       @sort-parent-role="sortDataByRole"
       @sort-parent-status="sortDataByStatus"
-      @delete-parent="deleteParentById"
+      @delete-parent="showConfirmDialog = $event"
       @create-account-for-parent="showCreateAccountView = $event"
     ></TableData>
     <div
@@ -143,21 +144,14 @@ function closeAccountCreationView() {
 }
 
 const getConfirm = (event) => {
-  if (event) {
-    const parentToDel = JSON.parse(localStorage.getItem("parentToDel") || {});
-
-    deleteParent(parentToDel);
-
+  if (!event) {
     showConfirmDialog.value = null;
-  } else {
-    showConfirmDialog.value = null;
+    return;
   }
+  deleteParent(event);
+  showConfirmDialog.value = null;
 };
 const emits = defineEmits(["add-toast"]);
-const deleteParentById = (event) => {
-  localStorage.setItem("parentToDel", JSON.stringify(event));
-  showConfirmDialog.value = "Bạn có muốn xóa  " + event.name + " không?";
-};
 async function deleteParent(parentToDel) {
   const resultOfDel = await parentStore.deleteParentInDB(parentToDel.id);
 

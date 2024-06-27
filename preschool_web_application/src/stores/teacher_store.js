@@ -123,11 +123,8 @@ export const useTeacherStore = defineStore("teacherStore", {
     },
     async deleteTeacher(idTeacherToDel) {
       this.loading = true;
-
       const res = await teacherService.deleleTeacher(idTeacherToDel);
-
       const data = res.data;
-
       if (data.status == 200) {
         this.deleteTeacher(idTeacherToDel);
         this.loading = false;

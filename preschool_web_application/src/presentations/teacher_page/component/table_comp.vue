@@ -21,9 +21,9 @@
               <th>Tài khoản</th>
               <th>Giới tính</th>
               <th>Liên hệ</th>
-              <!-- <th>Lớp quản lý</th> -->
+              <th>Lớp quản lý</th>
               <th>Chuyên môn</th>
-              <th>Văn bằng</th>
+              <!-- <th>Văn bằng</th> -->
               <th>Chức năng</th>
             </tr>
           </thead>
@@ -42,7 +42,7 @@
                 </div>
               </td>
               <td class="w-[700px]">{{ teacher.name }}</td>
-              <td class="px-3 w-[200px]">
+              <td class="px-3 w-[100px]">
                 <button
                   @click.prevent
                   v-if="teacher.account_id == null"
@@ -58,7 +58,7 @@
                   >
                 </dd>
               </td>
-              <td class="w-[100px]">
+              <td class="w-[50px]">
                 {{ teacher.gender === 0 ? "Nam" : "Nữ" }}
               </td>
               <td class="w-[400px] text-gray-400">
@@ -71,15 +71,8 @@
                   <span class="text-gray-700">{{ teacher.phone }}</span>
                 </dd>
               </td>
-              <!-- <td class="w-[700px] text-gray-400">
-                <div
-                  v-if="teacher.class_managed.length === 0"
-                  @click.prevent="$emit('create-for-teacher', teacher)"
-                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
-                >
-                  Thêm lớp quản lý
-                </div>
-                <div v-else>
+              <td class="w-[700px] text-gray-400">
+                <div>
                   <div
                     v-for="(classInfo, index) in teacher.class_managed"
                     :key="index"
@@ -89,18 +82,9 @@
                     <span>{{ classInfo.class_name }}</span>
                   </div>
                 </div>
-              </td> -->
+              </td>
               <td class="w-[700px]">
-                <div
-                  v-if="teacher.specialization_managed.length === 0"
-                  @click.prevent="
-                    $emit('create-specialization-for-teacher', teacher)
-                  "
-                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
-                >
-                  Thêm chuyên môn
-                </div>
-                <div v-else>
+                <div>
                   <div
                     v-for="(
                       specialInfo, index
@@ -108,28 +92,24 @@
                     :key="index"
                   >
                     <span>{{ specialInfo.SpecializationName }}</span>
+                    <span
+                      v-if="index < teacher.specialization_managed.length - 1"
+                      >,
+                    </span>
                   </div>
                 </div>
               </td>
-              <td class="w-[700px]">
-                <div
-                  v-if="teacher.certificate_managed.length === 0"
-                  @click.prevent="
-                    $emit('create-certificate-for-teacher', teacher)
-                  "
-                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
-                >
-                  Thêm văn bằng
-                </div>
-                <div v-else>
+              <!-- <td class="w-[700px]">
+                <div>
                   <div
                     v-for="(CerInfo, index) in teacher.certificate_managed"
                     :key="index"
                   >
-                    <span>{{ CerInfo.SpecializationName }}</span>
+                    <span>{{ CerInfo.CertificateName }}</span>
+                    <span v-if="index < teacher.certificate_managed.length - 1">, </span>
                   </div>
                 </div>
-              </td>
+              </td> -->
               <td class="w-[200px]">
                 <div class="flex">
                   <div
@@ -161,7 +141,7 @@ import delete_icon from "@/assets/icons/delete.svg";
 import edit_icon from "@/assets/icons/edit.svg";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
 
-const emits = defineEmits(["delete-teacher"]);
+const emits = defineEmits(["add-toast"]);
 defineProps({
   dataTable: {
     type: Array,
