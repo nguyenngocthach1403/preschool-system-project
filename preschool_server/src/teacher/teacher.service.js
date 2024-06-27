@@ -15,6 +15,8 @@ module.exports = {
   deleteTeacher,
   getSpecializationByTeacher,
   getCertificateByTeacher,
+  createTeacherSpecialization,
+  createTeacherCertificate,
 };
 
 async function getTeacher(limit, offset) {
@@ -73,7 +75,7 @@ async function getCertificateByTeacher(teacherId) {
   try {
     const data = await db.select(
       `${config.tb.teacher} tea LEFT JOIN ${config.tb.teacher_certificates} teaCer ON tea.id = teaCer.teacher_id LEFT JOIN ${config.tb.certificates} cer ON cer.id = teaCer.certificate_id`,
-      "tea.id as TeacherId, tea.name as TeacherName, cer.name AS SpecializationName",
+      "tea.id as TeacherId, tea.name as TeacherName, cer.name AS CertificateName",
       `WHERE tea.deleted = 0 AND teaCer.teacher_id = ${teacherId}`
     );
     return data || [];
@@ -125,22 +127,50 @@ async function countSearchTeacher(txtSearch) {
     };
   }
 }
+// async function searchTeacher(txtSearch, page, limit) {
+//   try {
+//     return db.selectLimit(
+//       config.tb.teacher,
+//       "*",
+//       `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%'`,
+//       `LIMIT ${limit}`,
+//       `OFFSET ${limit * page}`
+//     );
+//   } catch (error) {
+//     return {
+//       code: error.code,
+//       message: "An error occusred while excuted query",
+//     };
+//   }
+// }
 async function searchTeacher(txtSearch, page, limit) {
   try {
-    return db.selectLimit(
+    const data = await db.selectLimit(
       config.tb.teacher,
       "*",
-      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%'`,
+      `WHERE deleted = 0 AND (name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%')`,
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
+
+    for (let index = 0; index < data.length; index++) {
+      const teacher = data[index];
+      const specialization = await getSpecializationByTeacher(teacher.id);
+      const certificates = await getCertificateByTeacher(teacher.id);
+      teacher.specialization_managed = specialization;
+      teacher.certificate_managed = certificates;
+    }
+
+    return data;
   } catch (error) {
+    console.error("An error occurred while searching for teachers:", error);
     return {
       code: error.code,
-      message: "An error occusred while excuted query",
+      message: "An error occurred while executing query",
     };
   }
 }
+
 async function isDuplicate(email, phone) {
   try {
     const result = await db.select(
@@ -165,6 +195,7 @@ async function createTeacher(dataToCreate) {
     return {
       success: true,
       message: "Tạo giáo viên thành công",
+      data: data,
     };
   } catch (error) {
     return {
@@ -227,6 +258,52 @@ async function deleteTeacher(idTeacherToDel) {
     return {
       code: error.code,
       message: "Delete Fail",
+    };
+  }
+}
+async function createTeacherSpecialization(dataToCreate) {
+  try {
+    const teacherId = await db.insert(
+      config.tb.teacher_specialization,
+      dataToCreate
+    );
+    if (teacherId.effectedRows == 0) {
+      return {
+        success: false,
+        message: "Quá trình thêm dữ liệu thất bại. Hãy thử lại.",
+      };
+    }
+    return {
+      success: true,
+      message: "Tạo thành công",
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+async function createTeacherCertificate(dataToCreate) {
+  try {
+    const teacherId = await db.insert(
+      config.tb.teacher_certificates,
+      dataToCreate
+    );
+    if (teacherId.effectedRows == 0) {
+      return {
+        success: false,
+        message: "Quá trình thêm dữ liệu thất bại. Hãy thử lại.",
+      };
+    }
+    return {
+      success: true,
+      message: "Tạo thành công",
+    };
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
     };
   }
 }

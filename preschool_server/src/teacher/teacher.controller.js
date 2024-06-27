@@ -6,6 +6,7 @@ const upload = multer({ dest: "uploads/teacher" });
 const fs = require("fs");
 const accountService = require("../account/account.service");
 const teacherService = require("./teacher.service");
+const teacherSpecializationService = require("../teacher_specialization/teacher_specialization.service");
 const checkService = require("../config/check.service");
 const config = require("../config/config");
 router.get("/", getTeacher);
@@ -170,6 +171,8 @@ async function createTeacher(req, res, next) {
     status,
     experience,
     seniority,
+    spec,
+    cer,
   } = req.body;
 
   //Kiểm tra tải hình ảnh
@@ -205,7 +208,38 @@ async function createTeacher(req, res, next) {
     seniority: seniority,
     avatar: url || undefined,
   });
-
+  const teacherId = result.data.insertId;
+  // console.log(result.data.insertId);
+  // console.log(spec);
+  const specializationIds = Array.isArray(spec) ? spec : [spec];
+  for (const specializationId of specializationIds) {
+    const specializationResult =
+      await teacherService.createTeacherSpecialization({
+        specialization_id: specializationId,
+        teacher_id: teacherId,
+      });
+    if (!specializationResult.success) {
+      return res.status(500).json({
+        success: false,
+        error:
+          specializationResult.error ||
+          "Lỗi khi thêm dữ liệu chuyên môn của giáo viên.",
+      });
+    }
+  }
+  const CertificateIds = Array.isArray(cer) ? cer : [cer];
+  for (const certificateId of CertificateIds) {
+    const certificateResult = await teacherService.createTeacherCertificate({
+      certificate_id: certificateId,
+      teacher_id: teacherId,
+    });
+    if (!certificateResult.success) {
+      return res.status(500).json({
+        success: false,
+        error: certificateResult.error || "Lỗi khi thêm dữ lieu.",
+      });
+    }
+  }
   if (result.code) {
     if (req.files.length > 0) {
       fs.renameSync(req.files[0].path + ".jpg", "uploads/teacher/none");

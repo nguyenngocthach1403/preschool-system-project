@@ -180,7 +180,7 @@ import { convertParentRole } from "../../../utils/resources/converter";
 // const showOverlay = ref(false);
 // const deleteConfirmation = ref(false);
 // const parentToDelete = ref(null);
-const emits = defineEmits(["add-toast"]);
+const emits = defineEmits(["add-toast", "delete-parent"]);
 
 const formatDate = (birthday) => moment(birthday).format("DD/MM/YYYY");
 
