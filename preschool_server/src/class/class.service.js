@@ -12,6 +12,8 @@ module.exports = {
   addStudentIntoClasses,
   updateClass,
   getClassManagerRoles,
+  searchClass,
+  countSearchClass,
 };
 
 async function getClass(limit, offset) {
@@ -88,12 +90,10 @@ async function addStudentIntoClasses(data) {
 }
 async function countFindingUpcomingAndOngoingClasses(searchText) {
   try {
-    const now = new Date().toLocaleDateString();
-    const date = now.split("/");
     const resultCount = await db.select(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
       "*",
-      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' AND c.end_date > '${date[2]}-${date[0]}-${date[1]}'`
+      `WHERE c.deleted = 0  AND c.end_date > CURRENT_DATE AND c.name like '%${searchText}%' OR c.session like '%${searchText}%'`
     );
 
     if (resultCount.length == 0) {
@@ -108,6 +108,7 @@ async function countFindingUpcomingAndOngoingClasses(searchText) {
       total: resultCount.length,
     };
   } catch (error) {
+    console.error(error);
     return {
       code: error.code,
       error: error.sqlMessage,
@@ -117,12 +118,46 @@ async function countFindingUpcomingAndOngoingClasses(searchText) {
 
 async function findUpcomingAndOngoingClasses(searchText, limit, offset) {
   try {
-    const now = new Date().toLocaleDateString();
-    const date = now.split("/");
     const classesData = await db.selectLimit(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
-      "c.*, l.levelsName, s.syllabusName",
-      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' AND c.end_date > '${date[2]}-${date[0]}-${date[1]}'`,
+      "COUNT(*) AS total, c.*, l.name AS levelName, s.name AS syllabusName",
+      `WHERE c.deleted = 0 AND c.end_date > CURRENT_DATE AND c.name like '%${searchText}%' OR c.session like '%${searchText}%' GROUP BY c.id`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+
+    return classesData;
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function countSearchClass(searchText) {
+  try {
+    const classesData = await db.select(
+      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
+      "COUNT(*) AS total",
+      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' OR c.session like '%${searchText}%'`
+    );
+
+    return classesData[0].total;
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function searchClass(searchText, limit, offset) {
+  try {
+    const classesData = await db.selectLimit(
+      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
+      " c.*, l.name AS levelName, s.name AS syllabusName",
+      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' OR c.session like '%${searchText}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );

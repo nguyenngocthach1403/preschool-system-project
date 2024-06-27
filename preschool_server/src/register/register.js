@@ -122,21 +122,29 @@ router.post("/", upload.array("files"), async (req, res) => {
     resultCreateRegister
   );
 
-  //Create parent
-  const resultCreateParent = await parentService.insertParent({
-    name: name,
-    phone: phone,
-    email: email,
-    role: relationship,
-    status: 0,
-  });
+  if (await parentService.isExistParentByPhone(phone)) {
+    const parent = await parentService.getParentByPhone(phone);
+    await relationshipService.createRelationship({
+      student_id: resultToCreateStudent.insertId,
+      parent_id: parent.id,
+    });
+  } else {
+    //Create parent
+    const resultCreateParent = await parentService.insertParent({
+      name: name,
+      phone: phone,
+      email: email,
+      role: relationship,
+      status: 0,
+    });
 
-  if (!resultCreateParent.code) {
-    if (resultCreateParent.success) {
-      await relationshipService.createRelationship({
-        student_id: resultToCreateStudent.insertId,
-        parent_id: resultCreateParent.id,
-      });
+    if (!resultCreateParent.code) {
+      if (resultCreateParent.success) {
+        await relationshipService.createRelationship({
+          student_id: resultToCreateStudent.insertId,
+          parent_id: resultCreateParent.id,
+        });
+      }
     }
   }
 

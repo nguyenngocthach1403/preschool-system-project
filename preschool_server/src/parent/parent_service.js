@@ -17,6 +17,7 @@ module.exports = {
   isExistAccount,
   isExistParent,
   getParentByPhone,
+  isExistParentByPhone,
 };
 
 async function getAll() {
@@ -150,6 +151,35 @@ async function isExistParent(id) {
     return true;
   } catch (error) {
     return false;
+  }
+}
+async function isExistParentByPhone(phone) {
+  try {
+    const result = await db.select(
+      config.tb.parent,
+      "*",
+      `WHERE deleted = 0 AND phone = ${phone}`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getParentByPhone(phone) {
+  try {
+    const result = await db.select(
+      config.tb.parent,
+      "*",
+      `WHERE deleted = 0 AND phone = ${phone}`
+    );
+    return result[0];
+    return true;
+  } catch (error) {
+    console.error(error);
   }
 }
 

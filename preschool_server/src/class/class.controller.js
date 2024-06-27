@@ -8,6 +8,7 @@ const studentService = require("../student/student.service");
 const checkService = require("../config/check.service");
 const config = require("../config/config");
 router.get("/", getClass);
+router.get("/search/in-comming", findOnGoingAndInCommingClass);
 router.get("/search", findClass);
 router.post("/add", upload.array("files"), createClass);
 router.post("/update", upload.array("files"), updateClass);
@@ -231,13 +232,19 @@ async function getMembers(req, res) {
   });
 }
 
-async function findClass(req, res) {
+async function findOnGoingAndInCommingClass(req, res) {
   const { searchText, limit, offset } = req.query;
 
-  if (limit == undefined || offset == undefined) {
+  if (checkService.isEmpty(limit) || checkService.isEmpty(offset)) {
     return res.status(500).json({
       status: 500,
       error: "Limit và offset không được phép để trống.",
+    });
+  }
+  if (!checkService.isNumber(limit) || !checkService.isNumber(offset)) {
+    return res.status(500).json({
+      status: 500,
+      error: "Limit và offset không đúng định dạng!",
     });
   }
 
@@ -279,6 +286,48 @@ async function findClass(req, res) {
     data: result,
   });
 }
+
+async function findClass(req, res) {
+  const { searchText, limit, offset } = req.query;
+
+  if (checkService.isEmpty(limit) || checkService.isEmpty(offset)) {
+    return res.status(500).json({
+      status: 500,
+      error: "Limit và offset không được phép để trống.",
+    });
+  }
+  if (!checkService.isNumber(limit) || !checkService.isNumber(offset)) {
+    return res.status(500).json({
+      status: 500,
+      error: "Limit và offset không đúng định dạng!",
+    });
+  }
+
+  const count = await classService.countSearchClass(searchText);
+
+  if (count.code) {
+    return res.status(500).json({
+      status: 500,
+      error: count.error,
+    });
+  }
+
+  const result = await classService.searchClass(searchText, limit, offset);
+
+  if (result.code) {
+    return res.status(500).json({
+      status: 500,
+      error: result.error,
+    });
+  }
+
+  return res.status(200).json({
+    status: 200,
+    message: "Successfull",
+    total: count,
+    data: result,
+  });
+}
 async function getClass(req, res) {
   const { limit, offset } = req.query;
 
@@ -294,6 +343,7 @@ async function getClass(req, res) {
       error: "Invalid input: query must be has limit and page.",
     });
   }
+  const count = await classService.countSearchClass("");
 
   const result = await classService.getClass(limit, offset);
 
@@ -308,6 +358,7 @@ async function getClass(req, res) {
   res.status(200).json({
     status: 200,
     message: "Successful",
+    total: count,
     data: result,
   });
 }

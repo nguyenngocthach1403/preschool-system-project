@@ -11,16 +11,16 @@
           class="w-full h-[420px] border rounded-md flex flex-wrap justify-between px-3 overflow-y-auto"
         >
           <div
-            class="my-3 h-[250px] w-[440px] rounded-xl border-[2px] border-blue-500 bg-blue-100/50"
+            class="my-3 h-[250px] w-[440px] rounded-xl border-[1px] border-blue-500 bg-blue-100/50 hover:border-black"
           >
             <div class="w-full flex gap-2">
               <div class="my-2 mx-2">
                 <div
-                  class="w-[90px] h-[90px] rounded-full border-[2px] border-gray-500"
+                  class="w-[90px] h-[90px] rounded-full border-[1px] border-gray-300"
                 ></div>
               </div>
               <div
-                class="border-[2px] my-2 mr-2 bg-white rounded-md border-gray-400 w-full text-start px-2"
+                class="border-[1px] my-2 mr-2 bg-white rounded-md border-gray-300 w-full text-start px-2"
               >
                 <p>Nguyễn Thị Mỹ Linh</p>
                 <div class="text-[13px] flex gap-5">
@@ -45,7 +45,7 @@
               </div>
             </div>
             <div
-              class="border-[2px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-400"
+              class="border-[1px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-300"
             >
               <p>Kinh nghiệm</p>
               <ul class="px-5 text-[13px] list-disc">
@@ -62,16 +62,16 @@
             </div>
           </div>
           <div
-            class="my-3 h-[250px] w-[440px] rounded-xl border-[2px] border-blue-500 bg-blue-100/50"
+            class="my-3 h-[250px] w-[440px] rounded-xl border-[1px] border-blue-500 bg-blue-100/50"
           >
             <div class="w-full flex gap-2">
               <div class="my-2 mx-2">
                 <div
-                  class="w-[90px] h-[90px] rounded-full border-[2px] border-gray-500"
+                  class="w-[90px] h-[90px] rounded-full border-[1px] border-gray-500"
                 ></div>
               </div>
               <div
-                class="border-[2px] my-2 mr-2 bg-white rounded-md border-gray-400 w-full text-start px-2"
+                class="border-[1px] my-2 mr-2 bg-white rounded-md border-gray-300 w-full text-start px-2"
               >
                 <p>Nguyễn Thị Mỹ Linh</p>
                 <div class="text-[13px] flex gap-5">
@@ -96,7 +96,7 @@
               </div>
             </div>
             <div
-              class="border-[2px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-400"
+              class="border-[1px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-300"
             >
               <p>Kinh nghiệm</p>
               <ul class="px-5 text-[13px] list-disc">
@@ -113,16 +113,16 @@
             </div>
           </div>
           <div
-            class="my-3 h-[250px] w-[440px] rounded-xl border-[2px] border-blue-500 bg-blue-100/50"
+            class="my-3 h-[250px] w-[440px] rounded-xl border-[1px] border-blue-500 bg-blue-100/50"
           >
             <div class="w-full flex gap-2">
               <div class="my-2 mx-2">
                 <div
-                  class="w-[90px] h-[90px] rounded-full border-[2px] border-gray-500"
+                  class="w-[90px] h-[90px] rounded-full border-[1px] border-gray-500"
                 ></div>
               </div>
               <div
-                class="border-[2px] my-2 mr-2 bg-white rounded-md border-gray-400 w-full text-start px-2"
+                class="border-[1px] my-2 mr-2 bg-white rounded-md border-gray-300 w-full text-start px-2"
               >
                 <p>Nguyễn Thị Mỹ Linh</p>
                 <div class="text-[13px] flex gap-5">
@@ -147,7 +147,7 @@
               </div>
             </div>
             <div
-              class="border-[2px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-400"
+              class="border-[1px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-300"
             >
               <p>Kinh nghiệm</p>
               <ul class="px-5 text-[13px] list-disc">
@@ -164,16 +164,16 @@
             </div>
           </div>
           <div
-            class="my-3 h-[250px] w-[440px] rounded-xl border-[2px] border-blue-500 bg-blue-100/50"
+            class="my-3 h-[250px] w-[440px] rounded-xl border-[1px] border-blue-500 bg-blue-100/50"
           >
             <div class="w-full flex gap-2">
               <div class="my-2 mx-2">
                 <div
-                  class="w-[90px] h-[90px] rounded-full border-[2px] border-gray-500"
+                  class="w-[90px] h-[90px] rounded-full border-[1px] border-gray-500"
                 ></div>
               </div>
               <div
-                class="border-[2px] my-2 mr-2 bg-white rounded-md border-gray-400 w-full text-start px-2"
+                class="border-[1px] my-2 mr-2 bg-white rounded-md border-gray-300 w-full text-start px-2"
               >
                 <p>Nguyễn Thị Mỹ Linh</p>
                 <div class="text-[13px] flex gap-5">
@@ -198,7 +198,7 @@
               </div>
             </div>
             <div
-              class="border-[2px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-400"
+              class="border-[1px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-300"
             >
               <p>Kinh nghiệm</p>
               <ul class="px-5 text-[13px] list-disc">
@@ -215,16 +215,16 @@
             </div>
           </div>
           <div
-            class="my-3 h-[250px] w-[440px] rounded-xl border-[2px] border-blue-500 bg-blue-100/50"
+            class="my-3 h-[250px] w-[440px] rounded-xl border-[1px] border-blue-500 bg-blue-100/50"
           >
             <div class="w-full flex gap-2">
               <div class="my-2 mx-2">
                 <div
-                  class="w-[90px] h-[90px] rounded-full border-[2px] border-gray-500"
+                  class="w-[90px] h-[90px] rounded-full border-[1px] border-gray-500"
                 ></div>
               </div>
               <div
-                class="border-[2px] my-2 mr-2 bg-white rounded-md border-gray-400 w-full text-start px-2"
+                class="border-[1px] my-2 mr-2 bg-white rounded-md border-gray-300 w-full text-start px-2"
               >
                 <p>Nguyễn Thị Mỹ Linh</p>
                 <div class="text-[13px] flex gap-5">
@@ -249,7 +249,7 @@
               </div>
             </div>
             <div
-              class="border-[2px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-400"
+              class="border-[1px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-300"
             >
               <p>Kinh nghiệm</p>
               <ul class="px-5 text-[13px] list-disc">
@@ -266,16 +266,16 @@
             </div>
           </div>
           <div
-            class="my-3 h-[250px] w-[440px] rounded-xl border-[2px] border-blue-500 bg-blue-100/50"
+            class="my-3 h-[250px] w-[440px] rounded-xl border-[1px] border-blue-500 bg-blue-100/50"
           >
             <div class="w-full flex gap-2">
               <div class="my-2 mx-2">
                 <div
-                  class="w-[90px] h-[90px] rounded-full border-[2px] border-gray-500"
+                  class="w-[90px] h-[90px] rounded-full border-[1px] border-gray-500"
                 ></div>
               </div>
               <div
-                class="border-[2px] my-2 mr-2 bg-white rounded-md border-gray-400 w-full text-start px-2"
+                class="border-[1px] my-2 mr-2 bg-white rounded-md border-gray-300 w-full text-start px-2"
               >
                 <p>Nguyễn Thị Mỹ Linh</p>
                 <div class="text-[13px] flex gap-5">
@@ -300,7 +300,7 @@
               </div>
             </div>
             <div
-              class="border-[2px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-400"
+              class="border-[1px] bg-white h-[130px] overflow-y-auto my-1 mx-2 rounded-md text-start px-2 border-gray-300"
             >
               <p>Kinh nghiệm</p>
               <ul class="px-5 text-[13px] list-disc">

@@ -657,6 +657,15 @@ async function submitCreateRegister() {
     loading.value = true;
     const response = await registrationService.createRegister(formData);
 
+    if (response.data.isExist) {
+      toasts.value.push({
+        title: "Thất bại!",
+        content: "Số điện thoại đã được đăng ký",
+        type: 1,
+      });
+      return;
+    }
+
     if (!response.data.success) {
       toasts.value.push({ title: "Thất bại!", type: 1 });
       return;

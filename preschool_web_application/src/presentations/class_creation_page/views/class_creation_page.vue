@@ -159,7 +159,7 @@
               <input
                 placeholder="Nhập mã niên khóa"
                 v-model="sessionInput"
-                type="text"
+                type="number"
                 class="input-text-default"
                 :class="{ invalid: messageOfSession }"
               />
@@ -297,6 +297,7 @@ watch(classSyllabusInput, () => {
 watch(dateBeginInput, () => {
   if (!isEmpty(dateBeginInput.value)) {
     messageOfBeginDate.value = "";
+    sessionInput.value = dateBeginInput.value.getFullYear();
   }
 });
 

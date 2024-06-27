@@ -516,7 +516,7 @@
               <div class="w-[150px] h-[200px]">
                 <img
                   class="w-full h-full object-contain"
-                  src="https://th.bing.com/th/id/OIP.jleFhbOD3BG8h1PeUIGdNAAAAA?w=226&h=180&c=7&r=0&o=5&dpr=1.1&pid=1.7"
+                  :src="empty_icon"
                   alt=""
                 />
               </div>
@@ -594,7 +594,7 @@
             </div>
           </div>
         </div>
-        <div class="w-[700px] shadow rounded-md bg-white">
+        <div class="w-[700px] shadow rounded-md bg-white overflow-y-auto">
           <div class="w-full px-1 py-3">
             <div class="text-start px-3 text-[18px]">Tình trạng tư vấn</div>
             <ul class="w-full py-5 px-5 h-full">
@@ -616,6 +616,7 @@
                     <SelectStatus
                       :options="statusList"
                       class="border w-[200px] h-[45px] rounded-md"
+                      :value="statusSelected"
                       @choose="chooseStatus($event)"
                     />
                   </div>
@@ -802,6 +803,7 @@ const notes = ref([]);
 //effect
 const disableInput = ref(true);
 const addingNote = ref(false);
+const statusSelected = ref(null);
 
 //model
 const registerName = ref();
@@ -887,6 +889,10 @@ function initialInput(dataToFill) {
   notes.value = dataToFill.notes;
 }
 
+async function updataRegisterStatus() {
+  try {
+  } catch (error) {}
+}
 // async function updateRegister() {
 //   if (checkinvalid()) return;
 //   try {
@@ -1032,8 +1038,25 @@ async function addNote() {
   noteInput.value = "";
 }
 
-function chooseStatus(event) {
-  alert(event.name);
+async function chooseStatus(event) {
+  alert(event.id);
+  statusSelected.value = event.id;
+
+  try {
+    const reponse = await registrationService.updateStatus(
+      register.value.id,
+      event.id,
+      window.user.id,
+      register.value.status
+    );
+
+    console.log(reponse);
+
+    getRegisterByID();
+    statusSelected.value = null;
+  } catch (error) {
+    emits("add-toast", { title: "Thất bại!", type: 1 });
+  }
 }
 function isShowDelete(item) {
   console.log(window.user.role);
