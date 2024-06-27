@@ -18,6 +18,10 @@ const config = {
     classMembers: "class_members",
     registerNotes: "register_notes",
     managerRoles: "class_manager_roles",
+    teacher_specialization: "teacher_specializations",
+    specialization: "specializations",
+    teacher_certificates: "teacher_certificates",
+    certificates: "certificates",
   },
 };
 

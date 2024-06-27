@@ -14,7 +14,21 @@
       @close="closeAccountCreationView()"
       @add-toast="$emit('add-toast', $event)"
     />
-    <div class="text-left px-[20px] text-[36px] font-bold">Teacher</div>
+    <CreateSpecializationView
+      v-if="showCreateSpecializationView"
+      class="absolute top-0 left-0"
+      :teacher-id="showCreateSpecializationView"
+      @close="closeAccountCreationView()"
+      @add-toast="$emit('add-toast', $event)"
+    />
+    <CreateCertificateView
+      v-if="showCreateCertificateView"
+      class="absolute top-0 left-0"
+      :teacher-id="showCreateCertificateView"
+      @close="closeAccountCreationView()"
+      @add-toast="$emit('add-toast', $event)"
+    />
+    <div class="text-left px-[20px] text-[36px] font-bold">Giáo viên</div>
     <div class="flex justify-between content-center mr-3">
       <SearchForm
         @passSearchText="getSearchText"
@@ -30,6 +44,8 @@
     <TableData
       :data-table="teachers"
       @create-account-for-teacher="showCreateAccountView = $event"
+      @create-specialization-for-teacher="showCreateSpecializationView = $event"
+      @create-certificate-for-teacher="showCreateCertificateView = $event"
       @delete-teacher="showConfirmDialog = $event"
     ></TableData>
     <div
@@ -72,6 +88,8 @@ import CreateButtonComp from "../../../components/create_button.vue";
 import Pagination from "../../../components/pagination.vue";
 import ConfirmDialog from "@/components/confirm_dialog.vue";
 import CreateAccountView from "../../account_page/components/create_account_teacher_view.vue";
+import CreateSpecializationView from "@/presentations/teacher_page/view/popup_create_specialization.vue";
+import CreateCertificateView from "@/presentations/teacher_page/view/popup_create_certificate.vue";
 import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useTeacherStore } from "../../../stores/teacher_store";
@@ -80,6 +98,8 @@ import ShowNumberComp from "../../../components/show_number_comp.vue";
 const teacherStore = useTeacherStore();
 const showConfirmDialog = ref("");
 const showCreateAccountView = ref(false);
+const showCreateSpecializationView = ref(false);
+const showCreateCertificateView = ref(false);
 const { teachers, page, limit, loading, total, status } =
   storeToRefs(teacherStore);
 onMounted(async () => {
@@ -110,7 +130,8 @@ function changeLimit(event) {
 }
 function closeAccountCreationView() {
   showCreateAccountView.value = null;
-
+  showCreateSpecializationView.value = null;
+  showCreateCertificateView.value = null;
   if (teacherStore.txtSearch != "") {
     teacherStore.searchTeacher(teacherStore.txtSearch);
     return;

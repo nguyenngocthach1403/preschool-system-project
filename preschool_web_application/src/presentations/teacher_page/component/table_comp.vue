@@ -21,9 +21,9 @@
               <th>Tài khoản</th>
               <th>Giới tính</th>
               <th>Liên hệ</th>
-              <!-- <th>Tên lớp</th>
-              <th>Vai trò</th> -->
-              <th>Lớp quản lý</th>
+              <!-- <th>Lớp quản lý</th> -->
+              <th>Chuyên môn</th>
+              <th>Văn bằng</th>
               <th>Chức năng</th>
             </tr>
           </thead>
@@ -41,8 +41,8 @@
                   />
                 </div>
               </td>
-              <td class="w-[500px]">{{ teacher.name }}</td>
-              <td class="px-3 w-[300px]">
+              <td class="w-[700px]">{{ teacher.name }}</td>
+              <td class="px-3 w-[200px]">
                 <button
                   @click.prevent
                   v-if="teacher.account_id == null"
@@ -73,16 +73,6 @@
               </td>
               <!-- <td class="w-[700px] text-gray-400">
                 <div
-                  v-for="(classInfo, index) in teacher.class_managed"
-                  :key="index"
-                >
-                  <span>{{ classInfo.role_name }}</span>
-                  <span class="text-gray-700"> của lớp </span>
-                  <span>{{ classInfo.class_name }}</span>
-                </div>
-              </td> -->
-              <td class="w-[700px] text-gray-400">
-                <div
                   v-if="teacher.class_managed.length === 0"
                   @click.prevent="$emit('create-for-teacher', teacher)"
                   class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
@@ -97,6 +87,46 @@
                     <span>{{ classInfo.role_name }}</span>
                     <span class="text-gray-700"> của lớp </span>
                     <span>{{ classInfo.class_name }}</span>
+                  </div>
+                </div>
+              </td> -->
+              <td class="w-[700px]">
+                <div
+                  v-if="teacher.specialization_managed.length === 0"
+                  @click.prevent="
+                    $emit('create-specialization-for-teacher', teacher)
+                  "
+                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
+                >
+                  Thêm chuyên môn
+                </div>
+                <div v-else>
+                  <div
+                    v-for="(
+                      specialInfo, index
+                    ) in teacher.specialization_managed"
+                    :key="index"
+                  >
+                    <span>{{ specialInfo.SpecializationName }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="w-[700px]">
+                <div
+                  v-if="teacher.certificate_managed.length === 0"
+                  @click.prevent="
+                    $emit('create-certificate-for-teacher', teacher)
+                  "
+                  class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
+                >
+                  Thêm văn bằng
+                </div>
+                <div v-else>
+                  <div
+                    v-for="(CerInfo, index) in teacher.certificate_managed"
+                    :key="index"
+                  >
+                    <span>{{ CerInfo.SpecializationName }}</span>
                   </div>
                 </div>
               </td>
@@ -126,14 +156,12 @@
 
 <script setup>
 import { ref, computed } from "vue";
-// import moment from "moment";
 import router from "@/router/router";
 import delete_icon from "@/assets/icons/delete.svg";
 import edit_icon from "@/assets/icons/edit.svg";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
 
 const emits = defineEmits(["delete-teacher"]);
-
 defineProps({
   dataTable: {
     type: Array,

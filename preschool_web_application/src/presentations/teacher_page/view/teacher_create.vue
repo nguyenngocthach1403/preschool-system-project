@@ -98,6 +98,19 @@
           </div>
           <div id="input-side-4" class="flex w-full gap-5 mx-[20px]">
             <label class="w-full text-start">
+              <span class="pl-4 text-blue-700">Thâm niên</span>
+              <select
+                id="gender"
+                v-model="selectedYear"
+                class="input-text-default"
+              >
+                <option value="">Chọn năm</option>
+                <option v-for="year in years()" :key="year" :value="year">
+                  {{ year }}
+                </option>
+              </select>
+            </label>
+            <label class="w-full text-start">
               <span class="pl-4 text-blue-700">Địa chỉ</span>
               <input
                 v-model="address"
@@ -152,7 +165,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, computed } from "vue";
 import teacherService from "../../../services/teacher.service";
 import {
   isEmpty,
@@ -160,7 +173,7 @@ import {
   isEmailValid,
 } from "../../../utils/resources/check_valid";
 const name = ref("");
-const gender = ref("");
+const gender = ref(0);
 const birthday = ref("");
 const address = ref("");
 const email = ref("");
@@ -171,11 +184,20 @@ const emits = defineEmits(["add-toast"]);
 const creating = ref(false);
 const fileUpload = ref(null);
 const teacherAvatarPath = ref(null);
+const selectedYear = ref("");
 
 const messageOfTeacherName = ref("");
 const messageOfTeacherPhone = ref("");
 const messageOfTeacherEmail = ref("");
 
+function years() {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = 0; i <= 20; i++) {
+    years.push(currentYear - i);
+  }
+  return years;
+}
 function checkValidTeacher() {
   let invalid = false;
 
@@ -220,6 +242,7 @@ async function createTeacher() {
     formData.append("experience", experience.value);
   formData.append("phone", phone.value);
   formData.append("account_id", account_id.value);
+  formData.append("seniority", selectedYear.value);
 
   const response = await teacherService.createTeacher(formData);
 
