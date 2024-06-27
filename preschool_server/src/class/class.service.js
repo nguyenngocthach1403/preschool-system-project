@@ -11,6 +11,7 @@ module.exports = {
   getMembers,
   addStudentIntoClasses,
   updateClass,
+  getClassManagerRoles,
 };
 
 async function getClass(limit, offset) {
@@ -203,5 +204,18 @@ async function updateClass(classID, dataToUpdate) {
       code: error.code,
       error: error.sqlMessage,
     };
+  }
+}
+async function getClassManagerRoles() {
+  try {
+    const res = await db.select(
+      config.tb.managerRoles,
+      "*",
+      "WHERE deleted= 0"
+    );
+    console.log(res);
+    return res;
+  } catch (err) {
+    console.error("Error executing query", err);
   }
 }

@@ -13,6 +13,7 @@ router.post("/add", upload.array("files"), createClass);
 router.post("/update", upload.array("files"), updateClass);
 router.get("/students/", getMembers);
 router.post("/add-students", addStudentIntoClass);
+router.get("/manager-roles", getManagerRoles);
 
 async function updateClass(req, res) {
   const { classId } = req.query;
@@ -200,6 +201,15 @@ async function addStudentIntoClass(req, res) {
   res.status(200).json({
     success: true,
     data: studentEntered,
+  });
+}
+
+async function getManagerRoles(req, res) {
+  const result = await classService.getClassManagerRoles();
+
+  res.status(200).json({
+    success: true,
+    data: result || [],
   });
 }
 

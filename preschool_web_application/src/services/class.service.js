@@ -7,6 +7,7 @@ export default {
   getMembers,
   addStudentIntoClass,
   updateClass,
+  getClassManagerRoles,
 };
 
 function fetchClass(limit, offset) {
@@ -34,6 +35,10 @@ function updateClass(classID, data) {
       "Content-Type": "multipart/form-data",
     },
   });
+}
+
+function getClassManagerRoles() {
+  return api().get(`/class/manager-roles`);
 }
 
 function getMembers(class_id) {

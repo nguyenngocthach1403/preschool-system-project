@@ -24,6 +24,7 @@
         :class-id="parseInt($router.currentRoute.value.query.classID)"
         @add-toast="$emit('add-toast', $event)"
       />
+      <ClassTeacherView v-if="getCurrentActive(3)" />
     </div>
   </div>
 </template>
@@ -31,6 +32,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import StudentListView from "../views/student_list_view.vue";
+import ClassTeacherView from "../views/class_teachers_view.vue";
 import { useRouter } from "vue-router";
 
 //router
@@ -54,6 +56,11 @@ const menuList = ref([
   {
     id: 2,
     title: "Điểm danh",
+    active: false,
+  },
+  {
+    id: 3,
+    title: "Giáo viên quản lý",
     active: false,
   },
 ]);
