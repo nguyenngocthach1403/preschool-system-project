@@ -261,7 +261,7 @@ async function insertParent(req, res, next) {
     job: job,
     role: role,
     address: address,
-    status: status,
+    status: 0,
     avatar: url || undefined,
   });
 
