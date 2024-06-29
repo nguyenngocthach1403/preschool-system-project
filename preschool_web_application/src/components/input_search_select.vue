@@ -1,9 +1,9 @@
 <template>
   <div class="relative">
     <button
-      class="main w-full h-full bg-white overflow-hidden focus:ring-1 rounded-md border hover:border hover:border-gray-500 p-[1px] flex items-center relative"
-      @focus="showOption = true"
+      class="main w-full h-full bg-white overflow-hidden focus:ring-1 rounded-md border border-gray-400/75 hover:border hover:border-gray-500 p-[1px] flex items-center relative"
       @focusout="closeOptionList"
+      @click.prevent
     >
       <div class="list flex text-[12px]">
         <div
@@ -31,6 +31,7 @@
       </div>
       <input
         @focus="showOption = true"
+        @click="showOption = true"
         type="text"
         v-model="value"
         class="w-full h-full px-3 pr-10 outline-none rounded-md text-[16px]"
@@ -38,7 +39,7 @@
       <button
         class="absolute w-5 h-5 top-[15px] right-2 opacity-0"
         :class="{ 'hover-show': selectedList.length != 0 }"
-        @click="selectedList = []"
+        @click="(selectedList = []), emits('selected', [])"
       >
         <img :src="close_icon" alt="" />
       </button>
@@ -63,7 +64,9 @@
         >
           <div>
             <p>{{ item.name }}</p>
-            <p class="text-[13px] text-gray-500">HS{{ item.id }}</p>
+            <p v-if="enableSub" class="text-[13px] text-gray-500">
+              HS{{ item.id }}
+            </p>
           </div>
           <!-- <img :src="complete_icon" class="w-5 h-5" alt="" /> -->
           <svg
@@ -98,7 +101,10 @@
           </svg>
         </li>
         <li v-if="props.hasData"><LoadingComp /></li>
-        <li v-if="props.options.length == 0" class="empty text-gray-400">
+        <li
+          v-if="props.options.length == 0"
+          class="empty text-center text-gray-400"
+        >
           <img class="w-10 h-10 m-auto" :src="empty_icon" alt="" />
           <span>Không có dữ liệu</span>
         </li>
@@ -119,6 +125,7 @@ import LoadingComp from "../components/loading_comp.vue";
 
 //effect
 const showOption = ref(false);
+const enableSub = ref(true);
 
 //model
 const input = ref("");
@@ -142,10 +149,17 @@ const props = defineProps({
     type: Boolean,
     require: true,
   },
+  enableSub: {
+    type: Boolean,
+    require: false,
+  },
 });
 watch(props, () => {
   if (props.value != "") {
     value.value = props.value;
+  }
+  if (props.enableSub) {
+    enableSub.value = props.enableSub;
   }
 });
 

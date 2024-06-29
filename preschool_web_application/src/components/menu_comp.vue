@@ -163,6 +163,14 @@ const menu = ref([
   },
   {
     id: 5,
+    title: "Phân công",
+    name: "AssignmentView",
+    icon: "",
+    active: false,
+    type: 1,
+  },
+  {
+    id: 6,
     title: "Lớp học",
     name: "ClassView",
     icon: classes,
@@ -171,7 +179,7 @@ const menu = ref([
   },
   // { title: "Nhân viên", name: "/ddd", icon: staff },
   {
-    id: 6,
+    id: 7,
     title: "Tài khoản",
     name: "AccountView",
     icon: account,
@@ -179,7 +187,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 7,
+    id: 8,
     title: "Giáo viên",
     name: "TeacherView",
     icon: staff,
@@ -187,7 +195,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 8,
+    id: 9,
     title: "Danh mục",
     name: "CategoryView",
     icon: category,

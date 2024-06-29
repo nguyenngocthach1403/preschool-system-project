@@ -28,8 +28,8 @@
           <div id="input-side" class="w-full pr-[20px]">
             <div id="input-side-1" class="flex w-full gap-5 mx-[20px]">
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Họ và tên</span
-                ><span class="text-red-600"> * </span>
+                <span class="pl-4 text-gray-500">Họ và tên</span
+                ><span class="text-red-600"> (*) </span>
                 <input
                   type="text"
                   placeholder="Họ và tên"
@@ -42,11 +42,11 @@
                 </div>
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Giới tính</span>
+                <span class="pl-4 text-gray-500">Giới tính</span>
+                <span class="text-red-600"> (*) </span>
                 <select id="gender" v-model="gender" class="input-text-default">
                   <option value="0">Nam</option>
                   <option value="1">Nữ</option>
-                  <option value="2">Khác</option>
                 </select>
               </label>
             </div>
@@ -55,30 +55,35 @@
               class="flex w-full gap-5 mx-[20px] mb-[25px]"
             >
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Ngày sinh</span>
-                <input
+                <span class="pl-4 text-gray-500">Ngày sinh</span>
+                <span class="text-red-600"> (*) </span>
+                <VueDatePicker
+                  :enable-time-picker="false"
                   v-model="birthday"
-                  type="date"
-                  class="input-text-default"
+                  class="rounded-md"
+                  :class="{ 'in-valid': messageOfTeacherBirthday }"
                 />
+                <div class="mt-1 mb-2 h-[25px] text-red-500">
+                  <span>{{ messageOfTeacherBirthday }}</span>
+                </div>
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Kinh nghiệm giảng dạy</span>
+                <span class="pl-4 text-gray-500">Thâm niên</span>
                 <input
                   type="text"
-                  placeholder="1 năm kinh nghiệm, 2 năm kinh nghiệm,..."
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-                  v-model="experience"
+                  v-model="selectedYear"
+                  class="input-text-default"
                 />
               </label>
             </div>
             <div id="input-side-3" class="flex w-full gap-5 mx-[20px]">
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Số điện thoại</span>
+                <span class="pl-4 text-gray-500">Số điện thoại</span>
+                <span class="text-red-600"> (*) </span>
                 <input
                   type="text"
                   placeholder="0xxxxxxxx"
-                  class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+                  class="input-text-default"
                   v-model="phone"
                   :class="{ 'in-valid': messageOfTeacherPhone }"
                 />
@@ -87,7 +92,8 @@
                 </div>
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Email</span>
+                <span class="pl-4 text-gray-500">Email (nếu có)</span>
+
                 <input
                   type="text"
                   placeholder="abc@abc.com"
@@ -102,26 +108,81 @@
             </div>
             <div id="input-side-4" class="flex w-full gap-5 mx-[20px]">
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Thâm niên</span>
-                <select
-                  id="gender"
-                  v-model="selectedYear"
+                <span class="pl-4 text-gray-500">Địa chỉ</span>
+                <input
+                  v-model="address"
+                  type="text"
                   class="input-text-default"
-                >
-                  <option value="">Chọn năm</option>
-                  <option v-for="year in years()" :key="year" :value="year">
-                    {{ year }}
+                />
+              </label>
+
+              <label class="w-full text-start">
+                <span class="pl-4 text-gray-500">Tỉnh/Thành phố</span>
+                <select class="input-text-default" v-model="city">
+                  <option v-for="item in cities" :key="item" :value="item.Name">
+                    {{ item.Name }}
+                  </option>
+                </select>
+              </label>
+            </div>
+            <div id="input-side-4" class="flex w-full mt-8 gap-5 mx-[20px]">
+              <label class="w-full text-start">
+                <span class="pl-4 text-gray-500">Quận/Huyện</span>
+                <select v-model="district" class="input-text-default">
+                  <option
+                    v-for="item in districts"
+                    :key="item"
+                    :value="item.Name"
+                  >
+                    {{ item.Name }}
                   </option>
                 </select>
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Địa chỉ</span>
-                <input
-                  v-model="address"
-                  type="text"
-                  placeholder="23 abc/3123, Tp.Hồ Chí Minh, Việt Nam"
-                  class="input-text-default"
+                <span class="pl-4 text-gray-500">Phường/Thị xã</span>
+                <select v-model="town" class="input-text-default">
+                  <option v-for="item in towns" :key="item" :value="item.Name">
+                    {{ item.Name }}
+                  </option>
+                </select>
+              </label>
+            </div>
+            <div id="input-side-4" class="flex w-full mt-8 gap-5 mx-[20px]">
+              <label class="w-full text-start">
+                <span class="pl-4 text-gray-500">Chuyên môn</span>
+                <SelectSearchComp
+                  class="h-[50px]"
+                  :enable-sub="false"
+                  :options="filterSpecializationList"
+                  :value="searchSpecialization"
+                  @newValue="searchSpecialization = $event"
+                  @selected="specializations = $event"
                 />
+              </label>
+              <label class="w-full text-start">
+                <span class="pl-4 text-gray-500">Văn bằng</span>
+                <SelectSearchComp
+                  class="h-[50px]"
+                  :enable-sub="false"
+                  :options="filterCertificateList"
+                  :value="searchCertificates"
+                  @newValue="searchCertificates = $event"
+                  @selected="certificates = $event"
+                />
+              </label>
+            </div>
+            <div
+              id="input-side-4"
+              class="w-full text-start mt-8 gap-5 mx-[20px]"
+            >
+              <label class="w-full text-start">
+                <span class="pl-4 text-gray-500">Giới thiệu thêm</span>
+                <textarea
+                  v-model="description"
+                  cols="30"
+                  rows="10"
+                  class="w-full border border-gray-300 rounded-md focus:ring-1 px-2 py-2 text-[18px] hover:border-black outline-none"
+                ></textarea>
               </label>
             </div>
           </div>
@@ -166,7 +227,7 @@
         </div>
       </div>
     </form>
-    <div
+    <!--<div
       class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-fit pb-[60px]"
     >
       <div id="head">Các chuyên môn</div>
@@ -176,7 +237,7 @@
           v-for="(specialization, index) in specializations"
           :key="index"
         >
-          <span class="pl-4 text-blue-700">Chuyên môn {{ index + 1 }}</span>
+          <span class="pl-4 text-gray-500">Chuyên môn {{ index + 1 }}</span>
           <select
             id="status_account"
             v-model="specialization.value"
@@ -223,7 +284,7 @@
           v-for="(certificate, index) in certificates"
           :key="index"
         >
-          <span class="pl-4 text-blue-700"
+          <span class="pl-4 text-gray-500"
             >Chứng chỉ, văn bằng {{ index + 1 }}</span
           >
           <select
@@ -261,30 +322,55 @@
           </div>
         </label>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
+//service
+import axios from "axios";
 import teacherService from "../../../services/teacher.service";
+import SpecializationService from "../../../services/specialization.service";
+import CertificateService from "../../../services/certificate.service";
 import {
   isEmpty,
   isPhoneValid,
   isEmailValid,
 } from "../../../utils/resources/check_valid";
-import delete_icon from "@/assets/icons/delete.svg";
-import plus_icon from "@/assets/icons/plus.svg";
-import SpecializationService from "../../../services/specialization.service";
-import CertificateService from "../../../services/certificate.service";
+import { yyyymmddDateString } from "../../../utils/resources/format_date";
+
+//component
+import SelectSearchComp from "../../../components/input_search_select.vue";
+
+//list
+const cities = ref([]);
+const districts = ref([]);
+const towns = ref([]);
 onMounted(async () => {
   await getSpecialization();
   await getCertificate();
+  await getAddress();
 });
+//search model
+const searchSpecialization = ref("");
+const searchCertificates = ref("");
+
+const filterSpecializationList = computed(() => {
+  return specializationList.value.filter((e) => {
+    return e.name.match(searchSpecialization.value);
+  });
+});
+const filterCertificateList = computed(() => {
+  return certificateList.value.filter((e) => {
+    return e.name.match(searchCertificates.value);
+  });
+});
+
 const specializationList = ref([]);
-const specializations = ref([{ value: "" }]);
+const specializations = ref([]);
 const certificateList = ref([]);
-const certificates = ref([{ value: "" }]);
+const certificates = ref([]);
 
 function addSpecialization() {
   specializations.value.push({ value: "" });
@@ -306,7 +392,7 @@ async function getSpecialization() {
       const element = response.data.data[index];
       specializationList.value.push({
         name: element.name,
-        value: element.id,
+        id: element.id,
       });
     }
   }
@@ -318,11 +404,15 @@ async function getCertificate() {
       const element = response.data.data[index];
       certificateList.value.push({
         name: element.name,
-        value: element.id,
+        id: element.id,
       });
     }
   }
 }
+
+const city = ref("");
+const district = ref("");
+const town = ref("");
 
 const name = ref("");
 const gender = ref(0);
@@ -337,21 +427,51 @@ const creating = ref(false);
 const fileUpload = ref(null);
 const teacherAvatarPath = ref(null);
 const selectedYear = ref("");
+const description = ref("");
 
 const messageOfTeacherName = ref("");
 const messageOfTeacherPhone = ref("");
 const messageOfTeacherEmail = ref("");
 const messageOfTeacherCertificate = ref("");
 const messageOfTeacherSpecialization = ref("");
+const messageOfTeacherBirthday = ref("");
 
-function years() {
-  const currentYear = new Date().getFullYear();
-  const years = [];
-  for (let i = 0; i <= 20; i++) {
-    years.push(currentYear - i);
+//watch
+watch(city, (newCity) => {
+  districts.value = [];
+  towns.value = [];
+
+  if (newCity) {
+    districts.value = cities.value.find((e) => e.Name.match(newCity)).Districts;
   }
-  return years;
-}
+});
+
+watch(district, (newDistrict) => {
+  towns.value = [];
+
+  if (newDistrict) {
+    towns.value = districts.value.find((e) => e.Name.match(newDistrict)).Wards;
+  }
+});
+
+watch(phone, (newValue) => {
+  if (!isEmpty(newValue) && isPhoneValid(newValue)) {
+    messageOfTeacherPhone.value = "";
+  }
+});
+
+watch(email, (newValue) => {
+  if (!isEmpty(newValue) && isEmailValid(newValue)) {
+    messageOfTeacherEmail.value = "";
+  }
+});
+
+watch(name, (newValue) => {
+  if (!isEmpty(newValue)) {
+    messageOfTeacherName.value = "";
+  }
+});
+
 function checkValidTeacher() {
   let invalid = false;
 
@@ -367,27 +487,31 @@ function checkValidTeacher() {
   }
   if (!isEmpty(email.value) && !isEmailValid(email.value)) {
     invalid = true;
-    messageOfTeacherEmail.value = "Email giáo viên sai định dạng.";
+    messageOfTeacherEmail.value = "Email giáo viên không đúng định dạng.";
   }
 
   if (isEmpty(name.value)) {
     invalid = true;
-    messageOfTeacherName.value = "Không được đển trống tên giáo viên";
+    messageOfTeacherName.value = "Vui lòng nhập họ và tên";
   }
-  const hasEmptySpecialization = specializations.value.some(
-    (spec) => spec.value === ""
-  );
-  if (hasEmptySpecialization) {
+  if (isEmpty(birthday.value)) {
     invalid = true;
-    messageOfTeacherSpecialization.value = "Vui lòng chọn ít nhất 1 chuyên môn";
+    messageOfTeacherBirthday.value = "Vui lòng chọn ngày sinh.";
   }
-  const hasEmptyCertificate = certificates.value.some(
-    (cert) => cert.value === ""
-  );
-  if (hasEmptyCertificate) {
-    invalid = true;
-    messageOfTeacherCertificate.value = "Vui lòng chọn ít nhất 1 văn bằng";
-  }
+  // const hasEmptySpecialization = specializations.value.some(
+  //   (spec) => spec.value === ""
+  // );
+  // if (hasEmptySpecialization) {
+  //   invalid = true;
+  //   messageOfTeacherSpecialization.value = "Vui lòng chọn ít nhất 1 chuyên môn";
+  // }
+  // const hasEmptyCertificate = certificates.value.some(
+  //   (cert) => cert.value === ""
+  // );
+  // if (hasEmptyCertificate) {
+  //   invalid = true;
+  //   messageOfTeacherCertificate.value = "Vui lòng chọn ít nhất 1 văn bằng";
+  // }
   return invalid;
 }
 
@@ -396,61 +520,76 @@ async function createTeacher() {
     return;
   }
   const selectedSpecializations = specializations.value.filter(
-    (spec) => spec.value !== ""
+    (spec) => spec.id !== ""
   );
   const selectedCertificate = certificates.value.filter(
-    (spec) => spec.value !== ""
+    (spec) => spec.id !== ""
   );
-  creating.value = true;
-  const formData = new FormData();
-  if (fileUpload.value !== null) {
-    formData.append("files", fileUpload.value);
-  }
-  formData.append("name", name.value);
-  formData.append("gender", gender.value);
-  if (!isEmpty(birthday.value)) formData.append("birthday", birthday.value);
-  if (!isEmpty(address.value)) formData.append("address", address.value);
-  if (!isEmpty(email.value)) formData.append("email", email.value);
-  if (!isEmpty(experience.value))
-    formData.append("experience", experience.value);
-  formData.append("phone", phone.value);
-  formData.append("account_id", account_id.value);
-  formData.append("seniority", selectedYear.value);
-  for (const spec of selectedSpecializations) {
-    formData.append("spec", spec.value);
-    // console.log(spec.value);
-  }
-  for (const cer of selectedCertificate) {
-    formData.append("cer", cer.value);
-    // console.log(cer.value);
-  }
+  try {
+    console.log(selectedSpecializations);
 
-  const response = await teacherService.createTeacher(formData);
+    creating.value = true;
+    const formData = new FormData();
+    if (fileUpload.value !== null) {
+      formData.append("files", fileUpload.value);
+    }
+    formData.append("name", name.value);
+    formData.append("gender", gender.value);
+    if (!isEmpty(birthday.value))
+      formData.append(
+        "birthday",
+        yyyymmddDateString(new Date(birthday.value).toLocaleDateString())
+      );
+    if (!isEmpty(address.value)) formData.append("address", address.value);
+    if (!isEmpty(email.value)) formData.append("email", email.value);
+    if (!isEmpty(description.value))
+      formData.append("description", description.value);
+    formData.append("phone", phone.value);
+    formData.append("account_id", account_id.value);
+    formData.append("city", city.value);
+    formData.append("district", district.value);
+    formData.append("town", town.value);
+    if (selectedYear.value) formData.append("seniority", selectedYear.value);
+    if (specializations.value.length > 0) {
+      for (const spec of selectedSpecializations) {
+        formData.append("spec", spec.id);
+        // console.log(spec.value);
+      }
+    }
+    if (certificates.value.length > 0) {
+      for (const cer of selectedCertificate) {
+        formData.append("cer", cer.id);
+        // console.log(cer.value);
+      }
+    }
 
-  creating.value = false;
+    const response = await teacherService.createTeacher(formData);
 
-  if (!response.data.success) {
+    creating.value = false;
+
+    if (!response.data.success) {
+      emits("add-toast", {
+        title: "Tạo thất bại",
+        content: response.data.message,
+        type: 2,
+      });
+      return;
+    }
+
     emits("add-toast", {
-      title: "Tạo thất bại",
-      content: response.data.message,
-      type: 2,
+      title: "Tạo thành công",
+      content: `Tạo giáo viên ${name.value} thành công.`,
+      type: 0,
     });
-    return;
-  }
-  if (response.data.status === 400) {
+  } catch (error) {
+    console.log(error);
+
     emits("add-toast", {
       title: "Emai hoặc số điện thoại đã tồn tại",
-      content: response.data.message,
+      content: error.response.data.error,
       type: 1,
     });
-    return;
   }
-
-  emits("add-toast", {
-    title: "Tạo thành công",
-    content: `Tạo giáo viên ${name.value} thành công.`,
-    type: 0,
-  });
 }
 // Sử lý và ràn buộc lấy hình ảnh
 const handleUploadTeacherImg = (event) => {
@@ -471,6 +610,20 @@ const handleUploadTeacherImg = (event) => {
   teacherAvatarPath.value = URL.createObjectURL(fileUpload.value);
   console.log(URL.createObjectURL(fileUpload.value));
 };
+
+//Function
+async function getAddress() {
+  axios
+    .get(
+      "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
+    )
+    .then((response) => {
+      cities.value = response.data;
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+}
 </script>
 <style scoped>
 #head {
@@ -479,5 +632,15 @@ const handleUploadTeacherImg = (event) => {
   font-size: large;
   font-weight: 600;
   border-bottom: solid 1px rgb(221, 221, 221);
+}
+.in-valid {
+  border: red 1px solid;
+}
+.dp__theme_light {
+  --dp-button-height: 35px;
+  --dp-border-radius: 5px;
+  --dp-input-padding: 12px 30px 12px 12px;
+  --dp-border-color: #48484864;
+  margin: 5px 0px;
 }
 </style>

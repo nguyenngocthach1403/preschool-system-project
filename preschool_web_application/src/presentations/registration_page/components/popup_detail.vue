@@ -1039,7 +1039,6 @@ async function addNote() {
 }
 
 async function chooseStatus(event) {
-  alert(event.id);
   statusSelected.value = event.id;
 
   try {

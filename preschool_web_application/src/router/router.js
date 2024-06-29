@@ -22,6 +22,7 @@ import TeacherCreationView from "../presentations/teacher_page/view/teacher_crea
 import StudentDetailView from "../presentations/student_detail_page/views/student_detail_page.vue";
 import ClassDetailView from "../presentations/class_detail_page/views/class_detail_page.vue";
 import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
+import AssignmentView from "../presentations/assignmet_page/views/assignment_page.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -56,6 +57,11 @@ function Router() {
             name: "StudentView",
             path: "/home-page/:username/students",
             component: StudentView,
+          },
+          {
+            name: "AssignmentView",
+            path: "/home-page/:username/asignment",
+            component: AssignmentView,
           },
           {
             name: "StudentDetailView",
