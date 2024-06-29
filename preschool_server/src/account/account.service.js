@@ -9,6 +9,8 @@ module.exports = {
   getAccountByUsername,
   isExistAccountByUsername,
   getAccountById,
+  getParentByID,
+  getTeacherByID,
 };
 
 async function getAccountByUsername(username) {
@@ -130,5 +132,27 @@ async function updateByUsername(username, newData) {
       code: error.code,
       message: error.sqlMessage,
     };
+  }
+}
+async function getParentByID(id) {
+  try {
+    return db.select(
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account_id = a.id`,
+      "p.*, a.*, p.status StatusParent,p.role AS RoleParent,p.id AS ParentID,p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
+      id !== undefined ? `Where a.id = ${id}` : ""
+    );
+  } catch (error) {
+    return error;
+  }
+}
+async function getTeacherByID(id) {
+  try {
+    return db.select(
+      `${config.tb.teacher} t LEFT JOIN ${config.tb.account} a ON t.account_id = a.id`,
+      "t.*, a.*, t.status StatusTeacher,t.id AS TeacherId,t.name AS Nameteacher, t.email AS EmailTeacher, t.phone AS PhoneTeacher , a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
+      id !== undefined ? `Where a.id = ${id}` : ""
+    );
+  } catch (error) {
+    return error;
   }
 }

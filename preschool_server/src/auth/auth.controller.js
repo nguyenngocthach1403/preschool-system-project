@@ -6,7 +6,6 @@ const authService = require("./auth.service");
 module.exports = router;
 
 router.post("/", login);
-
 router.get("/isExist/:username", isExistUser);
 
 async function isExistUser(req, res) {

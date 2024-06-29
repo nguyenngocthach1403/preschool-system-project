@@ -19,8 +19,9 @@ router.get("/search", getParentSearch);
 router.get("/delete", deleteParent);
 router.get("/:id", getByID);
 router.get("/get/id/:id", getParentById);
-
+router.get("/getStudent/:id", getStudentByParentID);
 router.get("/add/account/:id", addAccountForParent);
+router.get("/totalStudent/:id", countStudentByParentId);
 
 async function getAll(req, res, next) {
   const { limit, page } = req.query;
@@ -40,6 +41,14 @@ async function getAll(req, res, next) {
       error: result.message,
     });
   }
+  // for (let index = 0; index < result.length; index++) {
+  //   const element = result[index];
+  //   const classManaged = await parentService.getStudentByParentId(
+  //     element.id,
+  //     element.name
+  //   );
+  //   element.class_managed = classManaged.code ? [] : classManaged;
+  // }
   res.status(200).json({
     status: 200,
     message: "Successful",
@@ -261,7 +270,7 @@ async function insertParent(req, res, next) {
     job: job,
     role: role,
     address: address,
-    status: 0,
+    status: 1,
     avatar: url || undefined,
   });
 
@@ -366,6 +375,7 @@ async function updateParent(req, res) {
 
   if (result.code) {
     return res.status(500).json({
+      status: 500,
       success: false,
       error: result.error,
     });
@@ -373,12 +383,14 @@ async function updateParent(req, res) {
 
   if (!result.success) {
     return res.status(200).json({
+      status: 400,
       success: false,
       error: result.message,
     });
   }
 
   res.status(200).json({
+    status: 200,
     success: true,
     error: result.message,
   });
@@ -411,5 +423,37 @@ async function deleteParent(req, res, next) {
       })
     );
   }
+}
+async function getStudentByParentID(req, res) {
+  const id = req.params.id;
+
+  const result = await parentService.getStudentByParentId(id);
+
+  if (result.code) {
+    return res.status(200).json({
+      success: false,
+      message: result.message,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Thành công.",
+    data: result,
+  });
+}
+async function countStudentByParentId(req, res, next) {
+  const id = req.params.id;
+
+  const countParent = await parentService.countStudentByParentId(id);
+
+  res.send(
+    JSON.stringify({
+      status: 200,
+      message: "Successful",
+      data: countParent[0]["total"],
+    })
+  );
 }
 module.exports = router;

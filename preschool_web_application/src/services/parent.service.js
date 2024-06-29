@@ -11,6 +11,8 @@ export default {
   getParentByIdParam,
   searchParent,
   addAccountForParent,
+  getStudentByParentId,
+  countStudentByParentId,
 };
 
 function search(txtSearch, page, limit) {
@@ -59,4 +61,10 @@ function searchParent(searchText, page, limit) {
 
 function addAccountForParent(parentId, username) {
   return api().get(`/parents/add/account/${parentId}?username=${username}`);
+}
+function getStudentByParentId(id) {
+  return api().get(`/parents/getStudent/${id}`);
+}
+function countStudentByParentId(id) {
+  return api().get(`/parents/totalStudent/${id}`);
 }
