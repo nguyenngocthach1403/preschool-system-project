@@ -3,10 +3,15 @@ const multer = require("multer");
 const upload = multer({ dest: "uploads/class" });
 const fs = require("fs");
 const router = express.Router();
+//Sercvice
 const classService = require("./class.service");
 const studentService = require("../student/student.service");
 const checkService = require("../config/check.service");
+const teacherService = require("../teacher/teacher.service");
+const managerRoleService = require("../class_manager_role/class_manager_role.service");
 const config = require("../config/config");
+
+//Router
 router.get("/", getClass);
 router.get("/search/in-comming", findOnGoingAndInCommingClass);
 router.get("/search", findClass);
@@ -15,6 +20,85 @@ router.post("/update", upload.array("files"), updateClass);
 router.get("/students/", getMembers);
 router.post("/add-students", addStudentIntoClass);
 router.get("/manager-roles", getManagerRoles);
+router.get("/id", getClassById);
+router.get("/add-management-position-for-class", updateClassManagerByClassId);
+
+async function updateClassManagerByClassId(req, res) {
+  const { classId, role, teacherId } = req.query;
+
+  if (checkService.isEmpty(classId) || !checkService.isNumber(classId)) {
+    return res.status(400).json({
+      success: false,
+      error: "ClassId is not valid",
+    });
+  }
+
+  if (checkService.isEmpty(role) || !checkService.isNumber(role)) {
+    return res.status(400).json({
+      success: false,
+      error: "Role is not valid",
+    });
+  }
+
+  //Kiểm tra vai trò trong lớp có tồn tại
+  const isExistRoles = await managerRoleService.isExistClassManagerRole(role);
+  if (!isExistRoles) {
+    return res.status(400).json({
+      success: false,
+      error: "Vị trí phân công không hợp lệ",
+    });
+  }
+
+  //Kiểm tra lớp tồn tại
+  const isExist = await classService.isExistClass(classId);
+
+  if (!isExist) {
+    return res.status(404).json({
+      success: false,
+      error: "Lớp học không tồn tại",
+    });
+  }
+
+  //Kiểm vị trí trong lớp đó đã tồn tại hay chưa
+  const isExistRole = await classService.isExistManagementPosition(
+    classId,
+    role
+  );
+  if (isExistRole) {
+    return res.status(200).json({
+      success: false,
+      error: "Vị trí đã tồn tại!",
+    });
+  }
+
+  //! Kiểm tra teacher có tồn tại không
+  const isExistTeacher = await teacherService.isExistTeacherByID(teacherId);
+  if (!isExistTeacher) {
+    return res.status(404).json({
+      success: false,
+      error: "Giáo viên được phân công không tồn tại.",
+    });
+  }
+
+  const resultCreateMangerClass =
+    await classService.createClassManagerByClassId({
+      class_id: classId,
+      teacher_id: teacherId,
+      role: role,
+    });
+
+  if (!resultCreateMangerClass.success) {
+    return res.status(400).json({
+      success: false,
+      error: resultCreateMangerClass.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    error: resultCreateMangerClass.message,
+  });
+}
 
 async function updateClass(req, res) {
   const { classId } = req.query;
@@ -288,7 +372,7 @@ async function findOnGoingAndInCommingClass(req, res) {
 }
 
 async function findClass(req, res) {
-  const { searchText, limit, offset } = req.query;
+  const { searchText, session, status, limit, offset } = req.query;
 
   if (checkService.isEmpty(limit) || checkService.isEmpty(offset)) {
     return res.status(500).json({
@@ -303,29 +387,76 @@ async function findClass(req, res) {
     });
   }
 
-  const count = await classService.countSearchClass(searchText);
+  if (checkService.isEmpty(session) && checkService.isEmpty(status)) {
+    const count = await classService.countSearchClass(searchText, session);
+    const result = await classService.searchClass(searchText, limit, offset);
 
-  if (count.code) {
-    return res.status(500).json({
-      status: 500,
-      error: count.error,
+    return res.status(200).json({
+      success: true,
+      total: count || 0,
+      data: result || [],
+    });
+  }
+  if (checkService.isEmpty(session)) {
+    const count = await classService.countSearchClassWithStatus(
+      searchText,
+      status
+    );
+
+    const result = await classService.searchClassWithStatus(
+      searchText,
+      status,
+      limit,
+      offset
+    );
+
+    return res.status(200).json({
+      status: 200,
+      message: "Successfull",
+      total: count || 0,
+      data: result || [],
     });
   }
 
-  const result = await classService.searchClass(searchText, limit, offset);
+  if (checkService.isEmpty(status)) {
+    const count = await classService.countSearchClassWithSession(
+      searchText,
+      session
+    );
 
-  if (result.code) {
-    return res.status(500).json({
-      status: 500,
-      error: result.error,
+    const result = await classService.searchClassWithSession(
+      searchText,
+      session,
+      limit,
+      offset
+    );
+
+    return res.status(200).json({
+      status: 200,
+      message: "Successfull",
+      total: count || 0,
+      data: result || [],
     });
   }
+  const count = await classService.countSearchClassWithStatusAndSession(
+    searchText,
+    status,
+    session
+  );
+
+  const result = await classService.searchClassWithStatusAndSession(
+    searchText,
+    session,
+    status,
+    limit,
+    offset
+  );
 
   return res.status(200).json({
     status: 200,
     message: "Successfull",
-    total: count,
-    data: result,
+    total: count || 0,
+    data: result || [],
   });
 }
 async function getClass(req, res) {
@@ -343,8 +474,7 @@ async function getClass(req, res) {
       error: "Invalid input: query must be has limit and page.",
     });
   }
-  const count = await classService.countSearchClass("");
-
+  const count = await classService.countTotalClass();
   const result = await classService.getClass(limit, offset);
 
   if (result.code) {
@@ -358,8 +488,39 @@ async function getClass(req, res) {
   res.status(200).json({
     status: 200,
     message: "Successful",
-    total: count,
+    total: count || 0,
     data: result,
+  });
+}
+async function getClassById(req, res) {
+  const { classId } = req.query;
+
+  if (checkService.isEmpty(classId) || !checkService.isNumber(classId)) {
+    return res.status(400).json({
+      success: false,
+      error: "Mã lớp không hợp lệ!",
+    });
+  }
+  const isExist = await classService.isExistClass(classId);
+  if (!isExist) {
+    return res.status(404).json({
+      success: false,
+      error: "Lớp học không tồn tại.",
+    });
+  }
+
+  const classs = await classService.getClassById(classId);
+
+  if (!classs) {
+    return res.status(400).json({
+      success: false,
+      error: "Đã xảy ra lỗi. Hãy thử lại.",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: classs,
   });
 }
 

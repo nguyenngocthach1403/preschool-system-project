@@ -573,6 +573,7 @@ onMounted(async () => {
   --dp-button-height: 35px;
   --dp-border-radius: 5px;
   --dp-input-padding: 12px 30px 11px 12px;
+  --dp-border-color: #48484864;
   margin: 5px 0px;
 }
 </style>

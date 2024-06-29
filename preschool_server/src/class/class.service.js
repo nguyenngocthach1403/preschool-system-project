@@ -12,24 +12,61 @@ module.exports = {
   addStudentIntoClasses,
   updateClass,
   getClassManagerRoles,
+  searchClassWithSession,
   searchClass,
+  searchClassWithStatus,
+  searchClassWithStatusAndSession,
+  countSearchClassWithStatus,
   countSearchClass,
+  countTotalClass,
+  countSearchClassWithSession,
+  countSearchClassWithStatusAndSession,
+  getClassById,
+  getClassManagerRolesByClassId,
+  createClassManagerByClassId,
+  updateClassManagerClassId,
+  isExistManagementPosition,
 };
 
 async function getClass(limit, offset) {
   try {
-    return await db.selectLimit(
+    const classes = await db.selectLimit(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
       "c.*, l.name AS levelsName, s.name AS syllabusName",
       "",
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );
+
+    for (let index = 0; index < classes.length; index++) {
+      const element = classes[index];
+      const teachers = await getClassManagerRolesByClassId(element.id);
+      // const uniqueTeachers = teachers.filter(
+      //   (teacher, index, self) =>
+      //     index === self.findIndex((t) => t.id === teacher.id)
+      // );
+      element.teachers = teachers || [];
+    }
+    return classes;
   } catch (error) {
     return {
       code: error.code,
       message: error.sqlMessage,
     };
+  }
+}
+
+async function countTotalClass() {
+  try {
+    const result = await db.select(
+      config.tb.class,
+      "COUNT(*) AS total",
+      "WHERE deleted = 0"
+    );
+    if (result.length == 0) return undefined;
+    return result[0]["total"];
+  } catch (error) {
+    return undefined;
   }
 }
 
@@ -135,14 +172,87 @@ async function findUpcomingAndOngoingClasses(searchText, limit, offset) {
   }
 }
 
+//! Đếm số lượng lớp được theo tên
 async function countSearchClass(searchText) {
   try {
     const classesData = await db.select(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
       "COUNT(*) AS total",
-      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' OR c.session like '%${searchText}%'`
+      `WHERE c.deleted = 0 AND (c.name like '%${searchText}%' OR c.session like '%${searchText}%' )`
+    );
+    return classesData[0].total;
+  } catch (error) {
+    return {
+      code: error.code,
+      error: error.sqlMessage,
+    };
+  }
+}
+//! Đếm số lượng lớp theo status
+async function countSearchClassWithStatus(searchText, status) {
+  try {
+    var statusString = "";
+    if (status.match("0"))
+      statusString =
+        "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
+    if (status.match("1")) statusString = "AND c.start_date > CURRENT_DATE()";
+
+    if (status.match("2")) statusString = "AND c.end_date < CURRENT_DATE()";
+    const result = await db.select(
+      `${config.tb.class} c`,
+      "COUNT(*) total",
+      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' ${
+        statusString || ""
+      }`
     );
 
+    if (result.length == 0) return undefined;
+
+    return result[0]["total"];
+  } catch (error) {
+    return undefined;
+  }
+}
+
+//! Đếm số lượng lớp theo status
+async function countSearchClassWithStatusAndSession(
+  searchText,
+  status,
+  session
+) {
+  try {
+    var statusString = "";
+    if (status.match("0"))
+      statusString =
+        "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
+    if (status.match("1")) statusString = "AND c.start_date > CURRENT_DATE()";
+
+    if (status.match("2")) statusString = "AND c.end_date < CURRENT_DATE()";
+    const result = await db.select(
+      `${config.tb.class} c`,
+      "COUNT(*) total",
+      `WHERE c.deleted = 0 AND c.session = ${session} AND c.name like '%${searchText}%' ${
+        statusString || ""
+      }`
+    );
+
+    if (result.length == 0) return undefined;
+
+    return result[0]["total"];
+  } catch (error) {
+    return undefined;
+  }
+}
+
+//! Đếm số lượng lớp được tim theo tên và niên khóa
+async function countSearchClassWithSession(searchText, session) {
+  try {
+    const classesData = await db.select(
+      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
+      "COUNT(*) AS total",
+      `WHERE c.deleted = 0 AND  c.session = ${session}  AND (c.name like '%${searchText}%' OR c.session like '%${searchText}%' )`
+    );
+    console.log(session);
     return classesData[0].total;
   } catch (error) {
     return {
@@ -152,22 +262,127 @@ async function countSearchClass(searchText) {
   }
 }
 
+//! Search Tìm kiếm lớp học bằng tên
 async function searchClass(searchText, limit, offset) {
   try {
     const classesData = await db.selectLimit(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
       " c.*, l.name AS levelName, s.name AS syllabusName",
-      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' OR c.session like '%${searchText}%'`,
+      `WHERE c.deleted = 0 AND c.name like '%${searchText}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${offset}`
     );
 
+    if (classesData.length == 0) return undefined;
+
+    for (let index = 0; index < classesData.length; index++) {
+      const element = classesData[index];
+      const teachers = await getClassManagerRolesByClassId(element.id);
+      // const uniqueTeachers = teachers.filter(
+      //   (teacher, index, self) =>
+      //     index === self.findIndex((t) => t.id === teacher.id)
+      // );
+      element.teachers = teachers || [];
+    }
+
     return classesData;
   } catch (error) {
-    return {
-      code: error.code,
-      error: error.sqlMessage,
-    };
+    return undefined;
+  }
+}
+
+//! Search Tìm kiếm lớp học bằng tên và niên khóa
+async function searchClassWithSession(searchText, session, limit, offset) {
+  try {
+    const classesData = await db.selectLimit(
+      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
+      " c.*, l.name AS levelName, s.name AS syllabusName",
+      `WHERE c.deleted = 0 AND c.session = ${session} AND  c.name like '%${searchText}%'`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    if (classesData.length == 0) return undefined;
+
+    for (let index = 0; index < classesData.length; index++) {
+      const element = classesData[index];
+      const teachers = await getClassManagerRolesByClassId(element.id);
+      element.teachers = teachers || [];
+    }
+
+    return classesData;
+  } catch (error) {
+    return undefined;
+  }
+}
+
+//! Tìm kiếm lớp học với trạng thái
+async function searchClassWithStatus(searchText, status, limit, offset) {
+  try {
+    var statusString = "";
+    if (status.match("0"))
+      statusString +=
+        "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
+    if (status.match("1")) statusString += "AND c.start_date > CURRENT_DATE()";
+
+    if (status.match("2")) statusString += "AND c.end_date < CURRENT_DATE()";
+    const classesData = await db.selectLimit(
+      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
+      " c.*, l.name AS levelName, s.name AS syllabusName",
+      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' ${
+        statusString || ""
+      }`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    if (classesData.length == 0) return undefined;
+
+    for (let index = 0; index < classesData.length; index++) {
+      const element = classesData[index];
+      const teachers = await getClassManagerRolesByClassId(element.id);
+      element.teachers = teachers || [];
+    }
+
+    return classesData;
+  } catch (error) {
+    return undefined;
+  }
+}
+
+async function searchClassWithStatusAndSession(
+  searchText,
+  session,
+  status,
+  limit,
+  offset
+) {
+  try {
+    var statusString = "";
+    if (status.match("0"))
+      statusString =
+        "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
+    if (status.match("1")) statusString = "AND c.start_date > CURRENT_DATE()";
+
+    if (status.match("2")) statusString = "AND c.end_date < CURRENT_DATE()";
+    const classesData = await db.selectLimit(
+      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
+      " c.*, l.name AS levelName, s.name AS syllabusName",
+      `WHERE c.deleted = 0 AND c.session = ${session} AND c.name like '%${searchText}%' ${
+        statusString || ""
+      }`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    if (classesData.length == 0) return undefined;
+
+    for (let index = 0; index < classesData.length; index++) {
+      const element = classesData[index];
+      const teachers = await getClassManagerRolesByClassId(element.id);
+      element.teachers = teachers || [];
+    }
+
+    return classesData;
+  } catch (error) {
+    return undefined;
   }
 }
 
@@ -252,5 +467,116 @@ async function getClassManagerRoles() {
     return res;
   } catch (err) {
     console.error("Error executing query", err);
+  }
+}
+async function getClassManagerRolesByClassId(classId) {
+  try {
+    const result = await db.select(
+      `${config.tb.managerRole} cmr LEFT JOIN ${config.tb.classManager} cm ON cm.role = cmr.id LEFT JOIN ${config.tb.teacher} tc ON tc.id = cm.teacher_id`,
+      "cmr.id AS role_id, cmr.name AS role_name, tc.id AS teacher_id, tc.name AS teacher_name, tc.avatar AS teacher_avatar",
+      `WHERE cm.class_id =${classId} AND cmr.deleted = 0`
+    );
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}
+async function getClassTeachers(classId) {
+  try {
+    const result = await db.select(
+      `${config.tb.classManager} cm LEFT JOIN ${config.tb.managerRoles} mr ON mr.id = cm.role LEFT JOIN ${config.tb.teacher} t ON t.id = cm.teacher_id`,
+      "t.*, cm.role, mr.name as role_name",
+      `WHERE cm.class_id = ${classId} AND mr.deleted = 0`
+    );
+
+    return result;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getClassById(classID) {
+  try {
+    const result = await db.select(
+      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
+      " c.*, l.name AS levelName, s.name AS syllabusName",
+      `WHERE c.id = ${classID} AND c.deleted = 0`
+    );
+
+    const teachers = await getClassTeachers(classID);
+
+    if (teachers) {
+      result[0].teachers = teachers;
+    }
+
+    return result[0];
+  } catch (error) {
+    return false;
+  }
+}
+
+//Hàm dùng để tạo giáo viên quản lý cho lớp nếu chưa có
+async function createClassManagerByClassId(data) {
+  try {
+    const result = db.insert(config.tb.classManager, data);
+    if (result.effectedRows == 0) {
+      return {
+        success: false,
+        error: "Thất bại",
+      };
+    }
+    return {
+      success: true,
+      message: "Thành công.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+async function updateClassManagerClassId(classId, role, teacherId) {
+  try {
+    const result = db.update(
+      config.tb.classManager,
+      { teacher_id: teacherId },
+      { class_id: classId, role: role }
+    );
+    if (result.effectedRows == 0) {
+      return {
+        success: false,
+        error: "Thất bại",
+      };
+    }
+    return {
+      success: true,
+      error: "Thành công.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.sqlMessage,
+    };
+  }
+}
+
+//Hàm kiểm tra lớp đã có role quản lý đó hay chưa
+async function isExistManagementPosition(classId, role) {
+  try {
+    const result = await db.select(
+      config.tb.classManager,
+      "*",
+      `WHERE class_id = ${classId} AND role = ${role}`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
   }
 }

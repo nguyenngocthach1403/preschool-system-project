@@ -18,6 +18,68 @@ router.post("/create", upload.array("files"), createTeacher);
 router.post("/update/:id", upload.array("files"), updateTeacher);
 router.get("/add/account/:id", addAccountForTeacher);
 router.get("/delete", deleteTeacher);
+router.get("/get/assign-class-manager", getTeacherForAssignment);
+router.get("/get/assignment", getAssignmentTeacher);
+
+async function getTeacherForAssignment(req, res) {
+  const { searchText, startDate, endDate, limit, offset } = req.query;
+  console.log(searchText);
+  if (
+    checkService.isEmpty(limit) ||
+    !checkService.isNumber(limit) ||
+    checkService.isEmpty(offset) ||
+    !checkService.isNumber(offset)
+  ) {
+    return res.status(400).json({
+      succes: false,
+      error: "Limit and offset is not valid",
+    });
+  }
+
+  if (
+    checkService.isNotValidDate(startDate) ||
+    checkService.isNotValidDate(endDate)
+  ) {
+    return res.status(400).json({
+      succes: false,
+      error: "StartDate and EndDate is not valid",
+    });
+  }
+  const result = await teacherService.getTeacherForAssignment(
+    searchText,
+    startDate,
+    endDate,
+    limit,
+    offset
+  );
+
+  res.status(200).json({
+    succes: true,
+    data: result || [],
+  });
+}
+async function getAssignmentTeacher(req, res) {
+  const { limit, offset } = req.query;
+
+  if (
+    checkService.isEmpty(limit) ||
+    checkService.isEmpty(offset) ||
+    !checkService.isNumber(limit) ||
+    !checkService.isNumber(offset)
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: "Limit và offset không hợp lệ",
+    });
+  }
+
+  const result = await teacherService.getAssignmentTeacher(limit, offset);
+
+  res.status(200).json({
+    success: true,
+    data: result || [],
+  });
+}
 async function getTeacher(req, res) {
   const { limit, offset } = req.query;
 
@@ -160,7 +222,7 @@ async function isDuplicate(req, res, next) {
     next(error);
   }
 }
-async function createTeacher(req, res, next) {
+async function createTeacher(req, res) {
   const {
     name,
     gender,
@@ -169,7 +231,10 @@ async function createTeacher(req, res, next) {
     email,
     address,
     status,
-    experience,
+    description,
+    city,
+    district,
+    town,
     seniority,
     spec,
     cer,
@@ -202,52 +267,64 @@ async function createTeacher(req, res, next) {
     birthday: birthday,
     phone: phone,
     email: email,
+    city: city,
+    district: district,
+    ward: town,
     address: address,
     status: status,
-    experience: experience,
+    description: description,
     seniority: seniority,
     avatar: url || undefined,
   });
-  const teacherId = result.data.insertId;
-  // console.log(result.data.insertId);
-  // console.log(spec);
-  const specializationIds = Array.isArray(spec) ? spec : [spec];
-  for (const specializationId of specializationIds) {
-    const specializationResult =
-      await teacherService.createTeacherSpecialization({
-        specialization_id: specializationId,
-        teacher_id: teacherId,
-      });
-    if (!specializationResult.success) {
-      return res.status(500).json({
-        success: false,
-        error:
-          specializationResult.error ||
-          "Lỗi khi thêm dữ liệu chuyên môn của giáo viên.",
-      });
-    }
-  }
-  const CertificateIds = Array.isArray(cer) ? cer : [cer];
-  for (const certificateId of CertificateIds) {
-    const certificateResult = await teacherService.createTeacherCertificate({
-      certificate_id: certificateId,
-      teacher_id: teacherId,
-    });
-    if (!certificateResult.success) {
-      return res.status(500).json({
-        success: false,
-        error: certificateResult.error || "Lỗi khi thêm dữ lieu.",
-      });
-    }
-  }
   if (result.code) {
-    if (req.files.length > 0) {
-      fs.renameSync(req.files[0].path + ".jpg", "uploads/teacher/none");
-    }
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       error: result.error,
     });
+  }
+  const teacherId = result.data;
+  // console.log(result.data.insertId);
+  // console.log(spec);
+  if (spec != undefined) {
+    console.log(spec);
+    const specializationIds = Array.isArray(spec) ? spec : [spec];
+    if (specializationIds.length > 0) {
+      for (const specializationId of specializationIds) {
+        const specializationResult =
+          await teacherService.createTeacherSpecialization({
+            specialization_id: specializationId,
+            teacher_id: teacherId,
+          });
+        if (!specializationResult.success) {
+          return res.status(500).json({
+            success: false,
+            error:
+              specializationResult.error ||
+              "Lỗi khi thêm dữ liệu chuyên môn của giáo viên.",
+          });
+        }
+      }
+    }
+  }
+  if (cer != undefined) {
+    console.log(cer);
+    const CertificateIds = Array.isArray(cer) ? cer : [cer];
+    if (CertificateIds.length > 0) {
+      for (const certificateId of CertificateIds) {
+        const certificateResult = await teacherService.createTeacherCertificate(
+          {
+            certificate_id: certificateId,
+            teacher_id: teacherId,
+          }
+        );
+        if (!certificateResult.success) {
+          return res.status(500).json({
+            success: false,
+            error: certificateResult.error || "Lỗi khi thêm dữ lieu.",
+          });
+        }
+      }
+    }
   }
 
   if (!result.success) {

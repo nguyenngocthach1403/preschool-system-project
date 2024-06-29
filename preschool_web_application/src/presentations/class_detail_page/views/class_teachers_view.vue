@@ -1,9 +1,11 @@
 <template>
-  <div class="w-full h-full bg-white rounded-xl">
+  <div class="w-full h-full bg-[#F6F6F6] rounded-xl overflow-hidden">
     <PopupAddTeacher
       v-if="showPopupAddTeacher"
-      @close="showPopupAddTeacher = null"
+      @close="closePopup()"
       :class-role="showPopupAddTeacher"
+      :class-data="classs"
+      @add-toast="$emit('add-toast', $event)"
     />
     <div class="py-4 px-7 text-start border-b flex justify-between">
       <span class="text-[20px] font-bold">Danh sách giáo viên quản lý</span>
@@ -11,7 +13,7 @@
 
     <div v-if="loading" class="w-full flex flex-wrap my-5 mx-10 gap-3">
       <div
-        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] hover:border-black rounded-md flex"
+        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] rounded-md flex"
       >
         <div class="mx-2 my-2">
           <div
@@ -33,7 +35,7 @@
         </div>
       </div>
       <div
-        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] hover:border-black rounded-md flex"
+        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] rounded-md flex"
       >
         <div class="mx-2 my-2">
           <div
@@ -55,7 +57,7 @@
         </div>
       </div>
       <div
-        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] hover:border-black rounded-md flex"
+        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] rounded-md flex"
       >
         <div class="mx-2 my-2">
           <div
@@ -77,7 +79,7 @@
         </div>
       </div>
       <div
-        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] hover:border-black rounded-md flex"
+        class="loading w-[500px] bg-white border-[2px] border-gray-400 h-[200px] rounded-md flex"
       >
         <div class="mx-2 my-2">
           <div
@@ -103,25 +105,67 @@
       <div
         v-for="item in classManagerRoles"
         :key="item"
-        class="w-[500px] bg-white border-[2px] border-gray-400 h-[200px] hover:border-black rounded-md flex"
+        class="w-[48%] bg-white hover:border-black rounded-md drop-shadow-md hover:drop-shadow-xl overflow-hidden"
         @click="showPopupAddTeacher = item.id"
       >
-        <div class="mx-2 my-2">
+        <div v-if="!item.teacher" class="w-full">
+          <div class="mx-2 my-2">
+            <div
+              class="w-[100px] h-[100px] border-[2px] border-gray-400 p-2 rounded-full"
+            >
+              <img :src="user_icon" class="w-full h-full" alt="" />
+            </div>
+            <p class="text-[18px]">{{ item.name }}</p>
+          </div>
           <div
-            class="w-[100px] h-[100px] border-[2px] border-gray-400 p-2 rounded-full"
+            class="w-full border-[2px] border-gray-400 my-2 mx-2 px-2 text-start rounded-md"
           >
-            <img :src="user_icon" class="w-full h-full" alt="" />
+            <div>
+              <div class="w-full my-6 h-[5px] bg-gray-500 rounded-full"></div>
+              <div
+                class="w-[200px] my-6 h-[5px] bg-gray-500 rounded-full"
+              ></div>
+              <div
+                class="w-[300px] my-6 h-[5px] bg-gray-500 rounded-full"
+              ></div>
+              <div
+                class="w-[320px] my-6 h-[5px] bg-gray-500 rounded-full"
+              ></div>
+            </div>
           </div>
         </div>
-        <div
-          class="w-full border-[2px] border-gray-400 my-2 mx-2 px-2 text-start rounded-md"
-        >
-          <p class="text-[18px]">{{ item.name }}</p>
-          <div>
-            <div class="w-full my-6 h-[5px] bg-gray-500 rounded-full"></div>
-            <div class="w-[200px] my-6 h-[5px] bg-gray-500 rounded-full"></div>
-            <div class="w-[300px] my-6 h-[5px] bg-gray-500 rounded-full"></div>
-            <div class="w-[320px] my-6 h-[5px] bg-gray-500 rounded-full"></div>
+        <div v-if="item.teacher" class="flex w-full h-[300px] shadow">
+          <div class="mx-2 my-2">
+            <div
+              class="w-[100px] h-[100px] mx-5 border-[2px] border-gray-400 rounded-full overflow-hidden"
+            >
+              <img
+                :src="item.teacher.avatar || user_icon"
+                class="w-full h-full object-cover"
+                alt=""
+              />
+            </div>
+            <p class="text-[18px]">{{ item.name }}</p>
+          </div>
+          <div
+            class="w-full border-[2px] border-gray-400 my-2 mx-2 px-2 text-start rounded-md"
+          >
+            <div>
+              <div class="w-full">
+                <span class="text-gray-500 text-[15px]"
+                  >{{ item.teacher.gender == 0 ? "Thầy" : "Cô" }}:</span
+                >
+                <span class="text-blue-700 px-1 text-[20px]">{{
+                  item.teacher.name
+                }}</span>
+              </div>
+              <div class="w-full flex py-1 items-center text-bottom">
+                <div>
+                  <span class="text-gray-500 text-[15px]">Sdt:</span>
+                  <span class="px-1 text-[17px]">{{ item.teacher.phone }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -146,31 +190,72 @@ const showPopupAddTeacher = ref(null);
 
 //data
 const classManagerRoles = ref([]);
+const classs = ref(null);
 
 //emits
 const emits = defineEmits(["add-toast"]);
 
+//props
+const props = defineProps({
+  classId: {
+    type: Number,
+    require: true,
+  },
+});
+
 async function getClassManagerRoles() {
   try {
-    loading.value = true;
     const response = await classService.getClassManagerRoles();
     console.log(response);
     if (response.data.success) {
       classManagerRoles.value = response.data.data;
     }
+  } catch (error) {
+    emits("add-toast", { title: "Tải dữ liệu thất bại!", type: 1 });
+  }
+}
+
+async function getClassById(classId) {
+  try {
+    loading.value = true;
+    await getClassManagerRoles();
+
+    const response = await classService.getClassById(classId);
+
+    classs.value = response.data.data;
+
+    fillTeacher(classs.value.teachers);
     setTimeout(() => {
       loading.value = false;
-    }, 2000);
+    }, 500);
   } catch (error) {
     loading.value = false;
-    failed.value = true;
-    emits("add-toast", { title: "Tải dữ liệu thất bại!", type: 1 });
+    emits("add-toast", {
+      title: "Tải dữ liệu thất bại!",
+      content: error,
+      type: 1,
+    });
+  }
+}
+
+function fillTeacher(teachers) {
+  teachers.forEach((te) => {
+    const index = classManagerRoles.value.findIndex((el) => el.id == te.role);
+    classManagerRoles.value[index].teacher = te;
+  });
+}
+function closePopup() {
+  showPopupAddTeacher.value = null;
+  if (props.classId) {
+    getClassById(props.classId);
   }
 }
 
 //life circle
 onMounted(() => {
-  getClassManagerRoles();
+  if (props.classId) {
+    getClassById(props.classId);
+  }
 });
 </script>
 

@@ -1,11 +1,11 @@
 <template>
   <div
-    class="bg-gradient-to-r from-indigo-300/50 via-violet-100 via-40% to-blue-100 border w-[400px] h-[400px] rounded-[10px] grid shadow-card grid-rows-2 mt-[10px] mx-[10px]"
+    @click="onClickClassCard($event, classData.id)"
+    class="class-card relative bg-gradient-to-r from-indigo-300/50 via-violet-100 via-40% to-blue-100 border w-[400px] h-[450px] rounded-[10px] grid drop-shadow-md hover:drop-shadow-2xl grid-rows-2 mt-[10px] mx-[10px]"
   >
     <div
       v-if="showMenuOfClass"
-      class="w-[150px] absolute rounded-md bg-white z-30 shadow overflow-hidden"
-      :style="{ top: top + 'px', left: left + 'px' }"
+      class="w-[150px] absolute rounded-md bg-white z-30 shadow overflow-hidden right-3 top-12"
     >
       <Transition
         leave-active-class="transition ease-in duration-100"
@@ -39,7 +39,7 @@
       <div class="absolute top-3 right-3 z-10">
         <button
           @focusout="closeMenu"
-          class="w-7 h-7 content-center bg-white rounded-xl hover:border hover:border-black"
+          class="w-7 h-7 content-center bg-white rounded-md hover:border hover:border-black"
           @click="displayMenu($event)"
         >
           <img class="w-5 m-auto" :src="dot" alt="" />
@@ -61,16 +61,7 @@
         />
       </div>
     </div>
-    <div
-      id="body"
-      class="px-[15px]"
-      @click="
-        $router.push({
-          name: 'ClassDetailView',
-          query: { classID: classData.id },
-        })
-      "
-    >
+    <div id="body" class="px-[15px]">
       <div
         class="title flex items-center justify-between w-full my-1 text-start"
       >
@@ -92,34 +83,49 @@
           )
         }}</span>
       </div>
-      <div
-        class="teacher flex text-[13px] gap-2 items-center text-gray-500 content-center"
-      >
-        <span>Giáo viên:</span>
-        <div class="h-full content-center">
-          {{ classData.teacher || "Chưa có" }}
+      <div>
+        <div
+          v-for="teacher in classData.teachers"
+          :key="teacher"
+          class="teacher flex text-[13px] gap-2 items-center text-gray-500 content-center"
+        >
+          <span>{{ teacher.role_name }}:</span>
+          <div class="h-full content-center">
+            {{ teacher.teacher_name || "Chưa có" }}
+          </div>
         </div>
       </div>
       <div
         class="number-of-membver gap-2 my-5 flex items-center text-[13px] text-gray-500 h-[25px] my-1"
       >
-        <div class="px-3 py-2 rounded-md border border-black">
+        <div class="px-2 rounded-md border border-black">
           {{ classData.type || "Không có" }}
         </div>
-        <div class="px-3 py-2 rounded-md border border-black">
+        <div class="px-2 rounded-md border border-black">
           {{ classData.levelName || "Không có" }}
         </div>
-        <div class="px-3 py-2 rounded-md border border-black">
+        <div class="px-2 rounded-md border border-black">
           {{ classData.syllabusName || "Không có" }}
         </div>
       </div>
       <div
-        class="number-of-membver gap-2 flex items-center text-[13px] text-gray-500 h-[25px] my-1"
+        class="flex items-center gap-5 text-[13px] justify-between text-gray-500 h-[25px] my-1"
       >
-        <img :src="member_icon" class="rounded-[50px] h-[30px] w-[30px]" />
-        <span class="h-full content-center"
-          >{{ classData.member ?? 0 }}/{{ classData.limitedMember ?? 0 }}</span
-        >
+        <div class="number-of-membver gap-2 flex items-center">
+          <img :src="member_icon" class="rounded-[50px] h-[30px] w-[30px]" />
+          <span class="h-full content-center"
+            >{{ classData.member ?? 0 }}/{{
+              classData.limitedMember ?? 0
+            }}</span
+          >
+        </div>
+        <button>
+          <div
+            class="w-full h-10 px-3 border text-white bg-blue-500 content-center hover:bg-blue-300 rounded-md border-black"
+          >
+            Phân công
+          </div>
+        </button>
       </div>
     </div>
   </div>
@@ -133,11 +139,11 @@ import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 import edit_icon from "../../../assets/icons/edit.svg";
 import delete_icon from "../../../assets/icons/delete.svg";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
-const top = ref(0);
-const left = ref(0);
 const showMenuOfClass = ref(null);
 
+const router = useRouter();
 defineProps({
   classData: {
     type: Object,
@@ -160,14 +166,21 @@ const status = (status) => {
 
 function displayMenu(event) {
   showMenuOfClass.value = !showMenuOfClass.value;
-  top.value = event.clientY;
-  left.value = event.clientX;
 }
 
 function closeMenu() {
   setTimeout(() => {
     showMenuOfClass.value = false;
   }, 100);
+}
+
+function onClickClassCard(event, id) {
+  if (event.target.className.match("teacher")) {
+    router.push({
+      name: "ClassDetailView",
+      query: { classID: id },
+    });
+  }
 }
 </script>
 

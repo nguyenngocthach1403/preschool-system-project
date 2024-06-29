@@ -24,7 +24,11 @@
         :class-id="parseInt($router.currentRoute.value.query.classID)"
         @add-toast="$emit('add-toast', $event)"
       />
-      <ClassTeacherView v-if="getCurrentActive(3)" />
+      <ClassTeacherView
+        :class-id="parseInt($router.currentRoute.value.query.classID)"
+        v-if="getCurrentActive(3)"
+        @add-toast="$emit('add-toast', $event)"
+      />
     </div>
   </div>
 </template>

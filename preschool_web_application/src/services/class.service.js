@@ -8,15 +8,17 @@ export default {
   addStudentIntoClass,
   updateClass,
   getClassManagerRoles,
+  getClassById,
+  addManagementPositionForClass,
 };
 
 function fetchClass(limit, offset) {
   return api().get(`/class?limit=${limit}&offset=${offset}`);
 }
 
-function searchClass(searchText, limit, offset) {
+function searchClass(searchText, session, status, limit, offset) {
   return api().get(
-    `/class/search?searchText=${searchText}&limit=${limit}&offset=${
+    `/class/search?searchText=${searchText}&session=${session}&status=${status}&limit=${limit}&offset=${
       offset * limit
     }`
   );
@@ -49,5 +51,14 @@ function addStudentIntoClass(classID, accountID, studentsToAdd) {
   return api().post(
     `/class/add-students?classID=${classID}&accountID=${accountID}`,
     studentsToAdd
+  );
+}
+
+function getClassById(classId) {
+  return api().get(`/class/id?classId=${classId}`);
+}
+function addManagementPositionForClass(classId, role, teacherId) {
+  return api().get(
+    `/class/add-management-position-for-class?classId=${classId}&role=${role}&teacherId=${teacherId}`
   );
 }

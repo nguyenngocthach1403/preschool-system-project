@@ -1,5 +1,6 @@
 const db = require("../config/db.service");
 const config = require("../config/config");
+const classManagerService = require("../class_manager/class_manager.service");
 
 module.exports = {
   getTeacher,
@@ -17,6 +18,9 @@ module.exports = {
   getCertificateByTeacher,
   createTeacherSpecialization,
   createTeacherCertificate,
+  getTeacherForAssignment,
+  isExistTeacherByID,
+  getAssignmentTeacher,
 };
 
 async function getTeacher(limit, offset) {
@@ -38,7 +42,132 @@ async function getTeacher(limit, offset) {
     };
   }
 }
+//Lấy danh sách giáo viên và số lượng được phân công.
+async function getAssignmentTeacher(limit, offset) {
+  try {
+    const result = await db.selectLimit(
+      config.tb.teacher,
+      "*",
+      `WHERE deleted = 0`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    if (result.length == 0) return undefined;
 
+    for (let index = 0; index < result.length; index++) {
+      const teacher = result[index];
+      const countClassAttended = await countClassOfTeacherAtended(teacher.id);
+      const classAttented = await classManagerService.getClassOfTeacherAttended(
+        teacher.id
+      );
+      const classesAttending =
+        await classManagerService.getClassesOfTeacherAttending(teacher.id);
+      const classCommingAttend =
+        await classManagerService.getClassesOfTeacherComingAttend(teacher.id);
+
+      teacher.count_class_attended = countClassAttended || 0;
+      teacher.class_attended = classAttented || [];
+      teacher.class_attending = classesAttending || [];
+      teacher.class_comming_attend = classCommingAttend || [];
+    }
+    return result;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}
+async function countClassOfTeacherAtended(teacherId) {
+  try {
+    const result = await db.select(
+      config.tb.classManager,
+      "count(*) AS total",
+      `WHERE teacher_id = ${teacherId}`
+    );
+    if (result.length == 0) return undefined;
+
+    return result[0]["total"];
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}
+//Lấy danh sách giao viên để phân công giáo viên chủ nhiệm vào lớp
+async function getTeacherForAssignment(
+  searchText,
+  startDate,
+  endDate,
+  limit,
+  offset
+) {
+  //Điều kiện giáo viên chưa có phân công nào là chủ nhệm của một lớp đang diễn ra hoặc sắp diễm ra
+  try {
+    const query = `
+    SELECT 
+        t.id, 
+        t.avatar, 
+        t.name, 
+        t.gender, 
+        t.birthday, 
+        t.phone, 
+        t.email, 
+        t.address, 
+        t.status, 
+        t.account_id, 
+        t.description, 
+        t.seniority, 
+        t.type, 
+        t.city, 
+        t.district, 
+        t.ward, 
+        t.created, 
+        t.deleted
+    FROM 
+        teachers t
+    LEFT JOIN 
+        class_managers cm ON t.id = cm.teacher_id AND cm.role = 1
+    LEFT JOIN 
+        classes c ON cm.class_id = c.id
+    WHERE (t.name like ? OR t.phone like ? OR t.email like ?) AND
+        (cm.class_id IS NULL OR NOT (
+            (c.start_date BETWEEN ? AND ?) OR
+            (c.end_date BETWEEN ? AND ?) OR
+            (? BETWEEN c.start_date AND c.end_date) OR
+            (? BETWEEN c.start_date AND c.end_date)
+        )) LIMIT ? OFFSET ?;
+`;
+    const data = await db.query(query, [
+      `%${searchText}%`,
+      `%${searchText}%`,
+      `%${searchText}%`,
+      startDate,
+      endDate,
+      startDate,
+      endDate,
+      startDate,
+      endDate,
+      parseInt(limit),
+      parseInt(offset),
+    ]);
+
+    const uniqueTeachers = data.filter(
+      (teacher, index, self) =>
+        index === self.findIndex((t) => t.id === teacher.id)
+    );
+    for (let index = 0; index < uniqueTeachers.length; index++) {
+      const teacher = uniqueTeachers[index];
+      const specialization = await getSpecializationByTeacher(teacher.id);
+      const certificates = await getCertificateByTeacher(teacher.id);
+      const class_attended_count = await countClassManagerByTeacher(teacher.id);
+      teacher.specialization_managed = specialization || [];
+      teacher.certificate_managed = certificates || [];
+      teacher.class_attended_count = class_attended_count || 0;
+    }
+    return uniqueTeachers;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}
 async function getClassManagedByTeacher(teacherId) {
   try {
     const data = await db.select(
@@ -55,6 +184,25 @@ async function getClassManagedByTeacher(teacherId) {
     };
   }
 }
+
+//Đếm số lượng class mà giáo viên đã tham gia
+async function countClassManagerByTeacher(teacherId) {
+  //   `SELECT COUNT(cm.class_id) AS class_manager_count FROM teachers t LEFT JOIN class_managers cm ON t.id = cm.teacher_id WHERE t.id = teacherId
+  //Điều kiện lớp phải có mã giáo viên(teacherID)
+  try {
+    const result = await db.select(
+      `${config.tb.teacher} t LEFT JOIN ${config.tb.classManager} cm ON t.id = cm.teacher_id`,
+      "COUNT(cm.class_id) AS class_manager_count",
+      `WHERE t.id = ${teacherId}`
+    );
+    if (result.length == 0) return undefined;
+
+    return result[0]["class_manager_count"];
+  } catch (error) {
+    return undefined;
+  }
+}
+
 async function getSpecializationByTeacher(teacherId) {
   try {
     const data = await db.select(
@@ -65,10 +213,7 @@ async function getSpecializationByTeacher(teacherId) {
     return data || [];
   } catch (error) {
     console.error(error);
-    return {
-      code: error.code,
-      error: error.sqlMessage,
-    };
+    return undefined;
   }
 }
 async function getCertificateByTeacher(teacherId) {
@@ -81,10 +226,7 @@ async function getCertificateByTeacher(teacherId) {
     return data || [];
   } catch (error) {
     console.error(error);
-    return {
-      code: error.code,
-      error: error.sqlMessage,
-    };
+    return undefined;
   }
 }
 async function getByID(id) {
@@ -157,8 +299,8 @@ async function searchTeacher(txtSearch, page, limit) {
       const teacher = data[index];
       const specialization = await getSpecializationByTeacher(teacher.id);
       const certificates = await getCertificateByTeacher(teacher.id);
-      teacher.specialization_managed = specialization;
-      teacher.certificate_managed = certificates;
+      teacher.specialization_managed = specialization || [];
+      teacher.certificate_managed = certificates || [];
     }
 
     return data;
@@ -195,9 +337,10 @@ async function createTeacher(dataToCreate) {
     return {
       success: true,
       message: "Tạo giáo viên thành công",
-      data: data,
+      data: data.insertId,
     };
   } catch (error) {
+    console.error(error);
     return {
       code: error.code,
       error: error.sqlMessage,
@@ -305,5 +448,19 @@ async function createTeacherCertificate(dataToCreate) {
       code: error.code,
       error: error.sqlMessage,
     };
+  }
+}
+
+async function isExistTeacherByID(teacherId) {
+  try {
+    const result = await db.select(
+      config.tb.teacher,
+      "*",
+      `WHERE id = ${teacherId} AND deleted = 0`
+    );
+    if (result.length == 0) return false;
+    return true;
+  } catch (error) {
+    return false;
   }
 }

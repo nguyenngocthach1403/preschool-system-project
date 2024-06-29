@@ -5,10 +5,12 @@ export const useClassStore = defineStore("classStore", {
   state: () => ({
     classes: [],
     page: 0,
-    limit: 20,
+    limit: 10,
     status: "initial",
     searchText: "",
+    session: "",
     total: 0,
+    statusIds: [],
   }),
 
   actions: {
@@ -36,6 +38,7 @@ export const useClassStore = defineStore("classStore", {
           syllabusName: element.syllabusName ?? "none",
           levelId: element.level_id,
           syllabusId: element.syllabus_id,
+          teachers: element.teachers,
         });
       }
       return classes;
@@ -48,26 +51,22 @@ export const useClassStore = defineStore("classStore", {
       this.isBusy = false;
     },
 
-    async searchClasses(searchText) {
-      this.status = "searching";
-
-      if (this.searchText != searchText) {
-        this.searchClass = searchText;
-      }
+    async searchClasses() {
+      this.status = "loading";
 
       const response = await classService.searchClass(
-        this.searchClass,
+        this.searchText,
+        this.session,
+        this.statusIds,
         this.limit,
         this.page
       );
 
-      console.log(response);
+      const data = response.data;
 
-      if (response.status == 200 && response.data.status == 200) {
-        this.total = response.data.total;
-        this.classes = this.formatClass(response.data.data);
-        this.status = "searched";
-      }
+      this.total = data.total;
+      this.classes = this.formatClass(data.data);
+      this.status = "loaded";
     },
 
     async fetchClass() {
@@ -95,6 +94,7 @@ export const useClassStore = defineStore("classStore", {
       }
 
       this.classes = this.formatClass(data.data);
+      this.total = data.total;
       console.log(response);
       this.status = "loaded";
 
