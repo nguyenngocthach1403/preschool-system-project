@@ -169,58 +169,68 @@ async function login() {
 
   loading.value = true;
 
-  const isExistUser = await authService.isExistUser(username.value);
+  try {
+    const isExistUser = await authService.isExistUser(username.value);
 
-  if (!isExistUser.data.isExist) {
-    toasts.value.push({
-      title: "Tài khoản không tồn tại.",
-      content: `Tài khoản '${username.value}' không tồn tại.`,
-      type: 1,
-    });
-    loading.value = false;
-    return;
-  }
-
-  const response = await authService.login(username.value, password.value);
-
-  if (response.status !== 200) {
-    toasts.value.push({
-      title: "Đăng nhập thất bại.",
-      content: "Quá trình đăng nhập thất bại. Hãy thử lại.",
-      type: 1,
-    });
-    loading.value = false;
-    return;
-  }
-
-  const data = response.data;
-
-  if (!data.success) {
-    toasts.value.push({
-      title: "Đăng nhập thất bại.",
-      content: data.error,
-      type: 1,
-    });
-    loading.value = false;
-    return;
-  }
-
-  if (data.success) {
-    loading.value = false;
-    if (rememberPassword) {
-      localStorage.setItem("user", data.data[0]["username"]);
+    if (!isExistUser.data.isExist) {
+      toasts.value.push({
+        title: "Tài khoản không tồn tại.",
+        content: `Tài khoản '${username.value}' không tồn tại.`,
+        type: 1,
+      });
+      loading.value = false;
+      return;
     }
-    window.user = {
-      id: data.data[0]["id"],
-      username: data.data[0]["username"],
-      role: data.data[0]["role"],
-    };
-    router.push({
-      name: "DashBoardView",
-      params: {
+
+    const response = await authService.login(username.value, password.value);
+
+    if (response.status !== 200) {
+      toasts.value.push({
+        title: "Đăng nhập thất bại.",
+        content: "Quá trình đăng nhập thất bại. Hãy thử lại.",
+        type: 1,
+      });
+      loading.value = false;
+      return;
+    }
+
+    const data = response.data;
+
+    if (!data.success) {
+      toasts.value.push({
+        title: "Đăng nhập thất bại.",
+        content: data.error,
+        type: 1,
+      });
+      loading.value = false;
+      return;
+    }
+
+    if (data.success) {
+      loading.value = false;
+      if (rememberPassword) {
+        localStorage.setItem("user", data.data[0]["username"]);
+      }
+      window.user = {
+        id: data.data[0]["id"],
         username: data.data[0]["username"],
-      },
+        role: data.data[0]["role"],
+      };
+      router.push({
+        name: "DashBoardView",
+        params: {
+          username: data.data[0]["username"],
+        },
+      });
+    }
+  } catch (error) {
+    toasts.value.push({
+      title: "Thất bại!",
+      content: error,
+      type: 1,
     });
+  } finally {
+    loading.value = false;
   }
 }
 </script>
