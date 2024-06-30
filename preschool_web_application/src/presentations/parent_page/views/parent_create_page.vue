@@ -181,7 +181,7 @@ import {
   isPhoneValid,
 } from "../../../utils/resources/check_valid";
 const name_parent = ref("");
-const gender_parent = ref("");
+const gender_parent = ref(0);
 const birthday = ref("");
 const address = ref("");
 const job = ref("");

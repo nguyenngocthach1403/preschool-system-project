@@ -124,6 +124,7 @@ import account_icon from "../../../assets/icons/account.svg";
 import authService from "../../../services/authentication.service";
 import { isEmpty } from "../../../utils/resources/check_valid";
 import LoadingComp from "../../../components/loading_comp.vue";
+// import { log } from "console";
 
 const router = useRouter();
 const route = useRoute();
@@ -182,7 +183,6 @@ async function login() {
   }
 
   const response = await authService.login(username.value, password.value);
-
   if (response.status !== 200) {
     toasts.value.push({
       title: "Đăng nhập thất bại.",
@@ -215,17 +215,41 @@ async function login() {
       username: data.data[0]["username"],
       role: data.data[0]["role"],
     };
-    router.push({
-      name: "DashBoardView",
-      params: {
-        username: data.data[0]["username"],
-      },
-    });
+    // router.push({
+    //   name: "DashBoardView",
+    //   params: {
+    //     username: data.data[0]["username"],
+    //   },
+    // });
+    if (data.data[0].role === 1 || data.data[0].role === 2) {
+      router.push({
+        name: "DashBoardView",
+        params: {
+          username: data.data[0]["username"],
+        },
+      });
+    }
+    if (data.data[0].role === 4) {
+      router.push({
+        name: "homepage-parent",
+        params: {
+          username: data.data[0]["username"],
+        },
+      });
+    }
+    if (data.data[0].role === 3) {
+      router.push({
+        name: "homepage-teacher",
+        params: {
+          username: data.data[0]["username"],
+        },
+      });
+    }
   }
 }
 </script>
 
-<style  scoped>
+<style scoped>
 .valid {
   border: solid 1px red;
 }

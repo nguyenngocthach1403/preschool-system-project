@@ -203,7 +203,7 @@ async function createTeacher(req, res, next) {
     phone: phone,
     email: email,
     address: address,
-    status: status,
+    status: 1,
     experience: experience,
     seniority: seniority,
     avatar: url || undefined,
@@ -324,6 +324,7 @@ async function updateTeacher(req, res) {
     status,
     experience,
     username,
+    seniority,
   } = req.body;
 
   //Kiểm tra có giáo viên hay chưa.
@@ -375,6 +376,7 @@ async function updateTeacher(req, res) {
     experience: experience,
     address: address,
     status: status,
+    seniority: seniority,
     account_id: account != undefined ? account.id : undefined,
     avatar: url || undefined,
   });

@@ -11,7 +11,7 @@ async function isExistUser(username) {
     const resulst = await db.select(
       config.tb.account,
       "*",
-      `WHERE username = '${username}' AND role in (1,2,5)`
+      `WHERE username = '${username}' AND role in (1,2,3,4,5)`
     );
     if (resulst.length == 0) {
       return false;
@@ -27,7 +27,7 @@ async function loginAdmin(usename, password) {
     const isExistAccount = await db.select(
       config.tb.account,
       "COUNT(*) AS account",
-      `WHERE username = '${usename}' AND role in (1,2,5)`
+      `WHERE username = '${usename}' AND role in (1,2,3,4,5)`
     );
 
     if (isExistAccount[0]["account"] == 0) {
@@ -40,7 +40,7 @@ async function loginAdmin(usename, password) {
     const rightPassword = await db.select(
       config.tb.account,
       "COUNT(*) AS account",
-      `WHERE username = '${usename}' AND password = '${password}' AND role in (1,2,5)`
+      `WHERE username = '${usename}' AND password = '${password}' AND role in (1,2,3,4,5)`
     );
 
     if (rightPassword[0]["account"] == 0) {
@@ -53,7 +53,7 @@ async function loginAdmin(usename, password) {
     return db.select(
       config.tb.account,
       "id, username, role",
-      `WHERE username = '${usename}' AND password = '${password}' AND role in (1,2,5)`
+      `WHERE username = '${usename}' AND password = '${password}' AND role in (1,2,3,4,5)`
     );
   } catch (error) {
     return {

@@ -102,6 +102,7 @@ export const useParentStore = defineStore("parentStore", {
 
       this.getParent();
       return {
+        status: 200,
         success: true,
         message: response.data.message,
       };

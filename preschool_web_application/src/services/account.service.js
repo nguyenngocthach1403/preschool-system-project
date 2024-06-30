@@ -1,6 +1,13 @@
 import { api } from "../services/Api";
 
-export default { getTotalAccount, getAccount, createAccount, updateAccount };
+export default {
+  getTotalAccount,
+  getAccount,
+  createAccount,
+  updateAccount,
+  getParentById,
+  getTeacherById,
+};
 
 function getTotalAccount() {
   return api().get("/account/total");
@@ -15,4 +22,10 @@ function createAccount(accountToCreate) {
 }
 function updateAccount(username, dataToUpdate) {
   return api().put(`/account/${username}`, dataToUpdate);
+}
+function getParentById(id) {
+  return api().get(`/account/parent/${id}`);
+}
+function getTeacherById(id) {
+  return api().get(`/account/teacher/${id}`);
 }
