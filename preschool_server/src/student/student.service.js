@@ -400,29 +400,79 @@ async function getParentBuStudentId(id) {
 
 async function getStudent(offset, limit) {
   try {
-    const data = await db.selectLimit(
-      `${config.tb.student} s LEFT JOIN ${config.tb.class} c ON s.class_id = c.id`,
-      "s.*, s.place_of_origin, c.id AS classID, c.name AS className",
-      "WHERE s.deleted = 0 AND s.status = 1",
-      `LIMIT ${limit}`,
-      `OFFSET ${offset * limit}`
+    const result = db.query(
+      `SELECT 
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', s.id,
+              'avatar', s.avatar,
+              'name', s.name,
+              'gender', s.gender,
+              'birthday', s.birthday,
+              'address', s.address,
+              'fork', s.fork,
+              'nation', s.nation,
+              'place_of_birth', s.place_of_birth,
+              'place_of_origin', s.place_of_origin,
+              'class', (SELECT 
+                          JSON_OBJECT(
+                            'class_id', c.id,
+                            'class_name', c.name
+                          )
+                        FROM 
+                          classes c 
+                        WHERE 
+                          c.id = s.class_id
+                        ),
+              'study_status', s.study_status,
+              'status', s.status,
+              'created', s.created,
+              'parents', (
+                  SELECT 
+                      JSON_ARRAYAGG(
+                          JSON_OBJECT(
+                              'id', p.id,
+                              'avatar', p.avatar,
+                              'name', p.name,
+                              'gender', p.gender,
+                              'birthday', p.birthday,
+                              'phone', p.phone,
+                              'email', p.email,
+                              'job', p.job,
+                              'address', p.address,
+                              'role', p.role,
+                              'status', p.status,
+                              'account_id', p.account_id,
+                              'created', p.created,
+                              'relationship', r.relationship
+                          )
+                      )
+                  FROM 
+                      relationship r
+                  JOIN 
+                      parents p ON r.parent_id = p.id
+                  WHERE 
+                      r.student_id = s.id
+              )
+          )
+    ) AS students
+    FROM 
+      students s
+    LEFT JOIN 
+      classes c
+    ON
+      s.class_id = c.id
+    WHERE 
+      s.deleted = 0
+    LIMIT ?
+    OFFSET ?;`,
+      [parseInt(limit), parseInt(offset)]
     );
+    if (result.length == 0) return undefined;
 
-    for (let index = 0; index < data.length; index++) {
-      const element = data[index];
-      const parents = await getParentBuStudentId(element.id);
-      if (parents.length === 0) {
-        element.parents = [];
-      } else {
-        element.parents = parents;
-      }
-    }
-
-    return data;
+    return result;
   } catch (error) {
-    return {
-      code: error.code,
-      message: "An error occusred while excuted query",
-    };
+    console.log(error);
+    return undefined;
   }
 }

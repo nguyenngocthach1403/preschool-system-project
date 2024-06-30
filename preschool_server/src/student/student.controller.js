@@ -408,29 +408,25 @@ async function getTotalStudent(req, res, next) {
   );
 }
 
-async function getAll(req, res, next) {
-  const { limit, page } = req.query;
-  if (limit === undefined || page === undefined) {
+async function getAll(req, res) {
+  const { limit, offset } = req.query;
+  if (
+    checkService.isEmpty(limit) ||
+    checkService.isEmpty(offset) ||
+    !checkService.isNumber(limit) ||
+    !checkService.isNumber(offset)
+  ) {
     return res.status(400).json({
       status: 400,
       error: "Invalid input: Querry must has limit and page",
     });
   }
 
-  const result = await studentService.getStudent(page, limit);
+  const result = await studentService.getStudent(offset, limit);
 
-  if (result.code) {
-    return res.status(500).json({
-      status: 500,
-      code: result.code,
-      error: result.message,
-    });
-  }
-
-  return res.status(200).json({
-    status: 200,
-    message: "Successful",
-    data: result,
+  res.status(200).json({
+    success: true,
+    data: result[0],
   });
 }
 

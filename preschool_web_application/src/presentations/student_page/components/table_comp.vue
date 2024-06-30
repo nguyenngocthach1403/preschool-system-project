@@ -123,7 +123,7 @@
           </td>
           <td class="hidden lg:table-cell w-[1000px] px-3">
             <div v-if="item.class" class="">
-              <span>{{ item.class }} </span>
+              <span>{{ item.class.class_name }} </span>
               <button
                 @click="$emit('add-student-into-class', item)"
                 class="w-[19px] m-auto h-[19px] p-1 ml-5 mt-1 rounded-md hover:bg-gray-200"
