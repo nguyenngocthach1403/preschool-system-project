@@ -135,7 +135,7 @@
               </td>
               <td class="w-[700px]">{{ parent.job }}</td>
               <td class="w-[700px]">
-                {{ parent.status === 1 ? "Hoạt động" : "Không hoạt động" }}
+                {{ parent.status === 0 ? "Hoạt động" : "Không hoạt động" }}
               </td>
               <td class="w-[200px]">
                 <div class="flex">

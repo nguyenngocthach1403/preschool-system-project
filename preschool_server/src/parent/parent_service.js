@@ -18,6 +18,8 @@ module.exports = {
   isExistParent,
   getParentByPhone,
   isExistParentByPhone,
+  getStudentByParentId,
+  countStudentByParentId,
 };
 
 async function getAll() {
@@ -56,7 +58,7 @@ async function getByID(id) {
   try {
     return db.select(
       `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account_id = a.id`,
-      "p.*, p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent ,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
+      "p.*,p.name AS NameParent, p.email AS EmailParent, p.phone AS PhoneParent, p.address AS AddressParent, p.status AS StatusParent,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount, a.password AS password",
       id !== undefined ? `Where p.id = ${id}` : ""
     );
   } catch (error) {
@@ -95,7 +97,7 @@ async function getParentById(id) {
   try {
     return await db.select(
       `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON a.id = p.account_id`,
-      "p.*,a.username, a.email AS account_email, a.phone AS account_phone, a.status AS account_status",
+      "p.*,a.*,a.username, p.role AS RoleParent ,a.email AS account_email, a.phone AS account_phone, a.status AS account_status",
       `WHERE p.id = ${id}`
     );
   } catch (error) {
@@ -325,5 +327,31 @@ async function deleteParent(idParentToDel) {
       code: error.code,
       message: "An error occusred while excuted query",
     };
+  }
+}
+async function getStudentByParentId(id) {
+  try {
+    const data = await db.select(
+      `${config.tb.relationship} r 
+      LEFT JOIN ${config.tb.student} s ON r.student_id = s.id LEFT JOIN ${config.tb.class} c ON s.class_id = c.id`,
+      "s.* , s.id AS StudentId,s.name AS StudentName ,c.* , c.name AS ClassName, r.relationship",
+      `WHERE r.parent_id = ${id}`
+    );
+    return data;
+  } catch (error) {
+    return error;
+  }
+}
+async function countStudentByParentId(id) {
+  try {
+    const data = await db.select(
+      `${config.tb.relationship} r 
+    LEFT JOIN ${config.tb.student} s ON r.student_id = s.id `,
+      "Count(*) AS total",
+      `WHERE r.parent_id = ${id}`
+    );
+    return data;
+  } catch (error) {
+    return error;
   }
 }

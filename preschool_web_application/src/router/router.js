@@ -23,6 +23,17 @@ import StudentDetailView from "../presentations/student_detail_page/views/studen
 import ClassDetailView from "../presentations/class_detail_page/views/class_detail_page.vue";
 import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
 import AssignmentView from "../presentations/assignmet_page/views/assignment_page.vue";
+
+import HomePageParent from "../presentations/home_page/views/home_page_parent.vue";
+import ParentDetailView from "../presentations/parent_page/view_parentLogin/parent_detail.vue";
+import StudentDetailParentView from "../presentations/parent_page/view_parentLogin/student_detail.vue";
+import ParentDetailInfoView from "../presentations/parent_page/view_detail_i4/parent_detail_view.vue";
+
+import HomePageTeacher from "../presentations/home_page/views/home_page_teacher.vue";
+import InfoTeacherView from "../presentations/teacher_login/views/info_view.vue";
+import ClassTeacherDetailView from "../presentations/teacher_login/views/info_class_view.vue";
+import ClassCurentDetailView from "../presentations/teacher_login/view_info_class_detail/class_current_view.vue";
+import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -44,6 +55,63 @@ function Router() {
         meta: {
           requireAuth: false,
         },
+      },
+      //Parent View Login
+      {
+        path: "/home-page-parent/:username/",
+        name: "homepage-parent",
+        component: HomePageParent,
+        meta: {
+          requireAuth: true,
+        },
+        children: [
+          {
+            name: "ParentDetailView",
+            path: "/home-page/:username/parent-detail-view",
+            component: ParentDetailView,
+          },
+          {
+            name: "StudentDetailParentView",
+            path: "/home-page/:username/student-detail-parent-view",
+            component: StudentDetailParentView,
+          },
+          {
+            name: "ParentDetailInfoView",
+            path: "/home-page/:username/parent-info-detail-view",
+            component: ParentDetailInfoView,
+          },
+        ],
+      },
+      // Teacher View Login
+      {
+        path: "/home-page-teacher/:username/",
+        name: "homepage-teacher",
+        component: HomePageTeacher,
+        meta: {
+          requireAuth: true,
+        },
+        children: [
+          {
+            name: "InfoTeacherView",
+            path: "/home-page/:username/info-detail-view",
+            component: InfoTeacherView,
+          },
+          {
+            name: "ClassTeacherDetailView",
+            path: "/home-page/:username/info-class-detail-view",
+            component: ClassTeacherDetailView,
+          },
+          {
+            name: "ClassCurentDetailView",
+            path: "/home-page/:username/info-class-current-detail-view",
+            component: ClassCurentDetailView,
+          },
+          {
+            name: "ClassHistoryView",
+            path: "/home-page/:username/info-class-history-detail-view",
+            component: ClassHistoryView,
+          },
+        ],
       },
       {
         path: "/home-page/:username",

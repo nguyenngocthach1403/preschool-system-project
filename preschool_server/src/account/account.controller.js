@@ -15,6 +15,9 @@ router.post("/create", createAccount);
 
 router.put("/:username", updateAccountByUsername);
 
+router.get("/parent/:id", getParentByID);
+router.get("/teacher/:id", getTeacherByID);
+
 async function createAccount(req, res) {
   const data = req.body;
 
@@ -136,11 +139,12 @@ async function getAccont(req, res) {
 async function updateAccountByUsername(req, res) {
   const Username = req.params.username;
   // const newData = req.body;
-  const { email, phone, status } = req.body;
+  const { email, phone, status, password } = req.body;
   const result = await accountService.updateByUsername(Username, {
     email: email,
     phone: phone,
     status: status,
+    password: password,
   });
 
   if (result.code) {
@@ -155,6 +159,18 @@ async function updateAccountByUsername(req, res) {
     status: 200,
     message: "Update successful.",
   });
+}
+function getParentByID(req, res, next) {
+  accountService
+    .getParentByID(req.params.id)
+    .then((result) => res.send(result))
+    .catch(next);
+}
+function getTeacherByID(req, res, next) {
+  accountService
+    .getTeacherByID(req.params.id)
+    .then((result) => res.send(result))
+    .catch(next);
 }
 
 module.exports = router;

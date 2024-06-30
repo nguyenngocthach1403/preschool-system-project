@@ -116,20 +116,15 @@
               </label>
               <label class="w-full text-start">
                 <span class="pl-4 text-blue-700">Vai trò</span>
-                <select
-                  id="role"
-                  v-model="role"
-                  class="input-text-default"
-                  :class="{ 'in-valid': messageOfParentRole }"
-                >
+                <select id="role" v-model="role" class="input-text-default">
                   <option value="null">Chọn mối quan hệ</option>
                   <option value="0">Bố</option>
                   <option value="1">Mẹ</option>
                   <option value="2">Người giám hộ</option>
                 </select>
-                <div class="mt-1 mb-2 h-[25px] text-red-500">
+                <!-- <div class="mt-1 mb-2 h-[25px] text-red-500">
                   <span>{{ messageOfParentRole }}</span>
-                </div>
+                </div> -->
               </label>
             </div>
           </div>
@@ -273,23 +268,16 @@
             />
           </label>
         </div>
+
         <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
           <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Trạng thái</span>
-            <!-- <SelectStatusComp
-              class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
-              @choose="statusAccount = $event"
-              :active="1"
-              :choose="status_account"
-            /> -->
-            <select
-              id="status_account"
-              v-model="status_account"
-              class="input-text-default"
-            >
-              <option value="0">Khoá</option>
-              <option value="1">Đang hoạt động</option>
-            </select>
+            <span class="pl-4 text-blue-700">Mật khẩu</span>
+            <input
+              type="text"
+              placeholder="0xxxxxxxxx"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="password"
+            />
           </label>
           <label class="w-full text-start">
             <span class="pl-4 text-blue-700">Email</span>
@@ -299,6 +287,17 @@
               class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
               v-model="email_account"
             />
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Trạng thái</span>
+            <select
+              id="status_account"
+              v-model="status_account"
+              class="input-text-default"
+            >
+              <option value="0">Khoá</option>
+              <option value="1">Đang hoạt động</option>
+            </select>
           </label>
         </div>
         <div id="button-side" class="w-full flex text-start mx-5 gap-5">
@@ -362,11 +361,9 @@ const job = ref("");
 const email_parent = ref("");
 const phone_parent = ref("");
 const role = ref("");
-const status = ref("");
-const emits = defineEmits(["add-toast"]);
 const router = useRouter();
 const username_account = ref("");
-const create_account = ref("");
+const password = ref("");
 const email_account = ref("");
 const phone_account = ref("");
 const status_account = ref("");
@@ -377,11 +374,11 @@ const addingAccountForParent = ref(false);
 const fileUpload = ref(null);
 const parentAvatarPath = ref(null);
 const accountForParent = ref("");
-
+const emits = defineEmits(["add-toast"]);
 const messageOfParentName = ref("");
 const messageOfParentPhone = ref("");
 const messageOfParentEmail = ref("");
-const messageOfParentRole = ref("");
+// const messageOfParentRole = ref("");
 const messageOfAccountPhone = ref("");
 const messageOfAccountEmail = ref("");
 const messageOfAccountStatus = ref("");
@@ -417,13 +414,14 @@ async function getParent() {
     job.value = parents.job;
     email_parent.value = parents.email;
     phone_parent.value = parents.phone;
-    role.value = parents.role;
-    status.value = parents.status;
+    role.value = parents.RoleParent;
+    // status.value = parents.account_status;
     email_account.value = parents.account_email;
     phone_account.value = parents.account_phone;
     status_account.value = parents.account_status;
     parentAvatarPath.value = parents.avatar;
     username_account.value = parents.username;
+    password.value = parents.password;
   }
 }
 
@@ -451,10 +449,10 @@ function checkValidParent() {
     messageOfParentName.value = "Không được đển trống tên phụ huynh.";
   }
 
-  if (isEmpty(role.value)) {
-    invalid = true;
-    messageOfParentRole.value = "Vui lòng chọn vai trò của phụ huynh.";
-  }
+  // if (isEmpty(role.value)) {
+  //   invalid = true;
+  //   messageOfParentRole.value = "Vui lòng chọn vai trò của phụ huynh.";
+  // }
 
   return invalid;
 }
@@ -474,12 +472,6 @@ watch(phone_parent, () => {
 watch(email_parent, () => {
   if (!isEmpty(email_parent.value) && isEmailValid(email_parent.value)) {
     messageOfParentEmail.value = "";
-  }
-});
-
-watch(role, () => {
-  if (!isEmpty(role.value)) {
-    messageOfParentRole.value = "";
   }
 });
 
@@ -596,11 +588,12 @@ async function addAccountForParent() {
 }
 
 async function updateAccount() {
-  const Username = account.value;
+  const Username = username_account.value;
   console.log(Username);
   const AccountToUpdate = {
     email: email_account.value,
     phone: phone_account.value,
+    password: password.value,
     status: status_account.value,
   };
   const result = await accountStore.updateAccount(Username, AccountToUpdate);
