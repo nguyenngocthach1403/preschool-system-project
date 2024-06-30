@@ -193,11 +193,19 @@ async function countSearchClassWithStatus(searchText, status) {
   try {
     var statusString = "";
     if (status.match("0"))
-      statusString =
+      statusString +=
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
-    if (status.match("1")) statusString = "AND c.start_date > CURRENT_DATE()";
+    if (status.match("1")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
 
-    if (status.match("2")) statusString = "AND c.end_date < CURRENT_DATE()";
+    if (status.match("2")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
     const result = await db.select(
       `${config.tb.class} c`,
       "COUNT(*) total",
@@ -223,11 +231,19 @@ async function countSearchClassWithStatusAndSession(
   try {
     var statusString = "";
     if (status.match("0"))
-      statusString =
+      statusString +=
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
-    if (status.match("1")) statusString = "AND c.start_date > CURRENT_DATE()";
+    if (status.match("1")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
 
-    if (status.match("2")) statusString = "AND c.end_date < CURRENT_DATE()";
+    if (status.match("2")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
     const result = await db.select(
       `${config.tb.class} c`,
       "COUNT(*) total",
@@ -322,9 +338,17 @@ async function searchClassWithStatus(searchText, status, limit, offset) {
     if (status.match("0"))
       statusString +=
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
-    if (status.match("1")) statusString += "AND c.start_date > CURRENT_DATE()";
+    if (status.match("1")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
 
-    if (status.match("2")) statusString += "AND c.end_date < CURRENT_DATE()";
+    if (status.match("2")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
     const classesData = await db.selectLimit(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
       " c.*, l.name AS levelName, s.name AS syllabusName",
@@ -358,11 +382,19 @@ async function searchClassWithStatusAndSession(
   try {
     var statusString = "";
     if (status.match("0"))
-      statusString =
+      statusString +=
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
-    if (status.match("1")) statusString = "AND c.start_date > CURRENT_DATE()";
+    if (status.match("1")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
 
-    if (status.match("2")) statusString = "AND c.end_date < CURRENT_DATE()";
+    if (status.match("2")) {
+      statusString !== ""
+        ? (statusString += "OR c.start_date > CURRENT_DATE()")
+        : (statusString += "AND c.start_date > CURRENT_DATE()");
+    }
     const classesData = await db.selectLimit(
       `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
       " c.*, l.name AS levelName, s.name AS syllabusName",

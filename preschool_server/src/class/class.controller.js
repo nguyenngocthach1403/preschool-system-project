@@ -461,8 +461,6 @@ async function findClass(req, res) {
 }
 async function getClass(req, res) {
   const { limit, offset } = req.query;
-
-  //   //Xác thực đầu vào từ người dùng request
   if (
     limit === undefined ||
     offset === undefined ||

@@ -1,7 +1,7 @@
 <template>
   <div
     @click="onClickClassCard($event, classData.id)"
-    class="class-card relative bg-gradient-to-r from-indigo-300/50 via-violet-100 via-40% to-blue-100 border w-[400px] h-[450px] rounded-[10px] grid drop-shadow-md hover:drop-shadow-2xl grid-rows-2 mt-[10px] mx-[10px]"
+    class="class-card relative bg-gradient-to-r from-indigo-300/50 via-violet-100 via-40% to-blue-100 border w-[390px] h-[450px] rounded-[10px] grid drop-shadow-md hover:drop-shadow-2xl grid-rows-2 mt-[10px]"
   >
     <div
       v-if="showMenuOfClass"
@@ -90,8 +90,11 @@
           class="teacher flex text-[13px] gap-2 items-center text-gray-500 content-center"
         >
           <span>{{ teacher.role_name }}:</span>
-          <div class="h-full content-center">
-            {{ teacher.teacher_name || "Chưa có" }}
+          <div class="h-full flex items-center gap-2 object-cover">
+            <img
+              :src="teacher.teacher_avatar || avatar_teacher"
+              class="w-6 h-6 rounded-full overflow-hidden border border-white"
+            />{{ teacher.teacher_name || "Chưa có" }}
           </div>
         </div>
       </div>
@@ -138,6 +141,7 @@ import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 //icon
 import edit_icon from "../../../assets/icons/edit.svg";
 import delete_icon from "../../../assets/icons/delete.svg";
+import avatar_teacher from "../../../assets/img/avatar.jpg";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 

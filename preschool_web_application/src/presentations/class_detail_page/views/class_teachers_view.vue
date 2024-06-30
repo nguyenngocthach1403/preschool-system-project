@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full bg-[#F6F6F6] rounded-xl overflow-hidden">
+  <div class="w-full h-full bg-white rounded-xl overflow-hidden">
     <PopupAddTeacher
       v-if="showPopupAddTeacher"
       @close="closePopup()"
@@ -105,20 +105,20 @@
       <div
         v-for="item in classManagerRoles"
         :key="item"
-        class="w-[48%] bg-white hover:border-black rounded-md drop-shadow-md hover:drop-shadow-xl overflow-hidden"
+        class="w-[48%] bg-gradient-to-r from-indigo-300/40 via-violet-100/90 via-550% to-blue-200 hover:border-black rounded-md drop-shadow-xl hover:drop-shadow-2xl overflow-hidden"
         @click="showPopupAddTeacher = item.id"
       >
         <div v-if="!item.teacher" class="w-full">
           <div class="mx-2 my-2">
             <div
-              class="w-[100px] h-[100px] border-[2px] border-gray-400 p-2 rounded-full"
+              class="w-[100px] h-[100px] border border-violet-400/25 border-gray-400 p-2 rounded-full"
             >
               <img :src="user_icon" class="w-full h-full" alt="" />
             </div>
             <p class="text-[18px]">{{ item.name }}</p>
           </div>
           <div
-            class="w-full border-[2px] border-gray-400 my-2 mx-2 px-2 text-start rounded-md"
+            class="w-full border border-violet-400/25 my-2 mx-2 px-2 text-start rounded-md"
           >
             <div>
               <div class="w-full my-6 h-[5px] bg-gray-500 rounded-full"></div>
@@ -137,7 +137,7 @@
         <div v-if="item.teacher" class="flex w-full h-[300px] shadow">
           <div class="mx-2 my-2">
             <div
-              class="w-[100px] h-[100px] mx-5 border-[2px] border-gray-400 rounded-full overflow-hidden"
+              class="w-[100px] h-[100px] mx-5 border border-violet-400/25 rounded-full overflow-hidden"
             >
               <img
                 :src="item.teacher.avatar || user_icon"
@@ -148,7 +148,7 @@
             <p class="text-[18px]">{{ item.name }}</p>
           </div>
           <div
-            class="w-full border-[2px] border-gray-400 my-2 mx-2 px-2 text-start rounded-md"
+            class="w-full border-[1px] border-gray-400 my-4 mx-4 px-2 text-start rounded-md"
           >
             <div>
               <div class="w-full">

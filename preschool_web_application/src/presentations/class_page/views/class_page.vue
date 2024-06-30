@@ -54,12 +54,12 @@
       />
     </div>
     <ResultNumComp>{{ total }}</ResultNumComp>
-    <div class="mx-[15px] pb-[20px]">
+    <div class="mx-[10px] pb-[20px]">
       <EmptyComp v-if="classes.length == 0 && status !== 'loading'" />
       <LoadingComp v-if="status == 'loading'" />
       <div
         v-if="classes.length != 0 && status !== 'loading'"
-        class="w-full h-fit flex flex-wrap content-start"
+        class="w-full h-fit flex flex-wrap content-start gap-5"
       >
         <ClassCardComp
           v-for="item in classes"

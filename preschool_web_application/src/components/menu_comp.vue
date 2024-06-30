@@ -98,6 +98,7 @@ import registration from "@/assets/icons/Registration.svg";
 import logoutIcon from "@/assets/icons/Logout.svg";
 import category from "../assets/icons/Diversity.svg";
 import school from "../assets/icons/School.svg";
+import task from "../assets/icons/Task.svg";
 import { convertAccountRole } from "../utils/resources/converter";
 
 import { onMounted, ref } from "vue";
@@ -165,7 +166,7 @@ const menu = ref([
     id: 5,
     title: "Phân công",
     name: "AssignmentView",
-    icon: "",
+    icon: task,
     active: false,
     type: 1,
   },

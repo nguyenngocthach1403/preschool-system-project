@@ -5,13 +5,25 @@
     >
       Quản lý phân công
     </div>
-    <TableComp :data="data"></TableComp>
+    <div class="flex justify-between px-5">
+      <SearchComp class="w-[400px]" />
+      <CreateButtonComp />
+    </div>
+    <ResultNumComp />
+    <TableComp :data="data" class="mt-5"></TableComp>
+    <div class="w-full mr-0 py-3">
+      <PaginationComp class="m-auto" />
+    </div>
   </div>
 </template>
 
 <script setup>
 //component
 import TableComp from "../components/table_comp.vue";
+import SearchComp from "../../../components/search_form_comp.vue";
+import CreateButtonComp from "../../../components/create_button.vue";
+import ResultNumComp from "../../../components/result_comp.vue";
+import PaginationComp from "../../../components/pagination.vue";
 
 //store
 import { useAssignmentStore } from "../../../stores/assignment_store";
