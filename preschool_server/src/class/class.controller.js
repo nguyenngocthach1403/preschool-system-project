@@ -473,6 +473,7 @@ async function getClass(req, res) {
     });
   }
   const count = await classService.countTotalClass();
+  const countClassStatus = await classService.countClassByStatus();
   const result = await classService.getClass(limit, offset);
 
   if (result.code) {
@@ -487,6 +488,7 @@ async function getClass(req, res) {
     status: 200,
     message: "Successful",
     total: count || 0,
+    total_status: countClassStatus || null,
     data: result,
   });
 }

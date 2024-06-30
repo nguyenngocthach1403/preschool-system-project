@@ -97,7 +97,7 @@ const session = ref("");
 const statusList = ref([
   { id: 0, name: "Đang diễn ra", checked: false, total: 0 },
   { id: 1, name: "Kết thúc", checked: false, total: 0 },
-  { id: 2, name: "Sắp diễn", checked: false, total: 0 },
+  { id: 2, name: "Sắp diễn ra", checked: false, total: 0 },
 ]);
 
 const { classes, limit, page, status, total } = storeToRefs(classStore);
@@ -105,14 +105,11 @@ const { classes, limit, page, status, total } = storeToRefs(classStore);
 onMounted(async () => {
   classDataDemo.value = classStore.classes;
 
-  const result = await classStore.fetchClass();
-
-  if (!result.success) {
-    emits("add-toast", {
-      title: "Load data faild",
-      content: result.message,
-      type: 1,
-    });
+  await classStore.fetchClass();
+  if (classStore.totalStatus) {
+    statusList.value[0].total = classStore.totalStatus.going_on;
+    statusList.value[1].total = classStore.totalStatus.end;
+    statusList.value[2].total = classStore.totalStatus.upcoming;
   }
 });
 

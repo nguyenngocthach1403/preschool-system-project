@@ -19,6 +19,7 @@ module.exports = {
   countSearchClassWithStatus,
   countSearchClass,
   countTotalClass,
+  countClassByStatus,
   countSearchClassWithSession,
   countSearchClassWithStatusAndSession,
   getClassById,
@@ -30,29 +31,125 @@ module.exports = {
 
 async function getClass(limit, offset) {
   try {
-    const classes = await db.selectLimit(
-      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
-      "c.*, l.name AS levelsName, s.name AS syllabusName",
-      "",
-      `LIMIT ${limit}`,
-      `OFFSET ${offset}`
+    const result = await db.query(
+      `
+    SELECT
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', c.id,
+            'class_name', c.name,
+            'start_date', c.start_date,
+            'end_date', c.end_date,
+            'class_img', c.class_img,
+            'level', JSON_OBJECT(
+                'id', l.id,
+                'name', l.name,
+                'description', l.description
+            ),
+            'syllabus', JSON_OBJECT(
+                'id', s.id,
+                'name', s.name,
+                'description', s.description
+            ),
+            'members', c.members,
+            'member_limit', c.member_limit,
+            'type', c.type,
+            'session', c.session,
+            'status', c.status,
+            'created', c.created,
+            'deleted', c.deleted,
+            'created_by', c.created_by,
+            'managers', (
+                SELECT
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'teacher', JSON_OBJECT(
+                                'teacher_id', t.id,
+                                'teacher_name', t.name
+                            ),
+                            'role', JSON_OBJECT(
+                                'role_id', mr.id,
+                                'role_name', mr.name
+                            )
+                        )
+                    )
+                FROM
+                    class_managers cm
+                LEFT JOIN
+                    teachers t ON t.id = cm.teacher_id
+                LEFT JOIN
+                    class_manager_roles mr ON mr.id = cm.role
+                WHERE
+                    cm.class_id = c.id
+            )
+        )
+    ) AS classes
+    FROM
+        classes c
+    LEFT JOIN
+        levels l ON c.level_id = l.id
+    LEFT JOIN
+        syllabus s ON c.syllabus_id = s.id
+    WHERE
+      c.deleted = 0
+    LIMIT ?
+    OFFSET ?;
+    `,
+      [parseInt(limit), parseInt(offset)]
     );
-
-    for (let index = 0; index < classes.length; index++) {
-      const element = classes[index];
-      const teachers = await getClassManagerRolesByClassId(element.id);
-      // const uniqueTeachers = teachers.filter(
-      //   (teacher, index, self) =>
-      //     index === self.findIndex((t) => t.id === teacher.id)
-      // );
-      element.teachers = teachers || [];
-    }
-    return classes;
+    if (result.length == 0) return undefined;
+    return result[0];
   } catch (error) {
     return {
       code: error.code,
       message: error.sqlMessage,
     };
+  }
+}
+
+async function countClassByStatus() {
+  try {
+    const result = await db.query(`
+    SELECT JSON_OBJECT(
+      'end', SUM(CASE WHEN condition_name = 2 THEN count_classes ELSE 0 END),
+      'upcoming', SUM(CASE WHEN condition_name = 1 THEN count_classes ELSE 0 END),
+      'going_on', SUM(CASE WHEN condition_name = 0 THEN count_classes ELSE 0 END)
+    ) AS result
+    FROM (
+        SELECT
+            2 AS condition_name,
+            COUNT(*) AS count_classes
+        FROM
+            classes c
+        WHERE
+            c.end_date < CURRENT_DATE()
+
+        UNION
+
+        SELECT
+            1 AS condition_name,
+            COUNT(*) AS count_classes
+        FROM
+            classes c
+        WHERE
+            c.start_date > CURRENT_DATE()
+
+        UNION
+
+        SELECT
+            0 AS condition_name,
+            COUNT(*) AS count_classes
+        FROM
+            classes c
+        WHERE
+            CURRENT_DATE() BETWEEN c.start_date AND c.end_date
+    ) AS aggregated_results;
+      `);
+    if (result.length == 0) return undefined;
+
+    return result[0]["result"];
+  } catch (error) {
+    return undefined;
   }
 }
 
@@ -197,10 +294,9 @@ async function countSearchClassWithStatus(searchText, status) {
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
     if (status.match("1")) {
       statusString !== ""
-        ? (statusString += "OR c.start_date > CURRENT_DATE()")
-        : (statusString += "AND c.start_date > CURRENT_DATE()");
+        ? (statusString += "OR c.end_date < CURRENT_DATE()")
+        : (statusString += "AND c.end_date < CURRENT_DATE()");
     }
-
     if (status.match("2")) {
       statusString !== ""
         ? (statusString += "OR c.start_date > CURRENT_DATE()")
@@ -230,15 +326,15 @@ async function countSearchClassWithStatusAndSession(
 ) {
   try {
     var statusString = "";
+    var statusString = "";
     if (status.match("0"))
       statusString +=
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
     if (status.match("1")) {
       statusString !== ""
-        ? (statusString += "OR c.start_date > CURRENT_DATE()")
-        : (statusString += "AND c.start_date > CURRENT_DATE()");
+        ? (statusString += "OR c.end_date < CURRENT_DATE()")
+        : (statusString += "AND c.end_date < CURRENT_DATE()");
     }
-
     if (status.match("2")) {
       statusString !== ""
         ? (statusString += "OR c.start_date > CURRENT_DATE()")
@@ -281,27 +377,76 @@ async function countSearchClassWithSession(searchText, session) {
 //! Search Tìm kiếm lớp học bằng tên
 async function searchClass(searchText, limit, offset) {
   try {
-    const classesData = await db.selectLimit(
-      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
-      " c.*, l.name AS levelName, s.name AS syllabusName",
-      `WHERE c.deleted = 0 AND c.name like '%${searchText}%'`,
-      `LIMIT ${limit}`,
-      `OFFSET ${offset}`
+    const result = await db.query(
+      `SELECT
+      JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', c.id,
+              'class_name', c.name,
+              'start_date', c.start_date,
+              'end_date', c.end_date,
+              'class_img', c.class_img,
+              'level', JSON_OBJECT(
+                  'id', l.id,
+                  'name', l.name,
+                  'description', l.description
+              ),
+              'syllabus', JSON_OBJECT(
+                  'id', s.id,
+                  'name', s.name,
+                  'description', s.description
+              ),
+              'members', c.members,
+              'member_limit', c.member_limit,
+              'type', c.type,
+              'session', c.session,
+              'status', c.status,
+              'created', c.created,
+              'deleted', c.deleted,
+              'created_by', c.created_by,
+              'managers', (
+                  SELECT
+                      JSON_ARRAYAGG(
+                          JSON_OBJECT(
+                              'teacher', JSON_OBJECT(
+                                  'teacher_id', t.id,
+                                  'teacher_name', t.name
+                              ),
+                              'role', JSON_OBJECT(
+                                  'role_id', mr.id,
+                                  'role_name', mr.name
+                              )
+                          )
+                      )
+                  FROM
+                      class_managers cm
+                  LEFT JOIN
+                      teachers t ON t.id = cm.teacher_id
+                  LEFT JOIN
+                      class_manager_roles mr ON mr.id = cm.role
+                  WHERE
+                      cm.class_id = c.id
+              )
+          )
+      ) AS classes
+      FROM
+          classes c
+      LEFT JOIN
+          levels l ON c.level_id = l.id
+      LEFT JOIN
+          syllabus s ON c.syllabus_id = s.id
+      WHERE
+          c.deleted = 0
+        AND c.name like '%${searchText}%'
+      LIMIT ${limit}
+      OFFSET ${offset};`
     );
 
-    if (classesData.length == 0) return undefined;
-
-    for (let index = 0; index < classesData.length; index++) {
-      const element = classesData[index];
-      const teachers = await getClassManagerRolesByClassId(element.id);
-      // const uniqueTeachers = teachers.filter(
-      //   (teacher, index, self) =>
-      //     index === self.findIndex((t) => t.id === teacher.id)
-      // );
-      element.teachers = teachers || [];
+    if (result.length == 0) {
+      return undefined;
     }
 
-    return classesData;
+    return result[0];
   } catch (error) {
     return undefined;
   }
@@ -310,22 +455,77 @@ async function searchClass(searchText, limit, offset) {
 //! Search Tìm kiếm lớp học bằng tên và niên khóa
 async function searchClassWithSession(searchText, session, limit, offset) {
   try {
-    const classesData = await db.selectLimit(
-      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
-      " c.*, l.name AS levelName, s.name AS syllabusName",
-      `WHERE c.deleted = 0 AND c.session = ${session} AND  c.name like '%${searchText}%'`,
-      `LIMIT ${limit}`,
-      `OFFSET ${offset}`
+    const result = await db.query(
+      `SELECT
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', c.id,
+                'class_name', c.name,
+                'start_date', c.start_date,
+                'end_date', c.end_date,
+                'class_img', c.class_img,
+                'level', JSON_OBJECT(
+                    'id', l.id,
+                    'name', l.name,
+                    'description', l.description
+                ),
+                'syllabus', JSON_OBJECT(
+                    'id', s.id,
+                    'name', s.name,
+                    'description', s.description
+                ),
+                'members', c.members,
+                'member_limit', c.member_limit,
+                'type', c.type,
+                'session', c.session,
+                'status', c.status,
+                'created', c.created,
+                'deleted', c.deleted,
+                'created_by', c.created_by,
+                'managers', (
+                    SELECT
+                        JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'teacher', JSON_OBJECT(
+                                    'teacher_id', t.id,
+                                    'teacher_name', t.name
+                                ),
+                                'role', JSON_OBJECT(
+                                    'role_id', mr.id,
+                                    'role_name', mr.name
+                                )
+                            )
+                        )
+                    FROM
+                        class_managers cm
+                    LEFT JOIN
+                        teachers t ON t.id = cm.teacher_id
+                    LEFT JOIN
+                        class_manager_roles mr ON mr.id = cm.role
+                    WHERE
+                        cm.class_id = c.id
+                )
+            )
+        ) AS classes
+        FROM
+            classes c
+        LEFT JOIN
+            levels l ON c.level_id = l.id
+        LEFT JOIN
+            syllabus s ON c.syllabus_id = s.id
+        WHERE
+            c.deleted = 0
+          AND c.session = ${session} 
+          AND c.name like '%${searchText}%'
+        LIMIT ${limit}
+        OFFSET ${offset};`
     );
-    if (classesData.length == 0) return undefined;
 
-    for (let index = 0; index < classesData.length; index++) {
-      const element = classesData[index];
-      const teachers = await getClassManagerRolesByClassId(element.id);
-      element.teachers = teachers || [];
+    if (result.length == 0) {
+      return undefined;
     }
 
-    return classesData;
+    return result[0];
   } catch (error) {
     return undefined;
   }
@@ -340,33 +540,85 @@ async function searchClassWithStatus(searchText, status, limit, offset) {
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
     if (status.match("1")) {
       statusString !== ""
-        ? (statusString += "OR c.start_date > CURRENT_DATE()")
-        : (statusString += "AND c.start_date > CURRENT_DATE()");
+        ? (statusString += "OR c.end_date < CURRENT_DATE()")
+        : (statusString += "AND c.end_date < CURRENT_DATE()");
     }
-
     if (status.match("2")) {
       statusString !== ""
         ? (statusString += "OR c.start_date > CURRENT_DATE()")
         : (statusString += "AND c.start_date > CURRENT_DATE()");
     }
-    const classesData = await db.selectLimit(
-      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
-      " c.*, l.name AS levelName, s.name AS syllabusName",
-      `WHERE c.deleted = 0 AND c.name like '%${searchText}%' ${
-        statusString || ""
-      }`,
-      `LIMIT ${limit}`,
-      `OFFSET ${offset}`
+    console.log(statusString);
+    const result = await db.query(
+      `SELECT
+      JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', c.id,
+              'class_name', c.name,
+              'start_date', c.start_date,
+              'end_date', c.end_date,
+              'class_img', c.class_img,
+              'level', JSON_OBJECT(
+                  'id', l.id,
+                  'name', l.name,
+                  'description', l.description
+              ),
+              'syllabus', JSON_OBJECT(
+                  'id', s.id,
+                  'name', s.name,
+                  'description', s.description
+              ),
+              'members', c.members,
+              'member_limit', c.member_limit,
+              'type', c.type,
+              'session', c.session,
+              'status', c.status,
+              'created', c.created,
+              'deleted', c.deleted,
+              'created_by', c.created_by,
+              'managers', (
+                  SELECT
+                      JSON_ARRAYAGG(
+                          JSON_OBJECT(
+                              'teacher', JSON_OBJECT(
+                                  'teacher_id', t.id,
+                                  'teacher_name', t.name
+                              ),
+                              'role', JSON_OBJECT(
+                                  'role_id', mr.id,
+                                  'role_name', mr.name
+                              )
+                          )
+                      )
+                  FROM
+                      class_managers cm
+                  LEFT JOIN
+                      teachers t ON t.id = cm.teacher_id
+                  LEFT JOIN
+                      class_manager_roles mr ON mr.id = cm.role
+                  WHERE
+                      cm.class_id = c.id
+              )
+          )
+      ) AS classes
+      FROM
+          classes c
+      LEFT JOIN
+          levels l ON c.level_id = l.id
+      LEFT JOIN
+          syllabus s ON c.syllabus_id = s.id
+      WHERE
+          c.deleted = 0
+        AND c.name like '%${searchText}%' ${statusString || ""}
+      LIMIT ${limit}
+      OFFSET ${offset};`
     );
-    if (classesData.length == 0) return undefined;
 
-    for (let index = 0; index < classesData.length; index++) {
-      const element = classesData[index];
-      const teachers = await getClassManagerRolesByClassId(element.id);
-      element.teachers = teachers || [];
+    if (result.length == 0) {
+      return undefined;
     }
 
-    return classesData;
+    return result[0];
   } catch (error) {
     return undefined;
   }
@@ -386,8 +638,8 @@ async function searchClassWithStatusAndSession(
         "AND c.start_date <= CURRENT_DATE() AND c.end_date >= CURRENT_DATE()";
     if (status.match("1")) {
       statusString !== ""
-        ? (statusString += "OR c.start_date > CURRENT_DATE()")
-        : (statusString += "AND c.start_date > CURRENT_DATE()");
+        ? (statusString += "OR c.end_date < CURRENT_DATE()")
+        : (statusString += "AND c.end_date < CURRENT_DATE()");
     }
 
     if (status.match("2")) {
@@ -395,24 +647,78 @@ async function searchClassWithStatusAndSession(
         ? (statusString += "OR c.start_date > CURRENT_DATE()")
         : (statusString += "AND c.start_date > CURRENT_DATE()");
     }
-    const classesData = await db.selectLimit(
-      `${config.tb.class} c LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id LEFT JOIN ${config.tb.sysllabus} s ON c.syllabus_id = s.id`,
-      " c.*, l.name AS levelName, s.name AS syllabusName",
-      `WHERE c.deleted = 0 AND c.session = ${session} AND c.name like '%${searchText}%' ${
-        statusString || ""
-      }`,
-      `LIMIT ${limit}`,
-      `OFFSET ${offset}`
-    );
-    if (classesData.length == 0) return undefined;
 
-    for (let index = 0; index < classesData.length; index++) {
-      const element = classesData[index];
-      const teachers = await getClassManagerRolesByClassId(element.id);
-      element.teachers = teachers || [];
+    const result = await db.query(
+      `SELECT
+      JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', c.id,
+              'class_name', c.name,
+              'start_date', c.start_date,
+              'end_date', c.end_date,
+              'class_img', c.class_img,
+              'level', JSON_OBJECT(
+                  'id', l.id,
+                  'name', l.name,
+                  'description', l.description
+              ),
+              'syllabus', JSON_OBJECT(
+                  'id', s.id,
+                  'name', s.name,
+                  'description', s.description
+              ),
+              'members', c.members,
+              'member_limit', c.member_limit,
+              'type', c.type,
+              'session', c.session,
+              'status', c.status,
+              'created', c.created,
+              'deleted', c.deleted,
+              'created_by', c.created_by,
+              'managers', (
+                  SELECT
+                      JSON_ARRAYAGG(
+                          JSON_OBJECT(
+                              'teacher', JSON_OBJECT(
+                                  'teacher_id', t.id,
+                                  'teacher_name', t.name
+                              ),
+                              'role', JSON_OBJECT(
+                                  'role_id', mr.id,
+                                  'role_name', mr.name
+                              )
+                          )
+                      )
+                  FROM
+                      class_managers cm
+                  LEFT JOIN
+                      teachers t ON t.id = cm.teacher_id
+                  LEFT JOIN
+                      class_manager_roles mr ON mr.id = cm.role
+                  WHERE
+                      cm.class_id = c.id
+              )
+          )
+      ) AS classes
+      FROM
+          classes c
+      LEFT JOIN
+          levels l ON c.level_id = l.id
+      LEFT JOIN
+          syllabus s ON c.syllabus_id = s.id
+      WHERE
+          c.deleted = 0
+        AND c.session = ${session} 
+        AND c.name like '%${searchText}%' ${statusString || ""}
+      LIMIT ${limit}
+      OFFSET ${offset};`
+    );
+
+    if (result.length == 0) {
+      return undefined;
     }
 
-    return classesData;
+    return result[0];
   } catch (error) {
     return undefined;
   }

@@ -9,10 +9,10 @@
           <th class="py-2 px-3 w-[100px]">Avatar</th>
           <th class="py-2 px-3 w-[100px]">ID</th>
           <th class="py-2 px-3 text-start w-[200px]">Tên giáo viên</th>
-          <th class="py-2 px-3">Số lượng lớp tham gia</th>
+          <th class="py-2 px-3">Tất cả</th>
           <th class="py-2 px-3">Số lượng lớp đã tham gia</th>
-          <th class="py-2 px-3">Ds lớp đã tham gia</th>
-          <th class="py-2 px-3">Ds lớp đang tham gia</th>
+          <th class="py-2 px-3 text-start">Đang tham gia</th>
+          <th class="py-2 px-3">Đã tham gia</th>
         </tr>
       </thead>
       <tbody>

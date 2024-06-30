@@ -85,16 +85,16 @@
       </div>
       <div>
         <div
-          v-for="teacher in classData.teachers"
-          :key="teacher"
+          v-for="manager in classData.managers"
+          :key="manager"
           class="teacher flex text-[13px] gap-2 items-center text-gray-500 content-center"
         >
-          <span>{{ teacher.role_name }}:</span>
+          <span>{{ manager.role.role_name }}:</span>
           <div class="h-full flex items-center gap-2 object-cover">
             <img
-              :src="teacher.teacher_avatar || avatar_teacher"
+              :src="manager.teacher_avatar || avatar_teacher"
               class="w-6 h-6 rounded-full overflow-hidden border border-white"
-            />{{ teacher.teacher_name || "Chưa có" }}
+            />{{ manager.teacher.teacher_name || "Chưa có" }}
           </div>
         </div>
       </div>
@@ -105,10 +105,10 @@
           {{ classData.type || "Không có" }}
         </div>
         <div class="px-2 rounded-md border border-black">
-          {{ classData.levelName || "Không có" }}
+          {{ classData.level ? classData.level.name : "Không có" }}
         </div>
         <div class="px-2 rounded-md border border-black">
-          {{ classData.syllabusName || "Không có" }}
+          {{ classData.syllabus ? classData.syllabus.name : "Không có" }}
         </div>
       </div>
       <div

@@ -10,6 +10,7 @@ export const useClassStore = defineStore("classStore", {
     searchText: "",
     session: "",
     total: 0,
+    totalStatus: null,
     statusIds: [],
   }),
 
@@ -21,7 +22,7 @@ export const useClassStore = defineStore("classStore", {
         classes.push({
           id: element.id,
           avatar: element.class_img,
-          name: element.name,
+          name: element.class_name,
           start: element.start_date,
           end: element.end_date,
           member: element.members,
@@ -34,11 +35,9 @@ export const useClassStore = defineStore("classStore", {
               : new Date(element.end_date) > new Date()
               ? "Đang hoạt động"
               : "Kết thúc",
-          levelName: element.levelsName ?? "none",
-          syllabusName: element.syllabusName ?? "none",
-          levelId: element.level_id,
-          syllabusId: element.syllabus_id,
-          teachers: element.teachers,
+          level: element.level,
+          syllabus: element.syllabus,
+          managers: element.managers,
         });
       }
       return classes;
@@ -52,56 +51,48 @@ export const useClassStore = defineStore("classStore", {
     },
 
     async searchClasses() {
-      this.status = "loading";
+      try {
+        this.status = "loading";
 
-      const response = await classService.searchClass(
-        this.searchText,
-        this.session,
-        this.statusIds,
-        this.limit,
-        this.page
-      );
+        const response = await classService.searchClass(
+          this.searchText,
+          this.session,
+          this.statusIds,
+          this.limit,
+          this.page
+        );
 
-      const data = response.data;
+        console.log(response);
 
-      this.total = data.total;
-      this.classes = this.formatClass(data.data);
-      this.status = "loaded";
+        const classes = response.data.data.classes || [];
+
+        this.total = response.data.total;
+        this.classes = this.formatClass(classes);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.status = "loaded";
+      }
     },
 
     async fetchClass() {
-      this.status = "loading";
-      const response = await classService.fetchClass(this.limit, this.page);
+      try {
+        this.status = "loading";
 
-      const data = response.data;
+        const response = await classService.fetchClass(this.limit, this.page);
+        console.log(response);
 
-      if (data.status == 400) {
-        this.status = "load_failed";
+        const responseData = response.data;
 
-        return {
-          success: false,
-          message: data.message,
-        };
+        const classes = responseData.data.classes;
+
+        this.classes = this.formatClass(classes);
+        this.total = responseData.total;
+        this.totalStatus = responseData.total_status;
+      } catch (error) {
+      } finally {
+        this.status = "loaded";
       }
-
-      if (data.status === 500) {
-        this.status = "load_failed";
-
-        return {
-          success: false,
-          message: data.message,
-        };
-      }
-
-      this.classes = this.formatClass(data.data);
-      this.total = data.total;
-      console.log(response);
-      this.status = "loaded";
-
-      return {
-        success: true,
-        message: "Load successful",
-      };
     },
   },
 });
