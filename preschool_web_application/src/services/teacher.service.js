@@ -9,6 +9,8 @@ export default {
   getTeacherById,
   addAccountForTeacher,
   deleleTeacher,
+  getClassCurrent,
+  getHistoryClass,
   getTeacherForAssignment,
   getTeacherAssignment,
 };
@@ -47,6 +49,11 @@ function addAccountForTeacher(teacherId, username) {
 function deleleTeacher(idTeacherToDel) {
   return api().get(`/teacher/delete?id=${idTeacherToDel}`);
 }
+function getClassCurrent(teacher_id, page, limit) {
+  return api().get(`/teacher/get/classCurrent/${teacher_id}`);
+}
+function getHistoryClass(teacher_id) {
+  return api().get(`/teacher/get/classHistory/${teacher_id}`);
 
 function getTeacherForAssignment(searchText, startDate, endDate, limit, page) {
   return api().get(

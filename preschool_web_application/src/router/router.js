@@ -33,6 +33,8 @@ import HomePageTeacher from "../presentations/home_page/views/home_page_teacher.
 import InfoTeacherView from "../presentations/teacher_login/views/info_view.vue";
 import ClassTeacherDetailView from "../presentations/teacher_login/views/info_class_view.vue";
 import ClassCurentDetailView from "../presentations/teacher_login/view_info_class_detail/class_current_view.vue";
+import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_history_view.vue";
+import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
 import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs_view.vue";
 const router = Router();

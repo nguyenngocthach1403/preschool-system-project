@@ -13,7 +13,7 @@
       class="h-fit bg-white my-5 border-t-[1px] border-b-[1px] px-3"
     >
       <div class="flex w-full content-center h-[50px] gap-3 my-3 relative">
-        <div class="avatar rounded-full w-[50px] h-[50px] bg-blue-500"></div>
+        <div class="avatar rounded-full w-[50px] h-[50px] bg-[#6EC2F7]"></div>
         <div class="user">
           <p class="text-[16px]">
             {{ user != null ? user["username"] : null }}
@@ -89,7 +89,7 @@ function logout() {
 const menu = ref([
   {
     id: 1,
-    title: "Thông tin",
+    title: "Thông tin cá nhân",
     name: "InfoTeacherView",
     icon: info,
     active: false,
@@ -157,7 +157,7 @@ function selectActive(index) {
 .active .menu-item::before {
   animation: active 0.5s forwards normal;
   content: "";
-  background-color: #3b44d1;
+  background-color: #6ec2f7;
   width: 100%;
   position: absolute;
   height: 3px;

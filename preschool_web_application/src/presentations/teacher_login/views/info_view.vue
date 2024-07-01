@@ -3,7 +3,7 @@
   <div class="ml-4 rounded-3xl text-center h-fit pb-[10px]">
     <div class="m-auto w-[1300px] rounded-xl bg-white overflow-hidden relative">
       <!--background-->
-      <div class="w-full h-[200px] bg-blue-800"></div>
+      <div class="w-full h-[200px] bg-[#6EC2F7]"></div>
       <div class="w-full h-[140px] flex items-center">
         <!--Avatar-->
         <div
@@ -256,14 +256,14 @@
           class="w-full py-4 px-10 font-bold text-[18px] border-b text-start flex items-center star"
         >
           <span>Thông tin tài khoản</span>
-          <span class="ml-3"
+          <!-- <span class="ml-3"
             ><div
               class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
               @click="toggleEditAccount"
             >
               <img :src="edit_icon" class="w-[14px] m-auto" /></div
-          ></span>
-          <span
+          ></span> -->
+          <!-- <span
             v-if="allowEditAccount == false"
             class="text-gray-500 text-sm font-italic ml-8"
             >Nếu muốn chỉnh sửa thông tin vui lòng bấm icon</span
@@ -273,7 +273,7 @@
             class="text-gray-500 text-sm font-italic ml-8"
             >Thông tin đang được mở khoá để sửa, bấm icon để tắt hoặc bấm cập
             nhật thông tin mới</span
-          >
+          > -->
         </div>
         <div class="w-full px-10 py-5 content-center text-start">
           <!--Form-->
@@ -347,7 +347,7 @@
             </div>
           </section>
         </div>
-        <div id="button-side" class="w-full flex justify-end px-10 py-5">
+        <!-- <div id="button-side" class="w-full flex justify-end px-10 py-5">
           <button
             @click.prevent="updateAccount()"
             v-if="!updating"
@@ -384,7 +384,7 @@
             </svg>
             Processing...
           </button>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
