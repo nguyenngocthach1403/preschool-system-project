@@ -60,7 +60,7 @@ function changeActiveMenu(index) {
 }
 </script>
 
-<style  scoped>
+<style scoped>
 .active {
   color: #3b44d1;
 }

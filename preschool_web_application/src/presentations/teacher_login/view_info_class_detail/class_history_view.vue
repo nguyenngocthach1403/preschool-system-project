@@ -23,11 +23,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="item in ClassData"
-              :key="item.id"
-              class="h-[60px] w-full text-left even:bg-gray-50 hover:bg-gray-200"
-            >
+            <tr v-for="item in ClassData" :key="item.id">
               <td class="px-3 py-3">{{ item.name }}</td>
               <td class="px-3 py-3">{{ item.RoleName }}</td>
               <td class="px-3 py-3">{{ formatDate(item.start_date) }}</td>
@@ -38,22 +34,6 @@
             </tr>
           </tbody>
         </table>
-        <!-- <div
-          class="bottom-table-section flex justify-between h-[37px] content-center my-3"
-        >
-          <div
-            v-if="status == 'load_failed'"
-            class="h-[37px] content-center mx-[20px]"
-          >
-            There are no data!
-          </div>
-          <Pagination
-            v-if="status !== 'search_failed' || status !== 'load_failed'"
-            :page-nums="round(total / limit)"
-            :page-active="page + 1"
-            @click-page="changePage($event)"
-          ></Pagination>
-        </div> -->
       </div>
     </main>
   </div>
@@ -64,9 +44,6 @@
 import { ref, computed, onMounted } from "vue";
 import accountService from "../../../services/account.service";
 import teacherService from "../../../services/teacher.service";
-import Pagination from "../../../components/pagination.vue";
-import { useClassCurrentStore } from "../../../stores/class_current_store";
-// const classCurrentStore = useClassCurrentStore();
 const ClassData = ref([]);
 onMounted(async () => {
   CurrentClass();
@@ -75,19 +52,12 @@ async function CurrentClass() {
   const accountId = window.user.id;
   const response = await accountService.getTeacherById(accountId);
   const teacherId = response.data[0].TeacherId;
-  const result = await teacherService.getClassCurrent(teacherId);
-  // classCurrentStore.getClass(teacherId);
+  const result = await teacherService.getHistoryClass(teacherId);
+  // console.log(result.data.data);
   ClassData.value = result.data.data;
 }
 function formatDate(dateString) {
   const date = new Date(dateString);
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-}
-function round(value) {
-  return Math.ceil(value);
-}
-function changePage(event) {
-  // const page = event - 1;
-  // parentStore.changePage(page);
 }
 </script>
