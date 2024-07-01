@@ -80,12 +80,16 @@ async function updateRegistration(id, username) {
   }
 }
 
+/**
+ * isExistAccountByUsername method
+ * @param {string} username
+ * @returns {Boolean} True or False
+ */
 async function isExistAccountByUsername(username) {
   try {
     const result = await db.select(
-      `${config.tb.account} a LEFt JOIN ${config.tb.account} c ON a.created_by = c.id`,
-      "a.id, a.username, a.status, a.phone, a.email, a.role, c.username as creater_username,c.role as creater_role",
-      `WHERE a.username like '${username}' AND a.deleted = 0`
+      `${config.tb.account} a`,
+      "*"`WHERE a.username like '${username}' AND a.deleted = 0`
     );
 
     if (result.length == 0) {

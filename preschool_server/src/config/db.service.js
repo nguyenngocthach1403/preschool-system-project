@@ -1,6 +1,16 @@
 const dbPool = require("../config/dbPool");
 
-module.exports = { select, selectLimit, insert, deleteRow, update };
+module.exports = { select, selectLimit, insert, deleteRow, update, query };
+
+async function query(sql, data) {
+  try {
+    const [rows, fields] = await dbPool.query(sql, data);
+    return rows;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
 async function select(table, columns = "*", where = "") {
   try {

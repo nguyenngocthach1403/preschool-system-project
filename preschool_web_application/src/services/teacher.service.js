@@ -11,6 +11,8 @@ export default {
   deleleTeacher,
   getClassCurrent,
   getHistoryClass,
+  getTeacherForAssignment,
+  getTeacherAssignment,
 };
 
 function getTeacher(offset, limit) {
@@ -52,4 +54,16 @@ function getClassCurrent(teacher_id, page, limit) {
 }
 function getHistoryClass(teacher_id) {
   return api().get(`/teacher/get/classHistory/${teacher_id}`);
+
+function getTeacherForAssignment(searchText, startDate, endDate, limit, page) {
+  return api().get(
+    `/teacher/get/assign-class-manager?searchText=${searchText}&startDate=${startDate}&endDate=${endDate}&limit=${limit}&offset=${
+      page * limit
+    }`
+  );
+}
+function getTeacherAssignment(limit, page) {
+  return api().get(
+    `teacher/get/assignment?limit=${limit}&offset=${page * limit}`
+  );
 }

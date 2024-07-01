@@ -117,10 +117,9 @@
                   <label class="w-full text-start">
                     <span class="pl-4 text-gray-500"
                       >Vai trò của người đăng ký</span
-                    ><span class="text-red-600"> * </span>
+                    ><span class="text-red-600"> (*) </span>
                     <select
                       v-if="disableInput"
-                      id="relationship"
                       disabled
                       v-model="registerRelationship"
                       class="input-text-default disable"
@@ -131,7 +130,6 @@
                     </select>
                     <select
                       v-if="!disableInput"
-                      id="relationship"
                       v-model="registerRelationship"
                       class="input-text-default"
                     >
@@ -148,7 +146,7 @@
                 <div class="w-full">
                   <label class="w-full text-start">
                     <span class="pl-4 text-gray-500">Số điện thoại</span
-                    ><span class="text-red-600"> * </span>
+                    ><span class="text-red-600"> (*) </span>
                     <input
                       v-if="disableInput"
                       v-model="registerPhone"
@@ -172,7 +170,7 @@
                 <div class="w-full">
                   <label class="w-full text-start">
                     <span class="pl-4 text-gray-500">Email</span
-                    ><span class="text-red-600"> * </span>
+                    ><span class="text-red-600"> (*) </span>
                     <input
                       v-if="disableInput"
                       v-model="registerEmail"
@@ -191,6 +189,79 @@
                     <div class="px-3">
                       <p class="text-red-600 mt-1"></p>
                     </div>
+                  </label>
+                </div>
+              </div>
+            </section>
+          </div>
+          <div class="my-3 w-full bg-white p-3 gap-6 rounded-md shadow">
+            <div class="w-full text-start text-gray-500">Nhu cầu học</div>
+            <section class="my-5">
+              <div class="flex gap-5 w-full text-start">
+                <div class="w-full">
+                  <label for=""
+                    ><span class="pl-4 text-gray-500">Cấp bậc</span>
+                    <span class="text-red-600"> (*) </span>
+                    <select
+                      v-if="disableInput"
+                      class="input-text-default disable"
+                      disabled
+                      v-model="registerLevel"
+                    >
+                      <option
+                        v-for="item in levelList"
+                        :key="item"
+                        :value="item.value"
+                      >
+                        {{ item.name }}
+                      </option>
+                    </select>
+                    <select
+                      v-if="!disableInput"
+                      class="input-text-default"
+                      v-model="registerLevel"
+                    >
+                      <option
+                        v-for="item in levelList"
+                        :key="item"
+                        :value="item.value"
+                      >
+                        {{ item.name }}
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <div class="w-full">
+                  <label class="w-full text-start">
+                    <span class="pl-4 text-gray-500">Chương trình</span
+                    ><span class="text-red-600"> (*) </span>
+                    <select
+                      v-if="disableInput"
+                      disabled
+                      v-model="registerSyllabus"
+                      class="input-text-default disable"
+                    >
+                      <option
+                        v-for="item in syllabusList"
+                        :key="item"
+                        :value="item.value"
+                      >
+                        {{ item.name }}
+                      </option>
+                    </select>
+                    <select
+                      v-if="!disableInput"
+                      v-model="registerSyllabus"
+                      class="input-text-default"
+                    >
+                      <option
+                        v-for="item in syllabusList"
+                        :key="item"
+                        :value="item.value"
+                      >
+                        {{ item.name }}
+                      </option>
+                    </select>
                   </label>
                 </div>
               </div>
@@ -286,7 +357,6 @@
                     <select
                       v-if="!disableInput"
                       v-model="studentBirthOfOrigin"
-                      type="text"
                       class="input-text-default"
                     >
                       <option v-for="item in cities" :key="item" :value="item">
@@ -429,6 +499,28 @@
           </div>
           <div class="my-3 w-full bg-white p-3 gap-6 rounded-md shadow">
             <div class="w-full text-start text-gray-500">Hình ảnh</div>
+            <div class="flex gap-5">
+              <div class="w-[150px] h-[200px]">
+                <img
+                  class="w-full h-full object-contain"
+                  :src="
+                    register
+                      ? register.register_img == ''
+                        ? empty_icon
+                        : register.register_img
+                      : empty_icon
+                  "
+                  alt=""
+                />
+              </div>
+              <div class="w-[150px] h-[200px]">
+                <img
+                  class="w-full h-full object-contain"
+                  :src="empty_icon"
+                  alt=""
+                />
+              </div>
+            </div>
           </div>
           <div class="my-3 w-full bg-white p-3 gap-6 rounded-md shadow">
             <div class="w-full text-start text-gray-500">Ghi chú</div>
@@ -462,11 +554,12 @@
                       </article>
                     </div>
                     <button
+                      v-if="isShowDelete(item)"
                       class="w-[20px] h-[20px] rounded-full content-center hover:bg-gray-200"
                     >
                       <img
                         class="w-[15px] h-[15px] m-auto"
-                        :src="threedot_icon"
+                        :src="delete_icon"
                         alt=""
                       />
                     </button>
@@ -478,6 +571,7 @@
               <div class="w-full">
                 <input
                   type="text"
+                  placeholder="Nhập ghi chú..."
                   v-model="noteInput"
                   class="h-[40px] outline-none border w-full rounded-xl px-4 py-2"
                 />
@@ -500,7 +594,7 @@
             </div>
           </div>
         </div>
-        <div class="w-[700px] shadow rounded-md bg-white">
+        <div class="w-[700px] shadow rounded-md bg-white overflow-y-auto">
           <div class="w-full px-1 py-3">
             <div class="text-start px-3 text-[18px]">Tình trạng tư vấn</div>
             <ul class="w-full py-5 px-5 h-full">
@@ -519,16 +613,10 @@
                     <img :src="plus_icon" class="w-5 h-5 m-auto" alt="" />
                   </div>
                   <div>
-                    <!-- <select class="border w-[200px] h-[45px] rounded-md">
-                      <option value="0">Đơn mới</option>
-                      <option value="0">Đã liên hệ</option>
-                      <option value="0">Liên hệ lại</option>
-                      <option value="0">Đơn ảo</option>
-                      <option value="0">Chờ hủy</option>
-                    </select> -->
                     <SelectStatus
                       :options="statusList"
                       class="border w-[200px] h-[45px] rounded-md"
+                      :value="statusSelected"
                       @choose="chooseStatus($event)"
                     />
                   </div>
@@ -613,6 +701,8 @@ import edit_icon from "../../../assets/icons/edit.svg";
 import edit_user from "../../../assets/icons/Edit User.svg";
 import plus_icon from "../../../assets/icons/pls.svg";
 import threedot_icon from "../../../assets/icons/menu.svg";
+import empty_icon from "../../../assets/icons/Empty Box.svg";
+import delete_icon from "../../../assets/icons/delete.svg";
 
 //list
 const levelList = ref([]);
@@ -713,6 +803,7 @@ const notes = ref([]);
 //effect
 const disableInput = ref(true);
 const addingNote = ref(false);
+const statusSelected = ref(null);
 
 //model
 const registerName = ref();
@@ -722,8 +813,8 @@ const registerAddress = ref("");
 const registerCity = ref("");
 const registerDistrict = ref("");
 const registerTown = ref("");
-const registerLevel = ref(0);
-const registerSyllabus = ref(0);
+const registerLevel = ref("");
+const registerSyllabus = ref("");
 const registerRelationship = ref(0);
 const registerStatus = ref(0);
 //
@@ -752,7 +843,6 @@ const emits = defineEmits(["add-toast"]);
 watch(registerCity, (newValue) => {
   districts.value = [];
   wards.value = [];
-  console.log("a", cities.value.find((e) => e.Name.match(newValue)).Districts);
 
   if (newValue != undefined) {
     districts.value = cities.value.find((e) => e.Name.match(newValue))
@@ -766,7 +856,11 @@ watch(registerDistrict, () => {
   if (registerDistrict.value != undefined) {
     wards.value = districts.value.find((e) =>
       e.Name.match(registerDistrict.value)
-    ).Wards;
+    )
+      ? (wards.value = districts.value.find((e) =>
+          e.Name.match(registerDistrict.value)
+        ).Wards)
+      : [];
   }
 });
 watch(register, () => {
@@ -789,12 +883,16 @@ function initialInput(dataToFill) {
   studentGender.value = dataToFill.student_gender;
   studentBirthday.value = dataToFill.birthday;
   studentFork.value = dataToFill.student_fork;
-  studentBirthOfOrigin.value = dataToFill.place_of_origin;
+  studentBirthOfOrigin.value = dataToFill.place_of_birth;
   studentNation.value = dataToFill.student_nation;
   approves.value = dataToFill.approves;
   notes.value = dataToFill.notes;
 }
 
+async function updataRegisterStatus() {
+  try {
+  } catch (error) {}
+}
 // async function updateRegister() {
 //   if (checkinvalid()) return;
 //   try {
@@ -940,8 +1038,29 @@ async function addNote() {
   noteInput.value = "";
 }
 
-function chooseStatus(event) {
-  alert(event.name);
+async function chooseStatus(event) {
+  statusSelected.value = event.id;
+
+  try {
+    const reponse = await registrationService.updateStatus(
+      register.value.id,
+      event.id,
+      window.user.id,
+      register.value.status
+    );
+
+    console.log(reponse);
+
+    getRegisterByID();
+    statusSelected.value = null;
+  } catch (error) {
+    emits("add-toast", { title: "Thất bại!", type: 1 });
+  }
+}
+function isShowDelete(item) {
+  console.log(window.user.role);
+  if (window.user.id == item.created_by || window.user.role == 1) return true;
+  return false;
 }
 
 //life cicle
@@ -966,6 +1085,15 @@ onBeforeMount(() => {
   --dp-border-radius: 5px;
   --dp-input-padding: 12px 30px 11px 12px;
   margin: 5px 0px;
+}
+.disable .dp__theme_light {
+  --dp-button-height: 35px;
+  --dp-border-radius: 5px;
+  --dp-input-padding: 12px 30px 11px 12px;
+  --dp-border-color: #ffffff;
+  --dp-border-color-hover: #ffffff;
+  margin: 5px 0px;
+  border: none;
 }
 
 .status-0 {

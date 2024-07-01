@@ -66,7 +66,7 @@
           <td class="hidden 2xl:table-cell px-3 w-dvw">{{ item.email }}</td>
           <td class="hidden 2xl:table-cell px-3 w-[500px]">{{ item.phone }}</td>
           <td class="hidden 2xl:table-cell px-3 w-[500px]">
-            {{ convertRole(item.role) }}
+            {{ convertAccountRole(item.role) }}
           </td>
           <td class="hidden 2xl:table-cell px-3 w-[500px]">
             <dd>
@@ -104,6 +104,7 @@
 <script setup>
 import { ref } from "vue";
 import sort_icon from "../../../assets/icons/Sorting arrowheads.svg";
+import { convertAccountRole } from "../../../utils/resources/converter";
 
 const drops = defineProps(["data"]);
 

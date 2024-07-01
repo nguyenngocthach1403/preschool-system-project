@@ -33,6 +33,7 @@ export const useRegistrionStore = defineStore("registrationStore", {
           status: element.status,
           register_img: element.register_img,
           student_name: element.student_name,
+          student_id: element.student_id,
           register_img: element.register_img,
         });
       });

@@ -5,10 +5,13 @@ export const useClassStore = defineStore("classStore", {
   state: () => ({
     classes: [],
     page: 0,
-    limit: 20,
+    limit: 10,
     status: "initial",
     searchText: "",
+    session: "",
     total: 0,
+    totalStatus: null,
+    statusIds: [],
   }),
 
   actions: {
@@ -19,20 +22,22 @@ export const useClassStore = defineStore("classStore", {
         classes.push({
           id: element.id,
           avatar: element.class_img,
-          name: element.name,
+          name: element.class_name,
           start: element.start_date,
           end: element.end_date,
           member: element.members,
           limitedMember: element.member_limit,
-          session: new Date(element.start_date).getFullYear(),
+          session: element.session,
+          type: element.type,
           status:
             new Date(element.start_date) > new Date()
               ? "Sắp bắt đầu"
               : new Date(element.end_date) > new Date()
               ? "Đang hoạt động"
               : "Kết thúc",
-          levels: element.levelsName ?? "none",
-          sysllabus: element.sysllabusName ?? "none",
+          level: element.level,
+          syllabus: element.syllabus,
+          managers: element.managers,
         });
       }
       return classes;
@@ -45,60 +50,49 @@ export const useClassStore = defineStore("classStore", {
       this.isBusy = false;
     },
 
-    async searchClasses(searchText) {
-      this.status = "searching";
+    async searchClasses() {
+      try {
+        this.status = "loading";
 
-      if (this.searchText != searchText) {
-        this.searchClass = searchText;
-      }
+        const response = await classService.searchClass(
+          this.searchText,
+          this.session,
+          this.statusIds,
+          this.limit,
+          this.page
+        );
 
-      const response = await classService.searchClass(
-        this.searchClass,
-        this.limit,
-        this.page
-      );
+        console.log(response);
 
-      console.log(response);
+        const classes = response.data.data.classes || [];
 
-      if (response.status == 200 && response.data.status == 200) {
         this.total = response.data.total;
-        this.classes = this.formatClass(response.data.data);
-        this.status = "searched";
+        this.classes = this.formatClass(classes);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.status = "loaded";
       }
     },
 
     async fetchClass() {
-      this.status = "loading";
-      const response = await classService.fetchClass(this.limit, this.page);
+      try {
+        this.status = "loading";
 
-      const data = response.data;
+        const response = await classService.fetchClass(this.limit, this.page);
+        console.log(response);
 
-      if (data.status == 400) {
-        this.status = "load_failed";
+        const responseData = response.data;
 
-        return {
-          success: false,
-          message: data.message,
-        };
+        const classes = responseData.data.classes;
+
+        this.classes = this.formatClass(classes);
+        this.total = responseData.total;
+        this.totalStatus = responseData.total_status;
+      } catch (error) {
+      } finally {
+        this.status = "loaded";
       }
-
-      if (data.status === 500) {
-        this.status = "load_failed";
-
-        return {
-          success: false,
-          message: data.message,
-        };
-      }
-
-      this.classes = this.formatClass(data.data);
-      console.log(response);
-      this.status = "loaded";
-
-      return {
-        success: true,
-        message: "Load successful",
-      };
     },
   },
 });

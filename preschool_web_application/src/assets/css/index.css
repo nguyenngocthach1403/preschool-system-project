@@ -14,9 +14,8 @@ body{
     
     /* background-color: rgb(227, 236, 234); */
     background-color: #ECECEC;
-
+    
 }
-
 ::-webkit-scrollbar {
     width: 5px;
     height: 5px; /* Width of the entire scrollbar */
@@ -38,7 +37,7 @@ border-radius: 6px; /* Rounded corners */
 }
 @layer components {
     .input-text-default {
-        @apply mb-0 h-[50px] bg-white rounded-md my-[5px] w-full outline-none border-[0.12rem] hover:border-gray-600 focus:border-blue-500 px-4;
+        @apply mb-0 h-[50px] bg-white rounded-md my-[5px] w-full outline-none border-[0.12rem] border-gray-400/75 hover:border-gray-600 focus:border-blue-500 px-4;
     }
     .invalid-text {
         @apply text-[14px] text-red-500

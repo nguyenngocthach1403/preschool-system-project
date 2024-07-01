@@ -68,8 +68,8 @@ async function getNoteById(id) {
 
 async function createRegister(data) {
   try {
-    console.log("  * Create registration:");
-    return await db.insert(config.tb.register, data);
+    const result = await db.insert(config.tb.register, data);
+    return result.insertId;
   } catch (error) {
     return {
       code: error.code,
@@ -534,12 +534,9 @@ async function getRegistrations(admission_period_id, page, limit) {
   }
 }
 
-async function deleteRegistration(id, phone) {
+async function deleteRegistration(id) {
   try {
-    const result = await db.deleteRow(
-      config.tb.register,
-      `WHERE id = ${id} OR phone = ${phone}`
-    );
+    const result = await db.deleteRow(config.tb.register, `WHERE id = ${id}`);
 
     if (result == 0) {
       return {

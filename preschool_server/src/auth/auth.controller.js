@@ -3,6 +3,14 @@ const router = express.Router();
 
 const authService = require("./auth.service");
 
+const {
+  isEmpty,
+  validatePassword,
+  isValidEmail,
+} = require("../../helpers/validation");
+
+const Response = require("../../helpers/response");
+
 module.exports = router;
 
 router.post("/", login);
@@ -44,3 +52,34 @@ async function login(req, res) {
     data: result,
   });
 }
+
+// const loginUser = async (req, res) => {
+//   const { username, password } = req.body;
+
+//   if (isEmpty(username) || isEmpty(password)) {
+//     return Response.sendErrorResponse({
+//       res,
+//       message: "Vui lòng nhập Tài khoản và mật khẩu.",
+//       statusCode: 400,
+//     });
+//   }
+
+//   const user = await authService.getUser(username);
+
+//   if (!user) {
+//     return Response.sendErrorResponse({
+//       res,
+//       message: "Tài khoản không tồn tại!",
+//       statusCode: 404,
+//     });
+//   }
+
+//   if (user.password !== password) {
+//     return Response.sendErrorResponse({
+//       res,
+//       message: "Mật khẩu không hợp lệ!",
+//       statusCode: 500,
+//     });
+//   }
+
+// };
