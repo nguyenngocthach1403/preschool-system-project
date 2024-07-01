@@ -18,6 +18,8 @@ router.post("/create", upload.array("files"), createTeacher);
 router.post("/update/:id", upload.array("files"), updateTeacher);
 router.get("/add/account/:id", addAccountForTeacher);
 router.get("/delete", deleteTeacher);
+router.get("/get/classCurrent/:id", getClassCurrent);
+router.get("/get/classHistory/:id", getClassHistory);
 async function getTeacher(req, res) {
   const { limit, offset } = req.query;
 
@@ -428,5 +430,38 @@ async function deleteTeacher(req, res, next) {
       })
     );
   }
+}
+async function getClassCurrent(req, res) {
+  const id = req.params.id;
+  const result = await teacherService.getClassCurrent(id);
+  // console.log(result);
+  if (result.code) {
+    return res.status(500).json({
+      status: 500,
+      error: result.code,
+      message: result.message,
+    });
+  }
+  res.status(200).json({
+    status: 200,
+    message: "Successful",
+    data: result,
+  });
+}
+async function getClassHistory(req, res) {
+  const id = req.params.id;
+  const result = await teacherService.getClassHistory(id);
+  if (result.code) {
+    return res.status(500).json({
+      status: 500,
+      error: result.code,
+      message: result.message,
+    });
+  }
+  res.status(200).json({
+    status: 200,
+    message: "Successful",
+    data: result,
+  });
 }
 module.exports = router;

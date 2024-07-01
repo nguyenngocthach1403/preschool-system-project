@@ -12,7 +12,7 @@
         <router-link
           v-for="(item, index) in menuList"
           :key="index"
-          :to="{ name: 'AdmissionPeriodView' }"
+          :to="{ name: item.name }"
         >
           <li
             class="menu-item h-[40px] content-center px-5 text-black hover:bg-gray-100 cursor-default relative text-center"
@@ -47,7 +47,11 @@ onMounted(() => {
 
 const menuList = ref([
   { title: "Đợt tuyển sinh", checked: true, name: "AdmissionPeriodView" },
-  { title: "Chương trình học", checked: false, name: "" },
+  {
+    title: "Chương trình học",
+    checked: false,
+    name: "ExpertiseAndProgramView",
+  },
 ]);
 
 function changeActiveMenu(index) {
@@ -56,7 +60,7 @@ function changeActiveMenu(index) {
 }
 </script>
 
-<style  scoped>
+<style scoped>
 .active {
   color: #3b44d1;
 }
