@@ -278,7 +278,7 @@ async function insertParent(req, res, next) {
     if (req.files.length > 0) {
       fs.renameSync(req.files[0].path + ".jpg", "uploads/parents/none");
     }
-    return res.status(500).json({
+    return res.status(200).json({
       success: false,
       error: result.error,
     });
@@ -298,7 +298,7 @@ async function insertParent(req, res, next) {
 
   res.status(200).json({
     success: true,
-    error: result.message,
+    mesage: result.message,
     data: parentCreated.success ? parentCreated.data : undefined,
   });
 }

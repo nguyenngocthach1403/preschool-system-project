@@ -78,6 +78,25 @@
         :range="{ partialRange: true }"
       />
     </div>
+    <div class="flex items-center">
+      <ShowNumberComp
+        :numb-show="limit"
+        @change-limit="changeLimit($event)"
+      ></ShowNumberComp>
+      <div class="w-full flex gap-2">
+        <ItemCheckBox
+          v-for="item in statusList"
+          :key="item"
+          :content="item.name"
+          :checked="item.checked"
+          :id="item.id"
+          :total="item.total"
+          @change="changeChecked($event, item)"
+        >
+        </ItemCheckBox>
+      </div>
+    </div>
+
     <div
       v-if="registrations.length == 0 && status != 'loading'"
       class="h-full py-20 w-full align-center py-10"
@@ -85,28 +104,11 @@
       <img :src="empty_icon" class="m-auto" alt="" />
       <span class="text-gray-500">Không có dữ liệu</span>
     </div>
+
     <div v-if="registrations.length !== 0">
       <!--Show muc-->
-      <div v-if="admissionPeriod != 'null' && admissionPeriod != null">
-        <div class="flex items-center">
-          <ShowNumberComp
-            :numb-show="limit"
-            @change-limit="changeLimit($event)"
-          ></ShowNumberComp>
-          <div class="w-full flex gap-2">
-            <ItemCheckBox
-              v-for="item in statusList"
-              :key="item"
-              :content="item.name"
-              :checked="item.checked"
-              :id="item.id"
-              :total="item.total"
-              @change="changeChecked($event, item)"
-            >
-            </ItemCheckBox>
-          </div>
-        </div>
 
+      <div v-if="admissionPeriod != 'null' && admissionPeriod != null">
         <!-- Quick search -->
 
         <!-- Table components -->
@@ -128,8 +130,8 @@
           @update-status="registerUpdateStatus = $event"
           @show-register-img="showRegisterImg = $event"
           @create-parent="createParent($event)"
+          @add-toast="$emit('add-toast', $event)"
         ></TableComp>
-        {{ showConfirmDialog }}
         <div
           class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
         >
@@ -190,6 +192,8 @@ import { convertRegisterStatus } from "../../../utils/resources/converter";
 import io from "socket.io-client";
 import { useRouter } from "vue-router";
 import RegisterDetailPopup from "../components/popup_detail.vue";
+import registrationService from "../../../services/registration.service";
+import studentService from "../../../services/student.service";
 
 const registrationStore = useRegistrionStore();
 const { registrations, total, status, limit, page, searchText, statusIds } =
@@ -368,6 +372,9 @@ async function updateStatus(event) {
     });
     return;
   }
+  if (event.status == 4) {
+    approveStudentByRegisterID(event.id);
+  }
   const count = await registrationStore.getTotalOfStatus();
   fillStatusTotal(count);
   const socket = io("http://localhost:9000");
@@ -382,6 +389,22 @@ async function updateStatus(event) {
     content: result.message,
     type: 0,
   });
+}
+
+async function approveStudentByRegisterID(registerId) {
+  const response = await registrationService.getRegisterByID(registerId);
+  console.log(response);
+  if (!response.data.success) return;
+
+  if (!response.data.data.student_id) return;
+  const formData = new FormData();
+  formData.append("status", 1);
+  formData.append("study_status", 0);
+  const studentUpdateResponse = await studentService.updateStudent(
+    response.data.data.student_id,
+    formData
+  );
+  console.log(studentUpdateResponse);
 }
 
 async function comfirmChangeRegisterStatus(event) {

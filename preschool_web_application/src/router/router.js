@@ -22,6 +22,7 @@ import TeacherCreationView from "../presentations/teacher_page/view/teacher_crea
 import StudentDetailView from "../presentations/student_detail_page/views/student_detail_page.vue";
 import ClassDetailView from "../presentations/class_detail_page/views/class_detail_page.vue";
 import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
+import AssignmentView from "../presentations/assignmet_page/views/assignment_page.vue";
 
 import HomePageParent from "../presentations/home_page/views/home_page_parent.vue";
 import ParentDetailView from "../presentations/parent_page/view_parentLogin/parent_detail.vue";
@@ -33,6 +34,7 @@ import InfoTeacherView from "../presentations/teacher_login/views/info_view.vue"
 import ClassTeacherDetailView from "../presentations/teacher_login/views/info_class_view.vue";
 import ClassCurentDetailView from "../presentations/teacher_login/view_info_class_detail/class_current_view.vue";
 import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
+import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs_view.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -126,6 +128,11 @@ function Router() {
             component: StudentView,
           },
           {
+            name: "AssignmentView",
+            path: "/home-page/:username/asignment",
+            component: AssignmentView,
+          },
+          {
             name: "StudentDetailView",
             path: "/home-page/:username/students/detail",
             component: StudentDetailView,
@@ -154,6 +161,11 @@ function Router() {
                 name: "AdmissionPeriodView",
                 path: "/home-page/:username/program-configuration/addmission-period",
                 component: AdmissionPeriodView,
+              },
+              {
+                name: "ExpertiseAndProgramView",
+                path: "/home-page/:username/program-configuration/expertise-and-programs",
+                component: ExpertiseAndProgramView,
               },
             ],
           },
@@ -226,12 +238,21 @@ function Router() {
       },
     ],
   });
-  router.beforeEach((to, from) => {
-    if (localStorage.getItem("user") !== null) {
-      if (to.meta.requireAuth && !window.user) {
-        alert("You are not logged in");
-        return "/sign";
+  router.beforeEach((to, from, next) => {
+    if (to.name === from.name) {
+      return next();
+    }
+    next();
+    if (to.matched.some((record) => record.meta.requireAuth)) {
+      if (localStorage.getItem("user") == null) {
+        next({
+          path: "/sign",
+        });
+      } else {
+        next();
       }
+    } else {
+      next();
     }
   });
   return router;

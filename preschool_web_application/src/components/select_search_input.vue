@@ -1,6 +1,7 @@
 <template>
   <div id="list-box" class="relative">
     <button
+      @click.prevent
       class="relative w-full cursor-default rounded-md bg-white h-full text-left text-gray-900 sm:text-sm sm:leading-6"
     >
       <input

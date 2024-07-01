@@ -98,26 +98,25 @@ import registration from "@/assets/icons/Registration.svg";
 import logoutIcon from "@/assets/icons/Logout.svg";
 import category from "../assets/icons/Diversity.svg";
 import school from "../assets/icons/School.svg";
+import task from "../assets/icons/Task.svg";
 import { convertAccountRole } from "../utils/resources/converter";
 
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 onMounted(() => {
-  user.value = window.user;
+  getUser();
+  getCurrentActive();
 });
 
 const router = useRouter();
-const isMenuClose = ref(true);
 
 const user = ref(null);
 
 function logout() {
-  if (localStorage.getItem("user")) {
-    localStorage.setItem("user", null);
-  }
+  localStorage.removeItem("user");
   window.user = null;
-  router.push({ path: "/" });
+  router.push({ path: "/sign" });
 }
 
 const menu = ref([
@@ -163,6 +162,14 @@ const menu = ref([
   },
   {
     id: 5,
+    title: "Phân công",
+    name: "AssignmentView",
+    icon: task,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 6,
     title: "Lớp học",
     name: "ClassView",
     icon: classes,
@@ -171,7 +178,7 @@ const menu = ref([
   },
   // { title: "Nhân viên", name: "/ddd", icon: staff },
   {
-    id: 6,
+    id: 7,
     title: "Tài khoản",
     name: "AccountView",
     icon: account,
@@ -179,7 +186,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 7,
+    id: 8,
     title: "Giáo viên",
     name: "TeacherView",
     icon: staff,
@@ -187,7 +194,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 8,
+    id: 9,
     title: "Danh mục",
     name: "CategoryView",
     icon: category,
@@ -210,8 +217,19 @@ const drops = defineProps({
 //   emits("close-menu", isMenuClose.value);
 // }
 function selectActive(index) {
+  localStorage.setItem("currentActiveMenu", index);
   menu.value.forEach((e) => (e.active = false));
   menu.value.find((e) => e.id == index).active = true;
+}
+function getUser() {
+  user.value = JSON.parse(localStorage.getItem("user"));
+}
+function getCurrentActive() {
+  const currentMenuActive = localStorage.getItem("currentActiveMenu");
+  if (!currentMenuActive) return;
+
+  menu.value.forEach((e) => (e.active = false));
+  menu.value.find((e) => e.id == currentMenuActive).active = true;
 }
 </script>
 

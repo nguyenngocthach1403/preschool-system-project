@@ -152,6 +152,7 @@ async function updateStudent(req, res) {
     address,
     placeOfbirth,
     status,
+    study_status,
   } = req.body;
 
   //Kiểm tra tên
@@ -160,18 +161,6 @@ async function updateStudent(req, res) {
       return res.status(500).json({
         status: 500,
         error: "Sai định dạng dữ liệu giới tính.",
-      });
-    }
-  }
-
-  if (status !== undefined) {
-    if (
-      status == "" ||
-      (status != "0" && status != "1" && status != "2" && status != "3")
-    ) {
-      return res.status(500).json({
-        status: 500,
-        error: "Sai định dạng dữ liệu trạng thái.",
       });
     }
   }
@@ -217,6 +206,8 @@ async function updateStudent(req, res) {
     place_Of_birth: placeOfbirth,
     fork: fork,
     nation: nation,
+    status: status,
+    study_status: study_status,
   });
 
   if (result.code) {
@@ -254,7 +245,6 @@ async function createStudent(req, res) {
     nation,
     placeOfBirth,
     fork,
-    parentId,
     address,
     placeOfOrigin,
     status,
@@ -418,29 +408,25 @@ async function getTotalStudent(req, res, next) {
   );
 }
 
-async function getAll(req, res, next) {
-  const { limit, page } = req.query;
-  if (limit === undefined || page === undefined) {
+async function getAll(req, res) {
+  const { limit, offset } = req.query;
+  if (
+    checkService.isEmpty(limit) ||
+    checkService.isEmpty(offset) ||
+    !checkService.isNumber(limit) ||
+    !checkService.isNumber(offset)
+  ) {
     return res.status(400).json({
       status: 400,
       error: "Invalid input: Querry must has limit and page",
     });
   }
 
-  const result = await studentService.getStudent(page, limit);
+  const result = await studentService.getStudent(offset, limit);
 
-  if (result.code) {
-    return res.status(500).json({
-      status: 500,
-      code: result.code,
-      error: result.message,
-    });
-  }
-
-  return res.status(200).json({
-    status: 200,
-    message: "Successful",
-    data: result,
+  res.status(200).json({
+    success: true,
+    data: result[0],
   });
 }
 

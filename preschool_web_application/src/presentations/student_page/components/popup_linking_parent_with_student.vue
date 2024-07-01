@@ -299,39 +299,39 @@ async function linkParentWithStudent() {
     return;
   }
 
-  updating.value = true;
+  try {
+    updating.value = true;
 
-  const response = await relationshipService.createRelationship({
-    parentId: select.value.id,
-    studentId: props.studentData.id,
-    relationship: `${select.value.role}`,
-  });
+    const response = await relationshipService.createRelationship({
+      parentId: select.value.id,
+      studentId: props.studentData.id,
+      relationship: `${select.value.role}`,
+    });
 
-  if (response.status !== 200) {
+    updating.value = false;
+
+    if (!response.data.success) {
+      emits("add-toast", {
+        title: "Thất bại.",
+        content: response.data.error || response.data.message,
+        type: 1,
+      });
+      return;
+    }
+
+    emits("add-toast", {
+      title: "Thành công",
+      content: response.data.message,
+      type: 0,
+    });
+  } catch (error) {
+    updating.value = false;
     emits("add-toast", {
       title: "Thất bại.",
       content: `Liên kết học sinh ${props.studentData.name} và phụ huynh ${select.value.name} thất bại.`,
       type: 1,
     });
-    return;
   }
-
-  updating.value = false;
-
-  if (!response.data.success) {
-    emits("add-toast", {
-      title: "Thất bại.",
-      content: response.data.error || response.data.message,
-      type: 1,
-    });
-    return;
-  }
-
-  emits("add-toast", {
-    title: "Thành công",
-    content: response.data.message,
-    type: 0,
-  });
 
   getStudent();
 }

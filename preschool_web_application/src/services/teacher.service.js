@@ -9,6 +9,8 @@ export default {
   getTeacherById,
   addAccountForTeacher,
   deleleTeacher,
+  getTeacherForAssignment,
+  getTeacherAssignment,
 };
 
 function getTeacher(offset, limit) {
@@ -44,4 +46,17 @@ function addAccountForTeacher(teacherId, username) {
 }
 function deleleTeacher(idTeacherToDel) {
   return api().get(`/teacher/delete?id=${idTeacherToDel}`);
+}
+
+function getTeacherForAssignment(searchText, startDate, endDate, limit, page) {
+  return api().get(
+    `/teacher/get/assign-class-manager?searchText=${searchText}&startDate=${startDate}&endDate=${endDate}&limit=${limit}&offset=${
+      page * limit
+    }`
+  );
+}
+function getTeacherAssignment(limit, page) {
+  return api().get(
+    `teacher/get/assignment?limit=${limit}&offset=${page * limit}`
+  );
 }

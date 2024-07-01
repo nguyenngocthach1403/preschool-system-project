@@ -39,7 +39,7 @@ function countStudent() {
 }
 
 function getStudent(page, limit) {
-  return api().get(`/students?page=${page}&limit=${limit}`);
+  return api().get(`/students?offset=${page * limit}&limit=${limit}`);
 }
 
 function deleleStudent(idStudentToDel) {

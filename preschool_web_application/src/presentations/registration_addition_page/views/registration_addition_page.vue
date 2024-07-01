@@ -9,12 +9,17 @@
     <div
       class="bg-white ml-4 mt-[20px] px-20 rounded-xl mr-2 text-center h-fit pb-[60px]"
     >
-      <div id="site" class="flex px-[30px] py-[30px]">
+      <div id="site" class="flex px-[100px] py-[30px]">
         <div id="input-side" class="w-full pr-[20px]">
+          <div
+            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit"
+          >
+            Thông tin người đăng ký
+          </div>
           <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-2">
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Họ và tên người đăng ký</span
-              ><span class="text-red-600"> * </span>
+              <span class="pl-4 text-gray-500">Họ và tên người đăng ký</span
+              ><span class="text-red-600"> (*) </span>
               <input
                 v-model="name"
                 type="text"
@@ -27,8 +32,8 @@
               </div>
             </label>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Vai trò của người đăng ký</span
-              ><span class="text-red-600"> * </span>
+              <span class="pl-4 text-gray-500">Vai trò của người đăng ký</span
+              ><span class="text-red-600"> (*) </span>
               <select
                 id="relationship"
                 v-model="relationship"
@@ -42,8 +47,8 @@
           </div>
           <div class="flex w-full gap-5 mx-[20px] mb-[20px] mt-2">
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Số điện thoại</span
-              ><span class="text-red-600"> * </span>
+              <span class="pl-4 text-gray-500">Số điện thoại</span
+              ><span class="text-red-600"> (*) </span>
               <input
                 v-model="phone"
                 type="text"
@@ -56,8 +61,8 @@
               </div>
             </label>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Email</span
-              ><span class="text-red-600"> * </span>
+              <span class="pl-4 text-gray-500">Email</span
+              ><span class="text-red-600"> (*) </span>
               <input
                 v-model="email"
                 type="email"
@@ -70,10 +75,15 @@
               </div>
             </label>
           </div>
+          <div
+            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit"
+          >
+            Nhu cầu học
+          </div>
           <div class="flex w-full gap-5 mx-[20px] mb-[20px] mt-2">
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Cấp bậc</span
-              ><span class="text-red-600"> * </span>
+              <span class="pl-4 text-gray-500">Cấp bậc</span
+              ><span class="text-red-600"> (*) </span>
               <select id="levels" v-model="levels" class="input-text-default">
                 <option
                   v-for="item in levelList"
@@ -85,8 +95,8 @@
               </select>
             </label>
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Chương trình</span
-              ><span class="text-red-600"> * </span>
+              <span class="pl-4 text-gray-500">Chương trình</span
+              ><span class="text-red-600"> (*) </span>
               <select
                 id="syllabus"
                 v-model="syllabus"
@@ -102,11 +112,95 @@
               </select>
             </label>
           </div>
+          <div
+            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit"
+          >
+            Thông tin trẻ
+          </div>
+          <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-5">
+            <label class="w-full text-start">
+              <span class="pl-4 text-gray-500">Họ và tên bé</span
+              ><span class="text-red-600"> (*) </span>
+              <input
+                v-model="studentName"
+                type="text"
+                placeholder="Họ và tên"
+                class="input-text-default"
+                :class="{ valid: messageOfStudentName }"
+              />
+              <div class="px-3">
+                <p class="text-red-600 mt-1">{{ messageOfStudentName }}</p>
+              </div>
+            </label>
+            <label class="w-full text-start">
+              <span class="pl-4 text-gray-500">Giới tính</span
+              ><span class="text-red-600"> (*) </span>
+              <select
+                id="relationship"
+                v-model="studentGender"
+                class="input-text-default"
+              >
+                <option value="0">Nam</option>
+                <option value="1">Nữ</option>
+              </select>
+            </label>
+          </div>
+          <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-5">
+            <label class="w-full text-start">
+              <span class="pl-4 text-gray-500">Ngày sinh</span
+              ><span class="text-red-600"> (*) </span>
+              <VueDatePicker
+                v-model="studentBirthday"
+                :enable-time-picker="false"
+                :class="{ valid: messageOfstudentBirthDay }"
+              />
+              <div class="px-3">
+                <p class="text-red-600 mt-1">{{ messageOfstudentBirthDay }}</p>
+              </div>
+            </label>
+            <label class="w-full text-start">
+              <span class="pl-4 text-gray-500">Nơi sinh</span>
+              <select
+                id="relationship"
+                v-model="studentBirthOfOrigin"
+                class="input-text-default"
+              >
+                <option v-for="item in cities" :key="item" :value="item.Name">
+                  {{ item.Name }}
+                </option>
+              </select>
+            </label>
+          </div>
+          <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-2">
+            <label class="w-full text-start">
+              <span class="pl-4 text-gray-500">Dân tộc</span>
+              <select
+                id="relationship"
+                v-model="studentFork"
+                class="input-text-default"
+              >
+                <option v-for="item in forkList" :key="item" :value="item.name">
+                  {{ item.name }}
+                </option>
+              </select>
+              <div class="px-3">
+                <p class="text-red-600 mt-1">{{ messageOfName }}</p>
+              </div>
+            </label>
+            <label class="w-full text-start">
+              <span class="pl-4 text-gray-500">Quốc tịch</span>
+              <input
+                type="text"
+                class="input-text-default"
+                v-model="studentNation"
+              />
+            </label>
+          </div>
           <div class="w-full mx-[20px] mb-[20px] mt-2 text-start">
             <div class="flex w-full gap-5">
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Thành phố</span
-                ><span class="text-red-600"> * </span>
+                <span class="pl-4 text-gray-500">Thành phố</span
+                ><span class="text-red-600"> (*) </span>
                 <select
                   v-model="city"
                   @change="onCityChange"
@@ -124,8 +218,8 @@
                 </select>
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Quận/Huyện</span
-                ><span class="text-red-600"> * </span>
+                <span class="pl-4 text-gray-500">Quận/Huyện</span
+                ><span class="text-red-600"> (*) </span>
                 <select
                   v-model="district"
                   @change="onDistrictChange"
@@ -143,8 +237,8 @@
                 </select>
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Xã/Thị Xã</span
-                ><span class="text-red-600"> * </span>
+                <span class="pl-4 text-gray-500">Xã/Thị Xã</span
+                ><span class="text-red-600"> (*) </span>
                 <select
                   v-model="town"
                   @change="onWardChange"
@@ -168,7 +262,7 @@
           </div>
           <div id="input-side-4" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Địa chỉ</span>
+              <span class="pl-4 text-gray-500">Địa chỉ</span>
               <input
                 v-model="address"
                 type="text"
@@ -176,22 +270,13 @@
                 class="input-text-default"
               />
             </label>
-
             <label class="w-full text-start">
-              <span class="pl-4 text-blue-700">Trạng thái đơn</span
-              ><span class="text-red-600"> * </span>
-              <SelectStatusComp
-                :select-list="[
-                  'Đơn mới',
-                  'Chờ duyệt',
-                  'Chờ liên hệ',
-                  'Đã liên hệ',
-                  'Hoàn thành',
-                  'Đã hủy',
-                ]"
-                @choose="status = $event"
-                :active="status"
-                class="mb-0 h-[50px] rounded-md my-[5px] w-full outline-none"
+              <span class="pl-4 text-gray-500">Trạng thái đơn</span
+              ><span class="text-red-600"> (*) </span>
+              <RegisterSelectComp
+                :options="statusList"
+                class="h-[50px] my-1"
+                @choose="status = $event.id"
               />
             </label>
           </div>
@@ -214,7 +299,7 @@
                   />
                   <div v-if="!fileUpload && !imageUpload">
                     <img :src="image_default" class="w-10 m-auto my-5" />
-                    <span class="text-blue-700">Click</span>
+                    <span class="text-gray-500">Click</span>
                     <span> để thêm ảnh</span>
                   </div>
                 </div>
@@ -224,23 +309,17 @@
         </div>
       </div>
 
-      <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
+      <div id="button-side" class="w-full flex justify-center">
         <button
-          @click.prevent="saveDrafValueInput"
-          class="h-[48px] border border-[#3B44D1] hover:bg-[#3B44D1] hover:text-white px-[25px] rounded-md text-[20px]"
-        >
-          Save to Draf
-        </button>
-        <button
-          @click.prevent="handleSubmit"
-          v-if="status !== 'creating'"
+          @click.prevent="submitCreateRegister"
+          v-if="!creating"
           type="submit"
           class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
         >
-          Save
+          Tạo đơn đăng ký
         </button>
         <button
-          v-if="status === 'creating'"
+          v-if="creating"
           type="button"
           class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
           disabled
@@ -274,15 +353,17 @@
 
 <script setup>
 import { ref, watch, onBeforeMount, onMounted } from "vue";
-import SelectStatusComp from "../../../components/select_status_comp.vue";
-import axios from "axios";
-import RegistrationService from "../../../services/registration.service";
+import registrationService from "../../../services/registration.service";
 import image_default from "../../../assets/img/image-default.png";
 import levelService from "../../../services/levels.service";
 import syllabusService from "../../../services/syllabus.service";
 import { useRouter, useRoute } from "vue-router";
 import { useRegistrionStore } from "../../../stores/registration_store";
-import admissionService from "../../../services/admission_period.service";
+import RegisterSelectComp from "../../registration_page/components/select_register_status.vue";
+import studentService from "../../../services/student.service";
+import { yyyymmddDateString } from "../../../utils/resources/format_date";
+import addmissionPeriodService from "../../../services/admission_period.service";
+import axios from "axios";
 
 import {
   isEmpty,
@@ -293,6 +374,8 @@ import {
 const registrationStore = useRegistrionStore();
 const admissionPeriodOpening = ref(null);
 
+const creating = ref(false);
+
 const fileUpload = ref();
 const imageUpload = ref();
 
@@ -302,6 +385,89 @@ const syllabusList = ref([]);
 const cities = ref([]);
 const districts = ref([]);
 const wards = ref([]);
+const statusList = ref([
+  {
+    id: 0,
+    name: "Đơn mới",
+  },
+  {
+    id: 1,
+    name: "Đã hẹn",
+  },
+  {
+    id: 2,
+    name: "Liên hẹ lại",
+  },
+  {
+    id: 3,
+    name: "Đơn ảo",
+  },
+  {
+    id: 4,
+    name: "Hoàn thành",
+  },
+  {
+    id: 5,
+    name: "Chờ hủy",
+  },
+]);
+const forkList = ref([
+  { name: "Select item", id: 0 },
+  { name: "Kinh", id: 1 },
+  { name: "Tày", id: 2 },
+  { name: "Thái", id: 3 },
+  { name: "Mường", id: 4 },
+  { name: "H'Mông", id: 5 },
+  { name: "Dao", id: 7 },
+  { name: "Khơ Me", id: 8 },
+  { name: "Nùng", id: 9 },
+  { name: "H'rê", id: 10 },
+  { name: "Gia Rai", id: 11 },
+  { name: "Ê Đê", id: 12 },
+  { name: "Ba Na", id: 13 },
+  { name: "Xơ Đăng", id: 14 },
+  { name: "Sán Chay", id: 15 },
+  { name: "Cơ Tu", id: 16 },
+  { name: "Chăm", id: 17 },
+  { name: "Sán Dìu", id: 18 },
+  { name: "Hà Nhì", id: 19 },
+  { name: "Ra Glai", id: 20 },
+  { name: "La Chí", id: 21 },
+  { name: "M'Nông", id: 22 },
+  { name: "Chứt", id: 23 },
+  { name: "Xê Đăng", id: 24 },
+  { name: "Bru-Vân Kiều", id: 25 },
+  { name: "Giáy", id: 26 },
+  { name: "Cơ Ho", id: 27 },
+  { name: "Tà Ôi", id: 28 },
+  { name: "Co", id: 29 },
+  { name: "Ta Oi", id: 30 },
+  { name: "Kháng", id: 31 },
+  { name: "Co Lao", id: 32 },
+  { name: "La Ha", id: 33 },
+  { name: "Pu Péo", id: 34 },
+  { name: "Lự", id: 35 },
+  { name: "Ngái", id: 36 },
+  { name: "Pa Thẻn", id: 37 },
+  { name: "Lô Lô", id: 38 },
+  { name: "Chơ Ro", id: 39 },
+  { name: "Mảng", id: 40 },
+  { name: "Cờ Lao", id: 41 },
+  { name: "Bố Y", id: 42 },
+  { name: "La Hu", id: 43 },
+  { name: "Pà Thẻn", id: 44 },
+  { name: "Lào", id: 45 },
+  { name: "Mông", id: 46 },
+  { name: "Pơng", id: 47 },
+  { name: "Cống", id: 48 },
+  { name: "Si La", id: 49 },
+  { name: "Ơ Đu", id: 50 },
+  { name: "Mảng", id: 51 },
+  { name: "M'ngông", id: 52 },
+  { name: "Thổ", id: 53 },
+]);
+
+const addmisstionPeriod = ref(null);
 
 const name = ref("");
 const phone = ref("");
@@ -318,15 +484,25 @@ const emits = defineEmits(["add-toast"]);
 const router = useRouter();
 const route = useRoute();
 
+const studentName = ref("");
+const studentBirthday = ref(new Date());
+const studentFork = ref("");
+const studentGender = ref("");
+const studentBirthOfOrigin = ref("");
+const studentNation = ref("");
+
 const messageOfName = ref();
 const messageOfPhone = ref();
 const messageOfEmail = ref();
 const messageOfAddress = ref();
+const messageOfStudentName = ref();
+const messageOfstudentBirthDay = ref();
 
 onBeforeMount(() => {
   fetchData();
   getLevel();
   getSyllabus();
+  getAddmissionPeriod();
 });
 
 onMounted(async () => {
@@ -395,35 +571,6 @@ watch(district, () => {
   }
 });
 
-async function getAdmissionPeriodOpenning() {
-  const response = await admissionService.getAddmissionPeriodOpenning();
-
-  console.log(response);
-
-  if (response.status !== 200) {
-    emits("add-toast", {
-      title: "Cập nhật không thành công",
-      content: response.data.error,
-      type: 1,
-    });
-    return false;
-  }
-
-  if (!response.data.success) {
-    emits("add-toast", {
-      title: "Cập nhật không thành công",
-      content: response.data.message,
-      type: 1,
-    });
-    return false;
-  }
-
-  return {
-    success: true,
-    admission_id: response.data.data.id,
-  };
-}
-
 function checkValid() {
   let valid = false;
   if (isEmpty(name.value)) {
@@ -449,6 +596,15 @@ function checkValid() {
   if (isEmpty(city.value) || isEmpty(district.value) || isEmpty(town.value)) {
     valid = true;
     messageOfAddress.value = "Vui lòng nhập địa chỉ thường trú";
+  }
+
+  if (isEmpty(studentName.value)) {
+    valid = true;
+    messageOfStudentName.value = "Vui lòng nhập họ và tên của học sinh.";
+  }
+  if (isEmpty(studentBirthday.value)) {
+    valid = true;
+    messageOfstudentBirthDay.value = "Vui lòng chọn ngày sinh của học sinh.";
   }
   return valid;
 }
@@ -509,7 +665,23 @@ function onDistrictChange() {
     wards.value = districtData.Wards;
   }
 }
+async function getAddmissionPeriod() {
+  const response = await addmissionPeriodService.getAddmissionPeriodOpenning();
 
+  console.log(response);
+
+  if (response.status !== 200) {
+    emits("add-toast", {
+      title: "Tải trang thất bại.",
+      type: 1,
+    });
+    return;
+  }
+
+  if (response.data.success) {
+    addmisstionPeriod.value = response.data.data;
+  }
+}
 async function updateRegister() {
   if (checkValid()) return;
   try {
@@ -565,69 +737,6 @@ async function updateRegister() {
     });
   }
 }
-const saveValueInput = async () => {
-  if (checkValid()) return;
-  try {
-    const hasAdmission = await getAdmissionPeriodOpenning();
-    if (!hasAdmission) return;
-    const formData = new FormData();
-    if (fileUpload.value) {
-      formData.append("files", fileUpload.value);
-    }
-    formData.append("name", name.value);
-    if (isEmpty(email.value)) formData.append("email", email.value);
-    formData.append("phone", phone.value);
-    if (isEmpty(address.value)) formData.append("address", address.value);
-    formData.append("city", city.value);
-    formData.append("district", district.value);
-    formData.append("town", town.value);
-    if (!isEmpty(levels.value)) formData.append("levels", levels.value);
-    if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
-    formData.append("relationship", relationship.value);
-    formData.append("admission_period_id", hasAdmission.admission_id);
-    formData.append("status", status.value);
-
-    const response = await RegistrationService.createRegister(formData);
-
-    if (response.data.isExist) {
-      emits("add-toast", {
-        title: "Đơn đã tồn tại.",
-        content: "Số điện thoại đã được đăng ký.",
-        type: 1,
-      });
-      return;
-    }
-
-    if (response.status !== 200) {
-      emits("add-toast", {
-        title: "Đăng ký không thành công",
-        type: 1,
-      });
-      return;
-    }
-
-    if (!response.data.success) {
-      emits("add-toast", {
-        title: "Đăng ký không thành công",
-        content: response.data.error,
-        type: 1,
-      });
-      return;
-    }
-
-    emits("add-toast", {
-      title: "Đăng ký thành công",
-      type: 0,
-    });
-    router.push({ name: "RegistrationView" });
-  } catch (e) {
-    emits("add-toast", {
-      title: "Đăng ký không thành công",
-      content: e,
-      type: 1,
-    });
-  }
-};
 
 function handleUploadFile(event) {
   //Lấy hình
@@ -668,10 +777,70 @@ async function getSyllabus() {
     });
   }
 }
+async function submitCreateRegister() {
+  if (checkValid()) return;
+  if (!addmisstionPeriod.value) {
+    emits("add-toast", {
+      title: "Thất bại!",
+      content: "Không có đợt đăng ký nào được mở.",
+      type: 1,
+    });
+    return;
+  }
+  const formData = new FormData();
+  if (fileUpload.value) formData.append("files", fileUpload.value);
+  formData.append("admission_period_id", addmisstionPeriod.value.id);
+  formData.append("name", name.value);
+  if (!isEmpty(email.value)) formData.append("email", email.value);
+  formData.append("phone", phone.value);
+  if (!isEmpty(address.value)) formData.append("address", address.value);
+  formData.append("city", city.value);
+  formData.append("district", district.value);
+  formData.append("town", town.value);
+  if (!isEmpty(levels.value)) formData.append("levels", levels.value);
+  if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
+  formData.append("relationship", relationship.value);
+  formData.append("informationState", 0);
+  formData.append("status", 0);
+
+  formData.append("studentName", studentName.value);
+  formData.append(
+    "studentBirthday",
+    yyyymmddDateString(new Date(studentBirthday.value).toLocaleDateString())
+  );
+  formData.append("studentFork", studentFork.value);
+  if (!isEmpty(studentGender.value))
+    formData.append("studentGender", studentGender.value);
+  formData.append("studentPlaceOfBirth", studentBirthOfOrigin.value);
+  formData.append("studentNation", studentNation.value);
+
+  try {
+    creating.value = true;
+    const response = await registrationService.createRegister(formData);
+
+    if (!response.data.success) {
+      emits("add-toast", { title: "Thất bại!", type: 1 });
+      return;
+    }
+    emits("add-toast", { title: "Thành công!", type: 0 });
+    registerSuccess.value = true;
+  } catch (error) {
+    emits("add-toast", { title: "Thất bại!", type: 1 });
+  } finally {
+    creating.value = false;
+  }
+}
 </script>
 
 <style scoped>
 .valid {
   border: solid red 1px;
+}
+.dp__theme_light {
+  --dp-button-height: 35px;
+  --dp-border-radius: 5px;
+  --dp-input-padding: 12px 30px 11px 12px;
+  width: 100%;
+  margin: 5px 0px;
 }
 </style>

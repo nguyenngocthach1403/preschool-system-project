@@ -28,10 +28,10 @@ export const useStudentStore = defineStore("studentStore", {
           avatar: element.avatar,
           name: element.name,
           gender: element.gender,
-          classId: element.classId,
-          class: element.className,
+          class: element.class,
           birthday: new Date(element.birthday).toLocaleDateString(),
           status: element.status,
+          studyStatus: element.study_status,
           parents: element.parents,
           fork: element.fork,
           address: element.address,
@@ -156,39 +156,27 @@ export const useStudentStore = defineStore("studentStore", {
     },
 
     async getStudent() {
-      this.loading = true;
+      try {
+        this.loading = true;
 
-      this.status = "loading";
+        this.status = "loading";
 
-      // await this.getTotalStudent();
+        const response = await studentService.getStudent(this.page, this.limit);
 
-      // if (this.total == 0) {
-      //   this.status = "load_failed";
-      //   return;
-      // }
+        console.log(response);
 
-      const res = await studentService.getStudent(this.page, this.limit);
+        const responseData = response.data;
 
-      const dataRes = res.data;
+        const studentsResponse = responseData.data.students;
 
-      console.log(res);
-
-      const data = dataRes.data;
-
-      if (data.status === 404) {
-        this.status = "load_failed";
-        return;
+        this.students = this.formatDataStudent(studentsResponse);
+      } catch (error) {
+        console.log(error);
+        return error;
+      } finally {
+        this.loading = false;
+        this.status = "loaded";
       }
-
-      const studentFormated = this.formatDataStudent(data);
-
-      console.log(studentFormated);
-
-      this.students = studentFormated;
-
-      this.status = "loaded";
-
-      this.loading = false;
     },
 
     addStudent(studentToAdd) {

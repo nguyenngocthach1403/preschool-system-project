@@ -27,7 +27,7 @@
         <div id="input-side" class="w-full pl-[100px] pr-[20px]">
           <div id="input-side-1" class="flex w-full gap-5 mx-[20px]">
             <label class="w-full text-start">
-              <span class="pl-2 text-blue-800">Họ và tên</span
+              <span class="pl-2 text-gray-500">Họ và tên</span
               ><span class="text-red-600"> * </span>
               <input
                 v-model="studentNameInput"
@@ -42,7 +42,7 @@
               </div>
             </label>
             <label class="w-full text-start">
-              <span class="pl-2 text-blue-800">Lớp</span>
+              <span class="pl-2 text-gray-500">Lớp</span>
               <ListBox
                 @click.prevent
                 @choose-item="classInput = $event.id"
@@ -55,7 +55,7 @@
           <div id="input-side-2" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <div class="w-full flex gap-5">
               <label class="w-full text-start">
-                <span class="pl-2 text-blue-800">Ngày sinh</span>
+                <span class="pl-2 text-gray-500">Ngày sinh</span>
                 <VueDatePicker
                   v-model="studentBirthDayInput"
                   :enable-time-picker="false"
@@ -67,7 +67,7 @@
                 </div>
               </label>
               <label class="w-[200px] text-start">
-                <span class="pl-2 text-blue-800">Nơi sinh</span>
+                <span class="pl-2 text-gray-500">Nơi sinh</span>
                 <input
                   v-model="studentPlaceOfBirthInput"
                   type="text"
@@ -82,14 +82,11 @@
               </label>
             </div>
             <label class="w-full text-start">
-              <span class="pl-2 text-blue-800">Giới tính</span>
-              <ListBox
-                @choose-item="studentGenderInput = $event.id"
-                :option-list="genderList"
-                :value-active="studentGenderInput"
-                @click.prevent
-                class="h-[50px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
-              />
+              <span class="pl-2 text-gray-500">Giới tính</span>
+              <select v-model="studentGenderInput" class="input-text-default">
+                <option value="0">Nam</option>
+                <option value="1">Nữ</option>
+              </select>
               <div class="h-5 valid">
                 <p class="mb-4 text-red-300">{{ invalidGender }}</p>
               </div>
@@ -98,17 +95,19 @@
           <div id="input-side-3" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <div class="w-full flex gap-5">
               <label class="w-full text-start">
-                <span class="pl-2 text-blue-800">Dân tộc</span>
-                <ListBox
-                  @click.prevent
-                  @choose-item="studentForkInput = $event.name"
-                  class="h-[50px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
-                  :option-list="forkList"
-                  :value-active="studentForkInput"
-                />
+                <span class="pl-2 text-gray-500">Dân tộc</span>
+                <select v-model="studentForkInput" class="input-text-default">
+                  <option
+                    v-for="item in forkList"
+                    :key="item"
+                    :value="item.name"
+                  >
+                    {{ item.name }}
+                  </option>
+                </select>
               </label>
               <label class="w-full text-start">
-                <span class="pl-2 text-blue-800">Quốc tịch</span>
+                <span class="pl-2 text-gray-500">Quốc tịch</span>
                 <input
                   v-model="nationInput"
                   type="text"
@@ -118,7 +117,7 @@
               </label>
             </div>
             <label class="w-full text-start">
-              <span class="pl-2 text-blue-800">Phụ huynh</span>
+              <span class="pl-2 text-gray-500">Phụ huynh</span>
               <input
                 v-model="parentIdInput"
                 type="text"
@@ -129,7 +128,7 @@
           </div>
           <div id="input-side-4" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <label class="w-full text-start">
-              <span class="pl-2 text-blue-800">Địa chỉ</span>
+              <span class="pl-2 text-gray-500">Địa chỉ</span>
               <input
                 v-model="addressInput"
                 type="text"
@@ -139,7 +138,7 @@
             </label>
 
             <label class="w-full text-start">
-              <span class="pl-2 text-blue-800">Nguyên quân</span>
+              <span class="pl-2 text-gray-500">Nguyên quân</span>
               <input
                 v-model="placeOfOriginInput"
                 type="text"
@@ -490,6 +489,7 @@ function resetInput() {
   --dp-button-height: 35px;
   --dp-border-radius: 5px;
   --dp-input-padding: 11px 30px 10px 12px;
+  --dp-border-color: #48484864;
   margin: 7px 0px;
 }
 </style>

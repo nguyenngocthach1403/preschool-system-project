@@ -13,7 +13,7 @@
       }"
       @focus="showList = true"
       @focusout="closeList"
-      class="relative w-full cursor-default rounded-md bg-white h-full py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
+      class="relative w-full cursor-default rounded-md bg-white h-full py-1.5 pl-3 pr-10 border border-[0.12rem] border-gray-400 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
     >
       <span>{{ value.name ?? value }}</span>
       <span

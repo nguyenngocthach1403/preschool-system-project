@@ -17,6 +17,7 @@ module.exports = {
   isExistAccount,
   isExistParent,
   getParentByPhone,
+  isExistParentByPhone,
   getStudentByParentId,
   countStudentByParentId,
 };
@@ -154,6 +155,35 @@ async function isExistParent(id) {
     return false;
   }
 }
+async function isExistParentByPhone(phone) {
+  try {
+    const result = await db.select(
+      config.tb.parent,
+      "*",
+      `WHERE deleted = 0 AND phone = ${phone}`
+    );
+    if (result.length == 0) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function getParentByPhone(phone) {
+  try {
+    const result = await db.select(
+      config.tb.parent,
+      "*",
+      `WHERE deleted = 0 AND phone = ${phone}`
+    );
+    return result[0];
+    return true;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function countSearchParent(txtSearch) {
   try {
@@ -239,6 +269,7 @@ async function insertParent(dataToCreate) {
     return {
       success: true,
       message: "Tạo phụ huynh thành công",
+      id: parentId.insertId,
     };
   } catch (error) {
     return {

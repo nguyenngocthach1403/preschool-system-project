@@ -7,41 +7,63 @@
       >
         <!--Add Avatar-->
         <div
-          class="add-avatar w-[100px] h-[100px] m-auto bg-[#D9D9D9] rounded-md relative"
+          class="add-avatar w-[140px] h-[140px] m-auto bg-[#D9D9D9] rounded-md relative"
         >
           <img
             v-if="avatarPath"
             :src="avatarPath"
-            class="w-[100px] h-[100px] m-auto object-cover rounded-md border-2"
+            class="w-[140px] h-[140px] m-auto object-cover rounded-md border-2"
           />
           <input
             type="file"
-            class="absolute top-0 left-0 w-[100px] h-[100px] opacity-0"
+            class="absolute top-0 left-0 w-[140px] h-[140px] opacity-0"
             accept=".png, .jpeg, .jpg"
             @change="handleUploadImg"
           />
         </div>
         <p class="w-full text-center py-2">Ảnh đại diện lớp</p>
-        <label class="w-full text-start">
-          <span class="pl-4 text-[16px]">Tên lớp</span>
-          <span class="text-red-500"> *</span>
-          <input
-            v-model="classNameInput"
-            type="text"
-            placeholder="Nhập tên lớp học"
-            class="input-text-default"
-            :class="{ invalid: messageOfClassName }"
-          />
-          <div class="h-[30px] pt-2">
-            <p class="invalid-text">
-              {{ messageOfClassName }}
-            </p>
-          </div>
-        </label>
+
+        <div class="flex justify-between w-full gap-4">
+          <label class="w-full text-start">
+            <span class="pl-4 text-[16px]">Tên lớp</span>
+            <span class="text-red-500"> (*)</span>
+            <input
+              v-model="classNameInput"
+              type="text"
+              placeholder="Nhập tên lớp học"
+              class="input-text-default"
+              :class="{ invalid: messageOfClassName }"
+            />
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfClassName }}
+              </p>
+            </div>
+          </label>
+          <label class="w-full">
+            <span class="pl-4 text-[16px]">Loại</span>
+            <span class="text-red-500"> (*)</span>
+            <select
+              v-model="classTypeInput"
+              class="input-text-default"
+              :class="{ invalid: messageOfType }"
+            >
+              <option value="null" selected disabled>Selected</option>
+              <option value="Nội trú">Nội trú</option>
+              <option value="Bán trú">Bán trú</option>
+            </select>
+            <div class="h-[30px] pt-2">
+              <p class="invalid-text">
+                {{ messageOfType }}
+              </p>
+            </div>
+          </label>
+        </div>
         <!--Class type input-->
         <div class="flex justify-between w-full gap-4">
           <label class="w-full">
-            <span class="pl-4 text-[16px]">Levels</span>
+            <span class="pl-4 text-[16px]">Cấp bậc</span>
+            <span class="text-red-500"> (*)</span>
             <select
               v-model="classLevelInput"
               class="input-text-default"
@@ -59,9 +81,10 @@
             </div>
           </label>
           <label class="w-full">
-            <span class="pl-4 text-[16px]">Loại chương trình</span>
+            <span class="pl-4 text-[16px]">Chương trình</span>
+            <span class="text-red-500"> (*)</span>
             <select
-              v-model="classTypeInput"
+              v-model="classSyllabusInput"
               class="input-text-default"
               :class="{ invalid: messageOfSyllabus }"
             >
@@ -84,11 +107,11 @@
         <!--Time-->
         <div class="flex justify-between w-full gap-4">
           <label class="w-full">
-            <span class="pl-4 text-[16px]">Ngày mở lớp</span>
-            <input
+            <span class="pl-4 text-[16px]">Ngày mở lớp</span
+            ><span class="text-red-500"> (*)</span>
+            <VueDatePicker
+              :enable-time-picker="false"
               v-model="dateBeginInput"
-              type="date"
-              class="input-text-default"
               :class="{ invalid: messageOfBeginDate }"
             />
             <div class="h-[30px] pt-2">
@@ -98,11 +121,11 @@
             </div>
           </label>
           <label class="w-full">
-            <span class="pl-4 text-[16px]">Kết thúc dự kiến</span>
-            <input
+            <span class="pl-4 text-[16px]">Kết thúc dự kiến</span
+            ><span class="text-red-500"> (*)</span>
+            <VueDatePicker
+              :enable-time-picker="false"
               v-model="dateFinishInput"
-              type="date"
-              class="input-text-default"
               :class="{ invalid: messageOfEndDate }"
             />
             <div class="h-[30px] pt-2">
@@ -116,7 +139,7 @@
         <!--Limited member & Teacher-->
         <div class="flex justify-between w-full gap-4">
           <label class="w-full">
-            <span class="pl-4 text-[16px]">Số lượng tối đa</span>
+            <span class="pl-4 text-[16px]">Số lượng tối đa (mặc định 30)</span>
             <input
               v-model="limitedStudent"
               type="number"
@@ -130,45 +153,19 @@
             </div>
           </label>
           <label class="w-full">
-            <span class="pl-4 text-[16px]">Giáo viên phụ trách</span>
-            <div class="relative">
+            <span class="pl-4 text-[16px]">Niên khóa</span>
+            <span class="text-red-500"> (*)</span>
+            <div class="">
               <input
-                placeholder="Nhập mã giáo viên"
-                v-model="teacherInput"
-                type="text"
+                placeholder="Nhập mã niên khóa"
+                v-model="sessionInput"
+                type="number"
                 class="input-text-default"
-                :class="{ invalid: messageOfTeacher }"
+                :class="{ invalid: messageOfSession }"
               />
-              <div v-if="loaddingTeacher" class="absolute right-0 top-1/3">
-                <LoadingComp />
-              </div>
-              <div
-                v-if="teacher"
-                class="w-full h-full absolute top-0 px-3 pt-2 pb-1"
-              >
-                <div
-                  class="w-full h-full bg-white relative flex items-center gap-5"
-                >
-                  <img
-                    :src="teacher.avatar"
-                    class="w-[30px] h-[30px] border rounded-full object-cover"
-                  />
-                  <div>
-                    <p>{{ teacher.name }}</p>
-                  </div>
-                  <button
-                    @click.prevent="teacher = null"
-                    class="hover:bg-gray-200 w-[25px] h-[22px] absolute right-0 top-1/4 content-center rounded-md"
-                  >
-                    <img :src="close_icon" class="w-[15px] m-auto" />
-                  </button>
-                </div>
-              </div>
             </div>
             <div class="h-[30px] pt-2">
-              <p class="invalid-text">
-                {{ messageOfTeacher }}
-              </p>
+              <p class="invalid-text">{{ messageOfSession }}</p>
             </div>
           </label>
         </div>
@@ -188,12 +185,20 @@
           Hủy
         </button>
         <button
-          v-if="!creating"
+          v-if="!creating && !props.classData"
           @click="handleSubmitAddNewClass()"
           type="button"
           class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md ]"
         >
           Thêm
+        </button>
+        <button
+          v-if="!creating && props.classData"
+          @click="handleUpdateClass()"
+          type="button"
+          class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md ]"
+        >
+          Cập nhật
         </button>
 
         <button
@@ -231,51 +236,49 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import { useClassStore } from "@/stores/class_store.js";
-import close_icon from "../../../assets/icons/close.svg";
 import Layout from "@/components/edit_and_create_layout.vue";
-import SaveButton from "@/components/save_button.vue";
 import LevelsService from "../../../services/levels.service";
 import SyllabusService from "../../../services/syllabus.service";
 import { isEmpty } from "../../../utils/resources/check_valid";
 import LoadingComp from "../../../components/loading_comp.vue";
 import classService from "../../../services/class.service";
+import { yyyymmddDateString } from "../../../utils/resources/format_date";
 
 const classNameInput = ref("");
 const dateBeginInput = ref(null);
 const dateFinishInput = ref(null);
 const limitedStudent = ref(0);
-const teacherInput = ref("");
-const classStore = useClassStore();
+const sessionInput = ref("");
 const classLevelInput = ref(null);
-const classTypeInput = ref(null);
+const classSyllabusInput = ref(null);
 const levelList = ref([]);
 const syllabusList = ref([]);
-const loaddingTeacher = ref(false);
 const creating = ref(false);
-const teacher = ref(null);
+const classTypeInput = ref("");
 
 const messageOfClassName = ref("");
 const messageOfLevel = ref("");
 const messageOfSyllabus = ref("");
 const messageOfBeginDate = ref("");
 const messageOfEndDate = ref("");
-const messageOfTeacher = ref("");
 const messageOfLimit = ref("");
+const messageOfSession = ref("");
+const messageOfType = ref("");
 
 const isLeave = ref(false);
 
 const avatarUpload = ref(null);
 const avatarPath = ref(null);
 
-onMounted(async () => {
-  await getLevels();
-  await getSyllabus();
-});
-
 watch(classNameInput, () => {
   if (!isEmpty(classNameInput.value)) {
     messageOfClassName.value = "";
+  }
+});
+
+watch(classTypeInput, () => {
+  if (!isEmpty(classTypeInput.value)) {
+    messageOfType.value = "";
   }
 });
 
@@ -285,8 +288,8 @@ watch(classLevelInput, () => {
   }
 });
 
-watch(classTypeInput, () => {
-  if (!isEmpty(classTypeInput.value)) {
+watch(classSyllabusInput, () => {
+  if (!isEmpty(classSyllabusInput.value)) {
     messageOfSyllabus.value = "";
   }
 });
@@ -294,6 +297,7 @@ watch(classTypeInput, () => {
 watch(dateBeginInput, () => {
   if (!isEmpty(dateBeginInput.value)) {
     messageOfBeginDate.value = "";
+    sessionInput.value = dateBeginInput.value.getFullYear();
   }
 });
 
@@ -309,17 +313,7 @@ watch(limitedStudent, () => {
   }
 });
 
-watch(teacherInput, () => {
-  //Loading teacher
-  if (!isEmpty(teacherInput.value)) {
-    loaddingTeacher.value = true;
-  } else {
-    loaddingTeacher.value = false;
-  }
-  setTimeout(() => {
-    // Load teacher in server
-  }, 1000);
-});
+const props = defineProps(["classData"]);
 
 const emits = defineEmits(["close", "add-toast"]);
 
@@ -354,15 +348,24 @@ async function handleSubmitAddNewClass() {
   }
   formData.append("className", classNameInput.value);
   formData.append("level", classLevelInput.value);
-  formData.append("syllabus", classTypeInput.value);
-  formData.append("startDate", dateBeginInput.value);
-  formData.append("endDate", dateFinishInput.value);
+  formData.append("syllabus", classSyllabusInput.value);
+  formData.append(
+    "startDate",
+    yyyymmddDateString(new Date(dateBeginInput.value).toLocaleDateString())
+  );
+  formData.append(
+    "endDate",
+    yyyymmddDateString(new Date(dateFinishInput.value).toLocaleDateString())
+  );
   formData.append("limit", limitedStudent.value);
-  if (!isEmpty(teacherInput.value)) {
-    formData.append("teacher", teacherInput.value);
-  }
+  formData.append(
+    "session",
+    sessionInput.value || new Date(dateBeginInput.value).getFullYear()
+  );
+  formData.append("type", classTypeInput.value);
 
   formData.append("created_by", window.user.id);
+
   const response = await classService.createClass(formData);
 
   creating.value = false;
@@ -395,10 +398,77 @@ async function handleSubmitAddNewClass() {
   }
 
   emits("add-toast", {
-    title: "Thành công !",
+    title: "Thành công!",
     content: response.data.message,
     type: 0,
   });
+  emits("close");
+}
+async function handleUpdateClass() {
+  if (checkValid()) {
+    return;
+  }
+  creating.value = true;
+
+  const formData = new FormData();
+
+  if (avatarUpload.value) {
+    formData.append("files", avatarUpload.value);
+  }
+  if (classNameInput.value != props.classData.name) {
+    formData.append("className", classNameInput.value);
+  }
+  if (classLevelInput.value != props.classData.levelId) {
+    formData.append("level", classLevelInput.value);
+  }
+  if (classSyllabusInput.value != props.classData.syllabusId) {
+    formData.append("syllabus", classSyllabusInput.value);
+  }
+  if (dateBeginInput.value != props.classData.start) {
+    formData.append(
+      "startDate",
+      yyyymmddDateString(new Date(dateBeginInput.value).toLocaleDateString())
+    );
+  }
+  if (dateFinishInput.value != props.classData.end) {
+    formData.append(
+      "endDate",
+      yyyymmddDateString(new Date(dateFinishInput.value).toLocaleDateString())
+    );
+  }
+  if (limitedStudent.value != props.classData.limitedMember) {
+    formData.append("limit", limitedStudent.value);
+  }
+  if (sessionInput.value != props.classData.session) {
+    formData.append(
+      "session",
+      sessionInput.value || new Date(dateBeginInput.value).getFullYear()
+    );
+  }
+  if (classTypeInput.value != props.classData.type) {
+    formData.append("type", classTypeInput.value);
+  }
+
+  const response = await classService.updateClass(props.classData.id, formData);
+
+  creating.value = false;
+
+  if (!response.data.success) {
+    emits("add-toast", {
+      title: "Thất bại!",
+      content: response.data.error,
+      type: 1,
+    });
+    return;
+  }
+
+  emits("add-toast", {
+    title: "Thành công!",
+    content: response.data.message,
+    type: 0,
+  });
+
+  emits("close");
 }
 
 function checkValid() {
@@ -411,7 +481,7 @@ function checkValid() {
     invalid = true;
     messageOfLevel.value = "Vui lòng chọn cấp độ lớp.";
   }
-  if (isEmpty(classTypeInput.value)) {
+  if (isEmpty(classSyllabusInput.value)) {
     invalid = true;
     messageOfSyllabus.value = "Vui lòng chọn chương trình.";
   }
@@ -427,7 +497,15 @@ function checkValid() {
     invalid = true;
     messageOfLimit.value = "Vui lòng chọn số lượng";
   }
+  if (isEmpty(sessionInput.value)) {
+    invalid = true;
+    messageOfSession.value = "Vui lòng nhập niên khóa";
+  }
 
+  if (isEmpty(classTypeInput.value)) {
+    invalid = true;
+    messageOfType.value = "Vui lòng nhập chọn loại lớp học";
+  }
   return invalid;
 }
 
@@ -465,10 +543,37 @@ async function getSyllabus() {
     }
   }
 }
+
+function fillValueInput(data) {
+  avatarPath.value = data.avatar;
+  classNameInput.value = data.name;
+  dateBeginInput.value = new Date(data.start);
+  dateFinishInput.value = new Date(data.end);
+  limitedStudent.value = data.limitedMember;
+  sessionInput.value = data.session;
+  classLevelInput.value = data.levelId;
+  classSyllabusInput.value = data.syllabusId;
+  classTypeInput.value = data.type;
+}
+
+onMounted(async () => {
+  await getLevels();
+  await getSyllabus();
+  if (props.classData) {
+    fillValueInput(props.classData);
+  }
+});
 </script>
 
 <style scoped>
 .invalid {
   border: 1px solid red;
+}
+.dp__theme_light {
+  --dp-button-height: 35px;
+  --dp-border-radius: 5px;
+  --dp-input-padding: 12px 30px 11px 12px;
+  --dp-border-color: #48484864;
+  margin: 5px 0px;
 }
 </style>
