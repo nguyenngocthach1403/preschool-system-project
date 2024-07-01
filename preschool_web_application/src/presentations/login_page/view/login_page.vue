@@ -198,19 +198,13 @@ async function login() {
     }
     loading.value = false;
     if (rememberPassword) {
-      localStorage.setItem("user", data.data[0]["username"]);
+      localStorage.setItem("user", JSON.stringify(data.data[0]));
     }
     window.user = {
       id: data.data[0]["id"],
       username: data.data[0]["username"],
       role: data.data[0]["role"],
     };
-    // router.push({
-    //   name: "DashBoardView",
-    //   params: {
-    //     username: data.data[0]["username"],
-    //   },
-    // });
     if (data.data[0].role === 4) {
       router.push({
         name: "homepage-parent",

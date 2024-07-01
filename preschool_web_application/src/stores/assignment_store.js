@@ -16,9 +16,11 @@ export const useAssignmentStore = defineStore("assignment-store", {
           this.page
         );
 
-        this.asignment = response.data.data;
-        console.log(this.asignment);
-        return response.data.data;
+        const responseData = response.data;
+        const assignmentsData = responseData.data.assignmented;
+
+        this.asignment = assignmentsData || [];
+        console.log(response);
       } catch (error) {
         console.log(error);
         return error;

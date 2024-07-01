@@ -17,24 +17,34 @@
       </thead>
       <tbody>
         <tr
-          v-for="item in props.data"
-          :key="item"
+          v-for="teacher in props.data"
+          :key="teacher"
           class="even:bg-gray-200/75 hover:bg-gray-200"
         >
           <td class="px-3 py-3">
             <img
-              :src="item.avatar || avatar"
+              :src="teacher.avatar || avatar"
               class="w-[40px] h-[40px] rounded-full m-auto border border-white border-[1px]"
             />
           </td>
-          <td class="px-3 py-3">{{ item.id }}</td>
-          <td class="px-3 py-3 text-start">{{ item.name }}</td>
-          <td class="px-3 py-3">{{ item.count_class_attended }}</td>
-          <td class="px-3 py-3">{{ item.class_attended.length }}</td>
+          <td class="px-3 py-3">{{ teacher.id }}</td>
+          <td class="px-3 py-3 text-start">{{ teacher.name }}</td>
+          <td class="px-3 py-3">
+            {{
+              teacher.managed_classes
+                ? teacher.managed_classes.length
+                : 0 + teacher.current_classes_list
+                ? teacher.current_classes_list.length
+                : 0
+            }}
+          </td>
+          <td class="px-3 py-3">
+            {{ teacher.managed_classes ? teacher.managed_classes.length : 0 }}
+          </td>
           <td class="px-3 py-3">
             <div class="relative h-10">
               <div
-                v-for="(item, index) in item.class_attending"
+                v-for="(item, index) in teacher.current_classes_list || []"
                 :key="index"
                 class="class absolute drop-shadow-xl top-0 w-10 h-10 rounded-full bg-gray-200 hover:border hover:border-black overflow-hidden"
                 :style="{ left: index * 20 + 'px' }"
@@ -42,11 +52,6 @@
                 <img :src="item.class_img" class="w-full h-full object-cover" />
               </div>
             </div>
-            <!-- <button
-              class="border rounded-md px-3 py-1 text-[13px] border-yellow-500 text-yellow-600 bg-yellow-200/25 hover:bg-yellow-400"
-            >
-              Xem
-            </button> -->
           </td>
           <td class="px-3 py-3">
             <button

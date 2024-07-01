@@ -1,26 +1,52 @@
 const db = require("../config/db.service");
 const config = require("../../src/config/config");
 
-module.exports = {
-  loginAdmin,
-  isExistUser,
-};
-
+/**
+ * isExistUser method
+ * @param {string} username
+ * @returns {Boolean} True or False
+ */
 async function isExistUser(username) {
   try {
-    const resulst = await db.select(
+    const rows = await db.select(
       config.tb.account,
       "*",
-      `WHERE username = '${username}' AND role in (1,2,3,4,5)`
+      `WHERE username = '${username}'`
     );
-    if (resulst.length == 0) {
+
+    const dbResponse = rows[0];
+
+    if (!dbResponse) {
       return false;
     }
+
     return true;
   } catch (error) {
     return false;
   }
 }
+
+/**
+ * isExistUser method
+ * @param {string} username
+ * @returns {Boolean} True or False
+ */
+const getUser = async (username) => {
+  try {
+    const rows = db.query(
+      `SELECT * FROM ${config.tb.account} WHERE username = ?`,
+      [username]
+    );
+
+    const dbResponse = rows[0];
+
+    if (!dbResponse) return undefined;
+
+    return dbResponse;
+  } catch (error) {
+    return undefined;
+  }
+};
 
 async function loginAdmin(usename, password) {
   try {
@@ -62,3 +88,9 @@ async function loginAdmin(usename, password) {
     };
   }
 }
+
+module.exports = {
+  loginAdmin,
+  isExistUser,
+  getUser,
+};

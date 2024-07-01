@@ -45,47 +45,90 @@ async function getTeacher(limit, offset) {
 //Lấy danh sách giáo viên và số lượng được phân công.
 async function getAssignmentTeacher(limit, offset) {
   try {
-    const result = await db.selectLimit(
-      config.tb.teacher,
-      "*",
-      `WHERE deleted = 0`,
-      `LIMIT ${limit}`,
-      `OFFSET ${offset}`
+    const result = await db.query(
+      `
+      WITH TeacherList AS (
+          SELECT
+            *
+          FROM teachers t
+          WHERE t.deleted = 0
+          LIMIT ${limit}
+          OFFSET ${offset}
+      )
+      SELECT JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', tl.id,
+              'name', tl.name,
+              'gender', tl.gender,
+              'birthday', tl.birthday,
+              'phone', tl.phone,
+              'email', tl.email,
+              'address', tl.address,
+              'status', tl.status,
+              'description', tl.description,
+              'seniority', tl.seniority,
+              'type', tl.type,
+              'city', tl.city,
+              'district', tl.district,
+              'ward', tl.ward,
+              'managed_classes', (
+                  SELECT JSON_ARRAYAGG(
+                      JSON_OBJECT(
+                          'class_id', c.id,
+                          'class_name', c.name,
+                          'class_start_date', c.start_date,
+                          'class_end_date', c.end_date,
+                          'class_img', c.class_img,
+                          'members', c.members,
+                          'member_limit', c.member_limit,
+                          'class_type', c.type,
+                          'session', c.session,
+                          'class_status', c.status,
+                          'manager_role', JSON_OBJECT(
+                              'role_id', cmr.id,
+                              'role_name', cmr.name
+                          )
+                      )
+                  )
+                  FROM class_managers cm
+                  LEFT JOIN class_manager_roles cmr ON cm.role = cmr.id
+                  LEFT JOIN classes c ON cm.class_id = c.id
+                  WHERE cm.teacher_id = tl.id
+                    AND CURRENT_DATE() > c.end_date
+              ),
+              'current_classes_list', (
+                  SELECT JSON_ARRAYAGG(
+                      JSON_OBJECT(
+                          'class_id', c.id,
+                          'class_name', c.name,
+                          'class_start_date', c.start_date,
+                          'class_end_date', c.end_date,
+                          'class_img', c.class_img,
+                          'members', c.members,
+                          'member_limit', c.member_limit,
+                          'class_type', c.type,
+                          'session', c.session,
+                          'class_status', c.status,
+                          'manager_role', JSON_OBJECT(
+                              'role_id', cmr.id,
+                              'role_name', cmr.name
+                          )
+                      )
+                  )
+                  FROM class_managers cm
+                  LEFT JOIN class_manager_roles cmr ON cm.role = cmr.id
+                  LEFT JOIN classes c ON cm.class_id = c.id
+                  WHERE cm.teacher_id = tl.id
+                    AND CURRENT_DATE() BETWEEN c.start_date AND c.end_date
+              )
+          )
+      ) AS assignmented
+      FROM TeacherList tl;
+      `
     );
     if (result.length == 0) return undefined;
 
-    for (let index = 0; index < result.length; index++) {
-      const teacher = result[index];
-      const countClassAttended = await countClassOfTeacherAtended(teacher.id);
-      const classAttented = await classManagerService.getClassOfTeacherAttended(
-        teacher.id
-      );
-      const classesAttending =
-        await classManagerService.getClassesOfTeacherAttending(teacher.id);
-      const classCommingAttend =
-        await classManagerService.getClassesOfTeacherComingAttend(teacher.id);
-
-      teacher.count_class_attended = countClassAttended || 0;
-      teacher.class_attended = classAttented || [];
-      teacher.class_attending = classesAttending || [];
-      teacher.class_comming_attend = classCommingAttend || [];
-    }
-    return result;
-  } catch (error) {
-    console.error(error);
-    return undefined;
-  }
-}
-async function countClassOfTeacherAtended(teacherId) {
-  try {
-    const result = await db.select(
-      config.tb.classManager,
-      "count(*) AS total",
-      `WHERE teacher_id = ${teacherId}`
-    );
-    if (result.length == 0) return undefined;
-
-    return result[0]["total"];
+    return result[0];
   } catch (error) {
     console.error(error);
     return undefined;

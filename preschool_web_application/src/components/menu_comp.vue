@@ -105,20 +105,18 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 onMounted(() => {
-  user.value = window.user;
+  getUser();
+  getCurrentActive();
 });
 
 const router = useRouter();
-const isMenuClose = ref(true);
 
 const user = ref(null);
 
 function logout() {
-  if (localStorage.getItem("user")) {
-    localStorage.setItem("user", null);
-  }
+  localStorage.removeItem("user");
   window.user = null;
-  router.push({ path: "/" });
+  router.push({ path: "/sign" });
 }
 
 const menu = ref([
@@ -219,8 +217,19 @@ const drops = defineProps({
 //   emits("close-menu", isMenuClose.value);
 // }
 function selectActive(index) {
+  localStorage.setItem("currentActiveMenu", index);
   menu.value.forEach((e) => (e.active = false));
   menu.value.find((e) => e.id == index).active = true;
+}
+function getUser() {
+  user.value = JSON.parse(localStorage.getItem("user"));
+}
+function getCurrentActive() {
+  const currentMenuActive = localStorage.getItem("currentActiveMenu");
+  if (!currentMenuActive) return;
+
+  menu.value.forEach((e) => (e.active = false));
+  menu.value.find((e) => e.id == currentMenuActive).active = true;
 }
 </script>
 
