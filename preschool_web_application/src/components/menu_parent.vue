@@ -79,11 +79,9 @@ const isMenuClose = ref(true);
 const user = ref(null);
 
 function logout() {
-  if (localStorage.getItem("user")) {
-    localStorage.setItem("user", null);
-  }
+  localStorage.removeItem("user");
   window.user = null;
-  router.push({ path: "/" });
+  router.push({ path: "/sign" });
 }
 
 const menu = ref([
@@ -95,14 +93,14 @@ const menu = ref([
     active: false,
     type: 1,
   },
-  {
-    id: 2,
-    title: "Thông tin khác",
-    name: "ParentDetailView",
-    icon: parent,
-    active: false,
-    type: 1,
-  },
+  // {
+  //   id: 2,
+  //   title: "Thông tin khác",
+  //   name: "ParentDetailView",
+  //   icon: parent,
+  //   active: false,
+  //   type: 1,
+  // },
 ]);
 
 const settingItem = ref([{ name: "Đăng xuất", icon: logoutIcon }]);

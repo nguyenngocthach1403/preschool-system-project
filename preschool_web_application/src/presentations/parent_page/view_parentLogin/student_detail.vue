@@ -65,7 +65,9 @@
         v-if="getTabActive(0)"
         :student-data="studentData"
       />
-      <ClassHistoryView v-if="getTabActive(3)" />
+      <MenuFoodStudent v-if="getTabActive(1)" />
+      <ClassHistory v-if="getTabActive(2)" />
+      <!-- <ClassHistoryView v-if="getTabActive(3)" /> -->
     </div>
   </div>
 </template>
@@ -80,6 +82,8 @@ import { convertGender } from "../../../utils/resources/converter";
 import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 import StudentInformationView from "../../parent_page/view_detail_i4/student_detail_view.vue";
 import ClassHistoryView from "../../student_detail_page/views/class_history_view.vue";
+import MenuFoodStudent from "../view_detail_i4/menu_food_weekly.vue";
+import ClassHistory from "../view_detail_i4/class_history_view.vue";
 const router = useRouter();
 
 const studentData = ref(null);
@@ -94,21 +98,21 @@ const tabList = ref([
     active: true,
   },
   {
-    title: "Biểu đồ sức khỏe",
+    title: "Thực đơn hàng ngày của bé",
     active: false,
   },
-  {
-    title: "Lịch sử khám sức khỏe",
-    active: false,
-  },
+  // {
+  //   title: "Lịch sử khám sức khỏe",
+  //   active: false,
+  // },
   {
     title: "Lịch sử lớp học",
     active: false,
   },
-  {
-    title: "Thành tích",
-    active: false,
-  },
+  // {
+  //   title: "Thành tích",
+  //   active: false,
+  // },
 ]);
 
 onMounted(() => {
