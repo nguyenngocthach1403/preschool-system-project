@@ -38,6 +38,7 @@ import ExpertiseAndProgramView from "../presentations/program_configuration_page
 import MenuFoodStudent from "../presentations/parent_page/view_detail_i4/menu_food_weekly.vue";
 // import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 // import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
+import HomePageView from "../presentations/home_page_user/views/news_view.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -48,6 +49,14 @@ function Router() {
         name: "LoginView",
         path: "/sign",
         component: LoginView,
+        meta: {
+          requireAuth: false,
+        },
+      },
+      {
+        name: "HomePageView",
+        path: "/tin-tuc",
+        component: HomePageView,
         meta: {
           requireAuth: false,
         },
