@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white">
-    <div class="bg-white text-center h-full mb-20 py-3">
+  <div class="bg-[#EEEEEE]">
+    <div class="bg-[#EEEEEE] text-center h-full mb-20 py-3">
       <div class="container mx-auto px-4 py-8">
         <HeaderView class="fixed top-0 left-0 w-full z-50 bg-white shadow-md" />
         <h1 class="text-3xl font-bold mb-4 text-left mt-10">
@@ -35,7 +35,7 @@ const newsItems = [
     altText: "Placeholder Image",
     title: "Tiêu đề tin tức 111111111111111111111111",
     description:
-      "Mô tả ngắn gọn về tin tức aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbb",
+      "Mô tả ngắn gọn về tin tức aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbcccccccccccbb",
   },
   {
     id: 2,
