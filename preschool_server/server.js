@@ -71,6 +71,7 @@ app.use(
   require("./src/registrations/registation.controller")
 );
 
+app.use("/news", require("./src/news/news.controller"));
 app.use("/register", require("./src/register/register"));
 app.use("/images", express.static(path.join(__dirname, "uploads")));
 app.use("/account", require("./src/account/account.controller"));

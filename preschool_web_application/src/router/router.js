@@ -14,7 +14,8 @@ import RegistrationView from "@/presentations/registration_page/view/registratio
 import AccountView from "@/presentations/account_page/views/account_view.vue";
 import RegisterAdditionView from "../presentations/registration_addition_page/views/registration_addition_page.vue";
 import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";
-import CategoryView from "../presentations/category_page/views/category_page.vue";
+// import CategoryView from "../presentations/category_page/views/category_page.vue";
+import CategoryView from "../presentations/category_page/component/tab.vue";
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
 import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
 import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
@@ -40,6 +41,10 @@ import MenuFoodStudent from "../presentations/parent_page/view_detail_i4/menu_fo
 // import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
 import NewsView from "../presentations/home_page_user/views/news_view.vue";
 import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
+
+import CreateNewsView from "../presentations/news/create_news_view.vue";
+import EditNewsView from "../presentations/news/edit_news_view.vue";
+
 const router = Router();
 export default router;
 function Router() {
@@ -259,6 +264,16 @@ function Router() {
             name: "TeacherCreationView",
             path: "/home-page/:username/teacher",
             component: TeacherCreationView,
+          },
+          {
+            name: "CreateNewsView",
+            path: "/home-page/:username/create-news",
+            component: CreateNewsView,
+          },
+          {
+            name: "EditNewsView",
+            path: "/home-page/:username/edit-news/:id",
+            component: EditNewsView,
           },
         ],
       },
