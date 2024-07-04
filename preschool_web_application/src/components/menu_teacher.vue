@@ -79,11 +79,9 @@ const isMenuClose = ref(true);
 const user = ref(null);
 
 function logout() {
-  if (localStorage.getItem("user")) {
-    localStorage.setItem("user", null);
-  }
+  localStorage.removeItem("user");
   window.user = null;
-  router.push({ path: "/" });
+  router.push({ path: "/sign" });
 }
 
 const menu = ref([

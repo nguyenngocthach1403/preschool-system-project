@@ -20,6 +20,7 @@ module.exports = {
   isExistParentByPhone,
   getStudentByParentId,
   countStudentByParentId,
+  getHistoryClassStudentByParentId,
 };
 
 async function getAll() {
@@ -126,9 +127,9 @@ async function countParent() {
 async function searchParent(txtSearch, page, limit) {
   try {
     return db.selectLimit(
-      config.tb.parent,
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account_id = a.id`,
       "*",
-      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account_id LIKE '%${txtSearch}%'`,
+      `WHERE p.deleted = 0 AND p.name LIKE '%${txtSearch}%' OR p.email LIKE '%${txtSearch}%' OR p.phone LIKE '%${txtSearch}%'`,
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
@@ -188,9 +189,9 @@ async function getParentByPhone(phone) {
 async function countSearchParent(txtSearch) {
   try {
     return db.select(
-      config.tb.parent,
+      `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account_id = a.id`,
       "Count(*) AS total",
-      `WHERE deleted = 0 AND name LIKE '%${txtSearch}%' OR email LIKE '%${txtSearch}%' OR phone LIKE '%${txtSearch}%' OR account_id LIKE '%${txtSearch}%'`
+      `WHERE p.deleted = 0 AND p.name LIKE '%${txtSearch}%' OR p.email LIKE '%${txtSearch}%' OR p.phone LIKE '%${txtSearch}%'`
     );
   } catch (error) {
     return {
@@ -203,7 +204,7 @@ async function getPage(page, limit) {
   try {
     return db.selectLimit(
       `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON p.account_id = a.id`,
-      "p.*, a.username, a.username",
+      "p.*, a.username,p.email AS EmailParent,p.phone AS PhoneParent, a.email AS EmailAccount, a.phone AS PhoneAccount",
       "WHERE p.deleted = 0",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
@@ -348,6 +349,19 @@ async function countStudentByParentId(id) {
       `${config.tb.relationship} r 
     LEFT JOIN ${config.tb.student} s ON r.student_id = s.id `,
       "Count(*) AS total",
+      `WHERE r.parent_id = ${id}`
+    );
+    return data;
+  } catch (error) {
+    return error;
+  }
+}
+async function getHistoryClassStudentByParentId(id) {
+  try {
+    const data = await db.select(
+      `${config.tb.relationship} r 
+      LEFT JOIN ${config.tb.student} s ON r.student_id = s.id LEFT JOIN ${config.tb.classMembers} clm ON s.id = clm.student_id LEFT JOIN ${config.tb.class} c ON clm.class_id = c.id`,
+      "s.*,c.id AS ClassId, s.id AS StudentId,s.name AS StudentName ,c.* , c.name AS ClassName,clm.*",
       `WHERE r.parent_id = ${id}`
     );
     return data;

@@ -1,6 +1,12 @@
 <template>
   <!-- <div class="w-full relative"> -->
   <div class="ml-4 rounded-3xl text-center h-fit pb-[10px]">
+    <ConfirmDialog
+      v-if="showConfirmDialog"
+      class="absolute top-0 left-0"
+      :content="`Bạn có chắc chắn cập nhật thông tin tài khoản không?`"
+      @confirm="getConfirm($event)"
+    />
     <div class="m-auto w-[1300px] rounded-xl bg-white overflow-hidden relative">
       <!--background-->
       <div class="w-full h-[200px] bg-[#6EC2F7]"></div>
@@ -37,7 +43,7 @@
           class="w-full py-4 px-10 font-bold text-[18px] border-b text-start flex items-center star"
         >
           <span>Thông tin cá nhân</span>
-          <span class="ml-5"
+          <!-- <span class="ml-5"
             ><div
               class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
               @click="toggleEditTeacher"
@@ -54,7 +60,7 @@
             class="text-gray-500 text-sm font-italic ml-8"
             >Thông tin đang được mở khoá để sửa, bấm icon để tắt hoặc bấm cập
             nhật thông tin mới</span
-          >
+          > -->
         </div>
         <div class="w-full px-10 py-5 content-center text-start">
           <!--Form-->
@@ -211,7 +217,7 @@
           </section>
         </div>
         <!-- </div> -->
-        <div id="button-side" class="w-full flex justify-end px-10 py-5">
+        <!-- <div id="button-side" class="w-full flex justify-end px-10 py-5">
           <button
             @click.prevent="updateTeacher()"
             v-if="!updating"
@@ -248,7 +254,7 @@
             </svg>
             Processing...
           </button>
-        </div>
+        </div> -->
       </div>
       <!-- Thông tin account -->
       <div class="m-10 border rounded-md">
@@ -256,14 +262,14 @@
           class="w-full py-4 px-10 font-bold text-[18px] border-b text-start flex items-center star"
         >
           <span>Thông tin tài khoản</span>
-          <!-- <span class="ml-3"
+          <span class="ml-3"
             ><div
               class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
               @click="toggleEditAccount"
             >
               <img :src="edit_icon" class="w-[14px] m-auto" /></div
-          ></span> -->
-          <!-- <span
+          ></span>
+          <span
             v-if="allowEditAccount == false"
             class="text-gray-500 text-sm font-italic ml-8"
             >Nếu muốn chỉnh sửa thông tin vui lòng bấm icon</span
@@ -273,7 +279,7 @@
             class="text-gray-500 text-sm font-italic ml-8"
             >Thông tin đang được mở khoá để sửa, bấm icon để tắt hoặc bấm cập
             nhật thông tin mới</span
-          > -->
+          >
         </div>
         <div class="w-full px-10 py-5 content-center text-start">
           <!--Form-->
@@ -347,9 +353,9 @@
             </div>
           </section>
         </div>
-        <!-- <div id="button-side" class="w-full flex justify-end px-10 py-5">
+        <div id="button-side" class="w-full flex justify-end px-10 py-5">
           <button
-            @click.prevent="updateAccount()"
+            @click="showConfirmDialog = $event"
             v-if="!updating"
             type="submit"
             class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -384,7 +390,7 @@
             </svg>
             Processing...
           </button>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -395,6 +401,7 @@ import { ref, onMounted, defineEmits } from "vue";
 import accountService from "../../../services/account.service";
 import edit_icon from "@/assets/icons/edit.svg";
 import teacherService from "../../../services/teacher.service";
+import ConfirmDialog from "@/components/confirm_dialog.vue";
 import {
   isEmpty,
   isPhoneValid,
@@ -428,6 +435,8 @@ const messageOfTeacherEmail = ref("");
 const messageOfAccountPhone = ref("");
 const messageOfAccountEmail = ref("");
 const messageOfAccountPassword = ref("");
+
+const showConfirmDialog = ref("");
 
 function years() {
   const currentYear = new Date().getFullYear();
@@ -504,34 +513,34 @@ const handleUploadTeacherImg = (event) => {
   avatarPath.value = URL.createObjectURL(fileUpload.value);
   console.log(URL.createObjectURL(fileUpload.value));
 };
-function checkValidTeacher() {
-  let invalid = false;
+// function checkValidTeacher() {
+//   let invalid = false;
 
-  if (isEmpty(phone_teacher.value)) {
-    invalid = true;
-    messageOfTeacherPhone.value = "Vui lòng nhập số điện thoại";
-  }
-  if (isEmpty(email_teacher.value)) {
-    invalid = true;
-    messageOfTeacherEmail.value = "Vui lòng nhập email";
-  }
+//   if (isEmpty(phone_teacher.value)) {
+//     invalid = true;
+//     messageOfTeacherPhone.value = "Vui lòng nhập số điện thoại";
+//   }
+//   if (isEmpty(email_teacher.value)) {
+//     invalid = true;
+//     messageOfTeacherEmail.value = "Vui lòng nhập email";
+//   }
 
-  if (!isEmpty(phone_teacher.value) && !isPhoneValid(phone_teacher.value)) {
-    invalid = true;
-    messageOfTeacherPhone.value =
-      "Số điện thoại không đúng định dạng, phải đủ 10 số";
-  }
-  if (!isEmpty(email_teacher.value) && !isEmailValid(email_teacher.value)) {
-    invalid = true;
-    messageOfTeacherEmail.value = "Email sai định dạng";
-  }
+//   if (!isEmpty(phone_teacher.value) && !isPhoneValid(phone_teacher.value)) {
+//     invalid = true;
+//     messageOfTeacherPhone.value =
+//       "Số điện thoại không đúng định dạng, phải đủ 10 số";
+//   }
+//   if (!isEmpty(email_teacher.value) && !isEmailValid(email_teacher.value)) {
+//     invalid = true;
+//     messageOfTeacherEmail.value = "Email sai định dạng";
+//   }
 
-  if (isEmpty(name.value)) {
-    invalid = true;
-    messageOfTeacherName.value = "Không được đển trống tên giáo viên";
-  }
-  return invalid;
-}
+//   if (isEmpty(name.value)) {
+//     invalid = true;
+//     messageOfTeacherName.value = "Không được đển trống tên giáo viên";
+//   }
+//   return invalid;
+// }
 function checkValidAccount() {
   let invalid = false;
 
@@ -560,72 +569,84 @@ function checkValidAccount() {
   }
   return invalid;
 }
-async function updateTeacher() {
-  if (checkValidTeacher()) {
+// async function updateTeacher() {
+//   if (checkValidTeacher()) {
+//     return;
+//   }
+//   updating.value = true;
+//   const teacherId = id.value;
+//   const formData = new FormData();
+//   const formattedBirthday = new Date(birthday.value).toLocaleDateString(
+//     "en-CA"
+//   );
+//   if (fileUpload.value !== null) {
+//     formData.append("files", fileUpload.value);
+//   }
+//   formData.append("name", name.value);
+//   formData.append("gender", gender.value);
+//   formData.append("birthday", formattedBirthday);
+//   formData.append("address", address.value);
+//   formData.append("email", email_teacher.value);
+//   formData.append("phone", phone_teacher.value);
+//   formData.append("experience", experience.value);
+//   formData.append("seniority", selectedYear.value);
+//   formData.append("status", status_teacher.value);
+
+//   console.log(formData);
+
+//   const response = await teacherService.updateTeacher(teacherId, formData);
+
+//   updating.value = false;
+
+//   if (response.status !== 500 && response.status != 200) {
+//     emits("add-toast", {
+//       title: "Cập nhật thất bại",
+//       content: response.data.error,
+//       type: 1,
+//     });
+//     return;
+//   }
+
+//   if (response.status === 500) {
+//     emits("add-toast", {
+//       title: "Cập nhật thất bại",
+//       content: response.data.error,
+//       type: 3,
+//     });
+//     return;
+//   }
+//   if (!response.data.success) {
+//     emits("add-toast", {
+//       title: "Cập nhật thất bại",
+//       content: response.data.message,
+//       type: 2,
+//     });
+//     return;
+//   }
+
+//   emits("add-toast", {
+//     title: "Cập nhật thành công",
+//     content: `Cập nhật giáo viên ${name.value} thành công.`,
+//     type: 0,
+//   });
+// }
+// const confirmUpdateAccount = () => {
+//   if (checkValidAccount()) {
+//     return;
+//   }
+//   showConfirmDialog.value = true;
+//   confirmContent.value = "Bạn có chắc chắn muốn cập nhật thông tin tài khoản?";
+// };
+
+const getConfirm = (event) => {
+  if (!event) {
+    showConfirmDialog.value = null;
     return;
   }
-  updating.value = true;
-  const teacherId = id.value;
-  const formData = new FormData();
-  const formattedBirthday = new Date(birthday.value).toLocaleDateString(
-    "en-CA"
-  );
-  if (fileUpload.value !== null) {
-    formData.append("files", fileUpload.value);
-  }
-  formData.append("name", name.value);
-  formData.append("gender", gender.value);
-  formData.append("birthday", formattedBirthday);
-  formData.append("address", address.value);
-  formData.append("email", email_teacher.value);
-  formData.append("phone", phone_teacher.value);
-  formData.append("experience", experience.value);
-  formData.append("seniority", selectedYear.value);
-  formData.append("status", status_teacher.value);
-
-  console.log(formData);
-
-  const response = await teacherService.updateTeacher(teacherId, formData);
-
-  updating.value = false;
-
-  if (response.status !== 500 && response.status != 200) {
-    emits("add-toast", {
-      title: "Cập nhật thất bại",
-      content: response.data.error,
-      type: 1,
-    });
-    return;
-  }
-
-  if (response.status === 500) {
-    emits("add-toast", {
-      title: "Cập nhật thất bại",
-      content: response.data.error,
-      type: 3,
-    });
-    return;
-  }
-  if (!response.data.success) {
-    emits("add-toast", {
-      title: "Cập nhật thất bại",
-      content: response.data.message,
-      type: 2,
-    });
-    return;
-  }
-
-  emits("add-toast", {
-    title: "Cập nhật thành công",
-    content: `Cập nhật giáo viên ${name.value} thành công.`,
-    type: 0,
-  });
-}
-
+  updateAccount();
+  showConfirmDialog.value = null;
+};
 async function updateAccount() {
-  if (checkValidAccount()) {
-    return;
-  }
   const Username = window.user.username;
   console.log(Username);
   const AccountToUpdate = {

@@ -22,6 +22,7 @@ router.get("/get/id/:id", getParentById);
 router.get("/getStudent/:id", getStudentByParentID);
 router.get("/add/account/:id", addAccountForParent);
 router.get("/totalStudent/:id", countStudentByParentId);
+router.get("/get/classhistory/:id", getHistoryClassStudentByParentId);
 
 async function getAll(req, res, next) {
   const { limit, page } = req.query;
@@ -455,5 +456,24 @@ async function countStudentByParentId(req, res, next) {
       data: countParent[0]["total"],
     })
   );
+}
+async function getHistoryClassStudentByParentId(req, res, next) {
+  const id = req.params.id;
+
+  const result = await parentService.getHistoryClassStudentByParentId(id);
+
+  if (result.code) {
+    return res.status(200).json({
+      success: false,
+      message: result.message,
+      error: result.error,
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Thành công.",
+    data: result,
+  });
 }
 module.exports = router;

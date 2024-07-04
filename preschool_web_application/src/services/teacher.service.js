@@ -1,5 +1,4 @@
 import { api } from "../services/Api";
-
 export default {
   getTeacher,
   countTeacher,
@@ -13,6 +12,7 @@ export default {
   getHistoryClass,
   getTeacherForAssignment,
   getTeacherAssignment,
+  getSchedule,
 };
 
 function getTeacher(offset, limit) {
@@ -67,4 +67,8 @@ function getTeacherAssignment(limit, page) {
   return api().get(
     `teacher/get/assignment?limit=${limit}&offset=${page * limit}`
   );
+}
+
+function getSchedule(id) {
+  return api().get(`teacher/get/schedule/${id}`);
 }

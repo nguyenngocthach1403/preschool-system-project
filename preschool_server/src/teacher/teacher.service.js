@@ -23,6 +23,7 @@ module.exports = {
   getTeacherForAssignment,
   isExistTeacherByID,
   getAssignmentTeacher,
+  getScheduleTeacher,
 };
 
 async function getTeacher(limit, offset) {
@@ -546,5 +547,20 @@ async function isExistTeacherByID(teacherId) {
     return true;
   } catch (error) {
     return false;
+  }
+}
+//Lấy danh sách các lớp giảng dạy để đưa lên lịch
+async function getScheduleTeacher(teacherId) {
+  try {
+    return await db.select(
+      `${config.tb.class} c LEFT JOIN ${config.tb.classManager} cm ON c.id = cm.class_id`,
+      "c.*",
+      `WHERE cm.teacher_id = ${teacherId} AND c.deleted = 0`
+    );
+  } catch (error) {
+    return {
+      code: error.code,
+      message: error.sqlMessage,
+    };
   }
 }
