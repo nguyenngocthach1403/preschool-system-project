@@ -22,6 +22,7 @@ router.get("/get/classCurrent/:id", getClassCurrent);
 router.get("/get/classHistory/:id", getClassHistory);
 router.get("/get/assign-class-manager", getTeacherForAssignment);
 router.get("/get/assignment", getAssignmentTeacher);
+router.get("/get/schedule/:id", getScheduleTeacher);
 
 async function getTeacherForAssignment(req, res) {
   const { searchText, startDate, endDate, limit, offset } = req.query;
@@ -528,6 +529,23 @@ async function getClassCurrent(req, res) {
 async function getClassHistory(req, res) {
   const id = req.params.id;
   const result = await teacherService.getClassHistory(id);
+  if (result.code) {
+    return res.status(500).json({
+      status: 500,
+      error: result.code,
+      message: result.message,
+    });
+  }
+  res.status(200).json({
+    status: 200,
+    message: "Successful",
+    data: result,
+  });
+}
+
+async function getScheduleTeacher(req, res) {
+  const id = req.params.id;
+  const result = await teacherService.getScheduleTeacher(id);
   if (result.code) {
     return res.status(500).json({
       status: 500,

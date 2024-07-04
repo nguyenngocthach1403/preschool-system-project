@@ -19,6 +19,7 @@
           class="h-1 bg-[#6EC2F7] absolute bottom-0 rounded-md ease-in-out duration-300"
         ></div>
       </div>
+      <!-- <CalenderDetail v-if="getTabActive(0)" /> -->
       <ClassCurrentView v-if="getTabActive(0)" />
       <ClassHistoryView v-if="getTabActive(1)" />
     </div>
@@ -30,6 +31,7 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import ClassCurrentView from "../../teacher_login/view_info_class_detail/class_current_view.vue";
 import ClassHistoryView from "../view_info_class_detail/class_history_view.vue";
+import CalenderDetail from "../view_info_class_detail/calender_detail.vue";
 const router = useRouter();
 
 //element
@@ -37,6 +39,10 @@ const TabLineElement = ref(null);
 const TabElement = ref(null);
 
 const tabList = ref([
+  // {
+  //   title: "Lịch giảng dạy",
+  //   active: true,
+  // },
   {
     title: "Lớp đang giảng dạy",
     active: true,

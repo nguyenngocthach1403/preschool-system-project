@@ -253,7 +253,7 @@
         class="w-full py-4 px-10 font-bold text-[18px] border-b text-start flex items-center star"
       >
         <span>Thông tin tài khoản</span>
-        <span class="ml-3"
+        <!-- <span class="ml-3"
           ><div
             class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
             @click="toggleEditAccount"
@@ -270,7 +270,7 @@
           class="text-gray-500 text-sm font-italic ml-8"
           >Thông tin đang được mở khoá để sửa, bấm icon để tắt hoặc bấm cập nhật
           thông tin mới</span
-        >
+        > -->
       </div>
       <div class="w-full px-10 py-5 content-center text-start">
         <!--Form-->
@@ -344,7 +344,7 @@
           </div>
         </section>
       </div>
-      <div id="button-side" class="w-full flex justify-end px-10 py-5">
+      <!-- <div id="button-side" class="w-full flex justify-end px-10 py-5">
         <button
           @click.prevent="updateAccount()"
           v-if="!updating"
@@ -381,7 +381,7 @@
           </svg>
           Processing...
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

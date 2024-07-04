@@ -14,23 +14,23 @@
               <th class="px-3 py-3 text-left w-[250px]">
                 <div class="flex">Tên lớp học</div>
               </th>
-              <th class="w-[300px]">Chức vụ</th>
-              <th class="w-[400px]">Thời gian bắt đầu</th>
-              <th class="w-[400px]">Thời gian kết thúc</th>
+              <th class="w-[300px]">Vai trò</th>
               <th class="w-[300px]">Cấp độ</th>
               <th class="w-[300px]">Chương trình</th>
               <th class="w-[300px]">Niên khoá</th>
+              <th class="w-[400px]">Thời gian bắt đầu</th>
+              <th class="w-[400px]">Thời gian kết thúc</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="item in ClassData" :key="item.id">
               <td class="px-3 py-3">{{ item.name }}</td>
               <td class="px-3 py-3">{{ item.RoleName }}</td>
-              <td class="px-3 py-3">{{ formatDate(item.start_date) }}</td>
-              <td class="px-3 py-3">{{ formatDate(item.end_date) }}</td>
               <td class="px-3 py-3">{{ item.levelsName }}</td>
               <td class="px-3 py-3">{{ item.syllabusName }}</td>
               <td class="px-3 py-3">{{ item.session }}</td>
+              <td class="px-3 py-3">{{ formatDate(item.start_date) }}</td>
+              <td class="px-3 py-3">{{ formatDate(item.end_date) }}</td>
             </tr>
           </tbody>
         </table>

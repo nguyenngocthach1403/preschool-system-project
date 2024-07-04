@@ -13,6 +13,7 @@ export default {
   addAccountForParent,
   getStudentByParentId,
   countStudentByParentId,
+  getHistoryClassStudentByTeacherId,
 };
 
 function search(txtSearch, page, limit) {
@@ -67,4 +68,7 @@ function getStudentByParentId(id) {
 }
 function countStudentByParentId(id) {
   return api().get(`/parents/totalStudent/${id}`);
+}
+function getHistoryClassStudentByTeacherId(id) {
+  return api().get(`/parents/get/classhistory/${id}`);
 }
