@@ -8,6 +8,8 @@ const fs = require("fs");
 
 const checkService = require("../config/check.service");
 
+const Response = require("../../helpers/response");
+
 const multer = require("multer");
 const { error } = require("console");
 
@@ -40,6 +42,8 @@ router.get("/id/:id", getRegisterByID);
 
 router.post("/note/add", addNoteByRegisterId);
 
+router.get("/note/delete", deleteNote);
+
 async function addNoteByRegisterId(req, res) {
   const data = req.body;
 
@@ -71,6 +75,34 @@ async function addNoteByRegisterId(req, res) {
   return res.status(200).json({
     success: true,
     data: note,
+  });
+}
+
+async function deleteNote(req, res) {
+  const noteId = req.query.noteId;
+
+  console.log(noteId);
+
+  if (checkService.isEmpty(noteId)) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      error: "nodeId không đúng định dạng!",
+    });
+  }
+
+  const result = await registationService.deleteNote(noteId);
+
+  if (result) {
+    return Response.sendResponse({
+      res,
+      statusCode: 200,
+    });
+  }
+
+  Response.sendErrorResponse({
+    res,
+    statusCode: 400,
   });
 }
 

@@ -8,7 +8,7 @@ const path = require("path");
 const http = require("http");
 
 // const port = process.env.PORT;
-const port = config.port;
+const port = config.port || process.env.PORT;
 
 const server = http.createServer(app);
 
@@ -101,6 +101,7 @@ app.use(
   "/classCurrent",
   require("./src/teacher_class_current/teacher_class_current.controller")
 );
+app.use("/menu", require("./src/menu/menu.controller"));
 
 server.listen(port, () => {
   console.log(`listen port ${port}`);

@@ -54,7 +54,6 @@
             <div class="inline-flex items-center">
               <label
                 class="relative flex items-center p-3 rounded-full cursor-pointer"
-                htmlFor="check"
               >
                 <input
                   type="checkbox"
@@ -109,12 +108,12 @@
           <td class="w-dvw px-3 relative">
             <button
               @click.prevent="$emit('link-parent-with-student', item)"
-              v-if="item.parents.length === 0"
+              v-if="!item.parents"
               class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
             >
               Thêm phụ huynh
             </button>
-            <p v-for="parent in item.parents" :key="parent">
+            <p v-for="parent in item.parents || []" :key="parent">
               <span class="font-bold">
                 {{ convertParentRole(parent.relationship) }}:
               </span>

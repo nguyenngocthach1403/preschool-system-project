@@ -32,66 +32,65 @@ module.exports = {
 async function getClass(limit, offset) {
   try {
     const result = await db.query(
-      `
-    SELECT
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'id', c.id,
-            'class_name', c.name,
-            'start_date', c.start_date,
-            'end_date', c.end_date,
-            'class_img', c.class_img,
-            'level', JSON_OBJECT(
-                'id', l.id,
-                'name', l.name,
-                'description', l.description
-            ),
-            'syllabus', JSON_OBJECT(
-                'id', s.id,
-                'name', s.name,
-                'description', s.description
-            ),
-            'members', c.members,
-            'member_limit', c.member_limit,
-            'type', c.type,
-            'session', c.session,
-            'status', c.status,
-            'created', c.created,
-            'deleted', c.deleted,
-            'created_by', c.created_by,
-            'managers', (
-                SELECT
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'teacher', JSON_OBJECT(
-                                'teacher_id', t.id,
-                                'teacher_name', t.name
-                            ),
-                            'role', JSON_OBJECT(
-                                'role_id', mr.id,
-                                'role_name', mr.name
-                            )
+      `SELECT
+      JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', c.id,
+              'class_name', c.name,
+              'start_date', c.start_date,
+              'end_date', c.end_date,
+              'class_img', c.class_img,
+              'level', JSON_OBJECT(
+                  'id', l.id,
+                  'name', l.name,
+                  'description', l.description
+              ),
+              'syllabus', JSON_OBJECT(
+                  'id', s.id,
+                  'name', s.name,
+                  'description', s.description
+              ),
+              'members', c.members,
+              'member_limit', c.member_limit,
+              'type', c.type,
+              'session', c.session,
+              'status', c.status,
+              'created', c.created,
+              'deleted', c.deleted,
+              'created_by', c.created_by,
+              'managers', (
+                  SELECT JSON_OBJECTAGG(
+					cmr.name,
+                    JSON_OBJECT(
+						'role_id', cmr.id,
+                        'role_name', cmr.name,
+                        'teachers', (
+							SELECT JSON_OBJECT(
+								'name', t.name,
+                                'id', t.id
+							)
+                            FROM teachers t
+                            LEFT JOIN  class_managers cm1
+                            ON cm1.teacher_id = t.id
+                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
                         )
                     )
-                FROM
-                    class_managers cm
-                LEFT JOIN
-                    teachers t ON t.id = cm.teacher_id
-                LEFT JOIN
-                    class_manager_roles mr ON mr.id = cm.role
-                WHERE
-                    cm.class_id = c.id
-            )
-        )
-    ) AS classes
-    FROM
-        classes c
-    LEFT JOIN
-        levels l ON c.level_id = l.id
-    LEFT JOIN
-        syllabus s ON c.syllabus_id = s.id
-    WHERE
-      c.deleted = 0
+                  )
+                  FROM class_manager_roles cmr
+                  LEFT JOIN class_managers cm
+                  ON cmr.id = cm.role
+                  WHERE cmr.deleted = 0
+              )
+          )
+      ) AS classes
+      FROM
+          classes c
+      LEFT JOIN
+          levels l ON c.level_id = l.id
+      LEFT JOIN
+          syllabus s ON c.syllabus_id = s.id
+      WHERE
+          c.deleted = 0
     LIMIT ?
     OFFSET ?;
     `,
@@ -405,27 +404,27 @@ async function searchClass(searchText, limit, offset) {
               'deleted', c.deleted,
               'created_by', c.created_by,
               'managers', (
-                  SELECT
-                      JSON_ARRAYAGG(
-                          JSON_OBJECT(
-                              'teacher', JSON_OBJECT(
-                                  'teacher_id', t.id,
-                                  'teacher_name', t.name
-                              ),
-                              'role', JSON_OBJECT(
-                                  'role_id', mr.id,
-                                  'role_name', mr.name
-                              )
-                          )
-                      )
-                  FROM
-                      class_managers cm
-                  LEFT JOIN
-                      teachers t ON t.id = cm.teacher_id
-                  LEFT JOIN
-                      class_manager_roles mr ON mr.id = cm.role
-                  WHERE
-                      cm.class_id = c.id
+                  SELECT JSON_OBJECTAGG(
+					cmr.name,
+                    JSON_OBJECT(
+						'role_id', cmr.id,
+                        'role_name', cmr.name,
+                        'teachers', (
+							SELECT JSON_OBJECT(
+								'name', t.name,
+                                'id', t.id
+							)
+                            FROM teachers t
+                            LEFT JOIN  class_managers cm1
+                            ON cm1.teacher_id = t.id
+                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
+                        )
+                    )
+                  )
+                  FROM class_manager_roles cmr
+                  LEFT JOIN class_managers cm
+                  ON cmr.id = cm.role
+                  WHERE cmr.deleted = 0
               )
           )
       ) AS classes
@@ -457,64 +456,64 @@ async function searchClassWithSession(searchText, session, limit, offset) {
   try {
     const result = await db.query(
       `SELECT
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id', c.id,
-                'class_name', c.name,
-                'start_date', c.start_date,
-                'end_date', c.end_date,
-                'class_img', c.class_img,
-                'level', JSON_OBJECT(
-                    'id', l.id,
-                    'name', l.name,
-                    'description', l.description
-                ),
-                'syllabus', JSON_OBJECT(
-                    'id', s.id,
-                    'name', s.name,
-                    'description', s.description
-                ),
-                'members', c.members,
-                'member_limit', c.member_limit,
-                'type', c.type,
-                'session', c.session,
-                'status', c.status,
-                'created', c.created,
-                'deleted', c.deleted,
-                'created_by', c.created_by,
-                'managers', (
-                    SELECT
-                        JSON_ARRAYAGG(
-                            JSON_OBJECT(
-                                'teacher', JSON_OBJECT(
-                                    'teacher_id', t.id,
-                                    'teacher_name', t.name
-                                ),
-                                'role', JSON_OBJECT(
-                                    'role_id', mr.id,
-                                    'role_name', mr.name
-                                )
-                            )
+      JSON_ARRAYAGG(
+          JSON_OBJECT(
+              'id', c.id,
+              'class_name', c.name,
+              'start_date', c.start_date,
+              'end_date', c.end_date,
+              'class_img', c.class_img,
+              'level', JSON_OBJECT(
+                  'id', l.id,
+                  'name', l.name,
+                  'description', l.description
+              ),
+              'syllabus', JSON_OBJECT(
+                  'id', s.id,
+                  'name', s.name,
+                  'description', s.description
+              ),
+              'members', c.members,
+              'member_limit', c.member_limit,
+              'type', c.type,
+              'session', c.session,
+              'status', c.status,
+              'created', c.created,
+              'deleted', c.deleted,
+              'created_by', c.created_by,
+              'managers', (
+                  SELECT JSON_OBJECTAGG(
+					cmr.name,
+                    JSON_OBJECT(
+						'role_id', cmr.id,
+                        'role_name', cmr.name,
+                        'teachers', (
+							SELECT JSON_OBJECT(
+								'name', t.name,
+                                'id', t.id
+							)
+                            FROM teachers t
+                            LEFT JOIN  class_managers cm1
+                            ON cm1.teacher_id = t.id
+                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
                         )
-                    FROM
-                        class_managers cm
-                    LEFT JOIN
-                        teachers t ON t.id = cm.teacher_id
-                    LEFT JOIN
-                        class_manager_roles mr ON mr.id = cm.role
-                    WHERE
-                        cm.class_id = c.id
-                )
-            )
-        ) AS classes
-        FROM
-            classes c
-        LEFT JOIN
-            levels l ON c.level_id = l.id
-        LEFT JOIN
-            syllabus s ON c.syllabus_id = s.id
-        WHERE
-            c.deleted = 0
+                    )
+                  )
+                  FROM class_manager_roles cmr
+                  LEFT JOIN class_managers cm
+                  ON cmr.id = cm.role
+                  WHERE cmr.deleted = 0
+              )
+          )
+      ) AS classes
+      FROM
+          classes c
+      LEFT JOIN
+          levels l ON c.level_id = l.id
+      LEFT JOIN
+          syllabus s ON c.syllabus_id = s.id
+      WHERE
+          c.deleted = 0
           AND c.session = ${session} 
           AND c.name like '%${searchText}%'
         LIMIT ${limit}
@@ -577,27 +576,27 @@ async function searchClassWithStatus(searchText, status, limit, offset) {
               'deleted', c.deleted,
               'created_by', c.created_by,
               'managers', (
-                  SELECT
-                      JSON_ARRAYAGG(
-                          JSON_OBJECT(
-                              'teacher', JSON_OBJECT(
-                                  'teacher_id', t.id,
-                                  'teacher_name', t.name
-                              ),
-                              'role', JSON_OBJECT(
-                                  'role_id', mr.id,
-                                  'role_name', mr.name
-                              )
-                          )
-                      )
-                  FROM
-                      class_managers cm
-                  LEFT JOIN
-                      teachers t ON t.id = cm.teacher_id
-                  LEFT JOIN
-                      class_manager_roles mr ON mr.id = cm.role
-                  WHERE
-                      cm.class_id = c.id
+                  SELECT JSON_OBJECTAGG(
+					cmr.name,
+                    JSON_OBJECT(
+						'role_id', cmr.id,
+                        'role_name', cmr.name,
+                        'teachers', (
+							SELECT JSON_OBJECT(
+								'name', t.name,
+                                'id', t.id
+							)
+                            FROM teachers t
+                            LEFT JOIN  class_managers cm1
+                            ON cm1.teacher_id = t.id
+                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
+                        )
+                    )
+                  )
+                  FROM class_manager_roles cmr
+                  LEFT JOIN class_managers cm
+                  ON cmr.id = cm.role
+                  WHERE cmr.deleted = 0
               )
           )
       ) AS classes
@@ -676,27 +675,27 @@ async function searchClassWithStatusAndSession(
               'deleted', c.deleted,
               'created_by', c.created_by,
               'managers', (
-                  SELECT
-                      JSON_ARRAYAGG(
-                          JSON_OBJECT(
-                              'teacher', JSON_OBJECT(
-                                  'teacher_id', t.id,
-                                  'teacher_name', t.name
-                              ),
-                              'role', JSON_OBJECT(
-                                  'role_id', mr.id,
-                                  'role_name', mr.name
-                              )
-                          )
-                      )
-                  FROM
-                      class_managers cm
-                  LEFT JOIN
-                      teachers t ON t.id = cm.teacher_id
-                  LEFT JOIN
-                      class_manager_roles mr ON mr.id = cm.role
-                  WHERE
-                      cm.class_id = c.id
+                  SELECT JSON_OBJECTAGG(
+					cmr.name,
+                    JSON_OBJECT(
+						'role_id', cmr.id,
+                        'role_name', cmr.name,
+                        'teachers', (
+							SELECT JSON_OBJECT(
+								'name', t.name,
+                                'id', t.id
+							)
+                            FROM teachers t
+                            LEFT JOIN  class_managers cm1
+                            ON cm1.teacher_id = t.id
+                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
+                        )
+                    )
+                  )
+                  FROM class_manager_roles cmr
+                  LEFT JOIN class_managers cm
+                  ON cmr.id = cm.role
+                  WHERE cmr.deleted = 0
               )
           )
       ) AS classes

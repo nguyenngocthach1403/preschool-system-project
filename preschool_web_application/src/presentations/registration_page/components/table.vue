@@ -41,7 +41,6 @@
             <div class="inline-flex items-center">
               <label
                 class="relative flex items-center p-3 rounded-full cursor-pointer"
-                htmlFor="check"
               >
                 <input
                   type="checkbox"

@@ -1,5 +1,11 @@
 <template>
   <div class="w-full h-full bg-white rounded-xl">
+    <PopupCreateMenu
+      @close="isShowCreateMenu = null"
+      class="absolute top-0 left-0"
+      v-if="isShowCreateMenu"
+      :data-to-create="isShowCreateMenu"
+    />
     <div class="py-4 px-7 text-start border-b flex justify-between">
       <span class="text-[20px] font-bold">Thực đơn hàng tuần</span>
     </div>
@@ -12,12 +18,24 @@
     </div>
     <!--Body-->
     <!--Table-->
-    <MenuTable />
+    <MenuTable @create-meal-of-day-menu="isShowCreateMenu = $event" />
   </div>
 </template>
 
 <script setup>
+//component
+import LoadingComp from "../../../components/loading_comp.vue";
 import MenuTable from "../components/menu_table.vue";
+import PopupCreateMenu from "../components/create_menu_popup.vue";
+import { onMounted, ref } from "vue";
+
+//  @valiable state
+const loading = ref(false);
+const isShowCreateMenu = ref(false);
+
+//valiable data
+const meals = ref([]);
+const menu = ref();
 </script>
 
 <style  scoped>

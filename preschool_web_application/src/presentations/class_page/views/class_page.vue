@@ -15,6 +15,12 @@
       :class-data="showEditClass"
       @add-toast="$emit('add-toast', $event)"
     />
+    <PopupMenu
+      class="w-screen h-screen bg-black absolute z-10 left-0 top-0"
+      v-if="menuPopUp"
+      @close="menuPopUp = false"
+      @class-id="menuPopUp"
+    />
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
       Lớp học
@@ -64,6 +70,7 @@
         <ClassCardComp
           v-for="item in classes"
           @edit-class="showEditClass = $event"
+          @open-weekly-menu="menuPopUp = item.id"
           :key="item"
           :class-data="item"
           class="hover:bg-gray-200"
@@ -86,6 +93,7 @@ import EmptyComp from "../../../components/empty_data.vue";
 import LoadingComp from "../../../components/loading_comp.vue";
 import ItemCheckBox from "../../registration_page/components/item_checkbox_filter.vue";
 import { useClassStore } from "../../../stores/class_store";
+import PopupMenu from "../components/menu_popup.vue";
 
 import { storeToRefs } from "pinia";
 const searchText = ref("");
@@ -93,6 +101,7 @@ const classStore = useClassStore();
 const showCreateClass = ref(false);
 const showEditClass = ref(null);
 const session = ref("");
+const menuPopUp = ref(null);
 
 const statusList = ref([
   { id: 0, name: "Đang diễn ra", checked: false, total: 0 },

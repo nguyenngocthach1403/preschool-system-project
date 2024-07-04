@@ -533,7 +533,8 @@ async function getClassHistory(teacherId) {
       code: error.code,
       message: error.sqlMessage,
     };
-
+  }
+}
 async function isExistTeacherByID(teacherId) {
   try {
     const result = await db.select(

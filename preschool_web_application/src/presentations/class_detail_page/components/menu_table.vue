@@ -1,6 +1,8 @@
 
 <template>
-  <div class="schedule rounded-xl overflow-hidden border border-gray-300">
+  <div
+    class="schedule w-full rounded-xl overflow-hidden border border-gray-300"
+  >
     <table>
       <thead>
         <tr>
@@ -17,20 +19,22 @@
       </thead>
       <tbody>
         <tr v-for="meal in meals" :key="meal.id">
-          <td class="bg-blue-800 text-white">
-            {{ meal.name }}<br />{{ meal.start_time }} - {{ meal.end_date }}
+          <td class="meal bg-gray-300">
+            {{ meal.meal }}<br />{{ meal.start_time.slice(0, 5) }} -
+            {{ meal.end_time.slice(0, 5) }}
           </td>
           <td v-for="day in calculatedDays" :key="day.date">
             <div
               v-if="
-                weeklyMenu.daily_menu[day.date] &&
-                weeklyMenu.daily_menu[day.date].meals
+                weeklyMenu.days[day.date] &&
+                weeklyMenu['days'][`${day.date}`]['meals'] != null &&
+                weeklyMenu['days'][`${day.date}`]['meals'][`${meal.meal}`]
               "
             >
               <div
-                v-for="dish in weeklyMenu.daily_menu[day.date].meals[
-                  `${meal.id}`
-                ].menu"
+                v-for="dish in weeklyMenu['days'][`${day.date}`]['meals'][
+                  `${meal.meal}`
+                ]['menu']"
                 :key="dish.dish_id"
               >
                 <div class="meal-info">
@@ -38,16 +42,15 @@
                 </div>
               </div>
             </div>
-            <div v-else>
-              <div class="meal-info">
-                <div>Chưa có</div>
-                <button
-                  @click="addDish(day.label, meal.id)"
-                  class="add-dish-button"
-                >
-                  Thêm món ăn
-                </button>
-              </div>
+            <div v-else class="meal-info">
+              <button
+                @click="
+                  chooseMealOfDayToCreateMenu(meal.id, day.index, meal.meal)
+                "
+                class="add-dish-button"
+              >
+                Thêm
+              </button>
             </div>
           </td>
         </tr>
@@ -58,177 +61,39 @@
   
 <script setup>
 import moment from "moment";
-import { computed, ref } from "vue";
-const weeklyMenu = ref({
-  id: 1,
-  daily_menu: {
-    "01/07/2024": {
-      meals: {
-        1: {
-          menu: [
-            {
-              dish_id: 1,
-              dish_name: "Phở",
-            },
-            {
-              dish_id: 2,
-              dish_name: "Cơm gà",
-            },
-            {
-              dish_id: 3,
-              dish_name: "Bánh ngọt",
-            },
-          ],
-          meal_name: "Sáng",
-          meal_end_time: "08:00",
-          meal_start_time: "07:00",
-        },
-        2: {
-          menu: [
-            {
-              dish_id: 1,
-              dish_name: "Phở",
-            },
-            {
-              dish_id: 2,
-              dish_name: "Cơm tấm",
-            },
-            {
-              dish_id: 3,
-              dish_name: "Bánh ngọt",
-            },
-          ],
-          meal_name: "Trưa",
-          meal_end_time: "13:00",
-          meal_start_time: "12:00",
-        },
-        3: {
-          menu: [
-            {
-              dish_id: 1,
-              dish_name: "Phở",
-            },
-            {
-              dish_id: 2,
-              dish_name: "Cơm gà",
-            },
-            {
-              dish_id: 3,
-              dish_name: "Bánh ngọt",
-            },
-          ],
-          meal_name: "Chiều",
-          meal_end_time: "16:00",
-          meal_start_time: "15:40",
-        },
-      },
-    },
-    "02/07/2024": {
-      meals: {
-        1: {
-          menu: [
-            {
-              dish_id: 4,
-              dish_name: "Bún chả",
-            },
-            {
-              dish_id: 5,
-              dish_name: "Cơm sườn",
-            },
-            {
-              dish_id: 6,
-              dish_name: "Chè đậu",
-            },
-          ],
-          meal_name: "Sáng",
-          meal_end_time: "08:00",
-          meal_start_time: "07:00",
-        },
-        2: {
-          menu: [
-            {
-              dish_id: 4,
-              dish_name: "Bún chả",
-            },
-            {
-              dish_id: 5,
-              dish_name: "Cơm sườn",
-            },
-            {
-              dish_id: 6,
-              dish_name: "Chè đậu",
-            },
-          ],
-          meal_name: "Trưa",
-          meal_end_time: "13:00",
-          meal_start_time: "12:00",
-        },
-        3: {
-          menu: [
-            {
-              dish_id: 4,
-              dish_name: "Bún chả",
-            },
-            {
-              dish_id: 5,
-              dish_name: "Cơm sườn",
-            },
-            {
-              dish_id: 6,
-              dish_name: "Chè đậu",
-            },
-          ],
-          meal_name: "Chiều",
-          meal_end_time: "16:00",
-          meal_start_time: "15:40",
-        },
-      },
-    },
-    "03/07/2024": {
-      meals: null,
-    },
-    "2024-07-04": {
-      meals: null,
-    },
-    "2024-07-05": {
-      meals: null,
-    },
-    "2024-07-06": {
-      meals: null,
-    },
-    "2024-07-07": {
-      meals: null,
-    },
+import { computed, onMounted, ref, watch } from "vue";
+//service
+import menuService from "../../../services/menu.service";
+const weeklyMenu = ref({});
+const meals = ref([]);
+const loading = ref(false);
+
+//props
+const props = defineProps({
+  meals: {
+    type: Array,
+    require: true,
   },
-  type: "Standard",
-  created: "2024-07-01 18:50:09.000000",
-  end_date: "2024-07-07",
-  created_by: 1,
-  start_date: "2024-07-01",
+  weeklyMenu: {
+    type: Object,
+    require: true,
+  },
 });
 
-const meals = ref([
-  {
-    id: 1,
-    name: "Sáng",
-    end_date: "08:00",
-    start_time: "07:00",
-  },
-  {
-    id: 2,
-    name: "Trưa",
-    end_date: "13:00",
-    start_time: "12:00",
-  },
-  {
-    id: 3,
-    name: "Chiều",
-    end_date: "16:00",
-    start_time: "15:40",
-  },
-]);
+//emits
+const emits = defineEmits(["create-meal-of-day-menu"]);
 
+//function
+function chooseMealOfDayToCreateMenu(mealId, dateOfWeek, mealName) {
+  emits("create-meal-of-day-menu", {
+    mealId: mealId,
+    dateOfWeek: dateOfWeek,
+    mealName: mealName,
+    weeklyMenuId: 1,
+  });
+}
 const calculatedDays = computed(() => {
+  if (!weeklyMenu.value) return;
   const start = moment(weeklyMenu.value.start_date);
   const end = moment(weeklyMenu.value.end_date);
   const days = [];
@@ -247,6 +112,7 @@ const calculatedDays = computed(() => {
   while (current <= end) {
     const isCurrent = current.isSame(moment(), "day");
     days.push({
+      index: current.format("YYYY-MM-DD"),
       date: current.format("DD/MM/YYYY"),
       label: dayNames[current.isoWeekday() % 7],
       isNow: isCurrent,
@@ -257,20 +123,45 @@ const calculatedDays = computed(() => {
   return days;
 });
 
-//props
-const props = defineProps({
-  meals: {
-    type: Array,
-    require: true,
-  },
-  weeklyMenu: {
-    type: Object,
-    require: true,
-  },
+//watch
+// watch(props, (newVal) => {
+//   console.log(newVal.meals);
+//   meals.value = props.meals;
+//   weeklyMenu.value = props.weeklyMenu;
+// });
+
+//function
+/**
+ *
+ * @param
+ */
+async function getMenuById() {
+  try {
+    loading.value = true;
+    const response = await menuService.getWeeklyMenubById(1);
+
+    const dataResponse = response.data;
+
+    meals.value = dataResponse.data.meals;
+
+    weeklyMenu.value = dataResponse.data.menu;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(async () => {
+  await getMenuById();
 });
 </script>
   
   <style>
+.meal {
+  padding: 0px 0px !important;
+  margin: 0px !important;
+}
 .schedule table {
   width: 100%;
   border-collapse: collapse;

@@ -1,48 +1,37 @@
 <template>
   <div class="relative">
     <button
+      :disabled="props.disabled"
       class="main w-full h-full bg-white overflow-hidden focus:ring-1 rounded-md border border-gray-400/75 hover:border hover:border-gray-500 p-[1px] flex items-center relative"
       @focusout="closeOptionList"
       @click.prevent
+      :class="{ disabled: props.disabled }"
     >
-      <div class="list flex text-[12px]">
-        <div
-          v-for="(item, index) in selectedList"
-          :key="index"
-          class="ml-1 border rounded-md pl-2 pr-1 py-2 h-full w-fit flex items-center justify-between gap-2 inline-block"
-          v-show="index < 2"
+      <div
+        v-if="selected"
+        @click="
+          props.disabled == false ? (showOption = true) : (showOption = false)
+        "
+        class="w-full px-3 text-start text-[13px] overflow-hidden text-nowrap"
+      >
+        <span>{{ selected.name }}</span>
+        <button
+          :disabled="props.disabled"
+          class="absolute w-4 h-4 top-1/4 right-2 opacity-40 hover:opacity-100"
+          @click="deleteItem()"
         >
-          <p class="text-gray-500 text-nowrap">{{ item.name }}</p>
-          <button
-            class="rounded-full hover:bg-gray-200 text-center content-center h-4 w-4"
-            @click="deleteItem(index)"
-          >
-            <img :src="close_icon" class="w-[10px] h-[10px] m-auto" alt="" />
-          </button>
-        </div>
-        <div
-          class="ml-1 border rounded-md px-2 py-2 h-full w-fit flex items-center justify-between gap-2 inline-block"
-          v-show="selectedList.length > 2"
-        >
-          <p class="text-gray-500 text-nowrap">
-            + {{ selectedList.length - 2 }}
-          </p>
-        </div>
+          <img :src="close_icon" alt="" />
+        </button>
       </div>
       <input
+        :disabled="props.disabled"
+        v-else
         @focus="showOption = true"
         @click="showOption = true"
         type="text"
         v-model="value"
-        class="w-full h-full px-3 pr-10 outline-none rounded-md text-[16px]"
+        class="w-full h-full px-3 outline-none rounded-md text-[15px]"
       />
-      <button
-        class="absolute w-5 h-5 top-[15px] right-2 opacity-0"
-        :class="{ 'hover-show': selectedList.length != 0 }"
-        @click="(selectedList = []), emits('selected', [])"
-      >
-        <img :src="close_icon" alt="" />
-      </button>
     </button>
     <transition
       leave-active-class="transition ease-in duration-100"
@@ -51,26 +40,32 @@
     >
       <ul
         v-show="showOption"
-        ref="ListElemnt"
+        ref="ListElement"
         @scroll="handleScroll($event)"
         class="absolute z-10 mt-1 max-h-56 w-full overflow-y-scroll rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
       >
         <li
           v-for="(item, index) in props.options"
           :key="index"
-          class="text-start px-5 py-2 cursor-default flex justify-between items-center"
+          class="text-start px-5 py-2 cursor-default flex justify-between items-center hover:bg-gray-200"
           @click="chooseItem(item)"
-          :class="{ selected: getSelectedItems(item) }"
+          :class="{ selected: selected == item }"
         >
-          <div>
-            <p>{{ item.name }}</p>
-            <p v-if="props.enableSub" class="text-[13px] text-gray-500">
-              HS{{ item.id }}
-            </p>
+          <div class="flex items-center gap-3">
+            <img
+              :src="item.avatar || ''"
+              class="w-6 h-6 rounded-full border object-cover"
+            />
+            <div>
+              <p>{{ item.name }}</p>
+              <p v-if="props.enableSub" class="text-[12px] text-gray-500">
+                MS{{ item.id }}
+              </p>
+            </div>
           </div>
           <!-- <img :src="complete_icon" class="w-5 h-5" alt="" /> -->
           <svg
-            v-if="getSelectedItems(item)"
+            v-if="selected == item"
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
             viewBox="0,0,256,256"
@@ -112,16 +107,16 @@
     </transition>
   </div>
 </template>
-
-<script setup>
+  
+  <script setup>
 import { ref, watch } from "vue";
 
 //icon
-import close_icon from "../assets/icons/close.svg";
-import complete_icon from "../assets/icons/complete.svg";
-import empty_icon from "../assets/icons/Empty Box.svg";
+import close_icon from "../../assets/icons/close.svg";
+import complete_icon from "../../assets/icons/complete.svg";
+import empty_icon from "../../assets/icons/Empty Box.svg";
 //component
-import LoadingComp from "../components/loading_comp.vue";
+import LoadingComp from "../../components/loading_comp.vue";
 
 //effect
 const showOption = ref(false);
@@ -129,11 +124,11 @@ const enableSub = ref(true);
 
 //model
 const input = ref("");
-const selectedList = ref([]);
+const selected = ref(null);
 const value = ref("");
 
 //element
-const ListElemnt = ref(null);
+const ListElement = ref(null);
 
 //props emits watch
 const props = defineProps({
@@ -149,7 +144,15 @@ const props = defineProps({
     type: Boolean,
     require: true,
   },
+  select: {
+    type: Object,
+    require: false,
+  },
   enableSub: {
+    type: Boolean,
+    require: false,
+  },
+  disabled: {
     type: Boolean,
     require: false,
   },
@@ -158,6 +161,9 @@ watch(props, () => {
   if (props.value != "") {
     value.value = props.value;
   }
+  if (props.select) {
+    selected.value = props.options.find((e) => e.id == props.select.id) || null;
+  }
 });
 
 watch(value, () => {
@@ -165,26 +171,20 @@ watch(value, () => {
 });
 const emits = defineEmits(["selected", "newValue", "scrollEnd"]);
 
-//function
-function deleteItem(index) {
-  selectedList.value.splice(index, 1);
-  emits("selected", selectedList.value);
+/**
+ * Xóa dữ liệu đã chọn trước đó
+ *
+ */
+function deleteItem() {
+  selected.value = null;
 }
-
-function getSelectedItems(item) {
-  const isSelected = selectedList.value.find((e) => e.id == item.id);
-  if (isSelected != undefined) return true;
-
-  return false;
-}
+/**
+ * Phương thức lưu dữ liệu khi người dùng chọn
+ * @param {Object} item
+ */
 function chooseItem(item) {
-  const itemSelected = selectedList.value.findIndex((e) => e.id == item.id);
-  if (itemSelected != -1) {
-    deleteItem(itemSelected);
-    return;
-  }
-  selectedList.value.push(item);
-  emits("selected", selectedList.value);
+  selected.value = item;
+  emits("selected", item);
 }
 
 function closeOptionList() {
@@ -192,21 +192,16 @@ function closeOptionList() {
     showOption.value = false;
   }, 100);
 }
-function keepShow() {
-  setTimeout(() => {
-    showOption.value = false;
-  }, 101);
-}
+
 function updateValue(newValue) {
   emits("newValue", newValue);
 }
 //handle
+/**
+ * Sự kiện scroll khi người dùng scroll option list và gửi đi sự kiện khi scroll đến cuối cùng
+ * @param event
+ */
 function handleScroll(event) {
-  console.log(
-    "scroll",
-    event.target.scrollTop + event.target.clientHeight >=
-      event.target.scrollHeight
-  );
   if (
     event.target.scrollTop + event.target.clientHeight >=
     event.target.scrollHeight
@@ -215,15 +210,16 @@ function handleScroll(event) {
   }
 }
 </script>
-
-<style  scoped>
-button:hover > .hover-show {
-  opacity: 1 !important;
-}
+  
+  <style  scoped>
 .delete {
   color: blue;
 }
 .selected {
   background-color: rgb(234, 234, 255);
+}
+.disabled {
+  background-color: #cfcfcf83;
+  color: #898989;
 }
 </style>

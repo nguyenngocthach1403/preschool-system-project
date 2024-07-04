@@ -35,8 +35,7 @@ import ClassTeacherDetailView from "../presentations/teacher_login/views/info_cl
 import ClassCurentDetailView from "../presentations/teacher_login/view_info_class_detail/class_current_view.vue";
 import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_history_view.vue";
 import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
-import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
-import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs_view.vue";
+// import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 const router = Router();
 export default router;
 function Router() {

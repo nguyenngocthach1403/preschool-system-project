@@ -53,10 +53,23 @@ const empty = (input) => {
 // const comparePassword = (hashedPassword, password) =>
 //   bcrypt.compareSync(password, hashedPassword);
 
+/**
+ * is number method
+ * @param {string, number} number
+ * @returns {Boolean} True or False
+ */
+const isNumber = (number) => {
+  if (typeof number !== "number" && Number.isNaN(parseInt(number))) {
+    return false;
+  }
+  return true;
+};
+
 module.exports = {
   isValidEmail,
   validatePassword,
   isEmpty,
   empty,
+  isNumber,
   //   comparePassword,
 };

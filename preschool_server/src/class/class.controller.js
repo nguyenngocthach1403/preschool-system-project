@@ -59,18 +59,6 @@ async function updateClassManagerByClassId(req, res) {
     });
   }
 
-  //Kiểm vị trí trong lớp đó đã tồn tại hay chưa
-  const isExistRole = await classService.isExistManagementPosition(
-    classId,
-    role
-  );
-  if (isExistRole) {
-    return res.status(200).json({
-      success: false,
-      error: "Vị trí đã tồn tại!",
-    });
-  }
-
   //! Kiểm tra teacher có tồn tại không
   const isExistTeacher = await teacherService.isExistTeacherByID(teacherId);
   if (!isExistTeacher) {
@@ -80,24 +68,46 @@ async function updateClassManagerByClassId(req, res) {
     });
   }
 
-  const resultCreateMangerClass =
-    await classService.createClassManagerByClassId({
-      class_id: classId,
-      teacher_id: teacherId,
-      role: role,
-    });
+  //Kiểm vị trí trong lớp đó đã tồn tại hay chưa
+  const isExistRole = await classService.isExistManagementPosition(
+    classId,
+    role
+  );
+  if (isExistRole) {
+    const resultUpdateMangerClass =
+      await classService.updateClassManagerClassId(classId, role, teacherId);
 
-  if (!resultCreateMangerClass.success) {
-    return res.status(400).json({
-      success: false,
-      error: resultCreateMangerClass.error,
+    if (!resultUpdateMangerClass.success) {
+      return res.status(400).json({
+        success: false,
+        error: resultUpdateMangerClass.error,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      error: resultUpdateMangerClass.message,
+    });
+  } else {
+    const resultCreateMangerClass =
+      await classService.createClassManagerByClassId({
+        class_id: classId,
+        teacher_id: teacherId,
+        role: role,
+      });
+
+    if (!resultCreateMangerClass.success) {
+      return res.status(400).json({
+        success: false,
+        error: resultCreateMangerClass.error,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      error: resultCreateMangerClass.message,
     });
   }
-
-  res.status(200).json({
-    success: true,
-    error: resultCreateMangerClass.message,
-  });
 }
 
 async function updateClass(req, res) {

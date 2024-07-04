@@ -29,7 +29,10 @@
         v-if="getCurrentActive(3)"
         @add-toast="$emit('add-toast', $event)"
       />
-      <ClassMenuView v-if="getCurrentActive(4)" />
+      <ClassMenuView
+        :class-id="parseInt($router.currentRoute.value.query.classID)"
+        v-if="getCurrentActive(4)"
+      />
     </div>
   </div>
 </template>
