@@ -5,6 +5,7 @@
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
       :content="`Bạn có chắc chắn cập nhật thông tin tài khoản không?`"
+      :value="showConfirmDialog"
       @confirm="getConfirm($event)"
     />
     <div class="m-auto w-[1300px] rounded-xl bg-white overflow-hidden relative">

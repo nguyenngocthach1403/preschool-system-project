@@ -2,6 +2,13 @@
   <div
     class="bg-white ml-4 mt-[20px] rounded-xl mr-2 text-center h-full pb-[60px]"
   >
+    <ConfirmDialog
+      v-if="showConfirmDialog"
+      class="absolute top-0 left-0"
+      :content="`Bạn có muốn xóa tiêu đề ${showConfirmDialog.title} không?`"
+      :value="showConfirmDialog"
+      @confirm="getConfirm($event)"
+    />
     <div class="m-auto w-[1300px] rounded-xl bg-white overflow-hidden relative">
       <div class="mx-10 my-5 flex border-b relative">
         <button
@@ -23,6 +30,7 @@
       <NewsView
         v-if="getTabActive(1)"
         @add-toast="$emit('add-toast', $event)"
+        @delete-news="showConfirmDialog = $event"
       />
     </div>
   </div>
@@ -33,6 +41,9 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import NewsView from "../../news/view.vue";
 const router = useRouter();
+import { useNewsStore } from "../../../stores/news_store";
+import ConfirmDialog from "../../../components/confirm_dialog.vue";
+const newsStore = useNewsStore();
 const emits = defineEmits(["add-toast"]);
 //element
 const TabLineElement = ref(null);
@@ -75,6 +86,36 @@ function selectTab(event, index) {
 }
 function getTabActive(index) {
   return tabList.value[index].active;
+}
+const showConfirmDialog = ref("");
+
+const getConfirm = (event) => {
+  if (!event) {
+    showConfirmDialog.value = null;
+    return;
+  }
+  console.log(event);
+  deleteNews(event);
+  showConfirmDialog.value = null;
+};
+async function deleteNews(id) {
+  const resultOfDel = await newsStore.deleteNews(id.id);
+
+  if (resultOfDel) {
+    emits("add-toast", {
+      title: "Xoá thành công!",
+      content: "Xoá tiêu đề " + id.title,
+      type: 0,
+    });
+  } else {
+    emits("add-toast", {
+      title: "Xoá thất bại!",
+      content: `Lỗi xoá tiêu đề ${id.title}`,
+      type: 1,
+    });
+  }
+  newsStore.getNews();
+  newsStore.getTotalNews();
 }
 </script>
 

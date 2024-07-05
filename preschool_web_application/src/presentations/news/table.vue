@@ -49,16 +49,16 @@
               <td class="w-[200px]">
                 <div class="flex">
                   <div
-                    class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
-                    @click="deleteNews(news)"
-                  >
-                    <img :src="delete_icon" class="w-[14px] m-auto" />
-                  </div>
-                  <div
                     class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(53,61,186)] content-center"
                     @click="editNews(news.id)"
                   >
                     <img :src="edit_icon" class="w-[14px] m-auto" />
+                  </div>
+                  <div
+                    class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
+                    @click="deleteNews(news)"
+                  >
+                    <img :src="delete_icon" class="w-[14px] m-auto" />
                   </div>
                 </div>
               </td>

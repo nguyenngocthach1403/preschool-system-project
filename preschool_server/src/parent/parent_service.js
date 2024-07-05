@@ -330,13 +330,14 @@ async function deleteParent(idParentToDel) {
     };
   }
 }
+
 async function getStudentByParentId(id) {
   try {
     const data = await db.select(
-      `${config.tb.relationship} r 
+      `${config.tb.relationship} r
       LEFT JOIN ${config.tb.student} s ON r.student_id = s.id LEFT JOIN ${config.tb.class} c ON s.class_id = c.id`,
       "s.* , s.id AS StudentId,s.name AS StudentName ,c.* , c.name AS ClassName, r.relationship",
-      `WHERE r.parent_id = ${id}`
+      `WHERE s.deleted = 0  AND r.parent_id = ${id} `
     );
     return data;
   } catch (error) {
