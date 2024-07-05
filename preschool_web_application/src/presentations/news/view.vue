@@ -122,10 +122,12 @@ async function deleteNews(id) {
   } else {
     emits("add-toast", {
       title: "Xoá thất bại!",
-      content: `Lỗi xoá tiêu đề ${id.name}`,
+      content: `Lỗi xoá tiêu đề ${id.title}`,
       type: 1,
     });
   }
+  newsStore.getNews();
+  newsStore.getTotalNews();
 }
 </script>
 

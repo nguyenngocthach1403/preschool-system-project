@@ -186,12 +186,12 @@ async function updateNews(req, res) {
     var url = config.baseUrl + "/image/news/" + req.files[0].filename + ".jpg";
     data.img = url;
   }
-  if (await newsService.isExistNewsByTitle(data.title)) {
-    return res.status(200).json({
-      success: false,
-      message: `Tên tiêu đề đã tồn tại`,
-    });
-  }
+  // if (await newsService.isExistNewsByTitle(data.title)) {
+  //   return res.status(200).json({
+  //     success: false,
+  //     message: `Tên tiêu đề đã tồn tại`,
+  //   });
+  // }
 
   //Cập nhật
   const result = await newsService.updateNews(NewsId, {
