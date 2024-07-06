@@ -281,7 +281,7 @@ async function createStudent(req, res) {
     fs.renameSync(filePath, file_path_with_extension);
 
     const url =
-      config.baseUrl + "/image/students" + req.files[0].filename + ".jpg";
+      config.baseUrl + "/image/students/" + req.files[0].filename + ".jpg";
 
     data.avatar = url;
   }

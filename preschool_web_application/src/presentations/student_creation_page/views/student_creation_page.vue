@@ -18,6 +18,7 @@
               @change="handleUploadStudentImg"
             />
             <button
+              @click.prevent
               class="w-[150px] border h-[35px] rounded-md hover:bg-red-100"
             >
               Xóa ảnh
@@ -42,46 +43,6 @@
               </div>
             </label>
             <label class="w-full text-start">
-              <span class="pl-2 text-gray-500">Lớp</span>
-              <ListBox
-                @click.prevent
-                @choose-item="classInput = $event.id"
-                class="h-[50px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500"
-                :option-list="classList"
-                :value-active="classInput"
-              />
-            </label>
-          </div>
-          <div id="input-side-2" class="flex w-full gap-5 mx-[20px] mb-[20px]">
-            <div class="w-full flex gap-5">
-              <label class="w-full text-start">
-                <span class="pl-2 text-gray-500">Ngày sinh</span>
-                <VueDatePicker
-                  v-model="studentBirthDayInput"
-                  :enable-time-picker="false"
-                />
-                <div class="h-5 valid">
-                  <p class="mb-4 text-red-300">
-                    {{ invalidBirday }}
-                  </p>
-                </div>
-              </label>
-              <label class="w-[200px] text-start">
-                <span class="pl-2 text-gray-500">Nơi sinh</span>
-                <input
-                  v-model="studentPlaceOfBirthInput"
-                  type="text"
-                  placeholder="TP HCM"
-                  class="input-text-default"
-                />
-                <!-- <div class="h-[20px] valid">
-              <p v-if="messageOfStudentName" class="mb-4 text-red-300">
-                {{ messageOfStudentName }}
-              </p>
-            </div> -->
-              </label>
-            </div>
-            <label class="w-full text-start">
               <span class="pl-2 text-gray-500">Giới tính</span>
               <select v-model="studentGenderInput" class="input-text-default">
                 <option value="0">Nam</option>
@@ -92,31 +53,55 @@
               </div>
             </label>
           </div>
-          <div id="input-side-3" class="flex w-full gap-5 mx-[20px] mb-[20px]">
-            <div class="w-full flex gap-5">
-              <label class="w-full text-start">
-                <span class="pl-2 text-gray-500">Dân tộc</span>
-                <select v-model="studentForkInput" class="input-text-default">
-                  <option
-                    v-for="item in forkList"
-                    :key="item"
-                    :value="item.name"
-                  >
-                    {{ item.name }}
-                  </option>
-                </select>
-              </label>
-              <label class="w-full text-start">
-                <span class="pl-2 text-gray-500">Quốc tịch</span>
-                <input
-                  v-model="nationInput"
-                  type="text"
-                  placeholder="Viet Nam"
-                  class="input-text-default"
-                />
-              </label>
-            </div>
+          <div id="input-side-2" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <label class="w-full text-start">
+              <span class="pl-2 text-gray-500">Ngày sinh</span>
+              <VueDatePicker
+                v-model="studentBirthDayInput"
+                :enable-time-picker="false"
+              />
+              <div class="h-5 valid">
+                <p class="mb-4 text-red-300">
+                  {{ invalidBirday }}
+                </p>
+              </div>
+            </label>
+            <label class="w-full text-start">
+              <span class="pl-2 text-gray-500">Nơi sinh</span>
+              <input
+                v-model="studentPlaceOfBirthInput"
+                type="text"
+                placeholder="TP HCM"
+                class="input-text-default"
+              />
+              <!-- <div class="h-[20px] valid">
+              <p v-if="messageOfStudentName" class="mb-4 text-red-300">
+                {{ messageOfStudentName }}
+              </p>
+            </div> -->
+            </label>
+          </div>
+          <div id="input-side-3" class="flex w-full gap-5 mx-[20px] mb-[30px]">
+            <!-- <div class="w-full flex gap-5"> -->
+            <label class="w-full text-start">
+              <span class="pl-2 text-gray-500">Dân tộc</span>
+              <select v-model="studentForkInput" class="input-text-default">
+                <option v-for="item in forkList" :key="item" :value="item.name">
+                  {{ item.name }}
+                </option>
+              </select>
+            </label>
+            <label class="w-full text-start">
+              <span class="pl-2 text-gray-500">Quốc tịch</span>
+              <input
+                v-model="nationInput"
+                type="text"
+                placeholder="Viet Nam"
+                class="input-text-default"
+              />
+            </label>
+            <!-- </div> -->
+            <!-- <label class="w-full text-start">
               <span class="pl-2 text-gray-500">Phụ huynh</span>
               <input
                 v-model="parentIdInput"
@@ -124,7 +109,7 @@
                 placeholder="Mã phụ huynh"
                 class="input-text-default"
               />
-            </label>
+            </label> -->
           </div>
           <div id="input-side-4" class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <label class="w-full text-start">
@@ -150,21 +135,21 @@
         </div>
       </div>
       <div id="button-side" class="w-full flex text-start mx-[50px] gap-5">
-        <button
+        <!-- <button
           @click.prevent="saveDrafValueInput"
           class="h-[48px] border border-[#3B44D1] hover:bg-[#3B44D1] hover:text-white px-[25px] rounded-md text-[20px]"
         >
           Save to Draf
-        </button>
+        </button> -->
         <button
-          v-if="status !== 'creating'"
+          v-if="!loading"
           type="submit"
           class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
         >
-          Save
+          Tạo học sinh
         </button>
         <button
-          v-if="status === 'creating'"
+          v-if="loading"
           type="button"
           class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
           disabled
@@ -205,9 +190,10 @@ import { storeToRefs } from "pinia";
 import SaveButton from "../../../components/save_button.vue";
 
 import ListBox from "../../../components/select_comp.vue";
-import axios from "axios";
 import classSercive from "../../../services/class.service";
 import { yyyymmddDateString } from "../../../utils/resources/format_date";
+//service
+import studentService from "../../../services/student.service";
 
 onBeforeMount(() => {
   getDrafValue();
@@ -215,8 +201,9 @@ onBeforeMount(() => {
 });
 onMounted(async () => {
   studentAvatarPath.value = avatar_default;
-  fetchClass();
+  // fetchClass();
 });
+const loading = ref(false);
 
 const studentStore = useStudentStore();
 
@@ -238,11 +225,6 @@ const placeOfOriginInput = ref("");
 const messageOfStudentName = ref("");
 const invalidBirday = ref("");
 const invalidGender = ref("");
-
-const genderList = ref([
-  { id: 0, name: "Nam" },
-  { id: 1, name: "Nữ" },
-]);
 const forkList = ref([
   { name: "Select item", id: 0 },
   { name: "Kinh", id: 1 },
@@ -351,44 +333,51 @@ async function submitCreateStudent() {
     return;
   }
 
-  const formData = new FormData();
-  formData.append("files", fileUpload.value);
-  formData.append("name", studentNameInput.value);
-  formData.append("gender", studentGenderInput.value);
-  formData.append("placeOfOrigin", placeOfOriginInput.value);
-  formData.append("nation", nationInput.value);
-  formData.append(
-    "birthday",
-    yyyymmddDateString(
-      new Date(studentBirthDayInput.value).toLocaleDateString()
-    )
-  );
-  formData.append("placeOfBirth", studentPlaceOfBirthInput.value);
-  formData.append("fork", studentForkInput.value);
-  formData.append("status", 0);
-  if (parentIdInput.value !== "") {
-    formData.append("parentId", parentIdInput.value);
-  }
-  if (classInput.value !== 0) {
-    formData.append("classId", classInput.value);
-  }
+  try {
+    loading.value = true;
+    const formData = new FormData();
+    formData.append("files", fileUpload.value);
+    formData.append("name", studentNameInput.value);
+    formData.append("gender", studentGenderInput.value);
+    formData.append("placeOfOrigin", placeOfOriginInput.value);
+    formData.append("nation", nationInput.value);
+    formData.append(
+      "birthday",
+      yyyymmddDateString(
+        new Date(studentBirthDayInput.value).toLocaleDateString()
+      )
+    );
+    formData.append("placeOfBirth", studentPlaceOfBirthInput.value);
+    formData.append("fork", studentForkInput.value);
+    formData.append("status", 1);
 
-  const result = await studentStore.createStudent(formData);
+    const response = await studentService.createStudent(formData);
 
-  if (!result.success) {
+    console.log(response);
+
+    if (!response.data.success) {
+      emits("add-toast", {
+        title: "Thất bại!",
+        content: response.message,
+        type: 1,
+      });
+      return;
+    }
     emits("add-toast", {
-      title: "Create Student Failed!",
-      content: result.message,
+      title: "Thành công",
+      content: `Tạo bé ${studentNameInput.value} thành công.`,
+      type: 0,
+    });
+    resetInput();
+  } catch (error) {
+    emits("add-toast", {
+      title: "Thất bại",
+      content: error,
       type: 1,
     });
-    return;
+  } finally {
+    loading.value = false;
   }
-  emits("add-toast", {
-    title: "Create Successful!",
-    content: `Tạo bé ${studentNameInput.value} thành công.`,
-    type: 0,
-  });
-  resetInput();
 }
 
 function saveDrafValueInput() {

@@ -11,8 +11,7 @@
     <nav class="hidden sm:block">
       <ul class="flex items-center justify-center gap-4 mr-20">
         <li>
-          <!-- <router-link to="/">Trang chủ</router-link> -->
-          <a href="#">Trang chủ</a>
+          <router-link :to="{ name: 'Home' }">Trang chủ</router-link>
         </li>
         <li>
           <router-link :to="{ name: 'IntroduceView' }">
@@ -24,6 +23,12 @@
         </li>
 
         <li>
+          <router-link class="h-full" :to="{ name: 'RegistrationFormView' }"
+            >Tuyển sinh</router-link
+          >
+        </li>
+        <li>
+          <router-link :to="{ name: 'HomePageView' }">Tin tức</router-link>
           <router-link :to="{ name: 'RegistrationFormView' }">
             Tuyển sinh
           </router-link>
@@ -58,5 +63,13 @@
   .header .nav-toggle {
     display: block;
   }
+}
+
+ul > li {
+  padding: 10px 10px;
+}
+ul > li:hover {
+  color: white;
+  background-color: #3b44d1;
 }
 </style>

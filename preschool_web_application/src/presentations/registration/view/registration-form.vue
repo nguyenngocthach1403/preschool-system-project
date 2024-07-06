@@ -1,5 +1,6 @@
 <template>
-  <div class="bg-white w-full overflow-x-hidden xl:h-full relative">
+  <div class="bg-white w-full pt-[100px] overflow-x-hidden xl:h-full relative">
+    <HeaderComp class="fixed top-0 left-0 w-full z-50 bg-white shadow-md" />
     <Popup v-if="registerSuccess" @close="$router.push({ name: 'LoginView' })">
       <template #content>
         <div class="flex justify-center gap-5">
@@ -387,6 +388,7 @@
   </div>
 </template>
 <script setup>
+import HeaderComp from "../../home_page_user/component/header_view.vue";
 import Toast from "../../../components/toast_list.vue";
 import { onBeforeMount, onMounted, ref, watch } from "vue";
 import RegistrationService from "../../../services/registration.service";
@@ -671,7 +673,7 @@ async function submitCreateRegister() {
       return;
     }
     toasts.value.push({ title: "Thành công!", type: 0 });
-    registerSuccess.value = true;
+    router.push({ name: "Home" });
   } catch (error) {
     toasts.value.push({ title: "Thất bại!", type: 1 });
   } finally {

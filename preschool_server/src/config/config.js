@@ -22,6 +22,8 @@ const config = {
     specialization: "specializations",
     teacher_certificates: "teacher_certificates",
     certificates: "certificates",
+    meals: "meals",
+    dishes: "dishes",
     news: "news",
   },
 };

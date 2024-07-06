@@ -1,5 +1,5 @@
 <template>
-  <div class="h-dvh ml-4 mr-2 text-center overflow-hidden flex gap-5">
+  <div class="h-fit w-full ml-4 mr-2 text-center flex gap-5">
     <!--Menu-->
     <div class="w-[350px] bg-white rounded-xl relative">
       <button
@@ -17,7 +17,7 @@
         class="bg-[#3b44d1] w-1 h-10 top-0 absolute right-0 rounded-md ease-in-out duration-300"
       ></div>
     </div>
-    <div class="w-dvw bg-white rounded-xl">
+    <div class="w-full h-full bg-white rounded-xl">
       <!--Body-->
       <StudentListView
         v-if="getCurrentActive(1)"
@@ -29,6 +29,11 @@
         v-if="getCurrentActive(3)"
         @add-toast="$emit('add-toast', $event)"
       />
+      <ClassMenuView
+        :class-id="parseInt($router.currentRoute.value.query.classID)"
+        v-if="getCurrentActive(4)"
+        @add-toast="$emit('add-toast', $event)"
+      />
     </div>
   </div>
 </template>
@@ -37,6 +42,7 @@
 import { onMounted, ref } from "vue";
 import StudentListView from "../views/student_list_view.vue";
 import ClassTeacherView from "../views/class_teachers_view.vue";
+import ClassMenuView from "../views/class_menu_detail_view.vue";
 import { useRouter } from "vue-router";
 
 //router
@@ -65,6 +71,11 @@ const menuList = ref([
   {
     id: 3,
     title: "Giáo viên quản lý",
+    active: false,
+  },
+  {
+    id: 4,
+    title: "Thực đơn",
     active: false,
   },
 ]);

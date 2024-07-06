@@ -14,6 +14,7 @@ export default {
   getRegisterByID,
   updateRegister,
   addNote,
+  deleteNode,
 };
 
 function createRegister(data) {
@@ -95,4 +96,12 @@ function updateRegister(id, data) {
 
 function addNote(data) {
   return api().post(`/registrations/note/add`, data);
+}
+
+/**
+ * Api yều cầu xóa ghi chú
+ * @param {interger} nodeId
+ */
+function deleteNode(nodeId) {
+  return api().get(`/registrations/note/delete?noteId=${nodeId}`);
 }

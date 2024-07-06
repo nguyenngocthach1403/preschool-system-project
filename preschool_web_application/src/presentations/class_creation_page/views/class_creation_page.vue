@@ -551,8 +551,8 @@ function fillValueInput(data) {
   dateFinishInput.value = new Date(data.end);
   limitedStudent.value = data.limitedMember;
   sessionInput.value = data.session;
-  classLevelInput.value = data.levelId;
-  classSyllabusInput.value = data.syllabusId;
+  classLevelInput.value = data.level ? data.level.id : null;
+  classSyllabusInput.value = data.syllabus ? data.syllabus.id : null;
   classTypeInput.value = data.type;
 }
 

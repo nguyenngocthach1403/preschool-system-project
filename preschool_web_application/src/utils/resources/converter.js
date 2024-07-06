@@ -37,6 +37,31 @@ function convertParentRole(role) {
       return "None";
   }
 }
+/**
+ * Phương thức chuyển loại món ăn thành chuỗi
+ * @param {interger} category
+ * @returns {String} String
+ */
+function convertFoodCategory(category) {
+  switch (category) {
+    case 1:
+      return "Món nước";
+    case 2:
+      return "Nước";
+    case 3:
+      return "Món chiên";
+    case 4:
+      return "Cơm";
+    case 5:
+      return "Trái cây";
+    case 6:
+      return "Món luộc";
+    case 7:
+      return "Món mặn";
+    default:
+      return "None";
+  }
+}
 
 function convertAccountRole(role) {
   switch (role) {
@@ -73,4 +98,5 @@ export {
   convertAccountRole,
   convertStudentStatus,
   convertGender,
+  convertFoodCategory,
 };

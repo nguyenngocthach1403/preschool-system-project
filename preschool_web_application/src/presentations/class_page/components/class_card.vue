@@ -89,13 +89,17 @@
           :key="manager"
           class="teacher flex text-[13px] gap-2 items-center text-gray-500 content-center"
         >
-          <span>{{ manager.role.role_name }}:</span>
-          <div class="h-full flex items-center gap-2 object-cover">
+          <span>{{ manager.role_name }}:</span>
+          <div
+            v-if="manager.teachers"
+            class="h-full flex items-center gap-2 object-cover"
+          >
             <img
-              :src="manager.teacher_avatar || avatar_teacher"
+              :src="manager.teachers.teacher_avatar || avatar_teacher"
               class="w-6 h-6 rounded-full overflow-hidden border border-white"
-            />{{ manager.teacher.teacher_name || "Chưa có" }}
+            />{{ manager.teachers.name || "Chưa có" }}
           </div>
+          <div v-else>Chưa có</div>
         </div>
       </div>
       <div
@@ -122,6 +126,13 @@
             }}</span
           >
         </div>
+        <button @click="$emit('open-weekly-menu')">
+          <div
+            class="w-full h-10 px-3 border text-white bg-blue-500 content-center hover:bg-blue-300 rounded-md border-black"
+          >
+            Thực đơn
+          </div>
+        </button>
         <button>
           <div
             class="w-full h-10 px-3 border text-white bg-blue-500 content-center hover:bg-blue-300 rounded-md border-black"

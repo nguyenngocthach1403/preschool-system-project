@@ -7,6 +7,16 @@ const isValidEmail = (email) => {
   const regEx = /\S+@\S+\.\S+/;
   return regEx.test(email);
 };
+/**
+ * Phương thức kiểm tra gia trị thời gian
+ * @param {String} timeStr
+ * @returns {Boolean} True đúng định or False là sai định dạng
+ */
+const isValidTime = (timeStr) => {
+  const pattern = /^([01]?\d|2[0-3]):[0-5]\d$/;
+
+  return pattern.test(timeStr);
+};
 
 /**
  * validatePassword helper method
@@ -28,10 +38,7 @@ const isEmpty = (input) => {
   if (input === undefined || input === "") {
     return true;
   }
-  if (input.replace(/\s/g, "").length) {
-    return false;
-  }
-  return true;
+  return false;
 };
 
 /**
@@ -53,10 +60,35 @@ const empty = (input) => {
 // const comparePassword = (hashedPassword, password) =>
 //   bcrypt.compareSync(password, hashedPassword);
 
+/**
+ * is number method
+ * @param {string} number
+ * @returns {Boolean} True or False
+ */
+const isNumber = (number) => {
+  if (typeof number !== "number" && Number.isNaN(parseInt(number))) {
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Phương thức kiểm tra kiểu dữ liệu ngày YYYY-MM-DD
+ * @param {string} dateStr
+ * @returns True là hợp lệ or False là không hợp lệ
+ */
+const isValidDate = (dateStr) => {
+  const pattern = /^\d{4}-\d{2}-\d{2}$/;
+  return pattern.test(dateStr);
+};
+
 module.exports = {
   isValidEmail,
   validatePassword,
   isEmpty,
   empty,
+  isNumber,
+  isValidTime,
+  isValidDate,
   //   comparePassword,
 };

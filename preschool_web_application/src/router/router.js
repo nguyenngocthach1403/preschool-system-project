@@ -39,7 +39,16 @@ import ExpertiseAndProgramView from "../presentations/program_configuration_page
 import MenuFoodStudent from "../presentations/parent_page/view_detail_i4/menu_food_weekly.vue";
 // import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 // import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
+import HomePageView from "../presentations/home_page_user/views/news_view.vue";
+import Home from "../presentations/home_page_user/views/home_page.vue";
+
+//============Menu=================//
+import MenuManagementView from "../presentations/menu_page/views/menu_page.vue";
+import DishesView from "../presentations/menu_page/views/dishes_view.vue";
+import MealView from "../presentations/menu_page/views/meals_view.vue";
+import ClassMenuManagement from "../presentations/menu_page/views/menu_manager_view.vue";
 import NewsView from "../presentations/home_page_user/views/news_view.vue";
+
 import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
 
 import CreateNewsView from "../presentations/news/create_news_view.vue";
@@ -55,6 +64,14 @@ function Router() {
         name: "LoginView",
         path: "/sign",
         component: LoginView,
+        meta: {
+          requireAuth: false,
+        },
+      },
+      {
+        name: "Home",
+        path: "/",
+        component: Home,
         meta: {
           requireAuth: false,
         },
@@ -77,7 +94,7 @@ function Router() {
       },
       {
         name: "RegistrationFormView",
-        path: "/register",
+        path: "/ghi-danh",
         component: RegistrationForm,
         meta: {
           requireAuth: false,
@@ -146,7 +163,7 @@ function Router() {
         ],
       },
       {
-        path: "/home-page/:username",
+        path: "/home/:username",
         name: "homepage",
         component: HomePage,
         meta: {
@@ -155,27 +172,27 @@ function Router() {
         children: [
           {
             name: "StudentView",
-            path: "/home-page/:username/students",
+            path: "/home/:username/students",
             component: StudentView,
           },
           {
             name: "AssignmentView",
-            path: "/home-page/:username/asignment",
+            path: "/home/:username/asignment",
             component: AssignmentView,
           },
           {
             name: "StudentDetailView",
-            path: "/home-page/:username/students/detail",
+            path: "/home/:username/students/detail",
             component: StudentDetailView,
           },
           {
             name: "ParentStudentCreationView",
-            path: "/home-page/:username/registration/create_parent_student",
+            path: "/home/:username/registration/create_parent_student",
             component: ParentStudentCreationView,
           },
           {
             name: "ClassDetailView",
-            path: "/home-page/:username/classes/detail",
+            path: "/home/:username/classes/detail",
             component: ClassDetailView,
             beforeEnter(to, from) {
               if (!to.query.classID) {
@@ -185,84 +202,106 @@ function Router() {
           },
           {
             name: "ProgramConfigurationView",
-            path: "/home-page/:username/program-configuration",
+            path: "/home/:username/program-configuration",
             component: ProgramConfigurationView,
             children: [
               {
                 name: "AdmissionPeriodView",
-                path: "/home-page/:username/program-configuration/addmission-period",
+                path: "/home/:username/program-configuration/addmission-period",
                 component: AdmissionPeriodView,
               },
               {
                 name: "ExpertiseAndProgramView",
-                path: "/home-page/:username/program-configuration/expertise-and-programs",
+                path: "/home/:username/program-configuration/expertise-and-programs",
                 component: ExpertiseAndProgramView,
               },
             ],
           },
           {
+            name: "MenuManagementView",
+            path: "/home/:username/menu_management",
+            component: MenuManagementView,
+            children: [
+              {
+                name: "DishesView",
+                path: "/home/:username/menu_management/dishes",
+                component: DishesView,
+              },
+              {
+                name: "MealView",
+                path: "/home/:username/menu_management/meals",
+                component: MealView,
+              },
+              {
+                name: "ClassMenuManagement",
+                path: "/home/:username/menu_management/class_menu",
+                component: ClassMenuManagement,
+              },
+            ],
+          },
+          {
             name: "ParentView",
-            path: "/home-page/:username/parent",
+            path: "/home/:username/parent",
             component: ParentView,
           },
           {
             name: "TeacherView",
-            path: "/home-page/:username/teacher",
+            path: "/home/:username/teacher",
             component: TeacherView,
           },
           {
             name: "TeacherEditView",
-            path: "/home-page/:username/teacher-edit/:id",
+            path: "/home/:username/teacher-edit/:id",
             component: TeacherEditView,
           },
           {
             name: "DashBoardView",
-            path: "/home-page/:username/dashboard",
+            path: "/home/:username/dashboard",
             component: DashBoardView,
           },
           {
             name: "ClassView",
-            path: "/home-page/:username/class",
+            path: "/home/:username/class",
             component: ClassView,
           },
           {
             name: "StudentCreationView",
-            path: "/home-page/:username/student-creation",
+            path: "/home/:username/student-creation",
             component: StudentCreationView,
           },
           {
             name: "ParentCreationView",
-            path: "/home-page/:username/parent-creation",
+            path: "/home/:username/parent-creation",
             component: ParentCreationView,
           },
           {
             name: "RegistrationView",
-            path: "/home-page/:username/registration",
+            path: "/home/:username/registration",
             component: RegistrationView,
           },
           {
             name: "AccountView",
-            path: "/home-page/:username/account",
+            path: "/home/:username/account",
             component: AccountView,
           },
           {
             name: "ParentEditView",
-            path: "/home-page/:username/parent-edit/:id",
+            path: "/home/:username/parent-edit/:id",
             component: ParentEditView,
           },
           {
             name: "RegisterAdditionView",
-            path: "/home-page/:username/registration-addition-admin",
+            path: "/home/:username/registration-addition-admin",
             component: RegisterAdditionView,
           },
           {
             name: "CategoryView",
-            path: "/home-page/:username/category",
+            path: "/home/:username/category",
             component: CategoryView,
           },
           {
             name: "TeacherCreationView",
-            path: "/home-page/:username/teacher",
+            path: "/home/:username/teacher",
             component: TeacherCreationView,
           },
           {

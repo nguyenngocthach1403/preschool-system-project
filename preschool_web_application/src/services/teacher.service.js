@@ -62,6 +62,7 @@ function getTeacherForAssignment(searchText, startDate, endDate, limit, page) {
     }`
   );
 }
+
 function getTeacherAssignment(limit, page) {
   return api().get(
     `teacher/get/assignment?limit=${limit}&offset=${page * limit}`

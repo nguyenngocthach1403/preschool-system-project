@@ -10,7 +10,7 @@
     <div class="py-4 px-7 text-start border-b flex justify-between">
       <span class="text-[20px] font-bold">Danh sách các bé</span>
       <button
-        class="bg-green-500/75 text-[14px] text-white flex items-center py-2 gap-2 px-2 rounded-md hover:bg-green-500 active:scale-95"
+        class="bg-[#3B44D1] text-[14px] text-white flex items-center py-2 gap-2 px-2 rounded-md hover:bg-blue-900 active:scale-95"
         @click="showPopUpAddStudent = true"
       >
         <img :src="plus_icon" class="w-5 h-5" alt="" />

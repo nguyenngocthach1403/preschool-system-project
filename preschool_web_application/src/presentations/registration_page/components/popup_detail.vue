@@ -1,7 +1,7 @@
 <template>
   <LayoutPopup :title="'Thông tin khách hàng'" class="absolute top-0 right-0">
     <template #content>
-      <div class="w-[1600px] flex gap-2 pl-5 pr-3 h-[600px]">
+      <div class="xl:w-[1200px] 2xl:w-[1600px] flex gap-2 pl-5 pr-3 h-[600px]">
         <div class="w-full overflow-y-auto">
           <!--name-->
           <div
@@ -33,13 +33,13 @@
               class="h-full px-5 flex items-center gap-2"
             >
               <button
-                class="h-10 px-5 rounded-xl content-center text-center hover:bg-gray-200 border"
+                class="h-10 px-5 rounded-md content-center text-center hover:bg-gray-200 border"
                 @click="disableInput = true"
               >
                 Hủy
               </button>
               <button
-                class="h-10 px-5 rounded-xl content-center text-center hover:bg-blue-800 bg-blue-700 text-white"
+                class="h-10 px-5 rounded-md content-center text-center hover:bg-blue-800 bg-blue-700 text-white"
                 @click="disableInput = true"
               >
                 Lưu
@@ -549,12 +549,13 @@
                     >
                       <article class="text-balance w-full">
                         <p class="text-wrap">
-                          <span>{{ item.content }}</span>
+                          <span> {{ item.content }}</span>
                         </p>
                       </article>
                     </div>
                     <button
                       v-if="isShowDelete(item)"
+                      @click="deleteNote(item.id)"
                       class="w-[20px] h-[20px] rounded-full content-center hover:bg-gray-200"
                     >
                       <img
@@ -567,30 +568,33 @@
                 </li>
               </ul>
             </div>
-            <div class="w-full flex gap-3">
-              <div class="w-full">
-                <input
-                  type="text"
-                  placeholder="Nhập ghi chú..."
-                  v-model="noteInput"
-                  class="h-[40px] outline-none border w-full rounded-xl px-4 py-2"
-                />
-              </div>
-              <div>
-                <button
-                  v-if="!addingNote"
-                  @click="addNote()"
-                  class="px-3 h-full rounded-xl content-center bg-blue-600/75 text-white hover:bg-blue-700 active:scale-95"
-                >
-                  Send
-                </button>
-                <button
-                  v-if="addingNote"
-                  class="px-3 h-full rounded-xl content-center bg-blue-600/75 text-white hover:bg-blue-700 active:scale-95"
-                >
-                  <LoaddingComp />
-                </button>
-              </div>
+            <div class="w-full flex gap-3 items-center">
+              <form @submit="addNote()" class="w-full flex gap-3 items-center">
+                <div class="w-full">
+                  <input
+                    type="text"
+                    placeholder="Nhập ghi chú..."
+                    v-model="noteInput"
+                    class="h-[45px] outline-none border w-full rounded-md px-4 py-2 hover:border-black focus:ring-1 focus:border-none"
+                  />
+                </div>
+                <div>
+                  <button
+                    v-if="!addingNote"
+                    @click.prevent="addNote()"
+                    type="submit"
+                    class="h-full rounded-xl content-center w-10 text-white pt-2 active:scale-95 object-cover"
+                  >
+                    <img :src="send_icon" class="w-full h-full" />
+                  </button>
+                  <button
+                    v-if="addingNote"
+                    class="px-3 h-full rounded-xl content-center bg-blue-600/75 text-white hover:bg-blue-700 active:scale-95"
+                  >
+                    <LoaddingComp />
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -703,6 +707,7 @@ import plus_icon from "../../../assets/icons/pls.svg";
 import threedot_icon from "../../../assets/icons/menu.svg";
 import empty_icon from "../../../assets/icons/Empty Box.svg";
 import delete_icon from "../../../assets/icons/delete.svg";
+import send_icon from "../../../assets/icons/Sent.svg";
 
 //list
 const levelList = ref([]);
@@ -893,62 +898,72 @@ async function updataRegisterStatus() {
   try {
   } catch (error) {}
 }
-// async function updateRegister() {
-//   if (checkinvalid()) return;
-//   try {
-//     const formData = new FormData();
-//     if (fileUpload.value) {
-//       formData.append("files", fileUpload.value);
-//     }
-//     formData.append("name", name.value);
-//     if (!isEmpty(email.value)) formData.append("email", email.value);
-//     formData.append("phone", phone.value);
-//     if (isEmpty(address.value)) formData.append("address", address.value);
-//     formData.append("city", city.value);
-//     formData.append("district", district.value);
-//     formData.append("town", town.value);
-//     if (!isEmpty(levels.value)) formData.append("levels", levels.value);
-//     if (!isEmpty(syllabus.value)) formData.append("syllabus", syllabus.value);
-//     formData.append("relationship", relationship.value);
-//     formData.append("status", status.value);
+async function updateRegister() {
+  if (checkinvalid()) return;
+  try {
+    // formData.append("status", re.value);
+    const formData = getInput();
 
-//     const response = await RegistrationService.updateRegister(
-//       route.query.id,
-//       formData
-//     );
+    const response = await registrationService.updateRegister(
+      route.query.id,
+      formData
+    );
 
-//     if (response.status !== 200) {
-//       emits("add-toast", {
-//         title: "Cập nhật không thành công",
-//         content: response.data.error,
-//         type: 1,
-//       });
-//       return;
-//     }
+    if (response.status !== 200) {
+      emits("add-toast", {
+        title: "Cập nhật không thành công",
+        content: response.data.error,
+        type: 1,
+      });
+      return;
+    }
 
-//     if (!response.data.success) {
-//       emits("add-toast", {
-//         title: "Cập nhật không thành công",
-//         content: response.data.message,
-//         type: 1,
-//       });
-//       return;
-//     }
+    if (!response.data.success) {
+      emits("add-toast", {
+        title: "Cập nhật không thành công",
+        content: response.data.message,
+        type: 1,
+      });
+      return;
+    }
 
-//     emits("add-toast", {
-//       title: "Cập nhật thành công",
-//       content: response.data.message,
-//       type: 0,
-//     });
-//   } catch (e) {
-//     emits("add-toast", {
-//       title: "Cập nhật không thành công",
-//       content: e,
-//       type: 1,
-//     });
-//   }
-// }
+    emits("add-toast", {
+      title: "Cập nhật thành công",
+      content: response.data.message,
+      type: 0,
+    });
+  } catch (e) {
+    emits("add-toast", {
+      title: "Cập nhật không thành công",
+      content: e,
+      type: 1,
+    });
+  }
+}
 
+/**
+ * Phương thức lấy input chuyển thành From Data
+ * @return {FormData}
+ */
+async function getInput() {
+  const formData = new FormData();
+  if (fileUpload.value) {
+    formData.append("files", fileUpload.value);
+  }
+  formData.append("name", registerName.value);
+  if (!isEmpty(email.value)) formData.append("email", registerEmail.value);
+  formData.append("phone", phone.value);
+  if (isEmpty(registerAddress.value))
+    formData.append("address", registerAddress.value);
+  formData.append("city", registerCity.value);
+  formData.append("district", registerDistrict.value);
+  formData.append("town", registerTown.value);
+  if (!isEmpty(levels.value)) formData.append("levels", registerLevel.value);
+  if (!isEmpty(syllabus.value))
+    formData.append("syllabus", registerSyllabus.value);
+  formData.append("relationship", registerRelationship.value);
+  return formData;
+}
 async function getLevel() {
   const response = await levelService.getLevels();
   for (let index = 0; index < response.data.data.length; index++) {
@@ -1058,9 +1073,24 @@ async function chooseStatus(event) {
   }
 }
 function isShowDelete(item) {
-  console.log(window.user.role);
-  if (window.user.id == item.created_by || window.user.role == 1) return true;
+  const currentUser = JSON.parse(localStorage.getItem("user"));
+  if (!currentUser) return false;
+  if (currentUser.id == item.created_by || currentUser.role == 1) return true;
   return false;
+}
+
+/**
+ * Phương thức xóa note của đơn đăng ký
+ * @param {interger} nodeId
+ *
+ */
+async function deleteNote(nodeId) {
+  try {
+    if (!nodeId) return;
+
+    const response = await registrationService.deleteNode(nodeId);
+    getRegisterByID();
+  } catch (error) {}
 }
 
 //life cicle

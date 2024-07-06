@@ -24,6 +24,7 @@ module.exports = {
   getApproveByRegisterId,
   createNotes,
   getNoteById,
+  deleteNote,
 };
 
 async function createNotes(data) {
@@ -571,5 +572,20 @@ async function getApproveByRegisterId(registerId) {
       code: error.code,
       error: error.sqlMessage,
     };
+  }
+}
+
+async function deleteNote(nodeId) {
+  try {
+    const response = await db.deleteRow(
+      config.tb.registerNotes,
+      `WHERE id =${nodeId}`
+    );
+
+    if (response) return false;
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 }
