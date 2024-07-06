@@ -30,7 +30,7 @@
         <tr
           v-for="item in props.data"
           :key="item"
-          class="even:bg-gray-200/75 hover:bg-gray-200"
+          class="even:bg-gray-200 hover:bg-[#3B44D1]/50"
           :class="classBacgroundStatus(item.status)"
         >
           <td class="px-5">

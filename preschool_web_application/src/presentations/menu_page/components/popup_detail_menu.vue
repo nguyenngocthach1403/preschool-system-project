@@ -1,22 +1,37 @@
 <template>
-  <PopupLayout @close="$emit('close')" :title="'Tạo danh sách thực đơn'">
+  <PopupLayout
+    @close="$emit('close')"
+    :title="'Tạo bữa ăn'"
+    class="absolute top-0 left-0"
+  >
     <template #content>
-      <div>
-        <div>
-          <p><span>Buổi: </span> {{ props.dataToCreate.mealName }}</p>
-          <p>
-            <span>Ngày: </span>
-            {{
-              ddmmyyyyDateString(
-                new Date(props.dataToCreate.date).toLocaleDateString()
-              )
-            }}
-          </p>
-        </div>
-        <div class="text-start mx-[50px]">
+      <div class="w-[600px] px-[20px]">
+        <ul class="rounded-md border max-h-64 overflow-y-auto">
+          <li v-for="dish in props.menuDetail.menu_detail" :key="dish">
+            <div class="w-full py-2 px-3 text-start hover:bg-gray-200 relative">
+              {{ dish.dish_id }}-{{ dish.dish_name }}
+              <button
+                class="absolute right-3"
+                @click="
+                  $emit('delete', {
+                    meal_menu_id: props.menuDetail.meal_menu_id,
+                    dish_id: dish.dish_id,
+                    dish_name: dish.dish_name,
+                  })
+                "
+              >
+                <img
+                  :src="close_icon"
+                  class="w-5 opacity-50 hover:opacity-100"
+                />
+              </button>
+            </div>
+          </li>
+        </ul>
+        <div class="text-start my-5">
           <span class="pl-2">Chọn món</span>
           <InputSearchSelect
-            class="h-[50px] w-[500px]"
+            class="h-[50px] w-full"
             :options="dishes"
             :enable-sub="false"
             :has-data="hasData"
@@ -68,13 +83,14 @@
           Processing...
         </button>
       </div>
-    </template>
-  </PopupLayout>
+    </template></PopupLayout
+  >
 </template>
 
 <script setup>
-//component
+import close_icon from "../../../assets/icons/close.svg";
 import PopupLayout from "../../../components/popup_layout.vue";
+
 import InputSearchSelect from "../../../components/input_search_select.vue";
 
 //service
@@ -90,25 +106,17 @@ import { onMounted, ref } from "vue";
 const dishes = ref([]);
 
 const dishesSelected = ref([]);
-
 //
 const page = ref(0);
 const hasData = ref(true);
 const creating = ref(false);
 
-//props
 const props = defineProps({
-  dataToCreate: {
+  menuDetail: {
     type: Object,
     require: true,
   },
-  classId: {
-    type: Number,
-    require: true,
-  },
 });
-
-const emits = defineEmits(["add-toast", "close"]);
 
 async function fetchDishes(limit, page) {
   try {
@@ -128,51 +136,6 @@ async function fetchDishes(limit, page) {
   }
 }
 
-async function createMenu() {
-  try {
-    creating.value = true;
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (
-      isEmpty(props.classId) ||
-      isEmpty(props.dataToCreate.mealId) ||
-      isEmpty(props.dataToCreate.date) ||
-      dishesSelected.value.length == 0 ||
-      isEmpty(user.id)
-    ) {
-      return emits("add-toast", {
-        title: "Dữ liệu không phụ hợp!",
-        type: 1,
-      });
-    }
-
-    const response = await menuService.createMenu(
-      props.classId,
-      yyyymmddDateString(
-        new Date(props.dataToCreate.date).toLocaleDateString()
-      ),
-      user.id,
-      props.dataToCreate.mealId,
-      dishesSelected.value
-    );
-
-    emits("add-toast", {
-      title: "Thành công!",
-      type: 0,
-    });
-
-    emits("close", true);
-  } catch (error) {
-    console.log(error);
-    emits("add-toast", {
-      title: "Thất bại!",
-      content: error.response.data.error,
-      type: 1,
-    });
-  } finally {
-    creating.value = false;
-  }
-}
-
 function handleScrollEnd() {
   if (!hasData.value) return;
   page.value += 1;
@@ -184,5 +147,5 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 </style>

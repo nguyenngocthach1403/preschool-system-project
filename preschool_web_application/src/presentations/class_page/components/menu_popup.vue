@@ -1,7 +1,11 @@
 <template>
   <PopupLayout :title="'Thực đơn hàng tuần'" @close="$emit('close')">
     <template #content>
-      <MenuTable />
+      <div class="w-[1200px]">
+        <MenuTable
+          @create-meal-of-day-menu="$emit('create-meal-of-day-menu', $event)"
+        />
+      </div>
     </template>
   </PopupLayout>
 </template>

@@ -2,7 +2,6 @@
   <div class="relative">
     <button
       class="main w-full h-full bg-white overflow-hidden focus:ring-1 rounded-md border border-gray-400/75 hover:border hover:border-gray-500 p-[1px] flex items-center relative"
-      @focusout="closeOptionList"
       @click.prevent
     >
       <div class="list flex text-[12px]">
@@ -30,8 +29,7 @@
         </div>
       </div>
       <input
-        @focus="showOption = true"
-        @click="showOption = true"
+        @click="showOption = !showOption"
         type="text"
         v-model="value"
         class="w-full h-full px-3 pr-10 outline-none rounded-md text-[16px]"
@@ -53,6 +51,7 @@
         v-show="showOption"
         ref="ListElemnt"
         @scroll="handleScroll($event)"
+        @click="showOption = true"
         class="absolute z-10 mt-1 max-h-56 w-full overflow-y-scroll rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
       >
         <li
@@ -125,7 +124,6 @@ import LoadingComp from "../components/loading_comp.vue";
 
 //effect
 const showOption = ref(false);
-const enableSub = ref(true);
 
 //model
 const input = ref("");
@@ -143,7 +141,7 @@ const props = defineProps({
   },
   value: {
     type: String,
-    required: true,
+    required: false,
   },
   hasData: {
     type: Boolean,

@@ -32,6 +32,7 @@
       <ClassMenuView
         :class-id="parseInt($router.currentRoute.value.query.classID)"
         v-if="getCurrentActive(4)"
+        @add-toast="$emit('add-toast', $event)"
       />
     </div>
   </div>

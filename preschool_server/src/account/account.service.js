@@ -11,6 +11,7 @@ module.exports = {
   getAccountById,
   getParentByID,
   getTeacherByID,
+  isExitAccountById,
 };
 
 async function getAccountByUsername(username) {
@@ -44,6 +45,24 @@ async function getAccountById(id) {
       code: error.code,
       error: error.sql,
     };
+  }
+}
+
+async function isExitAccountById(id) {
+  try {
+    const result = await db.select(
+      `${config.tb.account} `,
+      "*",
+      `WHERE id = '${id}' AND deleted = 0`
+    );
+
+    const dbResponse = result[0];
+
+    if (!dbResponse) return false;
+
+    return true;
+  } catch (error) {
+    return false;
   }
 }
 

@@ -1,24 +1,36 @@
 <template>
   <div class="w-full h-full bg-white rounded-xl">
     <PopupCreateMenu
-      @close="isShowCreateMenu = null"
+      @close="closePopupCreateMenu($event)"
       class="absolute top-0 left-0"
       v-if="isShowCreateMenu"
       :data-to-create="isShowCreateMenu"
+      :class-id="props.classId"
+      @add-toast="$emit('add-toast', $event)"
+    />
+    <PopupEditMenu
+      v-if="isShowEditMenu"
+      :menu-detail="isShowEditMenu"
+      @close="isShowEditMenu = null"
+      @delete="isComfirmPopup = $event"
+    />
+    <PopupComfirm
+      :content="`Bạn có chắc muốn xóa ${isComfirmPopup.dish_name} khỏi danh sách?`"
+      v-if="isComfirmPopup"
+      class="absolute top-0 left-0"
+      :value="isComfirmPopup"
+      @confirm="isComfirmPopup = null"
     />
     <div class="py-4 px-7 text-start border-b flex justify-between">
       <span class="text-[20px] font-bold">Thực đơn hàng tuần</span>
     </div>
-    <div class="flex">
-      <div class="menu-navigation">
-        <button onclick="prevWeek()">Tuần trước</button>
-        <button onclick="nextWeek()">Hiện tại</button>
-        <button onclick="nextWeek()">Tuần sau</button>
-      </div>
-    </div>
     <!--Body-->
     <!--Table-->
-    <MenuTable @create-meal-of-day-menu="isShowCreateMenu = $event" />
+    <MenuTable
+      :menu-list="menu"
+      @create-meal-of-day-menu="isShowCreateMenu = $event"
+      @edit-menu="isShowEditMenu = $event"
+    />
   </div>
 </template>
 
@@ -27,33 +39,56 @@
 import LoadingComp from "../../../components/loading_comp.vue";
 import MenuTable from "../components/menu_table.vue";
 import PopupCreateMenu from "../components/create_menu_popup.vue";
+import PopupEditMenu from "../../menu_page/components/popup_detail_menu.vue";
+import PopupComfirm from "../../../components/confirm_dialog.vue";
 import { onMounted, ref } from "vue";
+import menuService from "../../../services/menu.service";
 
 //  @valiable state
 const loading = ref(false);
 const isShowCreateMenu = ref(false);
+const isShowEditMenu = ref(null);
+const isComfirmPopup = ref(false);
 
 //valiable data
 const meals = ref([]);
-const menu = ref();
+const menu = ref(null);
+
+const props = defineProps({
+  classId: {
+    type: Number,
+    require: true,
+  },
+});
+
+async function fetchMenuList(classId) {
+  try {
+    loading.value = true;
+
+    const response = await menuService.fetchMenuList(classId);
+
+    const dataResponse = response.data.data;
+
+    return dataResponse;
+  } catch (error) {
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(async () => {
+  if (props.classId) {
+    menu.value = await fetchMenuList(props.classId);
+  }
+});
+async function closePopupCreateMenu(event) {
+  isShowCreateMenu.value = null;
+
+  if (event) {
+    menu.value = await fetchMenuList(props.classId);
+  }
+}
 </script>
 
 <style  scoped>
-.menu-navigation {
-  margin: 10px 0px;
-}
-
-.menu-navigation button:hover {
-  background-color: #2d3d99;
-}
-
-.menu-navigation button {
-  background-color: #3f51b5;
-  color: white;
-  border-radius: 7px;
-  margin: 0 0px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
 </style>

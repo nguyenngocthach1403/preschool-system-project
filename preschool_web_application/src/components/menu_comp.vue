@@ -99,6 +99,7 @@ import logoutIcon from "@/assets/icons/Logout.svg";
 import category from "../assets/icons/Diversity.svg";
 import school from "../assets/icons/School.svg";
 import task from "../assets/icons/Task.svg";
+import menu_icon from "../assets/icons/Restaurant Menu.svg";
 import { convertAccountRole } from "../utils/resources/converter";
 
 import { onMounted, ref } from "vue";
@@ -170,6 +171,14 @@ const menu = ref([
   },
   {
     id: 6,
+    title: "Thực đơn",
+    name: "MenuManagementView",
+    icon: menu_icon,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 7,
     title: "Lớp học",
     name: "ClassView",
     icon: classes,
@@ -178,7 +187,7 @@ const menu = ref([
   },
   // { title: "Nhân viên", name: "/ddd", icon: staff },
   {
-    id: 7,
+    id: 8,
     title: "Tài khoản",
     name: "AccountView",
     icon: account,
@@ -186,7 +195,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 8,
+    id: 9,
     title: "Giáo viên",
     name: "TeacherView",
     icon: staff,
@@ -194,7 +203,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 9,
+    id: 10,
     title: "Danh mục",
     name: "CategoryView",
     icon: category,

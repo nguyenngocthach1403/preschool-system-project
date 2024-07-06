@@ -39,7 +39,7 @@
     <TableComp
       :data="classes"
       @update-manager-for-class="updateMnagerForClass($event)"
-      class="mt-5"
+      class="mt-5 drop-shadow-xl"
     ></TableComp>
     <div class="w-full mr-0 py-3">
       <PaginationComp class="m-auto" />

@@ -20,6 +20,14 @@
       v-if="menuPopUp"
       @close="menuPopUp = false"
       @class-id="menuPopUp"
+      @create-meal-of-day-menu="isShowPopupCreateMenu = $event"
+    />
+    <PopupCreateMenu
+      v-if="isShowPopupCreateMenu"
+      :data-to-create="isShowPopupCreateMenu"
+      class="absolute top-0 left-0"
+      @close="isShowPopupCreateMenu = null"
+      @add-toast="$emit('add-toast', $event)"
     />
     <!-- Header -->
     <div class="text-left px-6 text-[36px] py-4 font-bold border border-b-1">
@@ -94,6 +102,7 @@ import LoadingComp from "../../../components/loading_comp.vue";
 import ItemCheckBox from "../../registration_page/components/item_checkbox_filter.vue";
 import { useClassStore } from "../../../stores/class_store";
 import PopupMenu from "../components/menu_popup.vue";
+import PopupCreateMenu from "../../class_detail_page/components/create_menu_popup.vue";
 
 import { storeToRefs } from "pinia";
 const searchText = ref("");
@@ -102,6 +111,7 @@ const showCreateClass = ref(false);
 const showEditClass = ref(null);
 const session = ref("");
 const menuPopUp = ref(null);
+const isShowPopupCreateMenu = ref(null);
 
 const statusList = ref([
   { id: 0, name: "Đang diễn ra", checked: false, total: 0 },

@@ -1,57 +1,123 @@
 
 <template>
-  <div
-    class="schedule w-full rounded-xl overflow-hidden border border-gray-300"
-  >
-    <table>
-      <thead>
+  <div class="schedule w-full px-3 py-5 relative">
+    <div class="flex">
+      <div class="menu-navigation">
+        <button
+          class="text-white bg-[#3f51b5] my-3 px-3 py-2 hover:bg-blue-900 rounded-tl-md rounded-bl-md"
+          @click="previousWeek()"
+        >
+          Tuần trước
+        </button>
+        <button
+          @click="currentWeekStart = getStartOfWeek(new Date())"
+          class="text-black bg-white my-3 px-3 py-2 hover:bg-blue-900 hover:text-white"
+        >
+          Hiện tại
+        </button>
+        <button
+          class="text-white bg-[#3f51b5] my-3 px-3 py-2 hover:bg-blue-900 rounded-tr-md rounded-br-md"
+          @click="nextWeek()"
+        >
+          Tuần sau
+        </button>
+      </div>
+    </div>
+    <table class="rounded-md overflow-hidden w-full h-full">
+      <thead class="rounded-md">
         <tr>
           <th>Bữa ăn</th>
           <th
-            v-for="day in calculatedDays"
+            v-for="day in week"
             :key="day.date"
-            :class="{ 'current-date': day.isNow }"
+            :class="{
+              'current-date':
+                day.date.toDateString() == new Date().toDateString(),
+            }"
           >
-            {{ day.label }}
-            <div class="text-[13px] text-gray-300">{{ day.date }}</div>
+            {{ day.name }}
+            <div class="text-[13px] text-gray-300">
+              {{ ddmmyyyyDateString(day.date.toLocaleDateString()) }}
+            </div>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="meal in meals" :key="meal.id">
-          <td class="meal bg-gray-300">
-            {{ meal.meal }}<br />{{ meal.start_time.slice(0, 5) }} -
-            {{ meal.end_time.slice(0, 5) }}
+          <td
+            class="meal bg-gray-200 h-[100px] hover:border hover:border-black"
+          >
+            <span class="text-[16px] font-bold"> {{ meal.meal }}</span
+            ><br /><span class="text-[13px] text-gray-500"
+              >{{ meal.start_time.slice(0, 5) }} -
+              {{ meal.end_time.slice(0, 5) }}</span
+            >
           </td>
-          <td v-for="day in calculatedDays" :key="day.date">
+          <td
+            v-for="day in week"
+            :key="day.date"
+            class="hover:bg-gray-200 relative"
+            @click.right.prevent="handleRightClick(meal.id, day.date)"
+            :class="{
+              'cell-current-date':
+                day.date.toDateString() == new Date().toDateString(),
+            }"
+          >
+            <div
+              v-if="checkShowEdit(isShowEdit, meal.id, day.date, meal.meal)"
+              class="absolute top-0 left-0 w-full h-full bg-blue-800 text-white content-center"
+            >
+              <button
+                @click="handleEditMenu(day.date, meal.meal)"
+                class="border px-3 rounded-md py-1 hover:bg-blue-900 flex items-center justify-center gap-3 m-auto"
+              >
+                <img :src="edit_icon" class="w-5" />
+                Sửa
+              </button>
+            </div>
             <div
               v-if="
-                weeklyMenu.days[day.date] &&
-                weeklyMenu['days'][`${day.date}`]['meals'] != null &&
-                weeklyMenu['days'][`${day.date}`]['meals'][`${meal.meal}`]
+                getDetailMenuByDateAndMeal(
+                  ddmmyyyyDateString(day.date.toLocaleDateString()),
+                  meal.meal
+                )
               "
             >
               <div
-                v-for="dish in weeklyMenu['days'][`${day.date}`]['meals'][
-                  `${meal.meal}`
-                ]['menu']"
-                :key="dish.dish_id"
+                v-if="
+                  getDetailMenuByDateAndMeal(
+                    ddmmyyyyDateString(day.date.toLocaleDateString()),
+                    meal.meal
+                  ).menu
+                "
               >
-                <div class="meal-info">
-                  <div>{{ dish.dish_name }}</div>
+                <div
+                  v-for="dish in getDetailMenuByDateAndMeal(
+                    ddmmyyyyDateString(day.date.toLocaleDateString()),
+                    meal.meal
+                  ).menu"
+                  :key="dish.dish_id"
+                >
+                  <div class="meal-info">
+                    <div>{{ dish.dish_name }}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div v-else class="meal-info">
               <button
-                @click="
-                  chooseMealOfDayToCreateMenu(meal.id, day.index, meal.meal)
-                "
-                class="add-dish-button"
+                v-else
+                @click="createMenu(meal.id, meal.meal, day.date)"
+                class="border rounded-md hover:bg-gray-100 cursor-default w-fit px-3 py-1 m-auto"
               >
-                Thêm
+                Thêm món
               </button>
             </div>
+            <button
+              v-else
+              @click="createMenu(meal.id, meal.meal, day.date)"
+              class="border rounded-md hover:bg-gray-100 cursor-default w-fit px-3 py-1 m-auto"
+            >
+              Thêm
+            </button>
           </td>
         </tr>
       </tbody>
@@ -60,13 +126,27 @@
 </template>
   
 <script setup>
-import moment from "moment";
 import { computed, onMounted, ref, watch } from "vue";
+///icon
+import edit_icon from "../../../assets/icons/edit.svg";
 //service
 import menuService from "../../../services/menu.service";
-const weeklyMenu = ref({});
+import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 const meals = ref([]);
 const loading = ref(false);
+const isShowEdit = ref(null);
+const currentWeekStart = ref(getStartOfWeek(new Date()));
+const weekDays = ref([
+  "Thứ 2",
+  "Thứ 3",
+  "Thứ 4",
+  "Thứ 5",
+  "Thứ 6",
+  "Thứ 7",
+  "Chủ nhật",
+]);
+
+const isShowCreate = ref(false);
 
 //props
 const props = defineProps({
@@ -74,86 +154,127 @@ const props = defineProps({
     type: Array,
     require: true,
   },
-  weeklyMenu: {
+  menuList: {
     type: Object,
     require: true,
   },
 });
 
-//emits
-const emits = defineEmits(["create-meal-of-day-menu"]);
-
-//function
-function chooseMealOfDayToCreateMenu(mealId, dateOfWeek, mealName) {
-  emits("create-meal-of-day-menu", {
-    mealId: mealId,
-    dateOfWeek: dateOfWeek,
-    mealName: mealName,
-    weeklyMenuId: 1,
+const week = computed(() => {
+  return weekDays.value.map((day, index) => {
+    const date = new Date(currentWeekStart.value);
+    date.setDate(currentWeekStart.value.getDate() + index);
+    return { name: day, date };
   });
-}
-const calculatedDays = computed(() => {
-  if (!weeklyMenu.value) return;
-  const start = moment(weeklyMenu.value.start_date);
-  const end = moment(weeklyMenu.value.end_date);
-  const days = [];
-  let current = start;
-
-  const dayNames = [
-    "Chủ nhật",
-    "Thứ 2",
-    "Thứ 3",
-    "Thứ 4",
-    "Thứ 5",
-    "Thứ 6",
-    "Thứ 7",
-  ];
-
-  while (current <= end) {
-    const isCurrent = current.isSame(moment(), "day");
-    days.push({
-      index: current.format("YYYY-MM-DD"),
-      date: current.format("DD/MM/YYYY"),
-      label: dayNames[current.isoWeekday() % 7],
-      isNow: isCurrent,
-    });
-    current = current.add(1, "days");
-  }
-
-  return days;
 });
 
-//watch
-// watch(props, (newVal) => {
-//   console.log(newVal.meals);
-//   meals.value = props.meals;
-//   weeklyMenu.value = props.weeklyMenu;
-// });
+//emits
+const emits = defineEmits(["create-meal-of-day-menu", "edit-menu"]);
 
-//function
-/**
- *
- * @param
- */
-async function getMenuById() {
+async function fetchMeals() {
   try {
-    loading.value = true;
-    const response = await menuService.getWeeklyMenubById(1);
-
+    const response = await menuService.fetchMeals();
     const dataResponse = response.data;
+    meals.value = dataResponse.data;
+  } catch (error) {}
+}
 
-    meals.value = dataResponse.data.meals;
+function getStartOfWeek(date) {
+  const start = new Date(date);
+  start.setDate(date.getDate() - date.getDay() + 1);
+  return start;
+}
 
-    weeklyMenu.value = dataResponse.data.menu;
-  } catch (error) {
-    console.log(error);
-  } finally {
-    loading.value = false;
+/**
+ * Phương thức để chuyển sáng tuần tiếp theo
+ *
+ */
+function nextWeek() {
+  const newDate = new Date(currentWeekStart.value);
+  newDate.setDate(newDate.getDate() + 7);
+  currentWeekStart.value = newDate;
+}
+/**
+ * Phương thức để chuyển về tuần trước
+ *
+ */
+function previousWeek() {
+  const newDate = new Date(currentWeekStart.value);
+  newDate.setDate(newDate.getDate() - 7);
+  currentWeekStart.value = newDate;
+}
+
+function currentWeek() {
+  const newDate = getStartOfWeek(new Date());
+  newDate.setDate(newDate.getDate());
+  currentWeekStart.value = newDate;
+}
+
+function getDetailMenuByDateAndMeal(date, meal) {
+  if (!props.menuList) return undefined;
+
+  const dailyMenu = props.menuList.daily_menu[date];
+
+  if (!dailyMenu) return undefined;
+
+  const meals = dailyMenu.meals;
+
+  if (!meals) return undefined;
+
+  const detail = meals[meal];
+
+  return detail;
+}
+
+function checkShowEdit(isShowEdit, mealId, date, mealName) {
+  if (isShowEdit) {
+    const menu = getDetailMenuByDateAndMeal(
+      ddmmyyyyDateString(new Date(date).toLocaleDateString()),
+      mealName
+    );
+    if (
+      isShowEdit.mealId == mealId &&
+      isShowEdit.date == date &&
+      menu !== undefined
+    )
+      return true;
   }
+  return false;
+}
+
+function createMenu(mealId, mealName, date) {
+  emits("create-meal-of-day-menu", {
+    mealId: mealId,
+    mealName: mealName,
+    date: date,
+  });
+}
+
+function handleRightClick(mealId, date) {
+  if (isShowEdit.value) {
+    if (isShowEdit.value.mealId == mealId && isShowEdit.value.date == date) {
+      isShowEdit.value = null;
+      return;
+    }
+  }
+
+  isShowEdit.value = { mealId: mealId, date: date };
+}
+
+function handleEditMenu(date, mealName) {
+  const mealMenu = getDetailMenuByDateAndMeal(
+    ddmmyyyyDateString(new Date(date).toLocaleDateString()),
+    mealName
+  );
+
+  emits("edit-menu", {
+    meal_menu_id: mealMenu.meal_menu_id,
+    menu_detail: mealMenu.menu,
+  });
 }
 
 onMounted(async () => {
-  await getMenuById();
+  await fetchMeals();
 });
 </script>
   
@@ -169,8 +290,9 @@ onMounted(async () => {
 
 .schedule th,
 .schedule td {
-  border: 1px solid #000;
+  border: 1px solid #b8b8b8;
   padding: 10px;
+  border-collapse: collapse;
   text-align: center;
   position: relative;
 }
@@ -195,7 +317,9 @@ onMounted(async () => {
   border-radius: 7px;
 }
 .current-date {
-  background-color: rgb(107, 104, 255) !important;
+  background-color: rgb(70, 68, 169) !important;
 }
 </style>
   
+
+
