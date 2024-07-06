@@ -9,6 +9,7 @@ router.get("/students/:image", getStudentImage);
 router.get("/registration/:image", getRegisterImage);
 router.get("/parents/:image", getParentImage);
 router.get("/teacher/:image", getTeacherImage);
+router.get("/news/:image", getNewsImage);
 
 async function getStudentImage(req, res) {
   const imageName = req.params.image;
@@ -103,6 +104,26 @@ async function getTeacherImage(req, res) {
     });
   }
   let imgDefault = await fs.readFileSync(`uploads/teacher/${imageName}`);
+
+  imgDefault = Buffer.from(imgDefault, "base64");
+
+  res.writeHead(200, {
+    "Content-Type": "image/jpg",
+    "Content-Length": imgDefault.byteLength,
+  });
+
+  res.end(imgDefault);
+}
+async function getNewsImage(req, res) {
+  const imageName = req.params.image;
+
+  if (!fs.existsSync(`uploads/news/${imageName}`)) {
+    return res.status(200).json({
+      status: 500,
+      error: "Not found image",
+    });
+  }
+  let imgDefault = await fs.readFileSync(`uploads/news/${imageName}`);
 
   imgDefault = Buffer.from(imgDefault, "base64");
 

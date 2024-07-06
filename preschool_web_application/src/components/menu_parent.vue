@@ -66,6 +66,7 @@ import parent from "@/assets/icons/extension.svg";
 import { convertAccountRole } from "../utils/resources/converter";
 import logoutIcon from "@/assets/icons/Logout.svg";
 import info from "@/assets/icons/member.svg";
+import child from "@/assets/icons/child.svg";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -93,14 +94,14 @@ const menu = ref([
     active: false,
     type: 1,
   },
-  // {
-  //   id: 2,
-  //   title: "Thông tin khác",
-  //   name: "ParentDetailView",
-  //   icon: parent,
-  //   active: false,
-  //   type: 1,
-  // },
+  {
+    id: 2,
+    title: "Thông tin các bé",
+    name: "StudentDetailParentView",
+    icon: child,
+    active: false,
+    type: 1,
+  },
 ]);
 
 const settingItem = ref([{ name: "Đăng xuất", icon: logoutIcon }]);

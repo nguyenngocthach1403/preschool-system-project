@@ -126,10 +126,11 @@
           </div>
           <div class="w-full">
             <label class="pl-2">
-              <span>Ngày bắt đầu lớp học</span>
-              <VueDatePicker
-                :enable-time-picker="false"
-                v-model="student.start_date"
+              <span>Niên khoá</span>
+              <input
+                type="text"
+                class="input-text-default"
+                :value="student.session"
                 disabled
               />
             </label>
@@ -138,21 +139,20 @@
         <section class="w-full my-5 flex gap-5">
           <div class="w-full">
             <label class="pl-2">
-              <span>Ngày kết thúc lớp học</span>
+              <span>Ngày bắt đầu lớp học</span>
               <VueDatePicker
                 :enable-time-picker="false"
-                v-model="student.end_date"
+                v-model="student.start_date"
                 disabled
               />
             </label>
           </div>
           <div class="w-full">
             <label class="pl-2">
-              <span>Niên khoá</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.session"
+              <span>Ngày kết thúc lớp học</span>
+              <VueDatePicker
+                :enable-time-picker="false"
+                v-model="student.end_date"
                 disabled
               />
             </label>

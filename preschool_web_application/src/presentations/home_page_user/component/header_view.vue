@@ -15,17 +15,21 @@
           <a href="#">Trang chủ</a>
         </li>
         <li>
-          <a href="#">Giới thiệu</a>
+          <router-link :to="{ name: 'IntroduceView' }">
+            Giới thiệu
+          </router-link>
         </li>
         <li>
           <a href="#">Chương trình</a>
         </li>
 
         <li>
-          <a href="#">Tuyển sinh</a>
+          <router-link :to="{ name: 'RegistrationFormView' }">
+            Tuyển sinh
+          </router-link>
         </li>
         <li>
-          <a href="#">Tin tức</a>
+          <router-link :to="{ name: 'NewsView' }"> Tin tức </router-link>
         </li>
       </ul>
     </nav>

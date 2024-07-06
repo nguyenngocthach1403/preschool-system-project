@@ -101,10 +101,6 @@ const tabList = ref([
     title: "Thực đơn hàng ngày của bé",
     active: false,
   },
-  // {
-  //   title: "Lịch sử khám sức khỏe",
-  //   active: false,
-  // },
   {
     title: "Lịch sử lớp học",
     active: false,

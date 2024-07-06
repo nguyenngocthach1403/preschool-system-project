@@ -1,5 +1,12 @@
 <template>
-  <div class="w-full relative">
+  <!-- <div class="w-full relative"> -->
+  <div class="ml-4 rounded-3xl text-center h-fit pb-[10px]">
+    <ConfirmDialog
+      v-if="showConfirmDialog"
+      class="absolute top-0 left-0"
+      :content="`Bạn có chắc chắn cập nhật thông tin tài khoản không?`"
+      @confirm="getConfirm($event)"
+    />
     <!--background-->
     <div class="w-full h-[200px] bg-blue-800"></div>
     <div class="w-full h-[140px] flex items-center">
@@ -208,7 +215,7 @@
         </section>
       </div>
       <!-- </div> -->
-      <div id="button-side" class="w-full flex justify-end px-10 py-5">
+      <!-- <div id="button-side" class="w-full flex justify-end px-10 py-5">
         <button
           @click.prevent="updateParent()"
           v-if="!updating"
@@ -245,7 +252,7 @@
           </svg>
           Processing...
         </button>
-      </div>
+      </div> -->
     </div>
     <!-- Thông tin account -->
     <div class="m-10 border rounded-md">
@@ -253,7 +260,7 @@
         class="w-full py-4 px-10 font-bold text-[18px] border-b text-start flex items-center star"
       >
         <span>Thông tin tài khoản</span>
-        <!-- <span class="ml-3"
+        <span class="ml-3"
           ><div
             class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
             @click="toggleEditAccount"
@@ -270,7 +277,7 @@
           class="text-gray-500 text-sm font-italic ml-8"
           >Thông tin đang được mở khoá để sửa, bấm icon để tắt hoặc bấm cập nhật
           thông tin mới</span
-        > -->
+        >
       </div>
       <div class="w-full px-10 py-5 content-center text-start">
         <!--Form-->
@@ -344,9 +351,9 @@
           </div>
         </section>
       </div>
-      <!-- <div id="button-side" class="w-full flex justify-end px-10 py-5">
+      <div id="button-side" class="w-full flex justify-end px-10 py-5">
         <button
-          @click.prevent="updateAccount()"
+          @click.prevent="showConfirmDialog = $event"
           v-if="!updating"
           type="submit"
           class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
@@ -381,7 +388,7 @@
           </svg>
           Processing...
         </button>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -391,6 +398,8 @@ import { ref, onMounted, defineEmits } from "vue";
 import accountService from "../../../services/account.service";
 import edit_icon from "@/assets/icons/edit.svg";
 import parentService from "../../../services/parent.service";
+import ConfirmDialog from "@/components/confirm_dialog.vue";
+
 import {
   isEmpty,
   isEmailValid,
@@ -426,6 +435,9 @@ const messageOfParentName = ref("");
 const messageOfParentPhone = ref("");
 const messageOfParentEmail = ref("");
 // console.log(window.user);
+
+const showConfirmDialog = ref("");
+
 onMounted(() => {
   getParent();
   count();
@@ -508,96 +520,96 @@ const handleUploadParentImg = (event) => {
   console.log(URL.createObjectURL(fileUpload.value));
 };
 
-function checkValidParent() {
-  let invalid = false;
+// function checkValidParent() {
+//   let invalid = false;
 
-  if (isEmpty(phone_parent.value)) {
-    invalid = true;
-    messageOfParentPhone.value = "Vui lòng nhập số điện thoại";
-  }
-  if (isEmpty(email_parent.value)) {
-    invalid = true;
-    messageOfParentEmail.value = "Vui lòng nhập email";
-  }
+//   if (isEmpty(phone_parent.value)) {
+//     invalid = true;
+//     messageOfParentPhone.value = "Vui lòng nhập số điện thoại";
+//   }
+//   if (isEmpty(email_parent.value)) {
+//     invalid = true;
+//     messageOfParentEmail.value = "Vui lòng nhập email";
+//   }
 
-  if (!isEmpty(phone_parent.value) && !isPhoneValid(phone_parent.value)) {
-    invalid = true;
-    messageOfParentPhone.value =
-      "Số điện thoại không đúng định dạng, phải đủ 10 số";
-  }
+//   if (!isEmpty(phone_parent.value) && !isPhoneValid(phone_parent.value)) {
+//     invalid = true;
+//     messageOfParentPhone.value =
+//       "Số điện thoại không đúng định dạng, phải đủ 10 số";
+//   }
 
-  if (!isEmpty(email_parent.value) && !isEmailValid(email_parent.value)) {
-    invalid = true;
-    messageOfParentEmail.value = "Email sai định dạng";
-  }
+//   if (!isEmpty(email_parent.value) && !isEmailValid(email_parent.value)) {
+//     invalid = true;
+//     messageOfParentEmail.value = "Email sai định dạng";
+//   }
 
-  if (isEmpty(name.value)) {
-    invalid = true;
-    messageOfParentName.value = "Không được đển trống tên";
-  }
+//   if (isEmpty(name.value)) {
+//     invalid = true;
+//     messageOfParentName.value = "Không được đển trống tên";
+//   }
 
-  return invalid;
-}
-async function updateParent() {
-  if (checkValidParent()) {
-    return;
-  }
-  updating.value = true;
+//   return invalid;
+// }
+// async function updateParent() {
+//   if (checkValidParent()) {
+//     return;
+//   }
+//   updating.value = true;
 
-  const accountId = window.user.id;
-  const getIDParent = await accountService.getParentById(accountId);
-  //   console.log(getIDParent.data[0].ParentID);
-  const parentId = getIDParent.data[0].ParentID;
-  const formData = new FormData();
-  if (fileUpload.value !== null) {
-    formData.append("files", fileUpload.value);
-  }
-  formData.append("name", name.value);
-  formData.append("gender", gender.value);
-  formData.append("birthday", birthday.value);
-  formData.append("address", address.value);
-  formData.append("job", job.value);
-  formData.append("email", email_parent.value);
-  formData.append("phone", phone_parent.value);
-  formData.append("role", role.value);
-  formData.append("status", status_parent.value);
+//   const accountId = window.user.id;
+//   const getIDParent = await accountService.getParentById(accountId);
+//   //   console.log(getIDParent.data[0].ParentID);
+//   const parentId = getIDParent.data[0].ParentID;
+//   const formData = new FormData();
+//   if (fileUpload.value !== null) {
+//     formData.append("files", fileUpload.value);
+//   }
+//   formData.append("name", name.value);
+//   formData.append("gender", gender.value);
+//   formData.append("birthday", birthday.value);
+//   formData.append("address", address.value);
+//   formData.append("job", job.value);
+//   formData.append("email", email_parent.value);
+//   formData.append("phone", phone_parent.value);
+//   formData.append("role", role.value);
+//   formData.append("status", status_parent.value);
 
-  const result = await parentService.updateParent(parentId, formData);
-  console.log(result.data);
-  updating.value = false;
+//   const result = await parentService.updateParent(parentId, formData);
+//   console.log(result.data);
+//   updating.value = false;
 
-  if (result.data.status !== 500 && result.data.status != 200) {
-    emits("add-toast", {
-      title: "Cập nhật thất bại",
-      content: result.data.error,
-      type: 1,
-    });
-    return;
-  }
+//   if (result.data.status !== 500 && result.data.status != 200) {
+//     emits("add-toast", {
+//       title: "Cập nhật thất bại",
+//       content: result.data.error,
+//       type: 1,
+//     });
+//     return;
+//   }
 
-  if (result.data.status === 500) {
-    emits("add-toast", {
-      title: "Cập nhật thất bại",
-      content: result.data.error,
-      type: 3,
-    });
-    return;
-  }
-  if (!result.data.success) {
-    emits("add-toast", {
-      title: "Cập nhật thất bại",
-      content: result.data.message,
-      type: 2,
-    });
-    return;
-  }
+//   if (result.data.status === 500) {
+//     emits("add-toast", {
+//       title: "Cập nhật thất bại",
+//       content: result.data.error,
+//       type: 3,
+//     });
+//     return;
+//   }
+//   if (!result.data.success) {
+//     emits("add-toast", {
+//       title: "Cập nhật thất bại",
+//       content: result.data.message,
+//       type: 2,
+//     });
+//     return;
+//   }
 
-  emits("add-toast", {
-    title: "Cập nhật thành công",
-    content: `Cập nhật thông tin thành công.`,
-    type: 0,
-  });
-}
+//   emits("add-toast", {
+//     title: "Cập nhật thành công",
+//     content: `Cập nhật thông tin thành công.`,
+//     type: 0,
+//   });
+// }
 function checkValidAccount() {
   let invalid = false;
 
@@ -626,6 +638,15 @@ function checkValidAccount() {
   }
   return invalid;
 }
+const getConfirm = (event) => {
+  if (event) {
+    showConfirmDialog.value = null;
+    return;
+  }
+  updateAccount();
+  showConfirmDialog.value = null;
+};
+
 async function updateAccount() {
   if (checkValidAccount()) {
     return;
