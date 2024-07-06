@@ -39,6 +39,7 @@ import ExpertiseAndProgramView from "../presentations/program_configuration_page
 import MenuFoodStudent from "../presentations/parent_page/view_detail_i4/menu_food_weekly.vue";
 // import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 // import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
+
 import HomePageView from "../presentations/home_page_user/views/news_view.vue";
 import Home from "../presentations/home_page_user/views/home_page.vue";
 
@@ -48,7 +49,6 @@ import DishesView from "../presentations/menu_page/views/dishes_view.vue";
 import MealView from "../presentations/menu_page/views/meals_view.vue";
 import ClassMenuManagement from "../presentations/menu_page/views/menu_manager_view.vue";
 import NewsView from "../presentations/home_page_user/views/news_view.vue";
-
 import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
 
 import CreateNewsView from "../presentations/news/create_news_view.vue";

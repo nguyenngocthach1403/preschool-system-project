@@ -80,7 +80,7 @@
               <td class="w-[300px]">
                 <div class="ml-[15px]">
                   <img
-                    :src="parent.avatar"
+                    :src="parent.avatar || avatar"
                     class="w-[40px] h-[40px] rounded-[50px] object-cover"
                   />
                 </div>
@@ -170,6 +170,7 @@ import delete_icon from "@/assets/icons/delete.svg";
 import edit_icon from "@/assets/icons/edit.svg";
 import add_icon from "@/assets/icons/pls.svg";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
+import avatar from "../../../assets/img/avatar.jpg";
 import { convertParentRole } from "../../../utils/resources/converter";
 
 // const searchText = ref(props.searchText);

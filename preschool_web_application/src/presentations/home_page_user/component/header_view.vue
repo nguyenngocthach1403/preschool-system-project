@@ -23,12 +23,6 @@
         </li>
 
         <li>
-          <router-link class="h-full" :to="{ name: 'RegistrationFormView' }"
-            >Tuyển sinh</router-link
-          >
-        </li>
-        <li>
-          <router-link :to="{ name: 'HomePageView' }">Tin tức</router-link>
           <router-link :to="{ name: 'RegistrationFormView' }">
             Tuyển sinh
           </router-link>
