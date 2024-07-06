@@ -24,6 +24,7 @@ const config = {
     certificates: "certificates",
     meals: "meals",
     dishes: "dishes",
+    news: "news",
   },
 };
 

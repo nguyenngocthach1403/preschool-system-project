@@ -62,10 +62,10 @@
 </template>
 
 <script setup>
-import parent from "@/assets/icons/extension.svg";
+import info from "@/assets/icons/extension.svg";
 import { convertAccountRole } from "../utils/resources/converter";
 import logoutIcon from "@/assets/icons/Logout.svg";
-import info from "@/assets/icons/member.svg";
+import teacher from "@/assets/icons/teacher.svg";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -97,7 +97,7 @@ const menu = ref([
     id: 2,
     title: "Lớp giảng dạy",
     name: "ClassTeacherDetailView",
-    icon: parent,
+    icon: teacher,
     active: false,
     type: 1,
   },

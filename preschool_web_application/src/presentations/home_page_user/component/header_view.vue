@@ -14,7 +14,9 @@
           <router-link :to="{ name: 'Home' }">Trang chủ</router-link>
         </li>
         <li>
-          <a href="#">Giới thiệu</a>
+          <router-link :to="{ name: 'IntroduceView' }">
+            Giới thiệu
+          </router-link>
         </li>
         <li>
           <a href="#">Chương trình</a>
@@ -27,6 +29,12 @@
         </li>
         <li>
           <router-link :to="{ name: 'HomePageView' }">Tin tức</router-link>
+          <router-link :to="{ name: 'RegistrationFormView' }">
+            Tuyển sinh
+          </router-link>
+        </li>
+        <li>
+          <router-link :to="{ name: 'NewsView' }"> Tin tức </router-link>
         </li>
       </ul>
     </nav>

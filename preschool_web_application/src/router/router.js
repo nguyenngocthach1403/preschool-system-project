@@ -14,7 +14,8 @@ import RegistrationView from "@/presentations/registration_page/view/registratio
 import AccountView from "@/presentations/account_page/views/account_view.vue";
 import RegisterAdditionView from "../presentations/registration_addition_page/views/registration_addition_page.vue";
 import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";
-import CategoryView from "../presentations/category_page/views/category_page.vue";
+// import CategoryView from "../presentations/category_page/views/category_page.vue";
+import CategoryView from "../presentations/category_page/component/tab.vue";
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
 import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
 import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
@@ -46,6 +47,12 @@ import MenuManagementView from "../presentations/menu_page/views/menu_page.vue";
 import DishesView from "../presentations/menu_page/views/dishes_view.vue";
 import MealView from "../presentations/menu_page/views/meals_view.vue";
 import ClassMenuManagement from "../presentations/menu_page/views/menu_manager_view.vue";
+import NewsView from "../presentations/home_page_user/views/news_view.vue";
+
+import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
+
+import CreateNewsView from "../presentations/news/create_news_view.vue";
+import EditNewsView from "../presentations/news/edit_news_view.vue";
 
 const router = Router();
 export default router;
@@ -70,9 +77,17 @@ function Router() {
         },
       },
       {
-        name: "HomePageView",
+        name: "NewsView",
         path: "/tin-tuc",
-        component: HomePageView,
+        component: NewsView,
+        meta: {
+          requireAuth: false,
+        },
+      },
+      {
+        name: "IntroduceView",
+        path: "/gioi-thieu",
+        component: IntroduceView,
         meta: {
           requireAuth: false,
         },
@@ -288,6 +303,16 @@ function Router() {
             name: "TeacherCreationView",
             path: "/home/:username/teacher",
             component: TeacherCreationView,
+          },
+          {
+            name: "CreateNewsView",
+            path: "/home-page/:username/create-news",
+            component: CreateNewsView,
+          },
+          {
+            name: "EditNewsView",
+            path: "/home-page/:username/edit-news/:id",
+            component: EditNewsView,
           },
         ],
       },
