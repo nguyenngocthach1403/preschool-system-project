@@ -14,8 +14,10 @@ const getWeeklyMenubById = (id) => {
  * @param {interger} classId
  * @returns {Response}
  */
-const fetchMenuList = (classId) => {
-  return api().get(`/menu/class?classId=${classId}`);
+const fetchMenuList = (classId, startDate, endDate) => {
+  return api().get(
+    `/menu/class?classId=${classId}&startDate=${startDate}&endDate=${endDate}`
+  );
 };
 
 const addMeals = (dataToCreate) => {
@@ -47,18 +49,14 @@ const featchDishes = (limit, page) => {
 /**
  *
  * @param {interger} classId
- * @param {String} date
- * @param {interger} createBy
- * @param {interger} mealId
- * @param {Object} dishes
+ * @param {Object} dataToCreate
  */
-const createMenu = (classId, date, createBy, mealId, dishes) => {
-  return api().post(`/menu/create?classId=${classId}`, {
-    date: date,
-    createBy: createBy,
-    mealId: mealId,
-    dishes: dishes,
-  });
+const createMenu = (classId, dataToCreate) => {
+  return api().post(`/menu/create?classId=${classId}`, dataToCreate);
+};
+
+const updateMenu = (mealMenuId, dataToUpdate) => {
+  return api().post(`/menu/update?mealMenuId=${mealMenuId}`, dataToUpdate);
 };
 
 export default {
@@ -69,4 +67,5 @@ export default {
   addDish,
   fetchMenuList,
   createMenu,
+  updateMenu,
 };

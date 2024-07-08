@@ -1,33 +1,62 @@
 <template>
   <PopupLayout
     @close="$emit('close')"
-    :title="'Tạo bữa ăn'"
+    :title="'Tạo thực đơn'"
     class="absolute top-0 left-0"
   >
     <template #content>
-      <div class="w-[600px] px-[20px]">
-        <ul class="rounded-md border max-h-64 overflow-y-auto">
-          <li v-for="dish in props.menuDetail.menu_detail" :key="dish">
-            <div class="w-full py-2 px-3 text-start hover:bg-gray-200 relative">
-              {{ dish.dish_id }}-{{ dish.dish_name }}
-              <button
-                class="absolute right-3"
-                @click="
-                  $emit('delete', {
-                    meal_menu_id: props.menuDetail.meal_menu_id,
-                    dish_id: dish.dish_id,
-                    dish_name: dish.dish_name,
-                  })
-                "
+      <div class="w-[750px] px-[20px]">
+        <div class="flex gap-3">
+          <div class="w-full">
+            <div class="my-3">Danh sách món hiện tại</div>
+            <div class="h-[120px] rounded-md border overflow-y-auto">
+              <ul
+                v-if="props.menuDetail.dishes"
+                class="rounded-md border max-h-64 overflow-y-auto"
               >
-                <img
-                  :src="close_icon"
-                  class="w-5 opacity-50 hover:opacity-100"
-                />
-              </button>
+                <li v-for="dish in props.menuDetail.dishes" :key="dish">
+                  <div
+                    class="w-full py-2 px-3 bg-white drop-shadow-xl text-start relative"
+                    :class="{
+                      deleted: dishesToDelete.some(
+                        (e) => e.dish_id == dish.dish_id
+                      ),
+                    }"
+                  >
+                    {{ dish.dish_name }}
+                    <button
+                      class="absolute right-3"
+                      @click="onSelectToDelete(dish)"
+                    >
+                      <img
+                        :src="
+                          dishesToDelete.some((e) => e.dish_id == dish.dish_id)
+                            ? restore
+                            : close_icon
+                        "
+                        class="w-5 opacity-50 hover:opacity-100"
+                      />
+                    </button>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </li>
-        </ul>
+          </div>
+          <div class="w-full">
+            <div class="my-3">Danh sách món mới</div>
+            <div class="h-[120px] rounded-md border overflow-y-auto">
+              <ul class="h-full">
+                <li v-for="dish in dishesSelected" :key="dish">
+                  <div
+                    class="w-full py-2 px-3 bg-white drop-shadow-xl text-start hover:bg-gray-200 relative"
+                  >
+                    {{ dish.name }}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
         <div class="text-start my-5">
           <span class="pl-2">Chọn món</span>
           <InputSearchSelect
@@ -48,11 +77,11 @@
       >
         <button
           v-if="!creating"
-          @click="createMenu()"
+          @click="updateMenu()"
           type="button"
           class="h-[37px] my-[0px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md ]"
         >
-          Thêm
+          Cập nhật
         </button>
         <button
           v-if="creating"
@@ -89,6 +118,7 @@
 
 <script setup>
 import close_icon from "../../../assets/icons/close.svg";
+import restore from "../../../assets/icons/Reset.svg";
 import PopupLayout from "../../../components/popup_layout.vue";
 
 import InputSearchSelect from "../../../components/input_search_select.vue";
@@ -106,6 +136,7 @@ import { onMounted, ref } from "vue";
 const dishes = ref([]);
 
 const dishesSelected = ref([]);
+const dishesToDelete = ref([]);
 //
 const page = ref(0);
 const hasData = ref(true);
@@ -117,6 +148,7 @@ const props = defineProps({
     require: true,
   },
 });
+const emits = defineEmits(["add-toast", "close"]);
 
 async function fetchDishes(limit, page) {
   try {
@@ -136,10 +168,50 @@ async function fetchDishes(limit, page) {
   }
 }
 
+function onSelectToDelete(dish) {
+  console.log(dish);
+  const index = dishesToDelete.value.findIndex(
+    (el) => el.dish_id == dish.dish_id
+  );
+  if (index != -1) {
+    dishesToDelete.value.splice(index, 1);
+  } else {
+    dishesToDelete.value.push(dish);
+  }
+}
+
 function handleScrollEnd() {
   if (!hasData.value) return;
   page.value += 1;
   fetchDishes(10, page.value);
+}
+
+async function updateMenu() {
+  try {
+    creating.value = true;
+
+    const dataToUpdate = {
+      dishesToDelete: dishesToDelete.value,
+      dishesToAdd: dishesSelected.value,
+    };
+
+    await menuService.updateMenu(props.menuDetail.mealMenuId, dataToUpdate);
+
+    emits("add-toast", {
+      title: "Thành công!",
+      type: 0,
+    });
+    emits("close", true);
+  } catch (error) {
+    console.log(error);
+    emits("add-toast", {
+      title: "Thất bại!",
+      content: error,
+      type: 1,
+    });
+  } finally {
+    creating.value = false;
+  }
 }
 
 onMounted(() => {
@@ -147,5 +219,8 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+.deleted {
+  background-color: rgb(230, 230, 230) !important;
+}
 </style>

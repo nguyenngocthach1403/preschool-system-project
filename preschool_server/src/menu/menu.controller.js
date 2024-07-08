@@ -19,11 +19,37 @@ router.post("/meals/add", addMeal);
 router.post("/dish/add", addDish);
 router.get("/class", getMenuByClassId);
 router.post("/create", createMenuByClassId);
+router.post("/update", updateMenu);
+
+async function updateMenu(req, res) {
+  const { mealMenuId } = req.query;
+
+  const { dishesToDelete, dishesToAdd } = req.body;
+
+  try {
+    for (let index = 0; index < dishesToAdd.length; index++) {
+      const element = dishesToAdd[index];
+      await menuService.createDetailMenu(element.id, mealMenuId);
+    }
+
+    for (let index = 0; index < dishesToDelete.length; index++) {
+      const element = dishesToDelete[index];
+
+      await menuService.deleteDetailMenu(mealMenuId, element.dish_id);
+    }
+
+    Response.sendResponse({ res, statusCode: 200 });
+  } catch (error) {
+    Response.sendErrorResponse({ res, statusCode: 400, error: error });
+  }
+}
 
 async function createMenuByClassId(req, res) {
   const { classId } = req.query;
 
-  const { date, mealId, dishes, createBy } = req.body;
+  const { date, mealId, dishes, createBy, dailyMenuId, mealMenuId } = req.body;
+
+  console.log(dishes, date, mealId, createBy, dailyMenuId, mealMenuId);
 
   //Kiểm tra định dạng dữ liệu
   if (isEmpty(classId) || !isNumber(classId)) {
@@ -62,14 +88,6 @@ async function createMenuByClassId(req, res) {
     });
   }
 
-  if (!isValidDate(date)) {
-    return Response.sendErrorResponse({
-      res,
-      statusCode: 400,
-      error: "date phải có định dạng YYYY-MM-DD",
-    });
-  }
-
   const isExistCreator = await AccountService.isExitAccountById(createBy);
 
   if (!isExistCreator) {
@@ -80,120 +98,159 @@ async function createMenuByClassId(req, res) {
     });
   }
 
-  const isExitMeal = await menuService.isExistMeal(mealId);
+  if (isEmpty(dailyMenuId)) {
+    try {
+      if (!isValidDate(date)) {
+        return Response.sendErrorResponse({
+          res,
+          statusCode: 400,
+          error: "date phải có định dạng YYYY-MM-DD",
+        });
+      }
 
-  if (!isExitMeal) {
-    return Response.sendErrorResponse({
-      res,
-      statusCode: 404,
-      error: "Bữa ăn không tồn tại!",
-    });
+      const isExitMeal = await menuService.isExistMeal(mealId);
+
+      if (!isExitMeal) {
+        return Response.sendErrorResponse({
+          res,
+          statusCode: 404,
+          error: "Bữa ăn không tồn tại!",
+        });
+      }
+
+      for (let index = 0; index < dishes.length; index++) {
+        const element = dishes[index];
+        const isExistDish = await menuService.isExistDish(element.id);
+
+        if (!isExistDish) {
+          return Response.sendErrorResponse({
+            res,
+            statusCode: 404,
+            error: `Món ${element.name} không tồn tại!`,
+          });
+        }
+      }
+
+      const resultCreateDaiyMenu = await menuService.createDailyMenu({
+        date: date,
+        created_by: createBy,
+        class_id: classId,
+      });
+
+      const isExistDailyMenu = await menuService.isExistDailyMenu(
+        resultCreateDaiyMenu
+      );
+
+      if (!isExistDailyMenu) {
+        return Response.sendErrorResponse({
+          res,
+          statusCode: 400,
+          error: `Tạo thất bại!`,
+        });
+      }
+
+      const resultCreateMealMenu = await menuService.createMealMenu(
+        mealId,
+        resultCreateDaiyMenu
+      );
+
+      const isExistMealMenu = await menuService.isExistMealMenu(
+        resultCreateMealMenu
+      );
+
+      if (!isExistMealMenu) {
+        return Response.sendErrorResponse({
+          res,
+          statusCode: 400,
+          error: `Tạo thất bại!`,
+        });
+      }
+
+      for (let index = 0; index < dishes.length; index++) {
+        const element = dishes[index];
+
+        console.log(element);
+
+        await menuService.createDetailMenu(element.id, resultCreateMealMenu);
+      }
+
+      return Response.sendResponse({
+        res,
+        statusCode: 200,
+      });
+    } catch (error) {
+      return Response.sendErrorResponse({
+        res,
+        statusCode: 400,
+        error: error,
+      });
+    }
   }
 
-  for (let index = 0; index < dishes.length; index++) {
-    const element = dishes[index];
-    const isExistDish = await menuService.isExistDish(element.id);
-
-    if (!isExistDish) {
-      return Response.sendErrorResponse({
-        res,
-        statusCode: 404,
-        error: `Món ${element.name} không tồn tại!`,
-      });
-    }
-  }
-
-  //Kiểm tra
-  const dailyMenu = await menuService.getDailyMenuByDateAndClassId(
-    classId,
-    date
-  );
-
-  if (dailyMenu) {
-    const resultCreateMealMenu = await menuService.createMealMenu(
-      mealId,
-      dailyMenu.id
+  if (!isEmpty(dailyMenuId)) {
+    //Kiểm tra
+    const dailyMenu = await menuService.getDailyMenuByDateAndClassId(
+      classId,
+      date
     );
-
-    const isExistMealMenu = await menuService.isExistMealMenu(
-      resultCreateMealMenu
-    );
-
-    if (!isExistMealMenu) {
+    if (!dailyMenu) {
       return Response.sendErrorResponse({
         res,
         statusCode: 400,
-        error: `Tạo thất bại!`,
+        error: "Thất bại",
       });
     }
 
-    for (let index = 0; index < dishes.length; index++) {
-      const element = dishes[index];
+    try {
+      const resultCreateMealMenu = await menuService.createMealMenu(
+        mealId,
+        dailyMenuId
+      );
 
-      console.log(element);
+      const isExistMealMenu = await menuService.isExistMealMenu(
+        resultCreateMealMenu
+      );
 
-      await menuService.createDetailMenu(element.id, resultCreateMealMenu);
-    }
+      if (!isExistMealMenu) {
+        return Response.sendErrorResponse({
+          res,
+          statusCode: 400,
+          error: `Tạo thất bại!`,
+        });
+      }
 
-    return Response.sendResponse({
-      res,
-      statusCode: 200,
-    });
-  } else {
-    //Tạo dailyMenu
-    const resultCreateDaiyMenu = await menuService.createDailyMenu({
-      date: date,
-      created_by: createBy,
-    });
+      for (let index = 0; index < dishes.length; index++) {
+        const element = dishes[index];
 
-    const isExistDailyMenu = await menuService.isExistDailyMenu(
-      resultCreateDaiyMenu
-    );
+        console.log(element);
 
-    if (!isExistDailyMenu) {
+        await menuService.createDetailMenu(element.id, resultCreateMealMenu);
+      }
+
+      return Response.sendResponse({
+        res,
+        statusCode: 200,
+      });
+    } catch (error) {
       return Response.sendErrorResponse({
         res,
         statusCode: 400,
-        error: `Tạo thất bại!`,
+        error: error,
       });
     }
-
-    await menuService.createClassMenu(classId, resultCreateDaiyMenu);
-
-    const resultCreateMealMenu = await menuService.createMealMenu(
-      mealId,
-      resultCreateDaiyMenu
-    );
-
-    const isExistMealMenu = await menuService.isExistMealMenu(
-      resultCreateMealMenu
-    );
-
-    if (!isExistMealMenu) {
-      return Response.sendErrorResponse({
-        res,
-        statusCode: 400,
-        error: `Tạo thất bại!`,
-      });
-    }
-
-    for (let index = 0; index < dishes.length; index++) {
-      const element = dishes[index];
-
-      console.log(element);
-
-      await menuService.createDetailMenu(element.id, resultCreateMealMenu);
-    }
-
-    Response.sendResponse({
-      res,
-      statusCode: 200,
-    });
   }
 }
 
 async function getMenuByClassId(req, res) {
-  const { classId } = req.query;
+  const { classId, startDate, endDate } = req.query;
+
+  if (!isValidDate(startDate) || !isValidDate(endDate)) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      error: "Ngày không hợp lệ!",
+    });
+  }
 
   //Kiểm tra định dạng dữ liệu
   if (isEmpty(classId) || !isNumber(classId)) {
@@ -215,7 +272,11 @@ async function getMenuByClassId(req, res) {
     });
   }
 
-  const result = await menuService.getMenuByClassId(classId);
+  const result = await menuService.getMenuByClassId(
+    classId,
+    startDate,
+    endDate
+  );
 
   Response.sendResponse({ res, statusCode: 200, responseBody: result || [] });
 }
@@ -366,8 +427,6 @@ async function getDishes(req, res) {
   const dbResponse = await menuService.getDishes(limit, offset);
 
   const countResponse = await menuService.countDishes();
-
-  console.log(dbResponse);
 
   Response.sendResponse({
     res,

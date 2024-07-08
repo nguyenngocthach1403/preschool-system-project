@@ -92,6 +92,22 @@ function convertStudentStatus(status) {
   }
 }
 
+/**
+ *  Phương thức kiểm tra trạng thái lớp
+ * @param {Date} start_date
+ * @param {Date} end_date
+ * @return  {String} String
+ */
+function convertClassStatus(start_date, end_date) {
+  if (new Date(start_date) > new Date()) {
+    return "Sắp bắt đầu";
+  } else if (new Date(end_date) < new Date()) {
+    return "Kết thúc";
+  } else {
+    return "Đang hoạt động";
+  }
+}
+
 export {
   convertRegisterStatus,
   convertParentRole,
@@ -99,4 +115,5 @@ export {
   convertStudentStatus,
   convertGender,
   convertFoodCategory,
+  convertClassStatus,
 };

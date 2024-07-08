@@ -178,6 +178,9 @@ import { onMounted, ref } from "vue";
 import classService from "../../../services/class.service";
 import PopupAddTeacher from "../components/popup_add_teacher.vue";
 
+import { useRouter } from "vue-router";
+const router = useRouter();
+
 //icon
 import user_icon from "../../../assets/icons/User.svg";
 
@@ -194,14 +197,6 @@ const classs = ref(null);
 
 //emits
 const emits = defineEmits(["add-toast"]);
-
-//props
-const props = defineProps({
-  classId: {
-    type: Number,
-    require: true,
-  },
-});
 
 async function getClassManagerRoles() {
   try {
@@ -246,15 +241,15 @@ function fillTeacher(teachers) {
 }
 function closePopup() {
   showPopupAddTeacher.value = null;
-  if (props.classId) {
-    getClassById(props.classId);
+  if (router.currentRoute.value.query.classID) {
+    getClassById(router.currentRoute.value.query.classID);
   }
 }
 
 //life circle
 onMounted(() => {
-  if (props.classId) {
-    getClassById(props.classId);
+  if (router.currentRoute.value.query.classID) {
+    getClassById(router.currentRoute.value.query.classID);
   }
 });
 </script>

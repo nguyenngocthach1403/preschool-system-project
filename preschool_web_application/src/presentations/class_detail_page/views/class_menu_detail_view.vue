@@ -5,7 +5,7 @@
       class="absolute top-0 left-0"
       v-if="isShowCreateMenu"
       :data-to-create="isShowCreateMenu"
-      :class-id="props.classId"
+      :class-id="$router.currentRoute.value.query.classID"
       @add-toast="$emit('add-toast', $event)"
     />
     <PopupEditMenu
@@ -28,6 +28,7 @@
     <!--Table-->
     <MenuTable
       :menu-list="menu"
+      :class-id="$router.currentRoute.value.query.classID"
       @create-meal-of-day-menu="isShowCreateMenu = $event"
       @edit-menu="isShowEditMenu = $event"
     />
@@ -43,6 +44,9 @@ import PopupEditMenu from "../../menu_page/components/popup_detail_menu.vue";
 import PopupComfirm from "../../../components/confirm_dialog.vue";
 import { onMounted, ref } from "vue";
 import menuService from "../../../services/menu.service";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 //  @valiable state
 const loading = ref(false);
@@ -53,13 +57,6 @@ const isComfirmPopup = ref(false);
 //valiable data
 const meals = ref([]);
 const menu = ref(null);
-
-const props = defineProps({
-  classId: {
-    type: Number,
-    require: true,
-  },
-});
 
 async function fetchMenuList(classId) {
   try {
@@ -77,15 +74,15 @@ async function fetchMenuList(classId) {
 }
 
 onMounted(async () => {
-  if (props.classId) {
-    menu.value = await fetchMenuList(props.classId);
+  if (router.currentRoute.value.query.classID) {
+    menu.value = await fetchMenuList(router.currentRoute.value.query.classID);
   }
 });
 async function closePopupCreateMenu(event) {
   isShowCreateMenu.value = null;
 
   if (event) {
-    menu.value = await fetchMenuList(props.classId);
+    menu.value = await fetchMenuList(router.currentRoute.value.query.classID);
   }
 }
 </script>

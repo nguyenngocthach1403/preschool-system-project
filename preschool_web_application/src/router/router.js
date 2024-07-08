@@ -14,14 +14,12 @@ import RegistrationView from "@/presentations/registration_page/view/registratio
 import AccountView from "@/presentations/account_page/views/account_view.vue";
 import RegisterAdditionView from "../presentations/registration_addition_page/views/registration_addition_page.vue";
 import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";
-// import CategoryView from "../presentations/category_page/views/category_page.vue";
 import CategoryView from "../presentations/category_page/component/tab.vue";
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
 import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
 import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
 import TeacherCreationView from "../presentations/teacher_page/view/teacher_create.vue";
 import StudentDetailView from "../presentations/student_detail_page/views/student_detail_page.vue";
-import ClassDetailView from "../presentations/class_detail_page/views/class_detail_page.vue";
 import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
 import AssignmentView from "../presentations/assignmet_page/views/assignment_page.vue";
 
@@ -39,6 +37,14 @@ import ExpertiseAndProgramView from "../presentations/program_configuration_page
 import MenuFoodStudent from "../presentations/parent_page/view_detail_i4/menu_food_weekly.vue";
 // import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 // import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
+
+//===========ClassDetail================//
+import ClassDetailPage from "../presentations/class_detail_page/views/class_detail_page.vue";
+import ClassScheduleView from "../presentations/class_detail_page/views/class_schedule_view.vue";
+import ClassMenuView from "../presentations/class_detail_page/views/class_menu_detail_view_demo.vue";
+import ClassManagerView from "../presentations/class_detail_page/views/class_teachers_view.vue";
+import ClassMemberView from "../presentations/class_detail_page/views/student_list_view.vue";
+
 import HomePageView from "../presentations/home_page_user/views/news_view.vue";
 import Home from "../presentations/home_page_user/views/home_page.vue";
 
@@ -47,10 +53,15 @@ import MenuManagementView from "../presentations/menu_page/views/menu_page.vue";
 import DishesView from "../presentations/menu_page/views/dishes_view.vue";
 import MealView from "../presentations/menu_page/views/meals_view.vue";
 import ClassMenuManagement from "../presentations/menu_page/views/menu_manager_view.vue";
+//============Schedule============//
+import SchedulePage from "../presentations/schedule_page/schedule_page.vue";
+import ActivityView from "../presentations/schedule_page/views/activity_view.vue";
+import TimetableView from "../presentations/schedule_page/views/timetable_view.vue";
+
+import NewsView from "../presentations/home_page_user/views/news_view.vue";
 import NewsView from "../presentations/home_page_user/views/news_view.vue";
 import DetailNewsView from "../presentations/home_page_user/views/detail_news_view.vue";
 import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
-
 import CreateNewsView from "../presentations/news/create_news_view.vue";
 import EditNewsView from "../presentations/news/edit_news_view.vue";
 
@@ -202,14 +213,73 @@ function Router() {
             component: ParentStudentCreationView,
           },
           {
-            name: "ClassDetailView",
+            name: "ClassDetailPage",
             path: "/home/:username/classes/detail",
-            component: ClassDetailView,
+            component: ClassDetailPage,
             beforeEnter(to, from) {
               if (!to.query.classID) {
                 return from.path;
               }
             },
+            children: [
+              {
+                name: "ClassScheduleView",
+                path: "/home/:username/classes/detail/schedule",
+                component: ClassScheduleView,
+                beforeEnter(to, from) {
+                  if (!to.query.classID) {
+                    return from.path;
+                  }
+                },
+              },
+              {
+                name: "ClassMenuView",
+                path: "/home/:username/classes/detail/menu",
+                component: ClassMenuView,
+                beforeEnter(to, from) {
+                  if (!to.query.classID) {
+                    return from.path;
+                  }
+                },
+              },
+              {
+                name: "ClassManagerView",
+                path: "/home/:username/classes/detail/managers",
+                component: ClassManagerView,
+                beforeEnter(to, from) {
+                  if (!to.query.classID) {
+                    return from.path;
+                  }
+                },
+              },
+              {
+                name: "ClassMemberView",
+                path: "/home/:username/classes/detail/members",
+                component: ClassMemberView,
+                beforeEnter(to, from) {
+                  if (!to.query.classID) {
+                    return from.path;
+                  }
+                },
+              },
+            ],
+          },
+          {
+            name: "SchedulePage",
+            path: "/home/:username/schedule_manage_page",
+            component: SchedulePage,
+            children: [
+              {
+                name: "ActivityView",
+                path: "/home/:username/schedule_manage_page/activity",
+                component: ActivityView,
+              },
+              {
+                name: "TimetableView",
+                path: "/home/:username/schedule_manage_page/timetables",
+                component: TimetableView,
+              },
+            ],
           },
           {
             name: "ProgramConfigurationView",
@@ -343,12 +413,9 @@ function Router() {
     if (to.name === from.name) {
       return next();
     }
-    next();
     if (to.matched.some((record) => record.meta.requireAuth)) {
       if (localStorage.getItem("user") == null) {
-        next({
-          path: "/sign",
-        });
+        return "/sign";
       } else {
         next();
       }

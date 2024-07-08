@@ -39,11 +39,13 @@
         <td class="pr-5">
           <div class="flex justify-end">
             <div
+              @click="$emit('delete', item)"
               class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
             >
               <img :src="delete_icon" class="w-[14px] m-auto" />
             </div>
             <div
+              @click="editDish(item)"
               class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(53,61,186)] content-center"
             >
               <img :src="edit_icon" class="w-[14px] m-auto" />
@@ -71,6 +73,8 @@ import {
   formatTimeString,
   ddmmyyyyDateString,
 } from "../../../utils/resources/format_date";
+
+const emits = defineEmits(["edit"]);
 //props
 const props = defineProps({
   dishes: {
@@ -78,6 +82,10 @@ const props = defineProps({
     require: true,
   },
 });
+
+function editDish(item) {
+  emits("edit", item);
+}
 </script>
 
 <style lang="scss" scoped>

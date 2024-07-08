@@ -1,132 +1,137 @@
 
 <template>
   <div class="schedule w-full px-3 py-5 relative">
-    <div class="flex">
-      <div class="menu-navigation">
-        <button
-          class="text-white bg-[#3f51b5] my-3 px-3 py-2 hover:bg-blue-900 rounded-tl-md rounded-bl-md"
-          @click="previousWeek()"
-        >
-          Tuần trước
-        </button>
-        <button
-          @click="currentWeekStart = getStartOfWeek(new Date())"
-          class="text-black bg-white my-3 px-3 py-2 hover:bg-blue-900 hover:text-white"
-        >
-          Hiện tại
-        </button>
-        <button
-          class="text-white bg-[#3f51b5] my-3 px-3 py-2 hover:bg-blue-900 rounded-tr-md rounded-br-md"
-          @click="nextWeek()"
-        >
-          Tuần sau
-        </button>
+    <EmptyBox v-if="!menuList" />
+    <div v-else>
+      <div class="flex">
+        <div class="menu-navigation">
+          <button
+            class="text-white bg-[#3f51b5] my-3 px-3 py-2 hover:bg-blue-900 rounded-tl-md rounded-bl-md"
+            @click="previousWeek()"
+          >
+            Tuần trước
+          </button>
+          <button
+            @click="currentWeek()"
+            class="text-black bg-white my-3 px-3 py-2 hover:bg-blue-900 hover:text-white"
+          >
+            Hiện tại
+          </button>
+          <button
+            class="text-white bg-[#3f51b5] my-3 px-3 py-2 hover:bg-blue-900 rounded-tr-md rounded-br-md"
+            @click="nextWeek()"
+          >
+            Tuần sau
+          </button>
+        </div>
       </div>
-    </div>
-    <table class="rounded-md overflow-hidden w-full h-full">
-      <thead class="rounded-md">
-        <tr>
-          <th>Bữa ăn</th>
-          <th
-            v-for="day in week"
-            :key="day.date"
-            :class="{
-              'current-date':
-                day.date.toDateString() == new Date().toDateString(),
-            }"
-          >
-            {{ day.name }}
-            <div class="text-[13px] text-gray-300">
-              {{ ddmmyyyyDateString(day.date.toLocaleDateString()) }}
-            </div>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="meal in meals" :key="meal.id">
-          <td
-            class="meal bg-gray-200 h-[100px] hover:border hover:border-black"
-          >
-            <span class="text-[16px] font-bold"> {{ meal.meal }}</span
-            ><br /><span class="text-[13px] text-gray-500"
-              >{{ meal.start_time.slice(0, 5) }} -
-              {{ meal.end_time.slice(0, 5) }}</span
+      <table class="rounded-md overflow-hidden w-full h-full">
+        <thead class="rounded-md">
+          <tr>
+            <th>Bữa ăn</th>
+            <th
+              v-for="day in week"
+              :key="day.date"
+              :class="{
+                'current-date':
+                  day.date.toDateString() == new Date().toDateString(),
+              }"
             >
-          </td>
-          <td
-            v-for="day in week"
-            :key="day.date"
-            class="hover:bg-gray-200 relative"
-            @click.right.prevent="handleRightClick(meal.id, day.date)"
-            :class="{
-              'cell-current-date':
-                day.date.toDateString() == new Date().toDateString(),
-            }"
-          >
-            <div
-              v-if="checkShowEdit(isShowEdit, meal.id, day.date, meal.meal)"
-              class="absolute top-0 left-0 w-full h-full bg-blue-800 text-white content-center"
+              {{ day.name }}
+              <div class="text-[13px] text-gray-300">
+                {{ ddmmyyyyDateString(day.date.toLocaleDateString()) }}
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="meal in meals" :key="meal.id">
+            <td
+              class="meal bg-gray-200 h-[100px] hover:border hover:border-black"
             >
-              <button
-                @click="handleEditMenu(day.date, meal.meal)"
-                class="border px-3 rounded-md py-1 hover:bg-blue-900 flex items-center justify-center gap-3 m-auto"
+              <span class="text-[16px] font-bold"> {{ meal.meal }}</span
+              ><br /><span class="text-[13px] text-gray-500"
+                >{{ meal.start_time.slice(0, 5) }} -
+                {{ meal.end_time.slice(0, 5) }}</span
               >
-                <img :src="edit_icon" class="w-5" />
-                Sửa
-              </button>
-            </div>
-            <div
-              v-if="
-                getDetailMenuByDateAndMeal(
-                  ddmmyyyyDateString(day.date.toLocaleDateString()),
-                  meal.meal
-                )
-              "
+            </td>
+            <td
+              v-for="day in week"
+              :key="day.date"
+              class="hover:bg-gray-200 relative"
+              @click.right.prevent="handleRightClick(meal.id, day.date)"
+              :class="{
+                'cell-current-date':
+                  day.date.toDateString() == new Date().toDateString(),
+              }"
             >
+              <div
+                v-if="checkShowEdit(isShowEdit, meal.id, day.date, meal.meal)"
+                class="absolute top-0 left-0 w-full h-full bg-blue-800 text-white content-center"
+              >
+                <button
+                  @click="handleEditMenu(day.date, meal.meal)"
+                  class="border px-3 rounded-md py-1 hover:bg-blue-900 flex items-center justify-center gap-3 m-auto"
+                >
+                  <img :src="edit_icon" class="w-5" />
+                  Sửa
+                </button>
+              </div>
               <div
                 v-if="
                   getDetailMenuByDateAndMeal(
                     ddmmyyyyDateString(day.date.toLocaleDateString()),
                     meal.meal
-                  ).menu
+                  )
                 "
               >
                 <div
-                  v-for="dish in getDetailMenuByDateAndMeal(
-                    ddmmyyyyDateString(day.date.toLocaleDateString()),
-                    meal.meal
-                  ).menu"
-                  :key="dish.dish_id"
+                  v-if="
+                    getDetailMenuByDateAndMeal(
+                      ddmmyyyyDateString(day.date.toLocaleDateString()),
+                      meal.meal
+                    ).menu
+                  "
                 >
-                  <div class="meal-info">
-                    <div>{{ dish.dish_name }}</div>
+                  <div
+                    v-for="dish in getDetailMenuByDateAndMeal(
+                      ddmmyyyyDateString(day.date.toLocaleDateString()),
+                      meal.meal
+                    ).menu"
+                    :key="dish.dish_id"
+                  >
+                    <div class="meal-info">
+                      <div>{{ dish.dish_name }}</div>
+                    </div>
                   </div>
                 </div>
+                <button
+                  v-else
+                  @click="createMenu(meal.id, meal.meal, day.date, day.name)"
+                  class="border rounded-md hover:bg-gray-100 cursor-default w-fit px-3 py-1 m-auto"
+                >
+                  Thêm món
+                </button>
               </div>
               <button
                 v-else
-                @click="createMenu(meal.id, meal.meal, day.date)"
+                @click="createMenu(meal.id, meal.meal, day.date, day.name)"
                 class="border rounded-md hover:bg-gray-100 cursor-default w-fit px-3 py-1 m-auto"
               >
-                Thêm món
+                Thêm
               </button>
-            </div>
-            <button
-              v-else
-              @click="createMenu(meal.id, meal.meal, day.date)"
-              class="border rounded-md hover:bg-gray-100 cursor-default w-fit px-3 py-1 m-auto"
-            >
-              Thêm
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
   
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
+//component
+import EmptyBox from "../../../components/empty_data.vue";
 ///icon
 import edit_icon from "../../../assets/icons/edit.svg";
 //service
@@ -150,12 +155,12 @@ const isShowCreate = ref(false);
 
 //props
 const props = defineProps({
-  meals: {
-    type: Array,
-    require: true,
-  },
   menuList: {
     type: Object,
+    require: true,
+  },
+  classId: {
+    type: Number,
     require: true,
   },
 });
@@ -176,12 +181,18 @@ async function fetchMeals() {
     const response = await menuService.fetchMeals();
     const dataResponse = response.data;
     meals.value = dataResponse.data;
-  } catch (error) {}
+  } catch (error) {
+    //
+  }
 }
 
 function getStartOfWeek(date) {
   const start = new Date(date);
+
   start.setDate(date.getDate() - date.getDay() + 1);
+  if (start > new Date(date)) {
+    start.setDate(start.getDate() - 7);
+  }
   return start;
 }
 
@@ -206,6 +217,7 @@ function previousWeek() {
 
 function currentWeek() {
   const newDate = getStartOfWeek(new Date());
+  console.log(new Date());
   newDate.setDate(newDate.getDate());
   currentWeekStart.value = newDate;
 }
@@ -213,7 +225,7 @@ function currentWeek() {
 function getDetailMenuByDateAndMeal(date, meal) {
   if (!props.menuList) return undefined;
 
-  const dailyMenu = props.menuList.daily_menu[date];
+  const dailyMenu = props.menuList.daily_menu.daily_menu[date];
 
   if (!dailyMenu) return undefined;
 
@@ -242,11 +254,12 @@ function checkShowEdit(isShowEdit, mealId, date, mealName) {
   return false;
 }
 
-function createMenu(mealId, mealName, date) {
+function createMenu(mealId, mealName, date, name) {
   emits("create-meal-of-day-menu", {
     mealId: mealId,
     mealName: mealName,
     date: date,
+    name: name,
   });
 }
 
@@ -321,5 +334,4 @@ onMounted(async () => {
 }
 </style>
   
-
 

@@ -121,8 +121,8 @@
                   v-model="status_teacher"
                   class="input-text-default"
                 >
-                  <option value="0">Hoạt động</option>
-                  <option value="1">Không hoạt động</option>
+                  <option value="0">Không hoạt động</option>
+                  <option value="1">Hoạt động</option>
                 </select>
               </label>
             </div>

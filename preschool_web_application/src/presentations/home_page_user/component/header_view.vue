@@ -23,6 +23,10 @@
           </router-link>
         </li>
         <li>
+          <a href="#">Chương trình</a>
+        </li>
+
+        <li>
           <router-link :to="{ name: 'RegistrationFormView' }">
             Tuyển sinh
           </router-link>

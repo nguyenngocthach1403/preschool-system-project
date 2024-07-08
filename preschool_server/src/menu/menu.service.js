@@ -188,6 +188,7 @@ const createDailyMenu = async (dataToCreated) => {
 
     return responseCreateDailyMenu.insertId;
   } catch (error) {
+    console.error(error);
     return undefined;
   }
 };
@@ -201,16 +202,31 @@ const createMealMenu = async (mealId, dailyMenuId) => {
 
     return response.insertId;
   } catch (error) {
+    console.error(error);
     return undefined;
+  }
+};
+
+const deleteDetailMenu = async (mealMenuID, dishId) => {
+  try {
+    const reusult = await db.deleteRow(
+      "detail_menu",
+      `WHERE meal_menu_id = ${mealMenuID} AND dish_id = ${dishId}`
+    );
+
+    if (reusult == 0) throw new Error("Thất bại!");
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 };
 
 const getDailyMenuByDateAndClassId = async (classId, date) => {
   try {
     const response = await db.select(
-      "daily_menu dm left join class_menu cm  On cm.daily_menu_id = dm.id ",
+      "daily_menu dm left join classes c  On c.id = dm.class_id ",
       "*",
-      `WHERE cm.class_id = ${classId} AND dm.date = '${date}'`
+      `WHERE c.id = ${classId} AND dm.date = '${date}'`
     );
 
     const dbResponse = response[0];
@@ -245,22 +261,6 @@ const getDetailMenu = async (mealMenuId) => {
   }
 };
 
-const createClassMenu = async (classId, dailyMenuId) => {
-  try {
-    const responseCreateClassMenu = await db.insert("class_menu", {
-      class_id: classId,
-      daily_menu_id: dailyMenuId,
-    });
-
-    if (responseCreateClassMenu.affectedRows == 0) {
-      return false;
-    }
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
 const createDetailMenu = async (dishId, mealMenuId) => {
   try {
     const responseCreateDetailMenu = await db.insert("detail_menu", {
@@ -283,21 +283,21 @@ const createDetailMenu = async (dishId, mealMenuId) => {
  * @param {ínterger} classId
  * @returns {Object} object
  */
-const getMenuByClassId = async (classId) => {
+const getMenuByClassId = async (classId, startDate, endDate) => {
   try {
     const result = await db.query(`
       SELECT JSON_OBJECTAGG(
       DATE_FORMAT(dam.date, '%d/%m/%Y'),
       JSON_OBJECT(
-        'date', dam.date,
         'daily_menu_id', dam.id,
+        'date', dam.date,
         'created', dam.created,
         'meals', (
           SELECT JSON_OBJECTAGG(
             m.meal,
             JSON_OBJECT(
-              'meal_id', m.id,
               'meal_menu_id', mm.id,
+              'meal_id', m.id,
               'meal_name', m.meal,
               'meal_start_time', TIME_FORMAT(m.start_time, '%H:%i'),
               'meal_end_time', TIME_FORMAT(m.end_time, '%H:%i'),
@@ -320,11 +320,11 @@ const getMenuByClassId = async (classId) => {
         )
       )
     )
-    AS daily_menu
-    FROM class_menu cm
-    LEFT JOIN daily_menu dam
-    ON cm.daily_menu_id = dam.id
-    WHERE cm.class_id = ${classId};
+AS daily_menu
+FROM  daily_menu dam
+LEFT JOIN classes c 
+ON c.id = dam.class_id
+WHERE dam.class_id = ${classId} AND (dam.date BETWEEN '${startDate}' AND '${endDate}');
 `);
 
     const dbResponse = result[0];
@@ -410,7 +410,6 @@ module.exports = {
   getMenuByClassId,
   isExistMeal,
   isExistDish,
-  createClassMenu,
   createDailyMenu,
   createMealMenu,
   isExistDailyMenu,
@@ -418,4 +417,5 @@ module.exports = {
   createDetailMenu,
   getDailyMenuByDateAndClassId,
   getDetailMenu,
+  deleteDetailMenu,
 };

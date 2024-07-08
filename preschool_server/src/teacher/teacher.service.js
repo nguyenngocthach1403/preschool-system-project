@@ -341,6 +341,8 @@ async function searchTeacher(txtSearch, page, limit) {
       `OFFSET ${limit * page}`
     );
 
+    console.log(txtSearch);
+
     for (let index = 0; index < data.length; index++) {
       const teacher = data[index];
       const specialization = await getSpecializationByTeacher(teacher.id);

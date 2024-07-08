@@ -157,15 +157,15 @@ function handleScrollEnd() {
 }
 
 async function addStudentIntoClass() {
-  if (!props.classId || !window.user.id || !selected.value) {
-    alert("out");
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!props.classId || !user || !selected.value) {
     return;
   }
   loading.value = true;
 
   const response = await classService.addStudentIntoClass(
     props.classId,
-    window.user.id,
+    user.id,
     selected.value
   );
 
