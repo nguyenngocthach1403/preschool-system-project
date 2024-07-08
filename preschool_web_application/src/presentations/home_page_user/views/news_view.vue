@@ -10,6 +10,7 @@
           <NewsCard
             v-for="newsItem in filteredNews"
             :key="newsItem.id"
+            :id="newsItem.id"
             :imageUrl="newsItem.img"
             :altText="newsItem.altText"
             :title="newsItem.title"

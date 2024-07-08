@@ -7,7 +7,7 @@
         {{ description }}
       </p>
       <router-link
-        :to="{ name: 'DetailNewsView' } + id"
+        :to="{ name: 'DetailNewsView', params: { id: id } }"
         class="text-blue-500 hover:text-blue-700"
         >Đọc thêm</router-link
       >
@@ -18,7 +18,6 @@
 
 <script setup>
 import { defineProps } from "vue";
-
 const props = defineProps({
   id: String,
   imageUrl: String,
