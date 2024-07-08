@@ -5,7 +5,7 @@
         <HeaderView class="fixed top-0 left-0 w-full z-50 bg-white shadow-md" />
 
         <div class="container mx-auto py-12">
-          <div class="w-[1460px]">
+          <div class="w-[2000px]">
             <img
               src="https://png.pngtree.com/thumb_back/fw800/background/20190221/ourmid/pngtree-cartoon-wind-simple-starting-school-enrollment-image_13850.jpg"
               alt="Image description"
@@ -15,7 +15,7 @@
 
           <div class="mt-8 mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ml-20">
-              <div class="bg-white shadow-md rounded-md p-4 w-[1200px]">
+              <div class="bg-white shadow-md rounded-md p-4 w-[1800px]">
                 <p class="text-left mt-4">
                   Hân hoan chào đón Quý phụ huynh và xin được chúc mừng con em
                   của Quý vị đã trở thành công dân của Trường Mầm Non Quốc tế
@@ -43,7 +43,7 @@
           </div>
         </div>
         <div
-          class="bg-[#1b82ab] shadow-md rounded-md p-5 w-[1450px] h-full flex items-center justify-between"
+          class="bg-[#1b82ab] shadow-md rounded-md p-5 w-[2000px] h-full flex items-center justify-between"
         >
           <div class="w-[60%]">
             <h3 class="text-left font-bold text-white text-[35px] ml-4">
@@ -82,7 +82,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col items-center mt-10 p-5 w-[1450p]">
+        <div class="flex flex-col items-center mt-10 p-5 w-[1900px]">
           <h1 class="text-4xl font-bold">Quan niệm Nuôi Dạy</h1>
           <p class="text-left text-gray-600 mt-4 ml-20">
             Tuổi thơ là thời gian trẻ khởi đầu việc tiếp thu tri thức và hình
@@ -96,7 +96,7 @@
           </p>
         </div>
         <!-- Nguyên tắc 1 -->
-        <div class="p-5 h-full w-[1450px] flex mt-8">
+        <div class="p-5 h-full w-[1900px] flex mt-8">
           <div class="w-[25%] ml-20">
             <img
               src="https://kindycity.edu.vn/wp-content/uploads/2018/06/Untitled-3.png"
@@ -123,7 +123,7 @@
         </div>
         <!-- Nguyên tắc 2 -->
 
-        <div class="p-5 h-full w-[1450px] flex mt-8">
+        <div class="p-5 h-full w-[1900px] flex mt-8">
           <div class="w-[75%] ml-20">
             <h3 class="text-left font-bold text-[15px]">
               Năng lực tình cảm-xã hội là yếu tố thành công trong học tập.
@@ -153,7 +153,7 @@
         </div>
         <!-- Nguyên tắc 3 -->
 
-        <div class="p-5 h-full w-[1450px] flex mt-8">
+        <div class="p-5 h-full w-[1900px] flex mt-8">
           <div class="w-[25%] ml-20">
             <img
               src="https://kindycity.edu.vn/wp-content/uploads/2018/06/nguyen-tac-thu-ba-1.png"
@@ -180,7 +180,7 @@
         </div>
         <!-- Nguyên tắc 4 -->
 
-        <div class="p-5 h-full w-[1450px] flex mt-8">
+        <div class="p-5 h-full w-[1900px] flex mt-8">
           <div class="w-[75%] ml-20">
             <h3 class="text-left font-bold text-[15px]">
               Môi trường vật chất ảnh hưởng đến loại hình và chất lượng học tập.
@@ -207,7 +207,7 @@
         </div>
         <!-- Nguyên tắc 5 -->
 
-        <div class="p-5 h-full w-[1450px] flex mt-8">
+        <div class="p-5 h-full w-[1900px] flex mt-8">
           <div class="w-[25%] ml-20">
             <img
               src="https://kindycity.edu.vn/wp-content/uploads/2018/06/nguyen-tac-thu-nam-1.png"

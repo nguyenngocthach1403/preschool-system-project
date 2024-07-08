@@ -3,30 +3,30 @@
     <thead>
       <tr class="text-[15px] text-white bg-[#3B44D1] sticky top-0 z-10">
         <td>STT</td>
-        <th class="py-2 text-start px-5">Buổi</th>
-        <th class="py-2 text-start px-5">Thời gian</th>
+        <th class="py-2 text-start w-[300px] px-5">Tên hoạt động</th>
+        <th class="py-2 text-start px-5">Mô tả</th>
         <th class="py-2 text-start px-5">Tạo bởi</th>
-        <th class="py-2 text-start px-5">Tạo ngày</th>
-        <th class="py-2 px-5 fixed">Chức năng</th>
+        <th class="py-2 text-start px-5">Ngày tạo</th>
+        <th class="py-2 px-5 text-center w-[150px]">Chức năng</th>
       </tr>
     </thead>
     <EmptyBox
-      v-if="props.meals.length == 0"
+      v-if="props.activities.length == 0"
       class="absolute top-5 left-0 z-20"
     />
     <tbody v-else>
       <tr
-        v-for="(item, index) in props.meals"
-        :key="item"
+        v-for="(item, index) in props.activities"
+        :key="index"
         class="even:bg-gray-200 hover:bg-[#3B44D1]/50 hover:text-white"
       >
-        <td>{{ index + 1 }}</td>
-        <td class="py-2 text-start px-5">{{ item.meal }}</td>
+        <td class="w-[50px]">{{ index + 1 }}</td>
+        <td class="py-2 text-start px-5">{{ item.name }}</td>
         <td class="py-2 text-start px-5">
-          {{ item.start_time }}-{{ item.end_time }}
+          {{ item.description || "-" }}
         </td>
-        <td class="py-2 text-start px-5">{{ item.username }}</td>
-        <td class="py-2 text-start px-5">
+        <td class="py-2 text-start px-5 w-[100px]">{{ item.username }}</td>
+        <td class="py-2 text-start w-[200px] px-5">
           {{
             formatTimeString(
               new Date(item.created).getMinutes(),
@@ -36,8 +36,8 @@
           -
           {{ ddmmyyyyDateString(new Date(item.created).toLocaleDateString()) }}
         </td>
-        <td class="pl-3">
-          <div class="flex">
+        <td class="py-2">
+          <div class="flex justify-center">
             <div
               @click="$emit('delete', item)"
               class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
@@ -56,8 +56,8 @@
     </tbody>
   </table>
 </template>
-
-<script setup>
+    
+    <script setup>
 import EmptyBox from "../../../components/empty_data.vue";
 //icom
 import delete_icon from "../../../assets/icons/delete.svg";
@@ -71,12 +71,12 @@ import {
 
 // props
 const props = defineProps({
-  meals: {
+  activities: {
     type: Array,
     require: true,
   },
 });
 </script>
-
-<style lang="scss" scoped>
+    
+    <style lang="scss" scoped>
 </style>

@@ -100,6 +100,7 @@ import category from "../assets/icons/Diversity.svg";
 import school from "../assets/icons/School.svg";
 import task from "../assets/icons/Task.svg";
 import menu_icon from "../assets/icons/Restaurant Menu.svg";
+import calender from "../assets/icons/Calendar.svg";
 import { convertAccountRole } from "../utils/resources/converter";
 
 import { onMounted, ref } from "vue";
@@ -179,6 +180,14 @@ const menu = ref([
   },
   {
     id: 7,
+    title: "Thời khóa biểu",
+    name: "SchedulePage",
+    icon: calender,
+    active: false,
+    type: 1,
+  },
+  {
+    id: 8,
     title: "Lớp học",
     name: "ClassView",
     icon: classes,
@@ -187,7 +196,7 @@ const menu = ref([
   },
   // { title: "Nhân viên", name: "/ddd", icon: staff },
   {
-    id: 8,
+    id: 10,
     title: "Tài khoản",
     name: "AccountView",
     icon: account,
@@ -195,7 +204,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 9,
+    id: 11,
     title: "Giáo viên",
     name: "TeacherView",
     icon: staff,
@@ -203,7 +212,7 @@ const menu = ref([
     type: 1,
   },
   {
-    id: 10,
+    id: 12,
     title: "Danh mục",
     name: "CategoryView",
     icon: category,
@@ -220,13 +229,7 @@ const drops = defineProps({
   menuStyle: String,
 });
 
-// const emits = defineEmits(["close-menu"]);
-// function closeMenu() {
-//   isMenuClose.value = !isMenuClose.value;
-//   emits("close-menu", isMenuClose.value);
-// }
 function selectActive(index) {
-  localStorage.setItem("currentActiveMenu", index);
   menu.value.forEach((e) => (e.active = false));
   menu.value.find((e) => e.id == index).active = true;
 }

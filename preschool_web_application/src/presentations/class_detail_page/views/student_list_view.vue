@@ -2,7 +2,7 @@
   <div>
     <PopUpAddStudent
       v-if="showPopUpAddStudent"
-      :class-id="props.classId"
+      :class-id="$router.currentRoute.value.query.classID"
       class="absolute top-0 left-0 w-[200px]"
       @close="(showPopUpAddStudent = null), getStudentOfClass()"
       @add-toast="$emit('add-toast', $event)"
@@ -92,6 +92,10 @@ import EmptyComp from "../../../components/empty_data.vue";
 import { convertGender } from "../../../utils/resources/converter";
 import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 import { convertAccountRole } from "../../../utils/resources/converter";
+import { useRouter } from "vue-router";
+
+//router
+const router = useRouter();
 
 //Valiable effect
 const showPopUpAddStudent = ref(false);
@@ -100,28 +104,19 @@ const loading = ref(false);
 //Varible data
 const members = ref([]);
 
-//Props Emits Watch
-const props = defineProps({
-  classId: {
-    type: Number,
-    require: true,
-  },
-});
-
 onMounted(() => {
   getStudentOfClass();
 });
 
-watch(props, () => {
-  getStudentOfClass();
-});
 //function
 async function getStudentOfClass() {
   loading.value = true;
-  const response = await classService.getMembers(props.classId);
+  const response = await classService.getMembers(
+    router.currentRoute.value.query.classID
+  );
 
   loading.value = false;
-  console.log("meme", response);
+
   if (response.data.success) {
     members.value = response.data.data;
   }

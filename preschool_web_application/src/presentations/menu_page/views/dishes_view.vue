@@ -5,13 +5,32 @@
       @close="closePopupCreate($event)"
       @add-toast="$emit('add-toast', $event)"
     />
+    <PopupEditDish
+      v-if="isShowEdit"
+      :dish="isShowEdit"
+      @close="isShowEdit = null"
+      @add-toast="$emit('add-toast', $event)"
+    />
+    <ComfirmPopup
+      v-if="isShowDelete"
+      class="absolute top-0 left-0"
+      :content="`Bạn có muốn xóa món ${isShowDelete.name} không?`"
+      :value="isShowDelete"
+      @confirm="getComfirm($event)"
+    />
     <div class="flex justify-between">
       <SearchComp class="w-[450px]" />
       <CreateButton @click="openCreateDish()" :title="'Thêm món'" />
     </div>
     <ResultNumComp class="my-2">{{ total }}</ResultNumComp>
     <LaodingComp v-if="loading" />
-    <DishesTable v-if="!loading" :dishes="dishes" class="drop-shadow-xl" />
+    <DishesTable
+      v-if="!loading"
+      @edit="isShowEdit = $event"
+      @delete="isShowDelete = $event"
+      :dishes="dishes"
+      class="drop-shadow-xl"
+    />
 
     <div
       v-if="dishes.length != 0"
@@ -19,11 +38,13 @@
     >
       <div class="">
         Hiển thị từ {{ page * limit == 0 ? 1 : page * limit }} đến
-        {{ page * limit + limit }} trong {{ total }} món ăn
+        {{ (page + 1) * limit - (limit - dishes.length) }} trong {{ total }} món
+        ăn
       </div>
       <Pagination
         :page-active="page + 1"
         :pageNums="Math.ceil(total / limit)"
+        @click-page="nextPage($event - 1)"
       />
     </div>
   </div>
@@ -39,6 +60,8 @@ import ResultNumComp from "../../../components/result_comp.vue";
 import SearchComp from "../../../components/search_form_comp.vue";
 import CreateButton from "../../../components/create_button.vue";
 import PopupCreate from "../components/popup_create_dish.vue";
+import PopupEditDish from "../components/popup_edit_dish.vue";
+import ComfirmPopup from "../../../components/confirm_dialog.vue";
 //Service
 import { checkPermissions } from "../../../utils/resources/check_valid";
 //store
@@ -47,6 +70,8 @@ import { storeToRefs } from "pinia";
 const dishesStore = useDishesStore();
 
 const isShowCreate = ref(false);
+const isShowEdit = ref(false);
+const isShowDelete = ref(false);
 
 const { dishes, loading, page, limit, total } = storeToRefs(dishesStore);
 
@@ -77,6 +102,17 @@ function openCreateDish() {
     return;
   }
   isShowCreate.value = true;
+}
+
+function getComfirm(result) {
+  if (!result) isShowDelete.value = null;
+}
+
+function nextPage(newPage) {
+  if (newPage != dishesStore.page) {
+    dishesStore.page = newPage;
+    dishesStore.fetchDishes();
+  }
 }
 
 onMounted(async () => {

@@ -11,7 +11,11 @@
     <ShowNumberComp :numb-show="limit" @change-limit="changeLimit($event)" />
 
     <LoadingComp v-if="status == 'loading'"></LoadingComp>
-    <TableComp :data="account" v-if="status == 'loaded'"></TableComp>
+    <TableComp
+      :data="account"
+      v-if="status == 'loaded'"
+      class="drop-shadow-xl"
+    ></TableComp>
     <div
       class="bottom-table-section flex justify-between h-[37px] content-center my-3"
     >

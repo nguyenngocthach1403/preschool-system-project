@@ -1,28 +1,40 @@
 <template>
   <PopupLayout @close="$emit('close')" :title="'Tạo danh sách thực đơn'">
     <template #content>
-      <div>
-        <div>
-          <p><span>Buổi: </span> {{ props.dataToCreate.mealName }}</p>
-          <p>
-            <span>Ngày: </span>
-            {{
-              ddmmyyyyDateString(
-                new Date(props.dataToCreate.date).toLocaleDateString()
-              )
-            }}
-          </p>
+      <div class="px-10 text-[16px]">
+        <div
+          class="w-full py-3 bg-white drop-shadow-xl rounded-md text-start px-5 my-2"
+        >
+          <span class="font-bold"> {{ props.dataToCreate.name }}</span>
+          <div>
+            <p>
+              <span>Buổi: </span>
+              <span class="font-bold">{{ props.dataToCreate.mealName }}</span>
+            </p>
+            <p>
+              <span>Ngày: </span>
+              <span class="font-bold">{{
+                ddmmyyyyDateString(
+                  new Date(props.dataToCreate.date).toLocaleDateString()
+                )
+              }}</span>
+            </p>
+          </div>
         </div>
-        <div class="text-start mx-[50px]">
-          <span class="pl-2">Chọn món</span>
-          <InputSearchSelect
-            class="h-[50px] w-[500px]"
-            :options="dishes"
-            :enable-sub="false"
-            :has-data="hasData"
-            @selected="dishesSelected = $event"
-            @scrollEnd="handleScrollEnd()"
-          />
+        <div
+          class="w-full pt-5 pb-10 bg-white drop-shadow-xl rounded-md text-start px-1 my-2"
+        >
+          <div class="text-start mx-[50px]">
+            <span class="pl-2">Chọn món</span>
+            <InputSearchSelect
+              class="h-[50px] w-[500px]"
+              :options="dishes"
+              :enable-sub="false"
+              :has-data="hasData"
+              @selected="dishesSelected = $event"
+              @scrollEnd="handleScrollEnd()"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -102,10 +114,6 @@ const props = defineProps({
     type: Object,
     require: true,
   },
-  classId: {
-    type: Number,
-    require: true,
-  },
 });
 
 const emits = defineEmits(["add-toast", "close"]);
@@ -133,7 +141,7 @@ async function createMenu() {
     creating.value = true;
     const user = JSON.parse(localStorage.getItem("user"));
     if (
-      isEmpty(props.classId) ||
+      isEmpty(props.dataToCreate.classId) ||
       isEmpty(props.dataToCreate.mealId) ||
       isEmpty(props.dataToCreate.date) ||
       dishesSelected.value.length == 0 ||
@@ -145,14 +153,20 @@ async function createMenu() {
       });
     }
 
-    const response = await menuService.createMenu(
-      props.classId,
-      yyyymmddDateString(
+    const dataToCreate = {
+      date: yyyymmddDateString(
         new Date(props.dataToCreate.date).toLocaleDateString()
       ),
-      user.id,
-      props.dataToCreate.mealId,
-      dishesSelected.value
+      createBy: user.id,
+      mealId: props.dataToCreate.mealId,
+      dishes: dishesSelected.value,
+      mealMenuId: props.dataToCreate.mealMenuId,
+      dailyMenuId: props.dataToCreate.dailyMenuId,
+    };
+    console.log(dataToCreate);
+    const response = await menuService.createMenu(
+      props.dataToCreate.classId,
+      dataToCreate
     );
 
     emits("add-toast", {

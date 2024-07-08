@@ -26,9 +26,9 @@
         <tr
           v-for="item in drops.data"
           :key="item"
-          class="text-[14px] h-[60px] text-left even:bg-gray-50 border-b-[1px] hover:bg-gray-200"
+          class="even:bg-gray-200 hover:bg-[#3B44D1]/50 hover:text-white"
         >
-          <td class="px-3">
+          <td class="px-3 py-2">
             <div class="inline-flex items-center">
               <label
                 class="relative flex items-center p-3 rounded-full cursor-pointer"
@@ -60,15 +60,19 @@
               </label>
             </div>
           </td>
-          <td class="hidden 2xl:table-cell px-3 w-[1000px]">
+          <td class="hidden 2xl:table-cell px-3 py-2 w-[1000px]">
             {{ item.username }}
           </td>
-          <td class="hidden 2xl:table-cell px-3 w-dvw">{{ item.email }}</td>
-          <td class="hidden 2xl:table-cell px-3 w-[500px]">{{ item.phone }}</td>
-          <td class="hidden 2xl:table-cell px-3 w-[500px]">
+          <td class="hidden 2xl:table-cell px-3 py-2 w-dvw">
+            {{ item.email }}
+          </td>
+          <td class="hidden 2xl:table-cell px-3 py-2 w-[500px]">
+            {{ item.phone }}
+          </td>
+          <td class="hidden 2xl:table-cell px-3 py-2 w-[500px]">
             {{ convertAccountRole(item.role) }}
           </td>
-          <td class="hidden 2xl:table-cell px-3 w-[500px]">
+          <td class="hidden 2xl:table-cell px-3 py-2 w-[500px]">
             <dd>
               <span class="text-gray-400 text-[12px]">Username:</span>
               {{ item.creater_username }}
@@ -78,7 +82,7 @@
               {{ convertRole(item.creater_role) }}
             </dd>
           </td>
-          <td class="px-3 w-[500px]">
+          <td class="px-3 py-2 w-[500px]">
             <button
               v-if="item.status == 1"
               @click.prevent
@@ -94,7 +98,9 @@
               {{ convertStatus(item.status) }}
             </button>
           </td>
-          <td class="hidden 2xl:table-cell px-3 w-[500px]">{{ item.role }}</td>
+          <td class="hidden 2xl:table-cell px-3 py-2 w-[500px]">
+            {{ item.role }}
+          </td>
         </tr>
       </tbody>
     </table>

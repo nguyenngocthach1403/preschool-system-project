@@ -184,15 +184,6 @@ async function getTotalTeacher(req, res, next) {
 }
 async function getTeacherSearch(req, res, next) {
   const totalResult = await teacherService.countSearchTeacher(req.query.text);
-  if (totalResult[0]["total"] == 0) {
-    res.send(
-      JSON.stringify({
-        status: 404,
-        message: "Not found any teacher",
-      })
-    );
-    return;
-  }
   const resultTeacherSearch = await teacherService.searchTeacher(
     req.query.text,
     req.query.page,
@@ -202,7 +193,7 @@ async function getTeacherSearch(req, res, next) {
     status: 200,
     message: "Successful",
     total: totalResult[0]["total"],
-    data: resultTeacherSearch,
+    data: resultTeacherSearch || [],
   });
 }
 

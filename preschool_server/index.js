@@ -103,6 +103,7 @@ app.use(
   require("./src/teacher_class_current/teacher_class_current.controller")
 );
 app.use("/menu", require("./src/menu/menu.controller"));
+app.use("/schedule", require("./src/schedules/schedule.controller"));
 
 server.listen(port, () => {
   console.log(`listen port ${port}`);

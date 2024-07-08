@@ -49,7 +49,7 @@
         class="avatar w-full h-full rounded-[8px] border border-violet-400/25"
         @click="
           $router.push({
-            name: 'ClassDetailView',
+            name: 'ClassDetailPage',
             query: { classID: classData.id },
           })
         "
@@ -192,7 +192,7 @@ function closeMenu() {
 function onClickClassCard(event, id) {
   if (event.target.className.match("teacher")) {
     router.push({
-      name: "ClassDetailView",
+      name: "ClassDetailPage",
       query: { classID: id },
     });
   }
