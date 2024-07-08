@@ -9,8 +9,6 @@
             <tr>
               <th class="w-[100px]">ID</th>
               <th class="w-[300px]">Hình ảnh</th>
-              <th class="w-[400px]">Tiêu đề</th>
-              <th class="w-[300px]">Nội dung</th>
               <th class="w-[300px]">Ngày tạo</th>
               <th class="w-[300px]">Trạng thái</th>
               <th class="w-[300px]">Chức năng</th>
@@ -19,44 +17,38 @@
           <tbody>
             <tr
               class="h-[60px] w-full text-left even:bg-gray-50 hover:bg-gray-200"
-              v-for="news in dataTable"
-              :key="news.id"
+              v-for="slide in dataTable"
+              :key="slide.id"
             >
               <td class="w-[100px]">
-                {{ news.id }}
+                {{ slide.id }}
               </td>
               <td class="w-[300px]">
                 <div class="ml-[15px]">
                   <img
-                    :src="news.img"
-                    class="w-[40px] h-[40px] rounded-[50px] object-cover"
+                    :src="slide.url"
+                    class="w-[100px] h-[50px] object-cover"
                   />
                 </div>
               </td>
-              <td class="w-[400px]">
-                {{ news.title }}
-              </td>
               <!-- <td class="w-[400px]"> -->
-              <td class="truncate max-w-[400px]">
-                {{ news.description }}
+              <td class="w-[400px]">
+                {{ formatDate(slide.created) }}
               </td>
               <td class="w-[400px]">
-                {{ formatDate(news.created) }}
-              </td>
-              <td class="w-[400px]">
-                {{ news.status === 1 ? "Hiển thị" : "Khoá" }}
+                {{ slide.status === 1 ? "Hiển thị" : "Khoá" }}
               </td>
               <td class="w-[200px]">
                 <div class="flex">
                   <div
                     class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(53,61,186)] content-center"
-                    @click="editNews(news.id)"
+                    @click="editSlide(slide.id)"
                   >
                     <img :src="edit_icon" class="w-[14px] m-auto" />
                   </div>
                   <div
                     class="feature w-[35px] h-[30px] rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(206,44,44)] content-center"
-                    @click="deleteNews(news)"
+                    @click="deleteSlide(slide)"
                   >
                     <img :src="delete_icon" class="w-[14px] m-auto" />
                   </div>
@@ -72,9 +64,9 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import delete_icon from "@/assets/icons/delete.svg";
-import edit_icon from "@/assets/icons/edit.svg";
-import router from "@/router/router";
+import delete_icon from "../../assets/icons/delete.svg";
+import edit_icon from "../../assets/icons/edit.svg";
+import router from "../../router/router";
 const emits = defineEmits(["add-toast"]);
 defineProps({
   dataTable: {
@@ -83,12 +75,13 @@ defineProps({
   },
 });
 
-const editNews = (id) => {
-  router.push({ name: "EditNewsView", params: { id: id } });
+const editSlide = (id) => {
+  router.push({ name: "EditSlideView", params: { id: id } });
 };
-function deleteNews(id) {
-  emits("delete-news", id);
+function deleteSlide(id) {
+  emits("delete-slide", id);
 }
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");

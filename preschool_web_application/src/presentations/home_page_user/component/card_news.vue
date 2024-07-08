@@ -6,7 +6,12 @@
       <p class="clamp-text text-gray-600 text-sm mb-4 text-left">
         {{ description }}
       </p>
-      <a href="#" class="text-blue-500 hover:text-blue-700">Đọc thêm</a>
+      <router-link
+        :to="{ name: 'DetailNewsView' } + id"
+        class="text-blue-500 hover:text-blue-700"
+        >Đọc thêm</router-link
+      >
+      <!-- <a href="#" class="text-blue-500 hover:text-blue-700">Đọc thêm</a> -->
     </div>
   </div>
 </template>
@@ -15,6 +20,7 @@
 import { defineProps } from "vue";
 
 const props = defineProps({
+  id: String,
   imageUrl: String,
   altText: String,
   title: String,

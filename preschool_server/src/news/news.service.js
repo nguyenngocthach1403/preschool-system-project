@@ -33,7 +33,11 @@ async function getNewsAll(limit, page) {
 
 async function getNews() {
   try {
-    const result = await db.select(config.tb.news, "*", "WHERE deleted = 0");
+    const result = await db.select(
+      config.tb.news,
+      "*",
+      "WHERE deleted = 0 ORDER BY created DESC"
+    );
     return result;
   } catch (error) {
     return {
