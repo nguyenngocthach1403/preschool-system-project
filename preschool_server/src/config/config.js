@@ -27,6 +27,7 @@ const config = {
     news: "news",
     activity: "activities",
     timetable: "timetable",
+    slideshow: "slideshow",
   },
 };
 

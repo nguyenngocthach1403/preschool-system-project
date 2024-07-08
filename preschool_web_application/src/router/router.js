@@ -59,9 +59,14 @@ import ActivityView from "../presentations/schedule_page/views/activity_view.vue
 import TimetableView from "../presentations/schedule_page/views/timetable_view.vue";
 
 import NewsView from "../presentations/home_page_user/views/news_view.vue";
+import NewsView from "../presentations/home_page_user/views/news_view.vue";
+import DetailNewsView from "../presentations/home_page_user/views/detail_news_view.vue";
 import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
 import CreateNewsView from "../presentations/news/create_news_view.vue";
 import EditNewsView from "../presentations/news/edit_news_view.vue";
+
+import CreateSlideView from "../presentations/home_page_management/create_slide_view.vue";
+import EditSlideView from "../presentations/home_page_management/update_slide_view.vue";
 
 const router = Router();
 export default router;
@@ -97,6 +102,14 @@ function Router() {
         name: "IntroduceView",
         path: "/gioi-thieu",
         component: IntroduceView,
+        meta: {
+          requireAuth: false,
+        },
+      },
+      {
+        name: "DetailNewsView",
+        path: "/chi-tiet/:id",
+        component: DetailNewsView,
         meta: {
           requireAuth: false,
         },
@@ -381,6 +394,16 @@ function Router() {
             name: "EditNewsView",
             path: "/home-page/:username/edit-news/:id",
             component: EditNewsView,
+          },
+          {
+            name: "CreateSlideView",
+            path: "/home-page/:username/create-slide",
+            component: CreateSlideView,
+          },
+          {
+            name: "EditSlideView",
+            path: "/home-page/:username/edit-slide/:id",
+            component: EditSlideView,
           },
         ],
       },

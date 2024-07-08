@@ -1,15 +1,26 @@
 <template>
-  <footer
-    class="bg-gray-800 text-white py-8 px-4 flex flex-col justify-between items-center"
-  >
+  <footer class="bg-gray-800 text-white py-8 px-4 flex flex-col justify-center">
     <div class="flex flex-row justify-between mt-8">
-      <div class="flex flex-col items-start mr-20">
+      <div class="flex flex-col items-start ml-20">
         <h3 class="text-lg font-bold">Giới thiệu</h3>
-        <a href="#" class="text-base hover:underline">Trang chủ</a>
-        <a href="#" class="text-base mt-1 hover:underline">Giới thiệu</a>
-        <a href="#" class="text-base mt-1 hover:underline">Chương trình</a>
-        <a href="#" class="text-base mt-1 hover:underline">Tuyển sinh</a>
-        <a href="#" class="text-base mt-1 hover:underline">Tin tức</a>
+        <router-link :to="{ name: 'Home' }" class="text-base hover:underline"
+          >Trang chủ</router-link
+        >
+        <router-link
+          :to="{ name: 'IntroduceView' }"
+          class="text-base mt-1 hover:underline"
+          >Giới thiệu</router-link
+        >
+        <router-link
+          :to="{ name: 'RegistrationFormView' }"
+          class="text-base mt-1 hover:underline"
+          >Tuyển sinh</router-link
+        >
+        <router-link
+          :to="{ name: 'NewsView' }"
+          class="text-base mt-1 hover:underline"
+          >Tin tức</router-link
+        >
       </div>
 
       <div class="flex flex-col items-start">
@@ -27,7 +38,7 @@
         >
       </div>
 
-      <div class="flex flex-col items-start ml-20">
+      <div class="flex flex-col items-start mr-20">
         <h3 class="text-lg font-bold">Liên kết</h3>
         <a href="#" class="text-base mt-1 hover:underline">Trang web</a>
         <a href="#" class="text-base mt-1 hover:underline">Facebook</a>

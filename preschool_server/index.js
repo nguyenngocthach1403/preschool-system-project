@@ -104,6 +104,7 @@ app.use(
 );
 app.use("/menu", require("./src/menu/menu.controller"));
 app.use("/schedule", require("./src/schedules/schedule.controller"));
+app.use("/slide", require("./src/slideshow/slideshow.controller"));
 
 server.listen(port, () => {
   console.log(`listen port ${port}`);
