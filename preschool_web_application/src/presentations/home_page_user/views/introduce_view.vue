@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#EEEEEE]">
+  <div class="bg-[#EEEEEE] w-sreen">
     <div class="bg-[#EEEEEE] text-center h-full mb-20 py-3">
       <div class="container py-8">
         <HeaderView class="fixed top-0 left-0 w-full z-50 bg-white shadow-md" />
@@ -75,9 +75,9 @@
           </div>
           <div class="w-[40%]">
             <img
-              src="https://cdn.popsww.com/blog/sites/2/2022/01/thanh-guom-diet-quy-review.jpg"
+              src="https://storage-vnportal.vnpt.vn/ndh-ubnd/5039/CCB/b%C3%A1o.jpg"
               alt="Image description"
-              class="top-0 left-0 h-full w-full object-cover"
+              class="top-0 left-0 h-full w-full object-cover rounded-md"
             />
           </div>
         </div>

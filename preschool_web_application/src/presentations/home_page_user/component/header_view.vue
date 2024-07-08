@@ -1,12 +1,16 @@
 <template>
   <div class="bg-white shadow-md flex justify-between items-center p-4">
-    <div class="flex items-center">
-      <img
-        src="https://cdn.popsww.com/blog/sites/2/2022/01/thanh-guom-diet-quy-review.jpg"
-        alt="Logo"
-        class="h-8"
-      />
-      <span class="ml-4 text-lg font-bold">PreSchool</span>
+    <div>
+      <router-link :to="{ name: 'Home' }">
+        <div class="flex items-center">
+          <img
+            src="https://png.pngtree.com/png-vector/20230518/ourlarge/pngtree-green-plant-logo-vector-png-image_7101352.png"
+            alt="Logo"
+            class="h-8"
+          />
+          <span class="ml-4 text-lg font-bold">PreSchool</span>
+        </div>
+      </router-link>
     </div>
     <nav class="hidden sm:block">
       <ul class="flex items-center justify-center gap-4 mr-20">
@@ -19,22 +23,15 @@
           </router-link>
         </li>
         <li>
-          <a href="#">Chương trình</a>
-        </li>
-
-        <li>
-          <router-link class="h-full" :to="{ name: 'RegistrationFormView' }"
-            >Tuyển sinh</router-link
-          >
-        </li>
-        <li>
-          <router-link :to="{ name: 'HomePageView' }">Tin tức</router-link>
           <router-link :to="{ name: 'RegistrationFormView' }">
             Tuyển sinh
           </router-link>
         </li>
         <li>
           <router-link :to="{ name: 'NewsView' }"> Tin tức </router-link>
+        </li>
+        <li>
+          <router-link :to="{ name: 'LoginView' }"> Đăng nhập </router-link>
         </li>
       </ul>
     </nav>
