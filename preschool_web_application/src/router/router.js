@@ -59,7 +59,6 @@ import ActivityView from "../presentations/schedule_page/views/activity_view.vue
 import TimetableView from "../presentations/schedule_page/views/timetable_view.vue";
 
 import NewsView from "../presentations/home_page_user/views/news_view.vue";
-import NewsView from "../presentations/home_page_user/views/news_view.vue";
 import DetailNewsView from "../presentations/home_page_user/views/detail_news_view.vue";
 import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
 import CreateNewsView from "../presentations/news/create_news_view.vue";
@@ -68,6 +67,10 @@ import EditNewsView from "../presentations/news/edit_news_view.vue";
 import CreateSlideView from "../presentations/home_page_management/create_slide_view.vue";
 import EditSlideView from "../presentations/home_page_management/update_slide_view.vue";
 
+import HomePageSlideView from "../presentations/home_page_management/view.vue";
+import NewsManagementView from "../presentations/news/view.vue";
+import SettingHomePageView from "../presentations/setting_home_page_user/view/view_setting.vue";
+import EditSettingHomePageView from "../presentations/setting_home_page_user/view/edit_view.vue";
 const router = Router();
 export default router;
 function Router() {
@@ -299,6 +302,53 @@ function Router() {
             ],
           },
           {
+            name: "CategoryView",
+            path: "/home/:username/management",
+            component: CategoryView,
+            children: [
+              {
+                name: "HomePageSlideView",
+                path: "/home/:username/management/home-page",
+                component: HomePageSlideView,
+              },
+              {
+                name: "NewsManagementView",
+                path: "/home/:username/management/news",
+                component: NewsManagementView,
+              },
+              {
+                name: "SettingHomePageView",
+                path: "/home/:username/management/setting-page",
+                component: SettingHomePageView,
+              },
+              {
+                name: "CreateNewsView",
+                path: "/home-page/:username/management/create-news",
+                component: CreateNewsView,
+              },
+              {
+                name: "EditNewsView",
+                path: "/home-page/:username/management/edit-news/:id",
+                component: EditNewsView,
+              },
+              {
+                name: "CreateSlideView",
+                path: "/home-page/:username/create-slide",
+                component: CreateSlideView,
+              },
+              {
+                name: "EditSlideView",
+                path: "/home-page/:username/edit-slide/:id",
+                component: EditSlideView,
+              },
+              {
+                name: "EditSettingHomePageView",
+                path: "/home-page/:username/setting",
+                component: EditSettingHomePageView,
+              },
+            ],
+          },
+          {
             name: "MenuManagementView",
             path: "/home/:username/menu_management",
             component: MenuManagementView,
@@ -375,36 +425,36 @@ function Router() {
             path: "/home/:username/registration-addition-admin",
             component: RegisterAdditionView,
           },
-          {
-            name: "CategoryView",
-            path: "/home/:username/category",
-            component: CategoryView,
-          },
+          // {
+          //   name: "CategoryView",
+          //   path: "/home/:username/category",
+          //   component: CategoryView,
+          // },
           {
             name: "TeacherCreationView",
             path: "/home/:username/teacher",
             component: TeacherCreationView,
           },
-          {
-            name: "CreateNewsView",
-            path: "/home-page/:username/create-news",
-            component: CreateNewsView,
-          },
-          {
-            name: "EditNewsView",
-            path: "/home-page/:username/edit-news/:id",
-            component: EditNewsView,
-          },
-          {
-            name: "CreateSlideView",
-            path: "/home-page/:username/create-slide",
-            component: CreateSlideView,
-          },
-          {
-            name: "EditSlideView",
-            path: "/home-page/:username/edit-slide/:id",
-            component: EditSlideView,
-          },
+          // {
+          //   name: "CreateNewsView",
+          //   path: "/home-page/:username/create-news",
+          //   component: CreateNewsView,
+          // },
+          // {
+          //   name: "EditNewsView",
+          //   path: "/home-page/:username/edit-news/:id",
+          //   component: EditNewsView,
+          // },
+          // {
+          //   name: "CreateSlideView",
+          //   path: "/home-page/:username/create-slide",
+          //   component: CreateSlideView,
+          // },
+          // {
+          //   name: "EditSlideView",
+          //   path: "/home-page/:username/edit-slide/:id",
+          //   component: EditSlideView,
+          // },
         ],
       },
     ],

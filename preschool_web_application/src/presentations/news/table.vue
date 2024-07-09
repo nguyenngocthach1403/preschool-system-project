@@ -29,7 +29,7 @@
                 <div class="ml-[15px]">
                   <img
                     :src="news.img"
-                    class="w-[40px] h-[40px] rounded-[50px] object-cover"
+                    class="w-[100px] h-[50px] object-cover"
                   />
                 </div>
               </td>

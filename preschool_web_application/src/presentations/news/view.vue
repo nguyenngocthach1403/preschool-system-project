@@ -1,5 +1,12 @@
 <template>
   <div class="bg-white ml-4 h-fit rounded-3xl text-center mb-20 mb-3">
+    <ConfirmDialog
+      v-if="showConfirmDialog"
+      class="absolute top-0 left-0"
+      :content="`Bạn có muốn xóa tiêu đề ${showConfirmDialog.title} không?`"
+      :value="showConfirmDialog"
+      @confirm="getConfirm($event)"
+    />
     <div class="flex justify-between content-center mr-3 mt-5">
       <SearchForm
         @passSearchText="getSearchText"
@@ -7,7 +14,7 @@
       ></SearchForm>
 
       <router-link :to="{ name: 'CreateNewsView' }">
-        <CreateButtonComp></CreateButtonComp>
+        <CreateButtonComp :title="'Thêm tin mới'"></CreateButtonComp>
       </router-link>
     </div>
     <ResultNumComp>{{ total }}</ResultNumComp>
@@ -16,7 +23,7 @@
 
     <TableData
       :data-table="news"
-      @delete-news="handleDeleteNews($event)"
+      @delete-news="showConfirmDialog = $event"
     ></TableData>
     <div
       class="bottom-table-section flex justify-between h-[37px] content-center my-3"
@@ -95,33 +102,33 @@ function changeLimit(event) {
   newsStore.changeLimit(event);
 }
 
-// const getConfirm = (event) => {
-//   if (!event) {
-//     showConfirmDialog.value = null;
-//     return;
-//   }
-//   deleteNews(event);
-//   showConfirmDialog.value = null;
-// };
-// async function deleteNews(id) {
-//   const resultOfDel = await newsStore.deleteNews(id.id);
+const getConfirm = (event) => {
+  if (!event) {
+    showConfirmDialog.value = null;
+    return;
+  }
+  deleteNews(event);
+  showConfirmDialog.value = null;
+};
+async function deleteNews(id) {
+  const resultOfDel = await newsStore.deleteNews(id.id);
 
-//   if (resultOfDel) {
-//     emits("add-toast", {
-//       title: "Xoá thành công!",
-//       content: "Xoá tiêu đề " + id.title,
-//       type: 0,
-//     });
-//   } else {
-//     emits("add-toast", {
-//       title: "Xoá thất bại!",
-//       content: `Lỗi xoá tiêu đề ${id.title}`,
-//       type: 1,
-//     });
-//   }
-//   newsStore.getNews();
-//   newsStore.getTotalNews();
-// }
+  if (resultOfDel) {
+    emits("add-toast", {
+      title: "Xoá thành công!",
+      content: "Xoá tiêu đề " + id.title,
+      type: 0,
+    });
+  } else {
+    emits("add-toast", {
+      title: "Xoá thất bại!",
+      content: `Lỗi xoá tiêu đề ${id.title}`,
+      type: 1,
+    });
+  }
+  newsStore.getNews();
+  newsStore.getTotalNews();
+}
 function handleDeleteNews(news) {
   emits("delete-news", news);
 }

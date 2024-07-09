@@ -5,7 +5,8 @@
     >
       <div id="head">Tạo tin tức</div>
       <div id="site" class="flex px-[30px] py-[30px]">
-        <div class="add-avatar w-fit h-fit rounded-md">
+        <div class="add-avatar w-fit h-fit rounded-md mr-6">
+          <span class="text-blue-700">Ảnh tin tức</span>
           <img
             :src="newsAvatarPath"
             class="w-[150px] h-[150px] object-cover bg-[#D9D9D9] rounded-md"
@@ -17,11 +18,6 @@
               accept=".png, .jpeg, .jpg"
               @change="handleUploadNewsImg"
             />
-            <button
-              class="w-[150px] border h-[35px] rounded-md hover:bg-red-100"
-            >
-              Xóa ảnh
-            </button>
           </div>
         </div>
         <div id="input-side" class="w-full pr-[20px]">
