@@ -41,6 +41,25 @@ const updateSchedule = (timetableID, dataToUpdate) => {
 const deleteTimetableOfWeek = (classId, dataToDelete) => {
   return api().post(`/schedule/delete?classId=${classId}`, dataToDelete);
 };
+
+const searchActivities = (searchText, limit, page) => {
+  return api().get(
+    `/schedule/activity/search?searchText=${searchText}&limit=${limit}&offset=${
+      limit * page
+    }`
+  );
+};
+
+const deleteActivity = (activityId) => {
+  return api().delete(`/schedule/activity/delete?activityId=${activityId}`);
+};
+
+const updateeActivity = (activityId, dataToUpdate) => {
+  return api().post(
+    `/schedule/activity/update?activityId=${activityId}`,
+    dataToUpdate
+  );
+};
 export default {
   fetchActivities,
   fetchTimetable,
@@ -50,4 +69,7 @@ export default {
   createSchedule,
   updateSchedule,
   deleteTimetableOfWeek,
+  searchActivities,
+  deleteActivity,
+  updateeActivity,
 };

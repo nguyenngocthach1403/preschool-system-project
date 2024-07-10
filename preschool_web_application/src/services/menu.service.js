@@ -59,6 +59,22 @@ const updateMenu = (mealMenuId, dataToUpdate) => {
   return api().post(`/menu/update?mealMenuId=${mealMenuId}`, dataToUpdate);
 };
 
+const searchDishes = (searchText, limit, page) => {
+  return api().get(
+    `/menu/dish/search?searchText=${searchText}&limit=${limit}&offset=${
+      limit * page
+    }`
+  );
+};
+
+const deleteDish = (dishId) => {
+  return api().delete(`/menu/dish/delete?dishId=${dishId}`);
+};
+
+const updateDish = (dishId, dataToUpdate) => {
+  return api().post(`/menu/dish/update?dishId=${dishId}`, dataToUpdate);
+};
+
 export default {
   getWeeklyMenubById,
   featchDishes,
@@ -68,4 +84,7 @@ export default {
   fetchMenuList,
   createMenu,
   updateMenu,
+  searchDishes,
+  deleteDish,
+  updateDish,
 };

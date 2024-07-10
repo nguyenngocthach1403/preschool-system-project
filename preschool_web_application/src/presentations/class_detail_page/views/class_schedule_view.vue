@@ -76,13 +76,10 @@
       </div>
     </div>
     <LoadingComp v-if="loading" class="py-[300px]" />
-    <ScheduleTable
-      v-else
-      class="drop-shadow"
-      :timetables="timetables"
+    <Calendar
+      :week="currentWeekDisplay"
       :schedules="schedules"
       @add-new-time="isShowCreate = true"
-      :week="currentWeekDisplay"
       @create="createSchedule($event)"
       @show-teacher="onFocusTeacher($event)"
       @add-teacher="isShowTeacherSchedule = $event"
@@ -101,6 +98,7 @@ import PopupCreateSchedule from "../components/popup_create_schedule.vue";
 import PopupAddTeacherSchedule from "../components/popup_add_teacher_schedule.vue";
 import PopupUpdateTimeTable from "../components/popup_edit_timetable.vue";
 import PopupDeleteConfirm from "../../../components/confirm_dialog.vue";
+import Calendar from "../components/calender_table.vue";
 
 import forward from "../../../assets/icons/Forward.svg";
 import back from "../../../assets/icons/Back.svg";
@@ -352,6 +350,42 @@ async function fetchClassById(classId) {
 
 async function confirmDeleteTimeTabe(result) {
   if (result) {
+    // console.log(schedules.value.flatMap(timetables));
+    let isExitTimeTable;
+    for (const date in currentWeekDisplay.value) {
+      if (
+        schedules.value[
+          ddmmyyyyDateString(
+            new Date(currentWeekDisplay.value[date].date).toLocaleDateString()
+          )
+        ]
+      ) {
+        if (
+          schedules.value[
+            ddmmyyyyDateString(
+              new Date(currentWeekDisplay.value[date].date).toLocaleDateString()
+            )
+          ].timetable != null
+        ) {
+          isExitTimeTable =
+            schedules.value[
+              ddmmyyyyDateString(
+                new Date(
+                  currentWeekDisplay.value[date].date
+                ).toLocaleDateString()
+              )
+            ].timetable;
+        }
+      }
+    }
+    if (!isExitTimeTable) {
+      const index = timetables.value.findIndex(
+        (e) => e.start_time == isShowDelete.value.start_time
+      );
+      timetables.value.splice(index, 1);
+      return;
+    }
+
     const dataToDelete = {
       startTime: isShowDelete.value.startTime,
       endTime: isShowDelete.value.endTime,
@@ -381,6 +415,11 @@ async function deleTimetable(dataToDelete) {
       title: "Thành công!",
       type: 0,
     });
+    fetchSchedule(
+      classData.value.id,
+      currentWeekSelect.value.start,
+      currentWeekSelect.value.end
+    );
   } catch (error) {
     console.log(error);
     emits("add-toast", {

@@ -71,7 +71,7 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 onMounted(() => {
-  user.value = window.user;
+  user.value = JSON.parse(localStorage.getItem("user"));
 });
 
 const router = useRouter();
@@ -104,7 +104,7 @@ const menu = ref([
   },
 ]);
 
-const settingItem = ref([{ name: "Đăng xuất", icon: logoutIcon }]);
+const settingItem = ref([{ title: "Đăng xuất", icon: logoutIcon }]);
 
 const drops = defineProps({
   menuStyle: String,

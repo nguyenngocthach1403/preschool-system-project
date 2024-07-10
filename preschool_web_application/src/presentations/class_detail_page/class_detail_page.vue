@@ -6,9 +6,9 @@
       Thông tin lớp học
     </div>
 
-    <div class="w-full ml-4 mr-2 text-center flex gap-5">
+    <div class="w-full ml-4 mr-2 text-center flex gap-2 pr-5">
       <!--Menu-->
-      <div class="w-[380px] bg-white rounded-xl">
+      <div class="w-[350px] bg-white rounded-xl">
         <div
           v-if="classObject"
           class="w-full bg-white h-[100px] border-b rounded-md flex items-center px-5 gap-2"
@@ -59,35 +59,20 @@
       <div class="w-full h-full bg-white rounded-xl">
         <!--Body-->
         <router-view @add-toast="$emit('add-toast', $event)"></router-view>
-        <!-- <StudentListView
-          v-if="getCurrentActive(1)"
-          :class-id="parseInt($router.currentRoute.value.query.classID)"
-          @add-toast="$emit('add-toast', $event)"
-        />
-        <ClassTeacherView
-          :class-id="parseInt($router.currentRoute.value.query.classID)"
-          v-if="getCurrentActive(3)"
-          @add-toast="$emit('add-toast', $event)"
-        />
-        <ClassMenuView
-          :class-id="parseInt($router.currentRoute.value.query.classID)"
-          v-if="getCurrentActive(4)"
-          @add-toast="$emit('add-toast', $event)"
-        /> -->
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
-import StudentListView from "../views/student_list_view.vue";
-import ClassTeacherView from "../views/class_teachers_view.vue";
-import ClassMenuView from "../views/class_menu_detail_view.vue";
+import { onMounted, ref, watch } from "vue";
+import StudentListView from "./views/student_list_view.vue";
+import ClassTeacherView from "./views/class_teachers_view.vue";
+import ClassMenuView from "./views/class_menu_detail_view.vue";
 //services
-import ClassService from "../../../services/class.service";
-import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
-import { convertClassStatus } from "../../../utils/resources/converter";
+import ClassService from "../../services/class.service";
+import { ddmmyyyyDateString } from "../../utils/resources/format_date";
+import { convertClassStatus } from "../../utils/resources/converter";
 import { useRouter } from "vue-router";
 
 //router
@@ -131,6 +116,10 @@ const menuList = ref([
   },
 ]);
 
+watch(classObject, () => {
+  initialActiveTab();
+});
+
 /**
  * Phương thức lấy lớp học bằng Id
  * @param {interger} id
@@ -148,7 +137,6 @@ async function fetchClassById(id) {
 }
 
 onMounted(() => {
-  initialActiveTab();
   fetchClassById(router.currentRoute.value.query.classID);
 });
 
@@ -160,6 +148,11 @@ function initialActiveTab() {
       TabElement.value[indexHasActive].offsetHeight + "px";
     TabLineElement.value.style.top =
       TabElement.value[indexHasActive].offsetTop + "px";
+
+    router.push({
+      name: menuList.value[indexHasActive].name,
+      query: { classID: router.currentRoute.value.query.classID },
+    });
   }
 }
 function selectTab(event, index) {

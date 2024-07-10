@@ -58,7 +58,7 @@
         class="w-full flex justify-center gap-5 basis-1/6 text-[14px]"
       >
         <button
-          v-if="!creating"
+          v-if="!updating"
           @click="createDish()"
           type="button"
           class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-3 rounded-md ]"
@@ -66,7 +66,7 @@
           Cập nhật
         </button>
         <button
-          v-if="creating"
+          v-if="updating"
           type="button"
           class="h-[35px] basis-1/11 rounded-md my-[5px] w-fit outline-none border-[0.12rem] focus:border-blue-500 px-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
           disabled
@@ -120,9 +120,8 @@ const categories = ref([
 //   const startTime = ref(null);
 const category = ref(null);
 const dishName = ref("");
-const description = ref("");
 
-const creating = ref(false);
+const updating = ref(false);
 
 //   //Message Valid
 const messageOfName = ref(null);
@@ -158,6 +157,14 @@ function checkValid() {
     invalid = true;
     messageOfCategory.value = "Vui lòng chọn loại món ăn";
   }
+  if (isEmpty(props.dish.id)) {
+    emits("add-toast", {
+      title: "Thất bại!",
+      content: "Dữ liệu không tồn tại!",
+      type: 1,
+    });
+    invalid = true;
+  }
   return invalid;
 }
 
@@ -165,35 +172,31 @@ onMounted(() => {
   fillValue(props.dish);
 });
 
-// async function createDish() {
-//   if (checkValid()) return;
+async function createDish() {
+  if (checkValid()) return;
 
-//   try {
-//     const user = JSON.parse(localStorage.getItem("user"));
+  try {
+    if (!user) return;
+    updating.value = true;
+    await MenuService.updateDish(props.dish.id, {
+      name: dishName.value,
+      category: category.value,
+    });
 
-//     if (!user) return;
-//     creating.value = true;
-//     const response = await MenuService.addDish({
-//       dishName: dishName.value,
-//       category: category.value,
-//       description: description.value,
-//       create_by: user.id,
-//     });
-
-//     emits("add-toast", {
-//       title: "Thành công!",
-//       type: 0,
-//     });
-//     emits("close", true);
-//   } catch (error) {
-//     emits("add-toast", {
-//       title: "Thất bại!",
-//       type: 1,
-//     });
-//   } finally {
-//     creating.value = false;
-//   }
-// }
+    emits("add-toast", {
+      title: "Thành công!",
+      type: 0,
+    });
+    emits("close", true);
+  } catch (error) {
+    emits("add-toast", {
+      title: "Thất bại!",
+      type: 1,
+    });
+  } finally {
+    updating.value = false;
+  }
+}
 </script>
     
     <style  scoped>

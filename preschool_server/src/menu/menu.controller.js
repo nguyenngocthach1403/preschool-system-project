@@ -14,13 +14,86 @@ const router = express.Router();
 
 router.get("/", getWeeklyMenuById);
 router.get("/dish/get", getDishes);
+router.delete("/dish/delete", deleleDish);
+router.post("/dish/update", updateDish);
 router.get("/meals", getMeals);
+router.get("/dish/search", searchDish);
 router.post("/meals/add", addMeal);
 router.post("/dish/add", addDish);
 router.get("/class", getMenuByClassId);
 router.post("/create", createMenuByClassId);
 router.post("/update", updateMenu);
 
+async function updateDish(req, res) {
+  const { dishId } = req.query;
+  const { name, category } = req.body;
+
+  if (isEmpty(dishId) || !isNumber(dishId)) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      error: "Mã món ăn không hợp lệ!",
+    });
+  }
+
+  if ((await menuService.isExistDish(dishId)) == false) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 404,
+      error: "Mã món ăn không tồn tại!",
+    });
+  }
+
+  try {
+    await menuService.updateDish(dishId, { name, category });
+    Response.sendResponse({ res, statusCode: 200 });
+  } catch (error) {
+    Response.sendErrorResponse({ res, statusCode: 400, error: error });
+  }
+}
+async function deleleDish(req, res) {
+  const { dishId } = req.query;
+
+  if (isEmpty(dishId) || !isNumber(dishId)) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      error: "Mã món ăn không hợp lệ!",
+    });
+  }
+
+  try {
+    await menuService.deleteDish(dishId);
+    Response.sendResponse({ res, statusCode: 200 });
+  } catch (error) {
+    Response.sendErrorResponse({ res, statusCode: 400, error: error });
+  }
+}
+async function searchDish(req, res) {
+  const { searchText, limit, offset } = req.query;
+  if (
+    isEmpty(limit) ||
+    isEmpty(offset) ||
+    !isNumber(limit) ||
+    !isNumber(offset)
+  ) {
+    return Response.sendErrorResponse({
+      statusCode: 400,
+      res,
+      error: "Limit và offset không hợp lệ!",
+    });
+  }
+
+  const dbResponse = await menuService.searchDish(searchText, limit, offset);
+
+  const countResponse = await menuService.countDishWithSearch(searchText);
+
+  Response.sendResponse({
+    res,
+    statusCode: 200,
+    responseBody: { dishes: dbResponse || [], count: countResponse || 0 },
+  });
+}
 async function updateMenu(req, res) {
   const { mealMenuId } = req.query;
 

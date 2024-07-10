@@ -35,20 +35,19 @@
           </thead>
           <tbody>
             <tr
-              class="h-[60px] w-full text-left even:bg-gray-50 hover:bg-gray-200"
+              class="h-[60px] w-full text-left even:bg-gray-100 hover:bg-gray-200"
               v-for="parent in dataTable"
               :key="parent.id"
-              :class="{ 'empty-account': !parent.username }"
             >
               <td class="px-3 relative">
-                <div
+                <!-- <div
                   v-if="!parent.username"
                   class="absolute top-0 left-5 text-red-500 text-[12px]"
                 >
                   new
-                </div>
+                </div> -->
                 <div class="inline-flex items-center">
-                  <label
+                  <!-- <label
                     class="relative flex items-center p-3 rounded-full cursor-pointer"
                   >
                     <input
@@ -74,7 +73,7 @@
                         ></path>
                       </svg>
                     </span>
-                  </label>
+                  </label> -->
                 </div>
               </td>
               <td class="w-[300px]">

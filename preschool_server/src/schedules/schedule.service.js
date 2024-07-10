@@ -16,6 +16,21 @@ const countActivity = async () => {
     return 0;
   }
 };
+const countActivityWidthSearch = async (searchText) => {
+  try {
+    const response = await db.select(
+      config.tb.activity,
+      "COUNT(*) AS total",
+      `WHERE deleted = 0 AND name LIKE '%${searchText}%'`
+    );
+    const dbResponse = response[0];
+    if (!dbResponse) return 0;
+    return dbResponse["total"];
+  } catch (error) {
+    console.error(error);
+    return 0;
+  }
+};
 
 const countTimetable = async () => {
   try {
@@ -48,6 +63,25 @@ const getActivities = async (limit, offset) => {
     return undefined;
   }
 };
+const searchActivities = async (searchText, limit, offset) => {
+  try {
+    const response = await db.selectLimit(
+      `${config.tb.activity} act LEFT JOIN ${config.tb.account} acc ON acc.id  = act.created_by`,
+      `act.*, acc.username, acc.role`,
+      `WHERE act.deleted = 0 AND act.name LIKE '%${searchText}%'`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    const count = await countActivityWidthSearch(searchText);
+
+    if (response.length == 0) return undefined;
+
+    return { count, activities: response };
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
 
 const createActivity = async (activityToCreate) => {
   try {
@@ -71,7 +105,7 @@ const createTimetable = async (timetableToCreate) => {
     return response.insertId;
   } catch (error) {
     console.error(error);
-    throw error;
+    throw new Error(error.sqlMessage);
   }
 };
 
@@ -331,12 +365,12 @@ const deletedActivityGroups = async (timetableId, activityId) => {
       activity_id = ${activityId}`
     );
 
-    if (response.affectedRows == 0) return false;
+    if (response == 0) throw new Error("Thất bại!");
 
     return true;
   } catch (error) {
     console.error(error);
-    return false;
+    throw error;
   }
 };
 
@@ -348,8 +382,7 @@ const createTimetableAssignment = async (dataToCreate) => {
 
     return response.insertId;
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error.sqlMessage);
   }
 };
 
@@ -419,6 +452,40 @@ const deleteAllTimetablByTimetableId = async (timetableId) => {
     return false;
   }
 };
+const deleteActivity = async (activityId) => {
+  try {
+    const response = await db.update(
+      config.tb.activity,
+      { deleted: 1 },
+      { id: activityId }
+    );
+    if (response == 0) throw new Error("Thất bại!");
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateActivity = async (activityId, dataToUpData) => {
+  const keys = Object.keys(dataToUpData);
+  for (let index = 0; index < keys.length; index++) {
+    const key = keys[index];
+    if (dataToUpData[key] == undefined) {
+      delete dataToUpData[key];
+    }
+  }
+  try {
+    const response = await db.update(config.tb.activity, dataToUpData, {
+      id: activityId,
+    });
+    if (response == 0) throw new Error("Thất bại!");
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
 module.exports = {
   getActivities,
   countActivity,
@@ -438,4 +505,7 @@ module.exports = {
   deleteAllActivityGroupsByTimetableId,
   deleteAllTimetablAssignmentByTimetableId,
   deleteAllTimetablByTimetableId,
+  searchActivities,
+  deleteActivity,
+  updateActivity,
 };

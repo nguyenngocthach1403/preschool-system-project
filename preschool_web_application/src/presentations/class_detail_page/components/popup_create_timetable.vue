@@ -5,7 +5,7 @@
     class="absolute top-0 left-0"
   >
     <template #content>
-      <div class="w-[600px]">
+      <div class="w-[700px]">
         <form @submit="addNewTime()" action="" class="px-10">
           <div class="text-start">
             <span>Thời gian bắt đầu</span><span class="text-red-500"> (*)</span
@@ -19,15 +19,24 @@
               {{ messageOfStartTime }}
             </div>
           </div>
-          <div class="text-start">
-            <span>Thời gian kết thúc</span><span class="text-red-500"> (*)</span
-            ><input
-              v-model="endTime"
-              type="time"
-              class="input-text-default"
-              :class="{ invalid: messageOfEndTime }"
-            />
-            <div class="h-[20px] my-1 text-red-500">{{ messageOfEndTime }}</div>
+          <div class="flex gap-3">
+            <div class="text-start w-full">
+              <span>Thời gian kết thúc</span
+              ><span class="text-red-500"> (*)</span
+              ><input
+                v-model="endTime"
+                type="time"
+                class="input-text-default"
+                :class="{ invalid: messageOfEndTime }"
+              />
+              <div class="h-[20px] my-1 text-red-500">
+                {{ messageOfEndTime }}
+              </div>
+            </div>
+            <div class="text-start w-[200px]">
+              <span>Phút</span
+              ><input type="number" class="input-text-default" v-model="min" />
+            </div>
           </div>
         </form>
       </div>
@@ -88,6 +97,7 @@ import { isEmpty, isValidTime } from "../../../utils/resources/check_valid";
 //   //model
 const startTime = ref("");
 const endTime = ref("");
+const min = ref(0);
 
 const creating = ref(false);
 
@@ -104,7 +114,26 @@ watch(startTime, () => {
     messageOfStartTime.value = null;
   }
 });
+watch(min, () => {
+  if (startTime.value && min.value != 0) {
+    const [hours, minutes] = startTime.value.split(":").map(Number);
 
+    console.log(hours, minutes);
+    let totalMinutes = hours * 60 + minutes;
+    // Bước 2: Cộng thêm số phút vào tổng số phút
+    totalMinutes += min.value;
+    // Bước 3: Chuyển đổi lại tổng số phút thành định dạng "hh:mm"
+    const newHours = Math.floor(totalMinutes / 60) % 24; // Sử dụng % 24 để đảm bảo giờ không vượt quá 24
+    const newMinutes = totalMinutes % 60;
+    // Định dạng lại thành "hh:mm"
+    const formattedHours = newHours.toString().padStart(2, "0");
+    const formattedMinutes = newMinutes.toString().padStart(2, "0");
+    endTime.value = `${formattedHours}:${formattedMinutes}`;
+    console.log(`${formattedHours}:${formattedMinutes}`);
+  } else {
+    endTime.value = null;
+  }
+});
 watch(endTime, () => {
   if (!isEmpty(endTime.value)) {
     messageOfEndTime.value = null;
@@ -169,6 +198,10 @@ function addNewTime() {
 
   emits("close", { start_time: startTime.value, end_time: endTime.value });
 }
+onMounted(() => {
+  if (props.timetables.length != 0)
+    startTime.value = props.timetables[props.timetables.length - 1].end_time;
+});
 </script>
         
 <style  scoped>

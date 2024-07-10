@@ -1,16 +1,5 @@
 <template>
   <div class="h-fit mr-[10px]">
-    <PopupComfirm
-      :content="
-        isShowComfirm.oldTeacher
-          ? 'Bạn có chắc muốn thay đổi người quản lý không?'
-          : 'Bạn có chắc muốn thêm người quản lý không?'
-      "
-      v-if="isShowComfirm"
-      :value="isShowComfirm"
-      class="absolute top-0 left-0"
-      @confirm="confirmChangeTeacher($event)"
-    />
     <!--Table here-->
     <table class="h-fit w-full rounded-md">
       <thead
@@ -99,13 +88,9 @@
 import { computed, onMounted, ref } from "vue";
 //component
 import InputSearchSingleSelect from "../../../components/selects/input_search_single_select.vue";
-import PopupComfirm from "../../../components/confirm_dialog.vue";
 //service
 import classService from "../../../services/class.service";
 import teacherService from "../../../services/teacher.service";
-
-//
-const isShowComfirm = ref(false);
 
 //
 const roles = ref([]);
@@ -179,22 +164,15 @@ function isDisaple(item) {
  */
 function changeTeacherManger(teacherId, classId, roleId, oldTeacher) {
   //comfirm
-  isShowComfirm.value = {
+
+  emits("update-manager-for-class", {
     teacherId: teacherId,
     roleId: roleId,
     classId: classId,
     oldTeacher: oldTeacher,
-  };
+  });
 }
-function confirmChangeTeacher(comfirm) {
-  if (!comfirm) {
-    isShowComfirm.value = null;
-    return;
-  }
-  emits("update-manager-for-class", comfirm);
 
-  isShowComfirm.value = null;
-}
 async function fetchTeachers() {
   try {
     const response = await teacherService.getTeacher(0, 20);

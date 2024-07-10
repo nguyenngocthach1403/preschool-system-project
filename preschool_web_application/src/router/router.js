@@ -22,11 +22,12 @@ import TeacherCreationView from "../presentations/teacher_page/view/teacher_crea
 import StudentDetailView from "../presentations/student_detail_page/views/student_detail_page.vue";
 import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
 import AssignmentView from "../presentations/assignmet_page/views/assignment_page.vue";
-
+//==============Parent==================//
 import HomePageParent from "../presentations/home_page/views/home_page_parent.vue";
 import ParentDetailView from "../presentations/parent_page/view_parentLogin/parent_detail.vue";
 import StudentDetailParentView from "../presentations/parent_page/view_parentLogin/student_detail.vue";
 import ParentDetailInfoView from "../presentations/parent_page/view_detail_i4/parent_detail_view.vue";
+import StudentDetailViewOfParent from "../presentations/student_detail_page/views/student_detail_page.vue";
 
 import HomePageTeacher from "../presentations/home_page/views/home_page_teacher.vue";
 import InfoTeacherView from "../presentations/teacher_login/views/info_view.vue";
@@ -39,7 +40,7 @@ import MenuFoodStudent from "../presentations/parent_page/view_detail_i4/menu_fo
 // import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
 
 //===========ClassDetail================//
-import ClassDetailPage from "../presentations/class_detail_page/views/class_detail_page.vue";
+import ClassDetailPage from "../presentations/class_detail_page/class_detail_page.vue";
 import ClassScheduleView from "../presentations/class_detail_page/views/class_schedule_view.vue";
 import ClassMenuView from "../presentations/class_detail_page/views/class_menu_detail_view_demo.vue";
 import ClassManagerView from "../presentations/class_detail_page/views/class_teachers_view.vue";
@@ -58,7 +59,6 @@ import SchedulePage from "../presentations/schedule_page/schedule_page.vue";
 import ActivityView from "../presentations/schedule_page/views/activity_view.vue";
 import TimetableView from "../presentations/schedule_page/views/timetable_view.vue";
 
-import NewsView from "../presentations/home_page_user/views/news_view.vue";
 import NewsView from "../presentations/home_page_user/views/news_view.vue";
 import DetailNewsView from "../presentations/home_page_user/views/detail_news_view.vue";
 import IntroduceView from "../presentations/home_page_user/views/introduce_view.vue";
@@ -140,6 +140,11 @@ function Router() {
             name: "StudentDetailParentView",
             path: "/home-page/:username/student-detail-parent-view",
             component: StudentDetailParentView,
+            // beforeEnter(to, from) {
+            //   if (!to.query.parentId) {
+            //     return from.path;
+            //   }
+            // },
           },
           {
             name: "MenuFoodStudent",
@@ -150,6 +155,16 @@ function Router() {
             name: "ParentDetailInfoView",
             path: "/home-page/:username/parent-info-detail-view",
             component: ParentDetailInfoView,
+          },
+          {
+            name: "StudentDetailViewOfParent",
+            path: "/home-page/:username/student/detail",
+            component: StudentDetailViewOfParent,
+            beforeEnter(to, from) {
+              if (to.query.studentID == null) {
+                return from.path;
+              }
+            },
           },
         ],
       },
@@ -206,6 +221,11 @@ function Router() {
             name: "StudentDetailView",
             path: "/home/:username/students/detail",
             component: StudentDetailView,
+            beforeEnter(to, from) {
+              if (to.query.studentID == null) {
+                return from.path;
+              }
+            },
           },
           {
             name: "ParentStudentCreationView",
@@ -413,9 +433,12 @@ function Router() {
     if (to.name === from.name) {
       return next();
     }
+    next();
     if (to.matched.some((record) => record.meta.requireAuth)) {
       if (localStorage.getItem("user") == null) {
-        return "/sign";
+        next({
+          path: "/sign",
+        });
       } else {
         next();
       }

@@ -15,12 +15,69 @@ const router = express.Router();
 router.get("/activities", getActivities);
 router.get("/timetable", getTimetable);
 router.get("/timetable/search", searchTimetable);
+router.get("/activity/search", searchSchedules);
 router.post("/activity/add", addActivity);
+router.post("/activity/update", updateActivity);
+router.delete("/activity/delete", deleleActivity);
 router.post("/timetable/add", addTimetable);
 router.get("/", getSchedules);
 router.post("/create", createSchedule);
 router.post("/update", updateSchedule);
 router.post("/delete", deleteTimetableOfWeek);
+
+async function updateActivity(req, res) {
+  const { activityId } = req.query;
+  const { name, description } = req.body;
+
+  if (isEmpty(activityId) || !isNumber(activityId)) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      error: "Mã món ăn không hợp lệ!",
+    });
+  }
+
+  if ((await ScheduleService.isExistActivity(activityId)) == false) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 404,
+      error: "Dữ liệu không tồn tại!",
+    });
+  }
+
+  try {
+    await ScheduleService.updateActivity(activityId, { name, description });
+    Response.sendResponse({ res, statusCode: 200 });
+  } catch (error) {
+    Response.sendErrorResponse({ res, statusCode: 400, error: error });
+  }
+}
+async function deleleActivity(req, res) {
+  const { activityId } = req.query;
+
+  if (isEmpty(activityId) || !isNumber(activityId)) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      error: "Mã món ăn không hợp lệ!",
+    });
+  }
+
+  if ((await ScheduleService.isExistActivity(activityId)) == false) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 404,
+      error: "Dữ liệu không tồn tại!",
+    });
+  }
+
+  try {
+    await ScheduleService.deleteActivity(activityId);
+    Response.sendResponse({ res, statusCode: 200 });
+  } catch (error) {
+    Response.sendErrorResponse({ res, statusCode: 400, error: error });
+  }
+}
 
 async function deleteTimetableOfWeek(req, res) {
   const { classId } = req.query;
@@ -85,18 +142,17 @@ async function updateSchedule(req, res) {
   }
 
   try {
-    for (let index = 0; index < teachersToDelete.length; index++) {
-      const element = teachersToDelete[index];
+    for (const item in teachersToDelete) {
       await ScheduleService.deletedTimetableAssignment(
         timetableId,
-        element.teacher_id
+        teachersToDelete[item].teacher_id
       );
     }
-    for (let index = 0; index < activitiesToDelete.length; index++) {
-      const element = activitiesToAdd[index];
+    for (const item in activitiesToDelete) {
+      console.log(activitiesToDelete[item]);
       await ScheduleService.deletedActivityGroups(
         timetableId,
-        element.activity_id
+        activitiesToDelete[item].activity_id
       );
     }
     for (let index = 0; index < activitiesToAdd.length; index++) {
@@ -117,10 +173,11 @@ async function updateSchedule(req, res) {
     Response.sendResponse({ res, statusCode: 200 });
   } catch (error) {
     //
+    console.log(error.message);
     return Response.sendErrorResponse({
       res,
       statusCode: 400,
-      error: "Thất bại",
+      error: error.message,
     });
   }
 }
@@ -166,8 +223,15 @@ async function getSchedules(req, res) {
 
 async function createSchedule(req, res) {
   const { classId } = req.query;
-  const { startTime, endTime, dateId, timetableId, date, activities } =
-    req.body;
+  const {
+    startTime,
+    endTime,
+    dateId,
+    timetableId,
+    date,
+    activities,
+    teachers,
+  } = req.body;
 
   if (isEmpty(timetableId) && isEmpty(dateId)) {
     if (!isValidTime(startTime) || !isValidTime(endTime)) {
@@ -203,11 +267,18 @@ async function createSchedule(req, res) {
           timetable_id: resultCreateTimeTable,
         });
       }
+      console.log(teachers);
+      for (const index in teachers) {
+        await ScheduleService.createTimetableAssignment({
+          teacher_id: teachers[index].id,
+          timetable_id: resultCreateTimeTable,
+        });
+      }
     } catch (error) {
       return Response.sendErrorResponse({
         statusCode: 400,
         res,
-        error: error.sqlMessage,
+        error: error.message,
       });
     }
 
@@ -236,6 +307,13 @@ async function createSchedule(req, res) {
         const element = activities[index];
         await ScheduleService.createActivityGroup({
           activity_id: element.id,
+          timetable_id: resultCreateTimeTable,
+        });
+      }
+      console.log(teachers);
+      for (const index in teachers) {
+        await ScheduleService.createTimetableAssignment({
+          teacher_id: teachers[index].id,
           timetable_id: resultCreateTimeTable,
         });
       }
@@ -424,9 +502,35 @@ async function getTimetable(req, res) {
   });
 }
 
+async function searchSchedules(req, res) {
+  const { searchText, limit, offset } = req.query;
+  if (
+    isEmpty(limit) ||
+    isEmpty(offset) ||
+    !isNumber(limit) ||
+    !isNumber(offset)
+  ) {
+    return Response.sendErrorResponse({
+      statusCode: 400,
+      res,
+      error: "Limit và offset không hợp lệ!",
+    });
+  }
+
+  const activities = await ScheduleService.searchActivities(
+    searchText,
+    limit,
+    offset
+  );
+
+  Response.sendResponse({
+    res,
+    statusCode: 200,
+    responseBody: activities || [],
+  });
+}
 async function getActivities(req, res) {
   const { limit, offset } = req.query;
-  console.log(offset);
 
   if (
     isEmpty(limit) ||
@@ -442,8 +546,6 @@ async function getActivities(req, res) {
   }
 
   const activities = await ScheduleService.getActivities(limit, offset);
-
-  console.log(activities);
 
   Response.sendResponse({
     res,

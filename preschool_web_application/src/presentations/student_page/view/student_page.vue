@@ -67,7 +67,7 @@
     ></TableComp>
 
     <div
-      class="bottom-table-section flex justify-between h-[37px] content-center"
+      class="bottom-table-section flex justify-between h-[37px] content-center my-5"
     >
       <div
         v-if="status !== 'search_failed' && status !== 'load_failed'"

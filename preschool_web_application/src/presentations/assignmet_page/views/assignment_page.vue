@@ -5,6 +5,17 @@
     >
       Quản lý phân công
     </div>
+    <PopupComfirm
+      :content="
+        isShowComfirm.oldTeacher
+          ? 'Bạn có chắc muốn thay đổi người quản lý không?'
+          : 'Bạn có chắc muốn thêm người quản lý không?'
+      "
+      v-if="isShowComfirm"
+      :value="isShowComfirm"
+      class="absolute top-0 left-0"
+      @confirm="confirmChangeTeacher($event)"
+    />
     <div class="flex justify-between px-5">
       <div class="flex gap-5">
         <SearchComp
@@ -38,7 +49,7 @@
     <ResultNumComp>{{ total }}</ResultNumComp>
     <TableComp
       :data="classes"
-      @update-manager-for-class="updateMnagerForClass($event)"
+      @update-manager-for-class="isShowComfirm = $event"
       class="mt-5 drop-shadow-xl"
     ></TableComp>
     <div class="w-full mr-0 py-3">
@@ -55,6 +66,7 @@ import CreateButtonComp from "../../../components/create_button.vue";
 import ResultNumComp from "../../../components/result_comp.vue";
 import PaginationComp from "../../../components/pagination.vue";
 import ItemCheckBox from "../../registration_page/components/item_checkbox_filter.vue";
+import PopupComfirm from "../../../components/confirm_dialog.vue";
 //Service
 import classService from "../../../services/class.service";
 
@@ -67,6 +79,8 @@ const classStore = useClassStore();
 const { classes, limit, page, status, total } = storeToRefs(classStore);
 const session = ref("");
 const searchText = ref("");
+//
+const isShowComfirm = ref(false);
 
 const statusList = ref([
   { id: 0, name: "Đang diễn ra", checked: false, total: 0 },
@@ -125,6 +139,17 @@ async function changeChecked(event, item) {
     .flatMap((e) => e.id);
 
   classStore.searchClasses();
+}
+
+function confirmChangeTeacher(comfirm) {
+  if (!comfirm) {
+    isShowComfirm.value = null;
+    return;
+  }
+
+  updateMnagerForClass(comfirm);
+
+  isShowComfirm.value = null;
 }
 
 /**

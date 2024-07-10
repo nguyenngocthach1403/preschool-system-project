@@ -305,10 +305,10 @@ async function updateTimeTable() {
       emits("close", true);
     }, 500);
   } catch (error) {
-    console.log(error);
+    console.log(error.response);
     emits("add-toast", {
       title: "Thất bại!",
-      content: error,
+      content: error.response.data.error,
       type: 1,
     });
   } finally {

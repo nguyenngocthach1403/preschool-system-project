@@ -400,6 +400,71 @@ const getWeeklyMenuById = async (id) => {
   }
 };
 
+const countDishWithSearch = async (searchText) => {
+  try {
+    const response = await db.select(
+      `${config.tb.dishes}`,
+      "COUNT(*) as total",
+      `WHERE deleted = 0 AND name Like '%${searchText}%'`
+    );
+    const countResponse = response[0];
+
+    if (!countResponse) return 0;
+
+    return countResponse["total"];
+  } catch (error) {
+    return undefined;
+  }
+};
+
+const searchDish = async (searchText, limit, offset) => {
+  try {
+    const response = await db.selectLimit(
+      `${config.tb.dishes} d LEFT JOIN ${config.tb.account} a ON a.id = d.created_by`,
+      "d.*, a.username",
+      `WHERE d.deleted = 0 AND d.name like '%${searchText}%'`,
+      `LIMIT ${limit}`,
+      `OFFSET ${offset}`
+    );
+    if (response.length == 0) return undefined;
+    return response;
+  } catch (error) {
+    return undefined;
+  }
+};
+const deleteDish = async (dishId) => {
+  try {
+    const response = await db.update(
+      config.tb.dishes,
+      { deleted: 1 },
+      { id: dishId }
+    );
+    if (response == 0) throw new Error("Thất bại!");
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+const updateDish = async (dishId, dataToUpData) => {
+  const keys = Object.keys(dataToUpData);
+  for (let index = 0; index < keys.length; index++) {
+    const key = keys[index];
+    if (dataToUpData[key] == undefined) {
+      delete dataToUpData[key];
+    }
+  }
+  try {
+    const response = await db.update(config.tb.dishes, dataToUpData, {
+      id: dishId,
+    });
+    if (response == 0) throw new Error("Thất bại!");
+
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
 module.exports = {
   getMeals,
   getWeeklyMenuById,
@@ -418,4 +483,8 @@ module.exports = {
   getDailyMenuByDateAndClassId,
   getDetailMenu,
   deleteDetailMenu,
+  countDishWithSearch,
+  searchDish,
+  deleteDish,
+  updateDish,
 };

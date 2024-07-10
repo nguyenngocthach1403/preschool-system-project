@@ -64,6 +64,7 @@
       <StudentInformationView
         v-if="getTabActive(0)"
         :student-data="studentData"
+        @click-student="$emit('click-student', $event)"
       />
       <MenuFoodStudent v-if="getTabActive(1)" />
       <ClassHistory v-if="getTabActive(2)" />
