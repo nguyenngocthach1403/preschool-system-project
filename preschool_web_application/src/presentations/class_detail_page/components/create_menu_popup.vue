@@ -31,8 +31,11 @@
               :options="dishes"
               :enable-sub="false"
               :has-data="hasData"
+              :value="searchText"
+              :loading="loading"
               @selected="dishesSelected = $event"
               @scrollEnd="handleScrollEnd()"
+              @newValue="getSearchText($event)"
             />
           </div>
         </div>
@@ -107,6 +110,8 @@ const dishesSelected = ref([]);
 const page = ref(0);
 const hasData = ref(true);
 const creating = ref(false);
+const searchText = ref("");
+const loading = ref(false);
 
 //props
 const props = defineProps({
@@ -120,6 +125,7 @@ const emits = defineEmits(["add-toast", "close"]);
 
 async function fetchDishes(limit, page) {
   try {
+    loading.value = true;
     if (!hasData.value) return;
     const response = await menuService.featchDishes(limit, page);
     const dataReponse = response.data;
@@ -133,6 +139,39 @@ async function fetchDishes(limit, page) {
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+function getSearchText(text) {
+  if (text != searchText.value) {
+    searchText.value = text;
+    hasData.value = true;
+    page.value = 0;
+    dishes.value = [];
+    searchDishes(text, 10, page.value);
+  }
+}
+
+async function searchDishes(searchText, limit, page) {
+  try {
+    loading.value = true;
+    if (!hasData.value) return;
+    const response = await menuService.searchDishes(searchText, limit, page);
+    const dataReponse = response.data;
+
+    if (!dataReponse.status) return;
+
+    dishes.value = [...dishes.value, ...dataReponse.data.dishes];
+
+    if (dataReponse.data.dishes.length < 10) {
+      hasData.value = false;
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -190,7 +229,8 @@ async function createMenu() {
 function handleScrollEnd() {
   if (!hasData.value) return;
   page.value += 1;
-  fetchDishes(10, page.value);
+  if (searchText.value != "") searchDishes(searchText.value, 10, page.value);
+  else fetchDishes(10, page.value);
 }
 
 onMounted(() => {

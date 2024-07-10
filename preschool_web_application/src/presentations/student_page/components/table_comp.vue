@@ -27,7 +27,7 @@
             </div>
           </th>
           <th class="px-3 text-left">Phụ huynh</th>
-          <th class="px-3 text-left hidden lg:table-cell">
+          <!-- <th class="px-3 text-left hidden lg:table-cell">
             <div class="flex">
               Lớp
               <img
@@ -36,10 +36,10 @@
                 class="w-[20px] hover:bg-gray-200/25 rounded-full"
               />
             </div>
-          </th>
+          </th> -->
           <th class="px-3 text-left hidden 2xl:table-cell">Giới tính</th>
           <th class="px-3 text-left hidden xl:table-cell">Ngày sinh</th>
-          <th class="px-3 text-left">Trạng thái học</th>
+          <th class="px-3 text-center">Trạng thái học</th>
           <th class="px-3 text-left">Trạng thái</th>
           <th class="px-3 text-left">Chức năng</th>
         </tr>
@@ -48,11 +48,11 @@
         <tr
           v-for="item in dataTable"
           :key="item.id"
-          class="text-[14px] h-[60px] text-left even:bg-gray-50"
+          class="text-[14px] h-[60px] text-left even:bg-gray-100 hover:bg-gray-200 drop-shadow-xl"
         >
           <td class="px-3">
             <div class="inline-flex items-center">
-              <label
+              <!-- <label
                 class="relative flex items-center p-3 rounded-full cursor-pointer"
               >
                 <input
@@ -78,7 +78,7 @@
                     ></path>
                   </svg>
                 </span>
-              </label>
+              </label> -->
             </div>
           </td>
           <td class="px-3">
@@ -89,7 +89,7 @@
               />
             </div>
           </td>
-          <td class="hidden 2xl:table-cell px-3 w-[600px] text-blue-900">
+          <td class="hidden min-w-[100px] 2xl:table-cell px-3 text-blue-900">
             <span>PRE{{ item.id }}</span>
           </td>
           <td class="w-dvw px-3">
@@ -105,7 +105,7 @@
               {{ item.birthday }}
             </dd>
           </td>
-          <td class="w-dvw px-3 relative">
+          <td class="min-w-[200px] px-3 relative">
             <button
               @click.prevent="$emit('link-parent-with-student', item)"
               v-if="!item.parents"
@@ -120,7 +120,7 @@
               <span> {{ parent.name }}</span>
             </p>
           </td>
-          <td class="hidden lg:table-cell w-[1000px] px-3">
+          <!-- <td class="hidden lg:table-cell w-[1000px] px-3">
             <div v-if="item.class" class="">
               <span>{{ item.class.class_name }} </span>
               <button
@@ -138,13 +138,15 @@
             >
               Thêm vào lớp
             </button>
-          </td>
-          <td class="hidden 2xl:table-cell px-3 w-[600px]">
+          </td> -->
+          <td class="hidden 2xl:table-cell px-3 min-w-[100px]">
             <span>{{ convertNumToGender(item.gender) }}</span>
           </td>
 
-          <td class="hidden xl:table-cell px-3 w-[700px]">
-            <span>{{ new Date(item.birthday).toLocaleDateString() }}</span>
+          <td class="hidden xl:table-cell px-3 min-w-[130px]">
+            <span>{{
+              ddmmyyyyDateString(new Date(item.birthday).toLocaleDateString())
+            }}</span>
           </td>
           <td class="px-3 w-[400px]">
             <div
@@ -155,7 +157,7 @@
           </td>
           <td class="px-3">
             <div
-              class="rounded-[5px] h-[30px] text-white w-[70px] content-center text-center text-[12px]"
+              class="rounded-[5px] min-w-[100px] h-[30px] text-white w-[70px] content-center text-center text-[12px]"
               :class="`${checkStatusToClass(item.status)}`"
             >
               {{ checkStatusToContent(item.status) }}
@@ -254,6 +256,7 @@ import {
   convertParentRole,
   convertStudentStatus,
 } from "../../../utils/resources/converter";
+import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 
 const showMenu = ref();
 const x = ref();
@@ -327,9 +330,6 @@ function checkStatusToClass(sts) {
 </script>
 
 <style scoped>
-tbody > tr:hover {
-  background-color: #b7d3ff;
-}
 .none-status {
   background-color: gray;
 }

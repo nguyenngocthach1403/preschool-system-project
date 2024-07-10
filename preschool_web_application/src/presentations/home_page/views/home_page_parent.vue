@@ -20,6 +20,7 @@
         class="mt-5"
         @add-toast="addToast"
         @closeToast="deleteToast(item.id)"
+        @click-student="onClickStudent($event)"
       ></router-view>
     </section>
   </main>
@@ -31,6 +32,9 @@ import ToastList from "@/components/toast_list.vue";
 import next_icon from "@/assets/icons/Right.svg";
 import pre_icon from "@/assets/icons/Left Arrow.svg";
 import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const toasts = ref([]);
 
@@ -63,6 +67,16 @@ function closeMenu(is) {
   }
   menuStyle.value = "full-menu";
   menuIcon.value = pre_icon;
+}
+
+function onClickStudent(studentId) {
+  // log
+  router.push({
+    name: "StudentDetailViewOfParent",
+    query: {
+      studentID: studentId,
+    },
+  });
 }
 </script>
 

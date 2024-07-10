@@ -99,9 +99,9 @@
             </g>
           </svg>
         </li>
-        <li v-if="props.hasData"><LoadingComp /></li>
+        <li v-if="props.hasData || props.loading"><LoadingComp /></li>
         <li
-          v-if="!props.options || props.options.length == 0"
+          v-if="(!props.options || props.options.length == 0) && !props.loading"
           class="empty text-center text-gray-400"
         >
           <img class="w-10 h-10 m-auto" :src="empty_icon" alt="" />
@@ -148,6 +148,10 @@ const props = defineProps({
     require: true,
   },
   enableSub: {
+    type: Boolean,
+    require: false,
+  },
+  loading: {
     type: Boolean,
     require: false,
   },

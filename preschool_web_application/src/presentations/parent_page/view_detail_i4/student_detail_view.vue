@@ -1,15 +1,18 @@
 <template>
   <div class="w-full">
     <div
-      v-for="(student, index) in studentData.data"
+      v-for="(student, index) in studentData"
       :key="index"
       class="m-10 border rounded-md"
+      @click="onClickStudent(student)"
     >
-      <div class="w-full py-4 px-10 font-bold text-[18px] border-b text-start">
+      <button
+        class="w-full py-4 px-10 font-bold text-[18px] border-b text-start"
+      >
         Thông tin cá nhân bé {{ student.StudentName }}
-      </div>
-      <div class="w-full px-10 py-5 content-center text-start">
-        <!-- Each student's information -->
+      </button>
+      <!-- <div class="w-full px-10 py-5 content-center text-start">
+        Each student's information 
         <section class="w-full my-5 flex gap-5">
           <div class="w-full">
             <label class="pl-2">
@@ -158,7 +161,7 @@
             </label>
           </div>
         </section>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -180,13 +183,17 @@ const studentStudyStatus = ref(0);
 
 // const studentData = ref(null);
 const studentData = ref({ data: [] });
+const emits = defineEmits(["click-student"]);
 
 onBeforeMount(() => {
   getStudentByParentId();
 });
+function onClickStudent(student) {
+  emits("click-student", student.StudentId);
+}
 
 async function getStudentByParentId() {
-  const accountId = window.user.id;
+  const accountId = JSON.parse(localStorage.getItem("user")).id;
   const response = await accountService.getParentById(accountId);
   console.log(response.data[0].ParentID);
   const result = await parentService.getStudentByParentId(
@@ -199,8 +206,7 @@ async function getStudentByParentId() {
   if (!result.data.success) {
     return;
   }
-  studentData.value = result.data;
-  console.log(studentData.value);
+  studentData.value = result.data.data;
 }
 </script>
 

@@ -8,7 +8,7 @@
     <PopupEditDish
       v-if="isShowEdit"
       :dish="isShowEdit"
-      @close="isShowEdit = null"
+      @close="closePopupEdit($event)"
       @add-toast="$emit('add-toast', $event)"
     />
     <ComfirmPopup
@@ -34,7 +34,7 @@
 
     <div
       v-if="dishes.length != 0"
-      class="flex h-[50px] justify-between items-center"
+      class="flex h-[50px] justify-between items-center my-5"
     >
       <div class="">
         Hiển thị từ {{ page * limit == 0 ? 1 : page * limit }} đến
@@ -67,6 +67,7 @@ import { checkPermissions } from "../../../utils/resources/check_valid";
 //store
 import { useDishesStore } from "../../../stores/dishes_store";
 import { storeToRefs } from "pinia";
+import menuService from "../../../services/menu.service";
 const dishesStore = useDishesStore();
 
 const isShowCreate = ref(false);
@@ -105,7 +106,27 @@ function openCreateDish() {
 }
 
 function getComfirm(result) {
-  if (!result) isShowDelete.value = null;
+  if (result) {
+    deleteDish(isShowDelete.value.id);
+  }
+  isShowDelete.value = null;
+}
+async function deleteDish(dishId) {
+  try {
+    await menuService.deleteDish(dishId);
+    emits("add-toast", {
+      title: "Thành công!",
+      type: 0,
+    });
+    await dishesStore.fetchDishes();
+  } catch (error) {
+    console.log(error);
+    emits("add-toast", {
+      title: "Thất bại!",
+      content: error,
+      type: 1,
+    });
+  }
 }
 
 function nextPage(newPage) {
@@ -113,6 +134,12 @@ function nextPage(newPage) {
     dishesStore.page = newPage;
     dishesStore.fetchDishes();
   }
+}
+function closePopupEdit(result) {
+  if (result) {
+    dishesStore.fetchDishes();
+  }
+  isShowEdit.value = null;
 }
 
 onMounted(async () => {

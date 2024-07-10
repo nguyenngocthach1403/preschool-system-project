@@ -25,12 +25,7 @@
           <td class="text-center px-3 py-1 w-[160px] bg-gray-300 relative">
             {{ time.start_time }} - {{ time.end_time }}
             <div
-              @click="
-                $emit('delete-timetable', {
-                  startTime: time.start_time,
-                  endTime: time.end_time,
-                })
-              "
+              @click="onClickDeleteTimetable(time.start_time, time.end_time)"
               class="w-6 h-6 p-[4px] rounded-md overflow-hidden drop-shadow-xl absolute top-1 right-1 active:scale-95 hover:border hover:border-black"
             >
               <img :src="delete_icon" class="h-full w-full" />
@@ -137,6 +132,8 @@ import menu_icon from "../../../assets/icons/edit.svg";
 import avatar_default from "../../../assets/img/avatar.jpg";
 import delete_icon from "../../../assets/icons/delete.svg";
 
+const a = ref([]);
+
 //service
 import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 
@@ -155,7 +152,12 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["create", "add-teacher", "edit"]);
+const emits = defineEmits([
+  "create",
+  "add-teacher",
+  "edit",
+  "delete-timetable",
+]);
 
 const timetable = computed(() => {
   return props.timetables.sort((a, b) => {
@@ -236,6 +238,8 @@ function getDateIds(date) {
 }
 
 function getTimetableIds(date, start_time, end_time) {
+  if (!props.schedules) return;
+
   if (!props.schedules[ddmmyyyyDateString(new Date(date).toLocaleDateString())])
     return undefined;
 
@@ -273,6 +277,12 @@ function onClickAddTeacherForSchedule(date, startTime, endTime) {
   emits("add-teacher", {
     date,
     timeTable,
+  });
+}
+function onClickDeleteTimetable(startTime, endTime) {
+  emits("delete-timetable", {
+    startTime: startTime,
+    endTime: endTime,
   });
 }
 

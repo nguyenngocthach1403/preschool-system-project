@@ -116,9 +116,9 @@ onMounted(() => {
 
 //funciton
 async function getStudentById() {
-  if (!router.currentRoute.value.query.StudentID) return;
+  if (!router.currentRoute.value.query.studentID) return;
   const response = await studentService.getStudentById(
-    router.currentRoute.value.query.StudentID
+    router.currentRoute.value.query.studentID
   );
   if (response.status !== 200) {
     return;

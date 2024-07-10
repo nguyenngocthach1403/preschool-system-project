@@ -81,13 +81,15 @@
               :key="parentItem"
               class="w-full border h-fit py-2 relative rounded-md mb-3 flex items-center gap-4 px-3 hover:bg-gray-200/50"
               :class="{
-                selected: select !== null ? select.id == parentItem.id : false,
-                isExist: props.studentData.parents.some(
-                  (e) => e.id == parentItem.id
-                ),
+                selected: select ? select.id == parentItem.id : false,
+                isExist: props.studentData.parents
+                  ? props.studentData.parents.some((e) => e.id == parentItem.id)
+                  : false,
               }"
               :disabled="
-                props.studentData.parents.some((e) => e.id == parentItem.id)
+                props.studentData.parents
+                  ? props.studentData.parents.some((e) => e.id == parentItem.id)
+                  : false
               "
               @click.prevent="selectParent(parentItem)"
             >
@@ -276,8 +278,10 @@ async function getParents() {
   loadingParent.value = false;
 }
 function selectParent(parentItem) {
-  if (props.studentData.parents.some((e) => e.id == parentItem.id)) {
-    return;
+  if (props.studentData.parents) {
+    if (props.studentData.parents.some((e) => e.id == parentItem.id)) {
+      return;
+    }
   }
   if (select.value == null) {
     select.value = parentItem.id;

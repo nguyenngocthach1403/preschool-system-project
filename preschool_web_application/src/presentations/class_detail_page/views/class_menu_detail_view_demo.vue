@@ -154,7 +154,7 @@ function getDayOfWeek(startDate, endDate) {
     console.log(current.getDay());
     days.push({
       name: getDayOfDate(current.getDay()),
-      date: current,
+      date: new Date(current),
     });
     current = new Date(current.setDate(current.getDate() + 1));
   }

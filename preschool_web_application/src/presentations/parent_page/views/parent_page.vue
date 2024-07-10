@@ -39,6 +39,7 @@
       @sort-parent-status="sortDataByStatus"
       @delete-parent="showConfirmDialog = $event"
       @create-account-for-parent="showCreateAccountView = $event"
+      class="drop-shadow-xl"
     ></TableData>
     <div
       class="bottom-table-section flex justify-between h-[37px] content-center my-3"
