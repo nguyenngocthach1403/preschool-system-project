@@ -426,7 +426,7 @@ async function getAll(req, res) {
 
   res.status(200).json({
     success: true,
-    data: result[0],
+    data: result,
   });
 }
 

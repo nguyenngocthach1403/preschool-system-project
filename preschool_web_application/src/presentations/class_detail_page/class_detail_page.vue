@@ -114,6 +114,12 @@ const menuList = ref([
     active: false,
     name: "ClassMenuView",
   },
+  {
+    id: 5,
+    title: "Quản lý đánh giá",
+    active: false,
+    name: "StudentReviewManagementView",
+  },
 ]);
 
 watch(classObject, () => {

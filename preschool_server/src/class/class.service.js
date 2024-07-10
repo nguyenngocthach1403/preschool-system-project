@@ -31,74 +31,179 @@ module.exports = {
 
 async function getClass(limit, offset) {
   try {
-    const result = await db.query(
-      `SELECT
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', c.id,
-              'class_name', c.name,
-              'start_date', c.start_date,
-              'end_date', c.end_date,
-              'class_img', c.class_img,
-              'level', JSON_OBJECT(
-                  'id', l.id,
-                  'name', l.name,
-                  'description', l.description
-              ),
-              'syllabus', JSON_OBJECT(
-                  'id', s.id,
-                  'name', s.name,
-                  'description', s.description
-              ),
-              'members', c.members,
-              'member_limit', c.member_limit,
-              'type', c.type,
-              'session', c.session,
-              'status', c.status,
-              'created', c.created,
-              'deleted', c.deleted,
-              'created_by', c.created_by,
-              'managers', (
-                  SELECT JSON_OBJECTAGG(
-					cmr.name,
-                    JSON_OBJECT(
-						'role_id', cmr.id,
-                        'role_name', cmr.name,
-                        'teachers', (
-							SELECT JSON_OBJECT(
-								'name', t.name,
-                                'id', t.id
-							)
-                            FROM teachers t
-                            LEFT JOIN  class_managers cm1
-                            ON cm1.teacher_id = t.id
-                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
-                        )
-                    )
-                  )
-                  FROM class_manager_roles cmr
-                  LEFT JOIN class_managers cm
-                  ON cmr.id = cm.role
-                  WHERE cmr.deleted = 0
-              )
-          )
-      ) AS classes
-      FROM
+    // const result = await db.query(
+    //   `SELECT
+    //   JSON_ARRAYAGG(
+    //       JSON_OBJECT(
+    //           'id', c.id,
+    //           'class_name', c.name,
+    //           'start_date', c.start_date,
+    //           'end_date', c.end_date,
+    //           'class_img', c.class_img,
+    //           'level', JSON_OBJECT(
+    //               'id', l.id,
+    //               'name', l.name,
+    //               'description', l.description
+    //           ),
+    //           'syllabus', JSON_OBJECT(
+    //               'id', s.id,
+    //               'name', s.name,
+    //               'description', s.description
+    //           ),
+    //           'members', c.members,
+    //           'member_limit', c.member_limit,
+    //           'type', c.type,
+    //           'session', c.session,
+    //           'status', c.status,
+    //           'created', c.created,
+    //           'deleted', c.deleted,
+    //           'created_by', c.created_by,
+    //           'managers', (
+    //               SELECT JSON_OBJECTAGG(
+    // 			cmr.name,
+    //                 JSON_OBJECT(
+    // 				'role_id', cmr.id,
+    //                     'role_name', cmr.name,
+    //                     'teachers', (
+    // 					SELECT JSON_OBJECT(
+    // 						'name', t.name,
+    //                             'id', t.id
+    // 					)
+    //                         FROM teachers t
+    //                         LEFT JOIN  class_managers cm1
+    //                         ON cm1.teacher_id = t.id
+    //                         WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
+    //                     )
+    //                 )
+    //               )
+    //               FROM class_manager_roles cmr
+    //               LEFT JOIN class_managers cm
+    //               ON cmr.id = cm.role
+    //               WHERE cmr.deleted = 0
+    //           )
+    //       )
+    //   ) AS classes
+    //   FROM
+    //       classes c
+    //   LEFT JOIN
+    //       levels l ON c.level_id = l.id
+    //   LEFT JOIN
+    //       syllabus s ON c.syllabus_id = s.id
+    //   WHERE
+    //       c.deleted = 0
+    // LIMIT ?
+    // OFFSET ?;
+    // `,
+    //   [parseInt(limit), parseInt(offset)]
+    // );
+
+    const response = await db.query(`
+      SELECT 
+          c.id,
+          c.name as class_name,
+          c.start_date,
+          c.end_date,
+          c.class_img,
+          l.id as level_id,
+          l.name as level_name,
+          l.description as level_description,
+          s.id as syllabus_id,
+          s.name as syllabus_name,
+          s.description as syllabus_description,
+          c.members,
+          c.member_limit,
+          c.type,
+          c.session,
+          c.status,
+          c.created,
+          c.deleted,
+          c.created_by
+      FROM 
           classes c
-      LEFT JOIN
+      LEFT JOIN 
           levels l ON c.level_id = l.id
-      LEFT JOIN
+      LEFT JOIN 
           syllabus s ON c.syllabus_id = s.id
-      WHERE
+      WHERE 
           c.deleted = 0
-    LIMIT ?
-    OFFSET ?;
-    `,
-      [parseInt(limit), parseInt(offset)]
-    );
-    if (result.length == 0) return undefined;
-    return result[0];
+      LIMIT 10 OFFSET 0;
+  `);
+
+    if (response.length == 0) return undefined;
+
+    for (const classItem in response) {
+      console.log("class_id", response[classItem].class_id);
+      const managers = await db.query(`
+     SELECT cmr.name as role_name, cmr.id as role_id, t.id as teacher_id, t.name as teacher_name, t.avatar as teacher_avatar FROM class_managers cm LEFT JOIN  ${config.tb.managerRoles}  cmr ON cmr.id = cm.role  LEFT JOIN teachers t ON t.id = cm.teacher_id
+     WHERE cm.class_id = ${response[classItem].id}`);
+
+      response[classItem].managers = managers;
+    }
+
+    console.log(response);
+
+    return response;
+
+    // const managers = db.query(`
+    //   SELECT FROM class_managers cm LEFT JOIN teachers t ON t.id = cm.teacher_id`);
+    // const classes = {};
+
+    // rows.array.forEach((row) => {
+    //   const classId = row.class_id;
+
+    //   if (!classes[classId]) {
+    //     classes[classId] = {
+    //       id: classId,
+    //       class_name: row.class_name,
+    //       start_date: row.start_date,
+    //       end_date: row.end_date,
+    //       class_img: row.class_img,
+    //       level: {
+    //         id: row.level_id,
+    //         name: row.level_name,
+    //         description: row.level_description,
+    //       },
+    //       syllabus: {
+    //         id: row.syllabus_id,
+    //         name: row.syllabus_name,
+    //         description: row.syllabus_description,
+    //       },
+    //       members: row.members,
+    //       member_limit: row.member_limit,
+    //       type: row.type,
+    //       session: row.session,
+    //       status: row.status,
+    //       created: row.created,
+    //       deleted: row.deleted,
+    //       created_by: row.created_by,
+    //       managers: {},
+    //     };
+    //   }
+
+    //   const managerRoleName = row.manager_role_name;
+
+    //   if (!classes[classId].managers[managerRoleName]) {
+    //     classes[classId].managers[managerRoleName] = {
+    //       role_id: row.manager_role_id,
+    //       role_name: managerRoleName,
+    //       teachers: [],
+    //     };
+    //   }
+
+    //   if (row.teacher_id) {
+    //     classes[classId].managers[managerRoleName].teachers.push({
+    //       id: row.teacher_id,
+    //       name: row.teacher_name,
+    //     });
+    //   }
+    // });
+
+    // console.log(classes);
+
+    // if (result.length == 0) return undefined;
+    // return result[0];
   } catch (error) {
+    console.error(error);
     return {
       code: error.code,
       message: error.sqlMessage,
@@ -109,44 +214,15 @@ async function getClass(limit, offset) {
 async function countClassByStatus() {
   try {
     const result = await db.query(`
-    SELECT JSON_OBJECT(
-      'end', SUM(CASE WHEN condition_name = 2 THEN count_classes ELSE 0 END),
-      'upcoming', SUM(CASE WHEN condition_name = 1 THEN count_classes ELSE 0 END),
-      'going_on', SUM(CASE WHEN condition_name = 0 THEN count_classes ELSE 0 END)
-    ) AS result
-    FROM (
-        SELECT
-            2 AS condition_name,
-            COUNT(*) AS count_classes
-        FROM
-            classes c
-        WHERE
-            c.end_date < CURRENT_DATE()
-
-        UNION
-
-        SELECT
-            1 AS condition_name,
-            COUNT(*) AS count_classes
-        FROM
-            classes c
-        WHERE
-            c.start_date > CURRENT_DATE()
-
-        UNION
-
-        SELECT
-            0 AS condition_name,
-            COUNT(*) AS count_classes
-        FROM
-            classes c
-        WHERE
-            CURRENT_DATE() BETWEEN c.start_date AND c.end_date
-    ) AS aggregated_results;
+    SELECT
+    (SELECT COUNT(*) FROM classes WHERE current_date() BETWEEN start_date AND end_date AND deleted = 0) AS going_on,
+    (SELECT COUNT(*) FROM classes WHERE current_date() > end_date AND deleted = 0) AS end,
+    (SELECT COUNT(*) FROM classes WHERE current_date() < start_date AND deleted = 0) AS upcoming
+FROM dual;
       `);
     if (result.length == 0) return undefined;
 
-    return result[0]["result"];
+    return result[0];
   } catch (error) {
     return undefined;
   }
@@ -376,76 +452,49 @@ async function countSearchClassWithSession(searchText, session) {
 //! Search Tìm kiếm lớp học bằng tên
 async function searchClass(searchText, limit, offset) {
   try {
-    const result = await db.query(
-      `SELECT
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', c.id,
-              'class_name', c.name,
-              'start_date', c.start_date,
-              'end_date', c.end_date,
-              'class_img', c.class_img,
-              'level', JSON_OBJECT(
-                  'id', l.id,
-                  'name', l.name,
-                  'description', l.description
-              ),
-              'syllabus', JSON_OBJECT(
-                  'id', s.id,
-                  'name', s.name,
-                  'description', s.description
-              ),
-              'members', c.members,
-              'member_limit', c.member_limit,
-              'type', c.type,
-              'session', c.session,
-              'status', c.status,
-              'created', c.created,
-              'deleted', c.deleted,
-              'created_by', c.created_by,
-              'managers', (
-                  SELECT JSON_OBJECTAGG(
-					cmr.name,
-                    JSON_OBJECT(
-						'role_id', cmr.id,
-                        'role_name', cmr.name,
-                        'teachers', (
-							SELECT JSON_OBJECT(
-								'name', t.name,
-                                'id', t.id
-							)
-                            FROM teachers t
-                            LEFT JOIN  class_managers cm1
-                            ON cm1.teacher_id = t.id
-                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
-                        )
-                    )
-                  )
-                  FROM class_manager_roles cmr
-                  LEFT JOIN class_managers cm
-                  ON cmr.id = cm.role
-                  WHERE cmr.deleted = 0
-              )
-          )
-      ) AS classes
-      FROM
+    const response = await db.query(`
+      SELECT 
+          c.id,
+          c.name as class_name,
+          c.start_date,
+          c.end_date,
+          c.class_img,
+          l.id as level_id,
+          l.name as level_name,
+          l.description as level_description,
+          s.id as syllabus_id,
+          s.name as syllabus_name,
+          s.description as syllabus_description,
+          c.members,
+          c.member_limit,
+          c.type,
+          c.session,
+          c.status,
+          c.created,
+          c.deleted,
+          c.created_by
+      FROM 
           classes c
-      LEFT JOIN
+      LEFT JOIN 
           levels l ON c.level_id = l.id
-      LEFT JOIN
+      LEFT JOIN 
           syllabus s ON c.syllabus_id = s.id
-      WHERE
-          c.deleted = 0
-        AND c.name like '%${searchText}%'
-      LIMIT ${limit}
-      OFFSET ${offset};`
-    );
+      WHERE 
+          c.deleted = 0 AND c.name LIKE '%${searchText}%'
+      LIMIT ${limit} OFFSET ${offset};
+  `);
 
-    if (result.length == 0) {
-      return undefined;
+    if (response.length == 0) return undefined;
+
+    for (const classItem in response) {
+      const managers = await db.query(`
+     SELECT cmr.name as role_name, cmr.id as role_id, t.id as teacher_id, t.name as teacher_name, t.avatar as teacher_avatar FROM class_managers cm LEFT JOIN  ${config.tb.managerRoles}  cmr ON cmr.id = cm.role  LEFT JOIN teachers t ON t.id = cm.teacher_id
+     WHERE cm.class_id = ${response[classItem].id}`);
+
+      response[classItem].managers = managers;
     }
 
-    return result[0];
+    return response;
   } catch (error) {
     return undefined;
   }
@@ -454,77 +503,49 @@ async function searchClass(searchText, limit, offset) {
 //! Search Tìm kiếm lớp học bằng tên và niên khóa
 async function searchClassWithSession(searchText, session, limit, offset) {
   try {
-    const result = await db.query(
-      `SELECT
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', c.id,
-              'class_name', c.name,
-              'start_date', c.start_date,
-              'end_date', c.end_date,
-              'class_img', c.class_img,
-              'level', JSON_OBJECT(
-                  'id', l.id,
-                  'name', l.name,
-                  'description', l.description
-              ),
-              'syllabus', JSON_OBJECT(
-                  'id', s.id,
-                  'name', s.name,
-                  'description', s.description
-              ),
-              'members', c.members,
-              'member_limit', c.member_limit,
-              'type', c.type,
-              'session', c.session,
-              'status', c.status,
-              'created', c.created,
-              'deleted', c.deleted,
-              'created_by', c.created_by,
-              'managers', (
-                  SELECT JSON_OBJECTAGG(
-					cmr.name,
-                    JSON_OBJECT(
-						'role_id', cmr.id,
-                        'role_name', cmr.name,
-                        'teachers', (
-							SELECT JSON_OBJECT(
-								'name', t.name,
-                                'id', t.id
-							)
-                            FROM teachers t
-                            LEFT JOIN  class_managers cm1
-                            ON cm1.teacher_id = t.id
-                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
-                        )
-                    )
-                  )
-                  FROM class_manager_roles cmr
-                  LEFT JOIN class_managers cm
-                  ON cmr.id = cm.role
-                  WHERE cmr.deleted = 0
-              )
-          )
-      ) AS classes
-      FROM
+    const response = await db.query(`
+      SELECT 
+          c.id,
+          c.name as class_name,
+          c.start_date,
+          c.end_date,
+          c.class_img,
+          l.id as level_id,
+          l.name as level_name,
+          l.description as level_description,
+          s.id as syllabus_id,
+          s.name as syllabus_name,
+          s.description as syllabus_description,
+          c.members,
+          c.member_limit,
+          c.type,
+          c.session,
+          c.status,
+          c.created,
+          c.deleted,
+          c.created_by
+      FROM 
           classes c
-      LEFT JOIN
+      LEFT JOIN 
           levels l ON c.level_id = l.id
-      LEFT JOIN
+      LEFT JOIN 
           syllabus s ON c.syllabus_id = s.id
-      WHERE
-          c.deleted = 0
-          AND c.session = ${session} 
-          AND c.name like '%${searchText}%'
-        LIMIT ${limit}
-        OFFSET ${offset};`
-    );
+      WHERE 
+          c.deleted = 0 AND c.name LIKE '%${searchText}%' AND c.session = ${session}
+      LIMIT ${limit} OFFSET ${offset};
+  `);
 
-    if (result.length == 0) {
-      return undefined;
+    if (response.length == 0) return undefined;
+
+    for (const classItem in response) {
+      const managers = await db.query(`
+     SELECT cmr.name as role_name, cmr.id as role_id, t.id as teacher_id, t.name as teacher_name, t.avatar as teacher_avatar FROM class_managers cm LEFT JOIN  ${config.tb.managerRoles}  cmr ON cmr.id = cm.role  LEFT JOIN teachers t ON t.id = cm.teacher_id
+     WHERE cm.class_id = ${response[classItem].id}`);
+
+      response[classItem].managers = managers;
     }
 
-    return result[0];
+    return response;
   } catch (error) {
     return undefined;
   }
@@ -547,77 +568,121 @@ async function searchClassWithStatus(searchText, status, limit, offset) {
         ? (statusString += "OR c.start_date > CURRENT_DATE()")
         : (statusString += "AND c.start_date > CURRENT_DATE()");
     }
-    console.log(statusString);
-    const result = await db.query(
-      `SELECT
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', c.id,
-              'class_name', c.name,
-              'start_date', c.start_date,
-              'end_date', c.end_date,
-              'class_img', c.class_img,
-              'level', JSON_OBJECT(
-                  'id', l.id,
-                  'name', l.name,
-                  'description', l.description
-              ),
-              'syllabus', JSON_OBJECT(
-                  'id', s.id,
-                  'name', s.name,
-                  'description', s.description
-              ),
-              'members', c.members,
-              'member_limit', c.member_limit,
-              'type', c.type,
-              'session', c.session,
-              'status', c.status,
-              'created', c.created,
-              'deleted', c.deleted,
-              'created_by', c.created_by,
-              'managers', (
-                  SELECT JSON_OBJECTAGG(
-					cmr.name,
-                    JSON_OBJECT(
-						'role_id', cmr.id,
-                        'role_name', cmr.name,
-                        'teachers', (
-							SELECT JSON_OBJECT(
-								'name', t.name,
-                                'id', t.id
-							)
-                            FROM teachers t
-                            LEFT JOIN  class_managers cm1
-                            ON cm1.teacher_id = t.id
-                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
-                        )
-                    )
-                  )
-                  FROM class_manager_roles cmr
-                  LEFT JOIN class_managers cm
-                  ON cmr.id = cm.role
-                  WHERE cmr.deleted = 0
-              )
-          )
-      ) AS classes
-      FROM
-          classes c
-      LEFT JOIN
-          levels l ON c.level_id = l.id
-      LEFT JOIN
-          syllabus s ON c.syllabus_id = s.id
-      WHERE
-          c.deleted = 0
-        AND c.name like '%${searchText}%' ${statusString || ""}
-      LIMIT ${limit}
-      OFFSET ${offset};`
-    );
 
-    if (result.length == 0) {
-      return undefined;
+    const response = await db.query(`
+      SELECT 
+          c.id,
+          c.name as class_name,
+          c.start_date,
+          c.end_date,
+          c.class_img,
+          l.id as level_id,
+          l.name as level_name,
+          l.description as level_description,
+          s.id as syllabus_id,
+          s.name as syllabus_name,
+          s.description as syllabus_description,
+          c.members,
+          c.member_limit,
+          c.type,
+          c.session,
+          c.status,
+          c.created,
+          c.deleted,
+          c.created_by
+      FROM 
+          classes c
+      LEFT JOIN 
+          levels l ON c.level_id = l.id
+      LEFT JOIN 
+          syllabus s ON c.syllabus_id = s.id
+      WHERE 
+          c.deleted = 0 AND c.name LIKE '%${searchText}%' ${statusString || ""}
+      LIMIT ${limit} OFFSET ${offset};
+  `);
+
+    if (response.length == 0) return undefined;
+
+    for (const classItem in response) {
+      const managers = await db.query(`
+     SELECT cmr.name as role_name, cmr.id as role_id, t.id as teacher_id, t.name as teacher_name, t.avatar as teacher_avatar FROM class_managers cm LEFT JOIN  ${config.tb.managerRoles}  cmr ON cmr.id = cm.role  LEFT JOIN teachers t ON t.id = cm.teacher_id
+     WHERE cm.class_id = ${response[classItem].id}`);
+
+      response[classItem].managers = managers;
     }
 
-    return result[0];
+    return response;
+
+    // const result = await db.query(
+    //   `SELECT
+    //   JSON_ARRAYAGG(
+    //       JSON_OBJECT(
+    //           'id', c.id,
+    //           'class_name', c.name,
+    //           'start_date', c.start_date,
+    //           'end_date', c.end_date,
+    //           'class_img', c.class_img,
+    //           'level', JSON_OBJECT(
+    //               'id', l.id,
+    //               'name', l.name,
+    //               'description', l.description
+    //           ),
+    //           'syllabus', JSON_OBJECT(
+    //               'id', s.id,
+    //               'name', s.name,
+    //               'description', s.description
+    //           ),
+    //           'members', c.members,
+    //           'member_limit', c.member_limit,
+    //           'type', c.type,
+    //           'session', c.session,
+    //           'status', c.status,
+    //           'created', c.created,
+    //           'deleted', c.deleted,
+    //           'created_by', c.created_by,
+    //           'managers', (
+    //               SELECT JSON_OBJECTAGG(
+    // 			cmr.name,
+    //                 JSON_OBJECT(
+    // 				'role_id', cmr.id,
+    //                     'role_name', cmr.name,
+    //                     'teachers', (
+    // 					SELECT JSON_OBJECT(
+    // 						'name', t.name,
+    //                             'id', t.id
+    // 					)
+    //                         FROM teachers t
+    //                         LEFT JOIN  class_managers cm1
+    //                         ON cm1.teacher_id = t.id
+    //                         WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
+    //                     )
+    //                 )
+    //               )
+    //               FROM class_manager_roles cmr
+    //               LEFT JOIN class_managers cm
+    //               ON cmr.id = cm.role
+    //               WHERE cmr.deleted = 0
+    //           )
+    //       )
+    //   ) AS classes
+    //   FROM
+    //       classes c
+    //   LEFT JOIN
+    //       levels l ON c.level_id = l.id
+    //   LEFT JOIN
+    //       syllabus s ON c.syllabus_id = s.id
+    //   WHERE
+    //       c.deleted = 0
+    //     AND c.name like '%${searchText}%' ${statusString || ""}
+    //   LIMIT ${limit}
+    //   OFFSET ${offset};`
+    // );
+
+    // if (result.length == 0) {
+    //   return undefined;
+    // }
+
+    // return result[0];
   } catch (error) {
     return undefined;
   }
@@ -647,77 +712,123 @@ async function searchClassWithStatusAndSession(
         : (statusString += "AND c.start_date > CURRENT_DATE()");
     }
 
-    const result = await db.query(
-      `SELECT
-      JSON_ARRAYAGG(
-          JSON_OBJECT(
-              'id', c.id,
-              'class_name', c.name,
-              'start_date', c.start_date,
-              'end_date', c.end_date,
-              'class_img', c.class_img,
-              'level', JSON_OBJECT(
-                  'id', l.id,
-                  'name', l.name,
-                  'description', l.description
-              ),
-              'syllabus', JSON_OBJECT(
-                  'id', s.id,
-                  'name', s.name,
-                  'description', s.description
-              ),
-              'members', c.members,
-              'member_limit', c.member_limit,
-              'type', c.type,
-              'session', c.session,
-              'status', c.status,
-              'created', c.created,
-              'deleted', c.deleted,
-              'created_by', c.created_by,
-              'managers', (
-                  SELECT JSON_OBJECTAGG(
-					cmr.name,
-                    JSON_OBJECT(
-						'role_id', cmr.id,
-                        'role_name', cmr.name,
-                        'teachers', (
-							SELECT JSON_OBJECT(
-								'name', t.name,
-                                'id', t.id
-							)
-                            FROM teachers t
-                            LEFT JOIN  class_managers cm1
-                            ON cm1.teacher_id = t.id
-                            WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
-                        )
-                    )
-                  )
-                  FROM class_manager_roles cmr
-                  LEFT JOIN class_managers cm
-                  ON cmr.id = cm.role
-                  WHERE cmr.deleted = 0
-              )
-          )
-      ) AS classes
-      FROM
+    const response = await db.query(`
+      SELECT 
+          c.id,
+          c.name as class_name,
+          c.start_date,
+          c.end_date,
+          c.class_img,
+          l.id as level_id,
+          l.name as level_name,
+          l.description as level_description,
+          s.id as syllabus_id,
+          s.name as syllabus_name,
+          s.description as syllabus_description,
+          c.members,
+          c.member_limit,
+          c.type,
+          c.session,
+          c.status,
+          c.created,
+          c.deleted,
+          c.created_by
+      FROM 
           classes c
-      LEFT JOIN
+      LEFT JOIN 
           levels l ON c.level_id = l.id
-      LEFT JOIN
+      LEFT JOIN 
           syllabus s ON c.syllabus_id = s.id
-      WHERE
-          c.deleted = 0
-        AND c.session = ${session} 
-        AND c.name like '%${searchText}%' ${statusString || ""}
-      LIMIT ${limit}
-      OFFSET ${offset};`
-    );
+      WHERE 
+          c.deleted = 0 AND c.session = ${session} AND  c.name LIKE '%${searchText}%' ${
+      statusString || ""
+    }
+      LIMIT ${limit} OFFSET ${offset};
+  `);
 
-    if (result.length == 0) {
-      return undefined;
+    if (response.length == 0) return undefined;
+
+    for (const classItem in response) {
+      const managers = await db.query(`
+     SELECT cmr.name as role_name, cmr.id as role_id, t.id as teacher_id, t.name as teacher_name, t.avatar as teacher_avatar FROM class_managers cm LEFT JOIN  ${config.tb.managerRoles}  cmr ON cmr.id = cm.role  LEFT JOIN teachers t ON t.id = cm.teacher_id
+     WHERE cm.class_id = ${response[classItem].id}`);
+
+      response[classItem].managers = managers;
     }
 
-    return result[0];
+    return response;
+
+    // const result = await db.query(
+    //   `SELECT
+    //   JSON_ARRAYAGG(
+    //       JSON_OBJECT(
+    //           'id', c.id,
+    //           'class_name', c.name,
+    //           'start_date', c.start_date,
+    //           'end_date', c.end_date,
+    //           'class_img', c.class_img,
+    //           'level', JSON_OBJECT(
+    //               'id', l.id,
+    //               'name', l.name,
+    //               'description', l.description
+    //           ),
+    //           'syllabus', JSON_OBJECT(
+    //               'id', s.id,
+    //               'name', s.name,
+    //               'description', s.description
+    //           ),
+    //           'members', c.members,
+    //           'member_limit', c.member_limit,
+    //           'type', c.type,
+    //           'session', c.session,
+    //           'status', c.status,
+    //           'created', c.created,
+    //           'deleted', c.deleted,
+    //           'created_by', c.created_by,
+    //           'managers', (
+    //               SELECT JSON_OBJECTAGG(
+    // 			cmr.name,
+    //                 JSON_OBJECT(
+    // 				'role_id', cmr.id,
+    //                     'role_name', cmr.name,
+    //                     'teachers', (
+    // 					SELECT JSON_OBJECT(
+    // 						'name', t.name,
+    //                             'id', t.id
+    // 					)
+    //                         FROM teachers t
+    //                         LEFT JOIN  class_managers cm1
+    //                         ON cm1.teacher_id = t.id
+    //                         WHERE cm1.role = cmr.id AND cm1.class_id = c.id AND t.deleted = 0
+    //                     )
+    //                 )
+    //               )
+    //               FROM class_manager_roles cmr
+    //               LEFT JOIN class_managers cm
+    //               ON cmr.id = cm.role
+    //               WHERE cmr.deleted = 0
+    //           )
+    //       )
+    //   ) AS classes
+    //   FROM
+    //       classes c
+    //   LEFT JOIN
+    //       levels l ON c.level_id = l.id
+    //   LEFT JOIN
+    //       syllabus s ON c.syllabus_id = s.id
+    //   WHERE
+    //       c.deleted = 0
+    //     AND c.session = ${session}
+    //     AND c.name like '%${searchText}%' ${statusString || ""}
+    //   LIMIT ${limit}
+    //   OFFSET ${offset};`
+    // );
+
+    // if (result.length == 0) {
+    //   return undefined;
+    // }
+
+    // return result[0];
   } catch (error) {
     return undefined;
   }

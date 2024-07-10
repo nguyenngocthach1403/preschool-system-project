@@ -39,7 +39,7 @@
                 day.date.toDateString() == new Date().toDateString(),
             }"
           >
-            <div v-if="getDishes(meal.meal, day.date)">
+            <div v-if="getDishes(meal.meal, day.date).length != 0">
               <div
                 @click="editMenu(meal, day.date)"
                 class="w-6 h-6 border rounded-md absolute drop-shadow-xl content-center top-2 right-2 hover:border-black"
@@ -99,87 +99,111 @@ const props = defineProps({
 const emits = defineEmits(["create-menu", "edit-menu"]);
 
 function getDishes(mealName, date) {
-  if (!props.menus) return;
+  // if (!props.menus) return;
 
-  if (!props.menus.daily_menu) return;
+  // if (!props.menus.daily_menu) return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ]
-  )
-    return;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ]
+  // )
+  //   return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ].meals
-  )
-    return;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ].meals
+  // )
+  //   return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ].meals[mealName]
-  )
-    return;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ].meals[mealName]
+  // )
+  //   return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ].meals[mealName].menu
-  )
-    return;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ].meals[mealName].menu
+  // )
+  //   return;
 
-  return props.menus.daily_menu[
-    ddmmyyyyDateString(new Date(date).toLocaleDateString())
-  ].meals[mealName].menu;
+  // return props.menus.daily_menu[
+  //   ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  // ].meals[mealName].menu;
+  const dishes = props.menus.filter((e) => {
+    return (
+      new Date(e.date).toLocaleDateString() ==
+        new Date(date).toLocaleDateString() && mealName == e.meal_name
+    );
+  });
+
+  return dishes;
 }
 
 function getDailyId(date) {
-  if (!props.menus) return;
+  // if (!props.menus) return;
 
-  if (!props.menus.daily_menu) return;
+  // if (!props.menus.daily_menu) return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ]
-  )
-    return;
-  return props.menus.daily_menu[
-    ddmmyyyyDateString(new Date(date).toLocaleDateString())
-  ].daily_menu_id;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ]
+  // )
+  //   return;
+  // return props.menus.daily_menu[
+  //   ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  // ].daily_menu_id;
+  const dishes = props.menus.filter((e) => {
+    return (
+      new Date(e.date).toLocaleDateString() ==
+        new Date(date).toLocaleDateString() && mealName == e.meal_name
+    );
+  });
+  console.log(dishes);
+  return dishes[0] ? dishes[0].daily_menu_id : undefined;
 }
 
 function getMealMenuId(date, mealName) {
-  if (!props.menus) return;
+  // if (!props.menus) return;
 
-  if (!props.menus.daily_menu) return;
+  // if (!props.menus.daily_menu) return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ]
-  )
-    return;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ]
+  // )
+  //   return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ].meals
-  )
-    return;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ].meals
+  // )
+  //   return;
 
-  if (
-    !props.menus.daily_menu[
-      ddmmyyyyDateString(new Date(date).toLocaleDateString())
-    ].meals[mealName]
-  )
-    return;
-  return props.menus.daily_menu[
-    ddmmyyyyDateString(new Date(date).toLocaleDateString())
-  ].meals[mealName].meal_menu_id;
+  // if (
+  //   !props.menus.daily_menu[
+  //     ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  //   ].meals[mealName]
+  // )
+  //   return;
+  // return props.menus.daily_menu[
+  //   ddmmyyyyDateString(new Date(date).toLocaleDateString())
+  // ].meals[mealName].meal_menu_id;
+  const dishes = props.menus.filter((e) => {
+    return (
+      new Date(e.date).toLocaleDateString() ==
+        new Date(date).toLocaleDateString() && mealName == e.meal_name
+    );
+  });
+  console.log(dishes);
+  return dishes[0] ? dishes[0].meal_menu_id : undefined;
 }
 
 function createMenu(mealId, mealName, date, name) {
@@ -201,6 +225,8 @@ function editMenu(meal, date) {
   const dishes = getDishes(meal.meal, date);
 
   const mealMenuId = getMealMenuId(date, meal.meal);
+
+  console.log(mealMenuId);
 
   emits("edit-menu", {
     dishes,
