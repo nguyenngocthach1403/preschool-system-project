@@ -28,6 +28,7 @@ const config = {
     activity: "activities",
     timetable: "timetable",
     slideshow: "slideshow",
+    setting: "setting",
   },
 };
 

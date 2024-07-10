@@ -1,8 +1,16 @@
 <template>
-  <div class="bg-[#EEEEEE]">
+  <div class="bg-[#EEEEEE] w-screen">
     <div class="bg-[#EEEEEE] text-center h-full mb-20 py-3">
+      <div class="w-screen">
+        <img
+          src="https://png.pngtree.com/thumb_back/fw800/background/20190221/ourmid/pngtree-cartoon-wind-simple-starting-school-enrollment-image_13850.jpg"
+          alt="Image description"
+          class="h-full w-screen"
+        />
+      </div>
       <div class="container mx-auto px-4 py-8">
         <HeaderView class="fixed top-0 left-0 w-full z-50 bg-white shadow-md" />
+
         <h1 class="text-3xl font-bold mb-4 text-left mt-10">
           Danh sách tin tức
         </h1>

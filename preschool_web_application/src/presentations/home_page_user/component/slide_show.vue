@@ -6,7 +6,7 @@ Slideshow.vue
       :key="`slide-${index}`"
       :class="{ hidden: currentIndex !== index, block: currentIndex === index }"
     >
-      <img :src="image.url" class="w-screen h-[400px]" />
+      <img :src="image.url" class="w-screen max-h-500" />
     </div>
     <!-- <div class="flex justify-center mt-4">
       <div v-for="(image, index) in filteredImages" :key="`button-${index}`">
@@ -35,7 +35,7 @@ const props = defineProps({
 
 const defaultImage = {
   // url: "url_of_default_image.jpg",
-  url: "https://cdn.popsww.com/blog/sites/2/2022/01/thanh-guom-diet-quy-review.jpg",
+  url: "https://i.pinimg.com/originals/d3/fc/64/d3fc641235720b031acf0d7649a5a265.png",
   status: 1,
 };
 
@@ -72,4 +72,17 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.slideshow-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+.slideshow-container img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+}
+</style>

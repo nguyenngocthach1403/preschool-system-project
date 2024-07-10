@@ -8,6 +8,7 @@
         <div class="w-full my-3">
           <label>
             <span class="pl-5">Hình ảnh SlideShow</span>
+
             <div
               class="relative w-full content-center text-center gap-10 h-[300px] rounded-md border border-gray-400 border-dotted object-contain"
             >
@@ -16,12 +17,16 @@
                 type="file"
                 class="absolute top-0 w-full h-full opacity-0"
                 @change="handleUploadSlideImg($event)"
+                :class="{ 'in-valid': messageOfImageSelected }"
               />
               <div v-if="!fileUpload">
                 <img :src="image_default" class="w-10 m-auto my-5" />
                 <span class="text-blue-700">Click</span>
                 <span> để thêm ảnh</span>
               </div>
+            </div>
+            <div class="mt-1 mb-2 h-[25px] text-red-500 text-left">
+              <span>{{ messageOfImageSelected }}</span>
             </div>
           </label>
           <div id="input-side" class="w-full pr-[20px]">
@@ -92,8 +97,23 @@ const emits = defineEmits(["add-toast"]);
 const creating = ref(false);
 const fileUpload = ref(null);
 const imageUpload = ref(null);
+const messageOfImageSelected = ref("");
+
+function checkValidImageSelected() {
+  let invalid = false;
+
+  if (!fileUpload.value) {
+    invalid = true;
+    messageOfImageSelected.value = "Vui lòng chọn ảnh";
+  }
+
+  return invalid;
+}
 
 async function createSilde() {
+  if (checkValidImageSelected()) {
+    return;
+  }
   creating.value = true;
   const formData = new FormData();
   if (fileUpload.value !== null) {

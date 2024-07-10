@@ -3,12 +3,13 @@
     <div>
       <router-link :to="{ name: 'Home' }">
         <div class="flex items-center">
-          <img
+          <!-- <img
             src="https://png.pngtree.com/png-vector/20230518/ourlarge/pngtree-green-plant-logo-vector-png-image_7101352.png"
             alt="Logo"
             class="h-8"
-          />
-          <span class="ml-4 text-lg font-bold">PreSchool</span>
+          /> -->
+          <img :src="url" alt="" class="h-8" />
+          <span class="ml-4 text-lg font-bold">{{ name }}</span>
         </div>
       </router-link>
     </div>
@@ -22,10 +23,6 @@
             Giới thiệu
           </router-link>
         </li>
-        <li>
-          <a href="#">Chương trình</a>
-        </li>
-
         <li>
           <router-link :to="{ name: 'RegistrationFormView' }">
             Tuyển sinh
@@ -53,7 +50,27 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { onMounted, ref } from "vue";
+import settingService from "../../../services/setting_homepage.service";
+
+const url = ref("");
+const name = ref("");
+
+async function getSetting() {
+  const res = await settingService.getSetting();
+  console.log(res.data.data);
+  const data = res.data.data[0];
+  if (data) {
+    url.value = data.url_logo_page;
+    name.value = data.name_school;
+  }
+}
+
+onMounted(async () => {
+  getSetting();
+});
+</script>
 
 <style scoped>
 @media (max-width: 768px) {
@@ -71,6 +88,6 @@ ul > li {
 }
 ul > li:hover {
   color: white;
-  background-color: #3b44d1;
+  background-color: #33cc99;
 }
 </style>

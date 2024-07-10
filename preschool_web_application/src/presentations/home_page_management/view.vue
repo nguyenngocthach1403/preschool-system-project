@@ -1,18 +1,25 @@
 <template>
   <div class="bg-white ml-4 h-fit rounded-3xl text-center mb-20 mb-3">
-    <div class="head ml-4 text-[20px] font-bold">
+    <ConfirmDialog
+      v-if="showConfirmDialogSlide"
+      class="absolute top-0 left-0"
+      :content="`Bạn có muốn ảnh slideshow với id là ${showConfirmDialogSlide.id} không?`"
+      :value="showConfirmDialogSlide"
+      @confirm="getConfirmSlide($event)"
+    />
+    <div class="head ml-4 text-[20px] text-left font-bold mt-6">
       Danh sách hình ảnh SlideShow
     </div>
-    <div class="flex justify-end content-center mr-3 mt-5 mb-5">
+    <div class="flex justify-end content-center mr-3 mb-5">
       <router-link :to="{ name: 'CreateSlideView' }">
-        <CreateButtonComp></CreateButtonComp>
+        <CreateButtonComp :title="'Thêm ảnh mới'"></CreateButtonComp>
       </router-link>
     </div>
     <ResultNumComp>{{ total }}</ResultNumComp>
 
     <TableData
       :data-table="dataOfTable"
-      @delete-slide="handleDeleteSlide($event)"
+      @delete-slide="showConfirmDialogSlide = $event"
     ></TableData>
   </div>
 </template>
@@ -21,12 +28,14 @@
 import TableData from "../home_page_management/table.vue";
 import CreateButtonComp from "../../components/create_button.vue";
 
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeMount } from "vue";
 import ResultNumComp from "../../components/result_comp.vue";
 import SlideshowService from "../../services/slideshow.service.js";
+import ConfirmDialog from "../../components/confirm_dialog.vue";
+import slideshowService from "../../services/slideshow.service.js";
 const total = ref(null);
 const dataOfTable = ref([]);
-
+const showConfirmDialogSlide = ref(null);
 async function getTotal() {
   const resul = await SlideshowService.getTotal();
   console.log(resul.data);
@@ -61,8 +70,36 @@ onMounted(async () => {
   getSlide();
 });
 
-function handleDeleteSlide(id) {
-  emits("delete-slide", id);
+// async function handleDeleteSlide(id) {
+//   emits("delete-slide", id);
+// }
+
+async function getConfirmSlide(event) {
+  if (!event) {
+    showConfirmDialogSlide.value = null;
+    return;
+  }
+  await deleteSlide(event);
+  showConfirmDialogSlide.value = null;
+}
+
+async function deleteSlide(id) {
+  const resultOfDel = await slideshowService.deleleSlide(id.id);
+
+  if (resultOfDel) {
+    emits("add-toast", {
+      title: "Xoá thành công!",
+      content: "Xoá ảnh slide có id là " + id.id,
+      type: 0,
+    });
+  } else {
+    emits("add-toast", {
+      title: "Xoá thất bại!",
+      content: `Lỗi xoá ảnh slide có id là ${id.id}`,
+      type: 1,
+    });
+  }
+  await getSlide();
 }
 </script>
 

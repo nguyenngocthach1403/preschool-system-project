@@ -18,7 +18,7 @@ async function getNewsAll(limit, page) {
     const result = await db.select(
       config.tb.news,
       "*",
-      "WHERE deleted = 0",
+      "WHERE deleted = 0 ORDER BY created DESC",
       `LIMIT ${limit}`,
       `OFFSET ${limit * page}`
     );
