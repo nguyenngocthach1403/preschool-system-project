@@ -143,9 +143,9 @@ const period = computed(() => {
   return props.period;
 });
 
-const events = computed(() => {
-  return flatJsonSchedule(props.schedules);
-});
+// const events = computed(() => {
+//   return flatJsonSchedule(props.schedules);
+// });
 
 const timeSelected = ref([]);
 
@@ -222,26 +222,14 @@ function getDateIds(date) {
   );
 }
 function getTimetableIds(date, start_time, end_time) {
-  if (!props.schedules) return;
+  const timetable = props.schedules.find(
+    (e) =>
+      new Date(e.date).toDateString() == new Date(date).toDateString() &&
+      e.start == start_time &&
+      e.end == end_time
+  );
 
-  if (!props.schedules[ddmmyyyyDateString(new Date(date).toLocaleDateString())])
-    return undefined;
-
-  if (
-    !props.schedules[ddmmyyyyDateString(new Date(date).toLocaleDateString())]
-      .timetable
-  )
-    return;
-
-  if (
-    !props.schedules[ddmmyyyyDateString(new Date(date).toLocaleDateString())]
-      .timetable[start_time + "-" + end_time]
-  )
-    return;
-
-  return props.schedules[
-    ddmmyyyyDateString(new Date(date).toLocaleDateString())
-  ].timetable[start_time + "-" + end_time];
+  return timetable || undefined;
 }
 
 function onClickEdit(date, startTime, endTime) {
@@ -290,8 +278,6 @@ function getTimeList(startTime, endTime, period) {
 
   const totalEndMinute = endHour * 60 + endMinute;
 
-  console.log(totalStartMinute, totalEndMinute);
-
   let current = totalStartMinute;
 
   let timeList = [];
@@ -316,7 +302,7 @@ function getTimeList(startTime, endTime, period) {
   return timeList;
 }
 function getEventByDate(date) {
-  return events.value.filter(
+  return props.schedules.filter(
     (e) => new Date(date).toDateString() == new Date(e.date).toDateString()
   );
 }
@@ -333,8 +319,6 @@ function getEventStyle(item) {
     .map(Number);
   const startCalenderTotalMinutes =
     startCalendarHour * 60 + startCalendarMinute;
-
-  console.log("a", startCalenderTotalMinutes);
 
   const top =
     (startTotalMinutes * 70) / period.value -

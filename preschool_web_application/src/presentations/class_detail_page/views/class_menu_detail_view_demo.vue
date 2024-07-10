@@ -256,9 +256,8 @@ async function fetchMenuList(classId, startDate, endDate) {
       endDate
     );
 
-    console.log("a", response.data.data);
-
     const dataResponse = response.data.data;
+
     menuList.value = dataResponse;
   } catch (error) {
     console.log(error);
