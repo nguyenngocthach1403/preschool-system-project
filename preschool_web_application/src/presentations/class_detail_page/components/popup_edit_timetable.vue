@@ -25,8 +25,8 @@
           <p>
             Thời gian:
             <span class="font-bold">
-              {{ props.timetableData.timeTable.start_time }} -
-              {{ props.timetableData.timeTable.end_time }}
+              {{ props.timetableData.timeTable.start }} -
+              {{ props.timetableData.timeTable.end }}
             </span>
           </p>
         </div>

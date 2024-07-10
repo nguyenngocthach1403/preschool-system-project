@@ -190,59 +190,79 @@ const searchTimeTable = async (
 
 const getSchedules = async (classId, startDate, endDate) => {
   try {
+    //     const response = await db.query(`
+    //       SELECT JSON_OBJECTAGG(
+    // 	DATE_FORMAT(sch.date, '%d/%m/%Y'),
+    //     JSON_OBJECT(
+    // 		'date', sch.date,
+    //         'id', sch.id,
+    //         'timetable', (
+    // 			SELECT JSON_OBJECTAGG(
+    // 					CONCAT(DATE_FORMAT(tt.start_time, '%H:%i'), '-', DATE_FORMAT(tt.end_time, '%H:%i')),
+    //                     JSON_OBJECT(
+    // 						'id', tt.id,
+    // 						'start_time', DATE_FORMAT(tt.start_time, '%H:%i'),
+    //                         'end_time', DATE_FORMAT(tt.end_time, '%H:%i'),
+    //                         'teachers', (
+    // 							SELECT JSON_ARRAYAGG(
+    // 								JSON_OBJECT(
+    // 									'teacher_id', t.id,
+    //                                     'teacher_name', t.name,
+    //                                     'teacher_avatar', t.avatar
+    //                                 )
+    //                             )
+    //                             FROM timetable_assignment ta
+    //                             LEFT JOIN teachers t
+    //                             ON t.id = ta.teacher_id
+    //                             WHERE ta.timetable_id = tt.id
+    //                         ),
+    //                         'activities', (
+    // 							SELECT JSON_ARRAYAGG(
+    // 								JSON_OBJECT(
+    // 									'activity_id', act.id,
+    //                                     'activity_name',act.name
+    //                                 )
+    //                             )
+    //                             FROM activity_groups ag
+    //                             LEFT JOIN activities act
+    //                             ON ag.activity_id = act.id
+    //                             WHERE ag.timetable_id = tt.id
+    //                         )
+    //                     )
+    //                 )
+    //             FROM  timetable tt
+    //             WHERE tt.schedule_id = sch.id
+    //         )
+    //     )
+    // ) as schedules
+    //       FROM schedules sch
+    //       WHERE sch.class_id = ${classId}
+    //       AND sch.date >= '${startDate}' AND sch.date <= '${endDate}'
+    //       `);
+
     const response = await db.query(`
-      SELECT JSON_OBJECTAGG(
-	DATE_FORMAT(sch.date, '%d/%m/%Y'),
-    JSON_OBJECT(
-		'date', sch.date,
-        'id', sch.id,
-        'timetable', (
-			SELECT JSON_OBJECTAGG(
-					CONCAT(DATE_FORMAT(tt.start_time, '%H:%i'), '-', DATE_FORMAT(tt.end_time, '%H:%i')),
-                    JSON_OBJECT(
-						'id', tt.id,
-						'start_time', DATE_FORMAT(tt.start_time, '%H:%i'),
-                        'end_time', DATE_FORMAT(tt.end_time, '%H:%i'),
-                        'teachers', (
-							SELECT JSON_ARRAYAGG(
-								JSON_OBJECT(
-									'teacher_id', t.id,
-                                    'teacher_name', t.name,
-                                    'teacher_avatar', t.avatar
-                                )
-                            )
-                            FROM timetable_assignment ta
-                            LEFT JOIN teachers t
-                            ON t.id = ta.teacher_id
-                            WHERE ta.timetable_id = tt.id
-                        ),
-                        'activities', (
-							SELECT JSON_ARRAYAGG(
-								JSON_OBJECT(
-									'activity_id', act.id,
-                                    'activity_name',act.name
-                                )
-                            )
-                            FROM activity_groups ag
-                            LEFT JOIN activities act
-                            ON ag.activity_id = act.id
-                            WHERE ag.timetable_id = tt.id
-                        )
-                    )
-                )
-            FROM  timetable tt
-            WHERE tt.schedule_id = sch.id
-        ) 
-    )
-) as schedules
-      FROM schedules sch
-      WHERE sch.class_id = ${classId}
-      AND sch.date >= '${startDate}' AND sch.date <= '${endDate}'
+      SELECT tt.schedule_id as scheduleId,TIME_FORMAT(tt.start_time, '%H:%i') as start,TIME_FORMAT(tt.end_time, '%H:%i') as end, sch.date, tt.id as timetableId FROM  timetable tt LEFT JOIN schedules sch ON sch.id = tt.schedule_id
+      WHERE sch.class_id = ${classId} AND sch.date between '${startDate}' and '${endDate}'
       `);
 
-    const dbRespponse = response[0];
+    const dbRespponse = response;
 
-    if (!dbRespponse) return undefined;
+    if (dbRespponse == 0) return undefined;
+
+    for (const item in response) {
+      const teachers = await db.query(
+        `SELECT t.id as teacher_id, t.name as teacher_name, t.avatar as teacher_avatar FROM timetable_assignment tta LEFT JOIN teachers t ON t.id = tta.teacher_id WHERE tta.timetable_id = ${response[item].timetableId}`
+      );
+
+      const activities = await db.query(
+        `SELECT act.id as activity_id, act.name as activity_name FROM activity_groups ag LEFT JOIN activities act ON ag.activity_id = act.id WHERE ag.timetable_id = ${response[item].timetableId}`
+      );
+
+      response[item].teachers = teachers;
+      response[item].activities = activities;
+    }
+
+    console.log(dbRespponse);
 
     return dbRespponse;
   } catch (error) {

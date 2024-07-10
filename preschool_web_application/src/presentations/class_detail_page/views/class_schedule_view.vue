@@ -247,7 +247,6 @@ function getDayOfWeek(startDate, endDate) {
   let current = new Date(start);
 
   while (current <= end) {
-    console.log(current.getDay());
     days.push({
       name: getDayOfDate(current.getDay()),
       date: current,
@@ -442,8 +441,7 @@ async function fetchSchedule(classId, startDate, endDate) {
 
     const dataresponse = response.data.data;
 
-    schedules.value = dataresponse.schedules || [];
-    console.log(response);
+    schedules.value = dataresponse;
   } catch (error) {
     console.log(error);
   } finally {
