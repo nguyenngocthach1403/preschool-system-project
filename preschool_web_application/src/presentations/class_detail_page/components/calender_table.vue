@@ -1,19 +1,18 @@
 <template>
   <div>
-    <!-- <div v-for="item in events" :key="item">
-      {{ item }}
-    </div> -->
     <EmptyBox v-if="!props.week" class="py-10" />
     <div v-else>
       <!--Header-->
       <div class="w-full flex items-center">
-        <div class="schedule h-[50px]">
-          <div class="min-w-32 time-slot text-[15px] border border-gray-300">
+        <div class="schedule h-[70px]">
+          <div
+            class="min-w-32 h-[70px] content-center text-[15px] border border-gray-300"
+          >
             NGÀY HỌC
           </div>
         </div>
         <div
-          class="w-full h-[50px] schedule border border-gray-300"
+          class="w-full h-[70px] schedule content-center border border-gray-300"
           v-for="day in props.week"
           :key="day.date"
           :class="{
@@ -72,18 +71,7 @@
               <div class="w-full text-[13px] flex justify-between">
                 <span>{{ item.start }} - {{ item.end }}</span>
                 <button
-                  @click="
-                    // $emit('edit', {
-                    //   date: item.date,
-                    //   timeTable: {
-                    //     id: item.timetableId,
-                    //     start_time: item.start,
-                    //     end_time: item.end,
-                    //     activities: item.activities,
-                    //   },
-                    // })
-                    onClickEdit(day.date, item.start, item.end)
-                  "
+                  @click="onClickEdit(day.date, item.start, item.end)"
                   class="w-6 h-6 p-[2px] rounded-full hover:border hover:border-white"
                 >
                   <img :src="edit_icon" alt="edit" class="w-full h-full" />
@@ -151,7 +139,9 @@ import plus_icon from "../../../assets/icons/pls.svg";
 import avatar_default from "../../../assets/img/avatar.jpg";
 
 const times = ref({ startTime: "05:00", endTime: "24:00" });
-const period = ref(15);
+const period = computed(() => {
+  return props.period;
+});
 
 const events = computed(() => {
   return flatJsonSchedule(props.schedules);
@@ -167,6 +157,10 @@ const props = defineProps({
   schedules: {
     type: Object,
     require: true,
+  },
+  period: {
+    type: Number,
+    require: false,
   },
 });
 const emits = defineEmits(["create", "show-teacher", "edit"]);

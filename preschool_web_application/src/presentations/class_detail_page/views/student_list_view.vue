@@ -71,6 +71,9 @@
               <button class="px-1 py-1 hover:bg-white rounded-full">
                 <img :src="change_icon" class="w-[20px] h-[20px]" alt="" />
               </button>
+              <button class="px-1 py-1 hover:bg-white rounded-full">
+                <img :src="evalution_icon" class="w-[20px] h-[20px]" alt="" />
+              </button>
             </td>
           </tr>
         </tbody>
@@ -82,13 +85,17 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
+//icon
 import plus_icon from "../../../assets/icons/pls.svg";
 import change_icon from "../../../assets/icons/Available Updates.svg";
 import avatar_default from "../../../assets/icons/student.svg";
+import evalution_icon from "../../../assets/icons/Inscription.svg";
+//component
 import PopUpAddStudent from "../components/popup_add_student_into_class.vue";
-import classService from "../../../services/class.service";
 import LoaddingComp from "../../../components/loading_comp.vue";
 import EmptyComp from "../../../components/empty_data.vue";
+//service
+import classService from "../../../services/class.service";
 import { convertGender } from "../../../utils/resources/converter";
 import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 import { convertAccountRole } from "../../../utils/resources/converter";

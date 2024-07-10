@@ -285,52 +285,59 @@ const createDetailMenu = async (dishId, mealMenuId) => {
  */
 const getMenuByClassId = async (classId, startDate, endDate) => {
   try {
+    //     const result = await db.query(`
+    //       SELECT JSON_OBJECTAGG(
+    //       DATE_FORMAT(dam.date, '%d/%m/%Y'),
+    //       JSON_OBJECT(
+    //         'daily_menu_id', dam.id,
+    //         'date', dam.date,
+    //         'created', dam.created,
+    //         'meals', (
+    //           SELECT JSON_OBJECTAGG(
+    //             m.meal,
+    //             JSON_OBJECT(
+    //               'meal_menu_id', mm.id,
+    //               'meal_id', m.id,
+    //               'meal_name', m.meal,
+    //               'meal_start_time', TIME_FORMAT(m.start_time, '%H:%i'),
+    //               'meal_end_time', TIME_FORMAT(m.end_time, '%H:%i'),
+    //               'menu', (
+    //                 SELECT JSON_ARRAYAGG(
+    //                   JSON_OBJECT(
+    //                     "dish_id", d.id,
+    //                     "dish_name", d.name
+    //                   )
+    //                 )
+    //                 FROM detail_menu dm
+    //                 LEFT JOIN dishes d ON d.id = dm.dish_id
+    //                 WHERE dm.meal_menu_id = mm.id
+    //               )
+    //             )
+    //           )
+    //           FROM meal_menu mm
+    //           LEFT JOIN meals m ON m.id = mm.meal_id
+    //           WHERE mm.daily_menu_id = dam.id
+    //         )
+    //       )
+    //     )
+    // AS daily_menu
+    // FROM  daily_menu dam
+    // LEFT JOIN classes c
+    // ON c.id = dam.class_id
+    // WHERE dam.class_id = ${classId} AND (dam.date BETWEEN '${startDate}' AND '${endDate}');
+    // `);
+
     const result = await db.query(`
-      SELECT JSON_OBJECTAGG(
-      DATE_FORMAT(dam.date, '%d/%m/%Y'),
-      JSON_OBJECT(
-        'daily_menu_id', dam.id,
-        'date', dam.date,
-        'created', dam.created,
-        'meals', (
-          SELECT JSON_OBJECTAGG(
-            m.meal,
-            JSON_OBJECT(
-              'meal_menu_id', mm.id,
-              'meal_id', m.id,
-              'meal_name', m.meal,
-              'meal_start_time', TIME_FORMAT(m.start_time, '%H:%i'),
-              'meal_end_time', TIME_FORMAT(m.end_time, '%H:%i'),
-              'menu', (
-                SELECT JSON_ARRAYAGG(
-                  JSON_OBJECT(
-                    "dish_id", d.id,
-                    "dish_name", d.name
-                  )
-                )
-                FROM detail_menu dm
-                LEFT JOIN dishes d ON d.id = dm.dish_id
-                WHERE dm.meal_menu_id = mm.id
-              )
-            )
-          )
-          FROM meal_menu mm
-          LEFT JOIN meals m ON m.id = mm.meal_id
-          WHERE mm.daily_menu_id = dam.id
-        )
-      )
-    )
-AS daily_menu
-FROM  daily_menu dam
-LEFT JOIN classes c 
-ON c.id = dam.class_id
-WHERE dam.class_id = ${classId} AND (dam.date BETWEEN '${startDate}' AND '${endDate}');
-`);
+      SELECT dem.dish_id,d.name as dish_name, mm.daily_menu_id, dm.date, mm.meal_id,mm.id as meal_menu_id, m.meal as meal_name, m.end_time, m.start_time 
+      FROM detail_menu dem LEFT JOIN dishes d ON dem.dish_id = d.id 
+      LEFT JOIN  meal_menu mm ON dem.meal_menu_id = mm.id 
+      LEFT JOIN daily_menu dm ON mm.daily_menu_id = dm.id 
+      LEFT JOIN meals m ON m.id = mm.meal_id 
+      WHERE dm.class_id = ${classId} AND dm.date between '${startDate}' and '${endDate}'
+      `);
+    const dbResponse = result;
 
-    const dbResponse = result[0];
-
-    console.log(dbResponse);
-    if (!dbResponse) return undefined;
+    if (dbResponse.length == 0) return undefined;
 
     return dbResponse;
   } catch (error) {

@@ -35,8 +35,10 @@ export const useClassStore = defineStore("classStore", {
               : new Date(element.end_date) > new Date()
               ? "Đang hoạt động"
               : "Kết thúc",
-          level: element.level,
-          syllabus: element.syllabus,
+          level_name: element.level_name,
+          level_id: element.level_id,
+          syllabus_id: element.syllabus_id,
+          syllabus_name: element.syllabus_name,
           managers: element.managers,
         });
       }
@@ -64,7 +66,7 @@ export const useClassStore = defineStore("classStore", {
 
         console.log(response);
 
-        const classes = response.data.data.classes || [];
+        const classes = response.data.data || [];
 
         this.total = response.data.total;
         this.classes = this.formatClass(classes);
@@ -84,7 +86,7 @@ export const useClassStore = defineStore("classStore", {
 
         const responseData = response.data;
 
-        const classes = responseData.data.classes;
+        const classes = responseData.data;
 
         this.classes = this.formatClass(classes);
         this.total = responseData.total;

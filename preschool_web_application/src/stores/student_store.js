@@ -167,7 +167,7 @@ export const useStudentStore = defineStore("studentStore", {
 
         const responseData = response.data;
 
-        const studentsResponse = responseData.data.students;
+        const studentsResponse = responseData.data;
 
         this.students = this.formatDataStudent(studentsResponse);
       } catch (error) {

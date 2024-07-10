@@ -79,6 +79,7 @@
     <Calendar
       :week="currentWeekDisplay"
       :schedules="schedules"
+      :period="15"
       @add-new-time="isShowCreate = true"
       @create="createSchedule($event)"
       @show-teacher="onFocusTeacher($event)"
