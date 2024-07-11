@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative" ref="container">
     <button
       class="main w-full h-full bg-white overflow-hidden focus:ring-1 rounded-md border border-gray-400/75 hover:border hover:border-gray-500 p-[1px] flex items-center relative"
       @click.prevent
@@ -32,6 +32,7 @@
         @click="showOption = !showOption"
         type="text"
         v-model="value"
+        ref="myInput"
         class="w-full h-full px-3 pr-10 outline-none rounded-md text-[16px]"
       />
       <button
@@ -51,7 +52,6 @@
         v-show="showOption"
         ref="ListElemnt"
         @scroll="handleScroll($event)"
-        @click="showOption = true"
         class="absolute z-10 mt-1 max-h-56 w-full overflow-y-scroll rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
       >
         <li
@@ -113,7 +113,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 //icon
 import close_icon from "../assets/icons/close.svg";
@@ -132,6 +132,8 @@ const value = ref("");
 
 //element
 const ListElemnt = ref(null);
+const container = ref();
+const myInput = ref();
 
 //props emits watch
 const props = defineProps({
@@ -216,6 +218,25 @@ function handleScroll(event) {
     emits("scrollEnd");
   }
 }
+
+function handleClickOutside(event) {
+  if (
+    container.value &&
+    !container.value.contains(event.target) &&
+    !myInput.value.contains(event.target) &&
+    !ListElemnt.value.contains(event.target)
+  ) {
+    showOption.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <style  scoped>

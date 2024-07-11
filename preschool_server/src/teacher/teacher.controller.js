@@ -393,7 +393,6 @@ async function updateTeacher(req, res) {
     email,
     address,
     status,
-    experience,
     username,
     seniority,
   } = req.body;
@@ -444,7 +443,6 @@ async function updateTeacher(req, res) {
     birthday: birthday,
     phone: phone,
     email: email,
-    experience: experience,
     address: address,
     status: status,
     seniority: seniority,

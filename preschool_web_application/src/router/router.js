@@ -45,7 +45,7 @@ import ClassScheduleView from "../presentations/class_detail_page/views/class_sc
 import ClassMenuView from "../presentations/class_detail_page/views/class_menu_detail_view_demo.vue";
 import ClassManagerView from "../presentations/class_detail_page/views/class_teachers_view.vue";
 import ClassMemberView from "../presentations/class_detail_page/views/student_list_view.vue";
-import StudentReviewManagementView from "../presentations/class_detail_page/views/review_anagement_view.vue";
+import StudentReviewManagementView from "../presentations/class_detail_page/views/evaluation_management_view.vue";
 
 import HomePageView from "../presentations/home_page_user/views/news_view.vue";
 import Home from "../presentations/home_page_user/views/home_page.vue";

@@ -57,8 +57,9 @@
             <select
               :disabled="isDisaple(item)"
               :value="
-                item.managers[role.name].teachers
-                  ? item.managers[role.name].teachers.id
+                item.managers.find((e) => e.role_name == role.name)
+                  ? item.managers.find((e) => e.role_name == role.name)
+                      .teacher_id
                   : ''
               "
               class="w-[300px] rounded-md px-2 py-2 border outline-none hover:border-black"
@@ -67,7 +68,7 @@
                   $event.target.value,
                   item.id,
                   role.id,
-                  item.managers[role.name].teachers || null
+                  item.managers.find((e) => e.role_name == role.name) || null
                 )
               "
             >
