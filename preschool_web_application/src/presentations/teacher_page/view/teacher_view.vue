@@ -22,7 +22,7 @@
       ></SearchForm>
 
       <router-link :to="{ name: 'TeacherCreationView' }">
-        <CreateButtonComp></CreateButtonComp>
+        <CreateButtonComp :title="'Thêm giáo viên'"></CreateButtonComp>
       </router-link>
     </div>
     <ResultNumComp>{{ total }}</ResultNumComp>

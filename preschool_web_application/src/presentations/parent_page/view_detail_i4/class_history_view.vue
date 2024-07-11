@@ -184,7 +184,8 @@ onBeforeMount(() => {
 });
 
 async function getStudentByParentId() {
-  const accountId = window.user.id;
+  // const accountId = window.user.id;
+  const accountId = JSON.parse(localStorage.getItem("user")).id;
   const response = await accountService.getParentById(accountId);
   console.log(response.data[0].ParentID);
   const result = await parentService.getHistoryClassStudentByTeacherId(

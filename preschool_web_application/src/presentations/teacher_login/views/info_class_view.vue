@@ -19,7 +19,7 @@
           class="h-1 bg-[#6EC2F7] absolute bottom-0 rounded-md ease-in-out duration-300"
         ></div>
       </div>
-      <!-- <CalenderDetail v-if="getTabActive(0)" /> -->
+      <CalenderDetail v-if="getTabActive(0)" />
       <ClassCurrentView v-if="getTabActive(1)" />
       <ClassHistoryView v-if="getTabActive(2)" />
     </div>

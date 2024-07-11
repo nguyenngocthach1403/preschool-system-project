@@ -60,6 +60,15 @@ const updateeActivity = (activityId, dataToUpdate) => {
     dataToUpdate
   );
 };
+
+// const fetchSchedulesTeacherLogin = (teacherId, startDate, endDate) => {
+//   return api().get(
+//     `/schedule/timetable-teacher?teacherId=${teacherId}&startDate=${startDate}&endDate=${endDate}`
+//   );
+// };
+const fetchSchedulesTeacherLogin = (teacherId, startDate, endDate) => {
+  return api().get(`/schedule/timetable-teacher?teacherId=${teacherId}`);
+};
 export default {
   fetchActivities,
   fetchTimetable,
@@ -72,4 +81,5 @@ export default {
   searchActivities,
   deleteActivity,
   updateeActivity,
+  fetchSchedulesTeacherLogin,
 };

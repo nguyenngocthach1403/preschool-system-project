@@ -102,7 +102,8 @@ onMounted(async () => {
   CurrentClass();
 });
 async function CurrentClass() {
-  const accountId = window.user.id;
+  // const accountId = window.user.id;
+  const accountId = JSON.parse(localStorage.getItem("user")).id;
   const response = await accountService.getTeacherById(accountId);
   const teacherId = response.data[0].TeacherId;
   const result = await teacherService.getHistoryClass(teacherId);

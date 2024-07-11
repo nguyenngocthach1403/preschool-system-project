@@ -29,6 +29,9 @@ const config = {
     timetable: "timetable",
     slideshow: "slideshow",
     setting: "setting",
+    timetable_assignment: "timetable_assignment",
+    activity_groups: "activity_groups",
+    schedules: "schedules",
   },
 };
 

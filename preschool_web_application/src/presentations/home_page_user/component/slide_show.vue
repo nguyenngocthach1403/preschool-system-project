@@ -83,6 +83,6 @@ onBeforeUnmount(() => {
 .slideshow-container img {
   width: 100%;
   max-height: 500px;
-  object-fit: cover;
+  /* object-fit: cover; */
 }
 </style>
