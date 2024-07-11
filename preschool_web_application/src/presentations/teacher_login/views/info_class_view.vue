@@ -20,8 +20,8 @@
         ></div>
       </div>
       <!-- <CalenderDetail v-if="getTabActive(0)" /> -->
-      <ClassCurrentView v-if="getTabActive(0)" />
-      <ClassHistoryView v-if="getTabActive(1)" />
+      <ClassCurrentView v-if="getTabActive(1)" />
+      <ClassHistoryView v-if="getTabActive(2)" />
     </div>
   </div>
 </template>
@@ -39,13 +39,13 @@ const TabLineElement = ref(null);
 const TabElement = ref(null);
 
 const tabList = ref([
-  // {
-  //   title: "Lịch giảng dạy",
-  //   active: true,
-  // },
+  {
+    title: "Thời khoá biểu",
+    active: true,
+  },
   {
     title: "Lớp đang giảng dạy",
-    active: true,
+    active: false,
   },
   {
     title: "Lớp đã giảng dạy",
