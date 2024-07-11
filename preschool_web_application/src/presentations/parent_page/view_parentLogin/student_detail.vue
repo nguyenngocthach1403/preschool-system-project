@@ -1,50 +1,6 @@
 <template>
   <div class="ml-4 rounded-3xl text-center h-fit pb-[10px]">
     <div class="m-auto w-[1300px] rounded-xl bg-white overflow-hidden relative">
-      <!--background-->
-      <!-- <div class="w-full h-[300px] bg-blue-800"></div> -->
-      <!--Infor-->
-      <!-- <div class="w-full h-[140px] flex items-center">
-        Avatar
-        <div
-          class="w-[130px] h-[130px] rounded-full absolute bottom-[60px] left-10 border-[5px] border-white relative"
-        >
-          <img
-            :src="
-              studentData !== null
-                ? studentData.avatar
-                : 'https://th.bing.com/th/id/OIP.ZE4ir71OG1JRH0NymdnGnwHaJ4?w=236&h=315&c=7&o=5&dpr=1.1&pid=1.20'
-            "
-            alt=""
-            class="w-full h-full rounded-full"
-          />
-          <button
-            class="w-7 h-7 bg-black absolute bottom-0 right-0 rounded-full z-40"
-          ></button>
-        </div>
-        Name and gender
-        <div class="mx-[60px] text-start">
-          <p class="text-2xl font-bold">
-            Bé
-            {{ studentData !== null ? studentData.name : "unknown" }}
-          </p>
-          <p class="text-[15px] text-gray-500">
-            {{
-              studentData !== null ? convertGender(studentData.gender) : "none"
-            }}
-          </p>
-          <p class="text-[15px] text-gray-500">
-            {{
-              studentData !== null
-                ? ddmmyyyyDateString(
-                    new Date(studentData.birthday).toLocaleDateString()
-                  )
-                : "1/1/1988"
-            }}
-          </p>
-        </div>
-      </div> -->
-      <!--Tab-->
       <div class="mx-10 my-5 flex border-b relative">
         <button
           class="px-5 py-3 h-fit"
@@ -66,9 +22,7 @@
         :student-data="studentData"
         @click-student="$emit('click-student', $event)"
       />
-      <MenuFoodStudent v-if="getTabActive(1)" />
-      <ClassHistory v-if="getTabActive(2)" />
-      <!-- <ClassHistoryView v-if="getTabActive(3)" /> -->
+      <ClassHistory v-if="getTabActive(1)" />
     </div>
   </div>
 </template>
@@ -99,41 +53,15 @@ const tabList = ref([
     active: true,
   },
   {
-    title: "Thực đơn hàng ngày của bé",
+    title: "Lịch sử lớp học của các bé",
     active: false,
   },
-  {
-    title: "Lịch sử lớp học",
-    active: false,
-  },
-  // {
-  //   title: "Thành tích",
-  //   active: false,
-  // },
 ]);
 
 onMounted(() => {
   initialActiveTab();
   // getStudentByParentId();
 });
-// async function getStudentByParentId() {
-//   const accountId = window.user.id;
-//   const response = await accountService.getParentById(accountId);
-//   console.log(response.data[0].ParentID);
-//   const result = await parentService.getStudentByParentId(
-//     response.data[0].ParentID
-//   );
-//   console.log(result);
-//   if (result.status !== 200) {
-//     return;
-//   }
-//   if (!result.data.success) {
-//     return;
-//   }
-
-//   studentData.value = result.data.data[0];
-//   console.log(studentData.value);
-// }
 
 //effect function
 function initialActiveTab() {

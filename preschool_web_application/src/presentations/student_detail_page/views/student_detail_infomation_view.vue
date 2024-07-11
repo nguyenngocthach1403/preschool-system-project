@@ -108,7 +108,6 @@
     </div>
   </div>
 </template>
-  
 
 <script setup>
 import { onBeforeMount, onMounted, ref, watch } from "vue";
@@ -207,9 +206,9 @@ function getInitialValue(data) {
   studentGender.value = data.gender;
   studentFork.value = data.fork;
   studentNation.value = data.nation;
-  studentBirthOrigin.value = data.birthOfOrigin;
+  // studentBirthOrigin.value = data.birthOfOrigin;
+  studentBirthOrigin.value = data.place_of_birth;
   studentBirtday.value = new Date(data.birthday);
-  //   studentStudyStatus.value = data.ss
 }
 
 async function getStudentById() {

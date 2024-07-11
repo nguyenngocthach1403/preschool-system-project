@@ -1,8 +1,21 @@
 <template>
   <div>
-    <!-- <div class="py-4 px-7 text-start border-b flex justify-between">
+    <div
+      class="inf w-fit absolute top-0 z-30 flex bg-white drop-shadow-xl gap-5 px-5 py-3 rounded-md"
+      :style="{ top: y + 80 + 'px', left: x - 50 + 'px' }"
+      v-if="teacherHover"
+    >
+      <img
+        :src="teacherHover.teacher_avatar || avatar_default"
+        class="w-10 h-10 rounded-full"
+      />
+      <div>
+        <div>{{ teacherHover.teacher_name }}</div>
+      </div>
+    </div>
+    <div class="py-4 px-7 text-start border-b flex justify-between">
       <span class="text-[20px] font-bold">Thời khóa biểu</span>
-    </div> -->
+    </div>
     <div class="w-full flex items-center gap-5 mx-5">
       <div class="content-center flex items-center">
         <button
@@ -28,34 +41,34 @@
       </div>
     </div>
     <LoadingComp v-if="loading" class="py-[300px]" />
-    <MenuTable
-      v-else
+    <Calendar
       :week="currentWeekDisplay"
-      :meals="meals"
-      :menus="menuList"
+      :schedules="schedules"
+      :period="15"
+      @show-teacher="onFocusTeacher($event)"
     />
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-
-//component
+import { computed, onMounted, ref, watch } from "vue";
+// import ScheduleTable from "../../class_detail_page/components/schedule_table_parentview.vue";
 import LoadingComp from "../../../components/loading_comp.vue";
-
-import MenuTable from "../../../presentations/class_detail_page/components/menu_table_parentview.vue";
+import Calendar from "../../class_detail_page/components/calender_table.vue";
 import accountService from "../../../services/account.service";
 import parentService from "../../../services/parent.service";
-
-//icon
 import forward from "../../../assets/icons/Forward.svg";
 import back from "../../../assets/icons/Back.svg";
 import avatar_default from "../../../assets/img/avatar.jpg";
+
 //Service
 import ClassService from "../../../services/class.service";
-import MenuService from "../../../services/menu.service";
-import { yyyymmddDateString } from "../../../utils/resources/format_date";
+import ScheduleService from "../../../services/schedule.service";
+import {
+  ddmmyyyyDateString,
+  yyyymmddDateString,
+} from "../../../utils/resources/format_date";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
@@ -63,23 +76,45 @@ const weekList = ref([]);
 const currentWeekSelect = ref(null);
 const currentWeekSelectIndex = ref(0);
 const currentWeekDisplay = ref([]);
+
+const studentData = ref([]);
 const studentId = router.currentRoute.value.query.studentID;
+const classID = ref("");
+
+//
+const timetables = ref([
+  { start_time: "13:00", end_time: "15:00" },
+  { start_time: "10:00", end_time: "12:00" },
+  { start_time: "08:00", end_time: "10:00" },
+]);
+
+const teacherHover = ref(null);
+
+const x = ref(0);
+const y = ref(0);
+
+//
+const isShowCreate = ref(false);
 const loading = ref(false);
+const isShowCreateSchedule = ref(false);
+const isShowTeacherSchedule = ref(false);
+const isShowEdit = ref(false);
+const isShowDelete = ref(false);
 
 //valliable
 const classData = ref(null);
-const meals = ref([]);
-const menuList = ref([]);
-const studentData = ref([]);
+const schedules = ref([]);
 
-const classId = ref("");
+const emits = defineEmits(["add-toast"]);
 
+//watch
 watch(classData, () => {
   weekList.value = getWeekList(
     classData.value.start_date,
     classData.value.end_date
   );
 });
+
 watch(weekList, () => {
   if (!currentWeekSelect.value) {
     currentWeekSelect.value =
@@ -87,15 +122,7 @@ watch(weekList, () => {
   }
 });
 
-// watch(meals, () => {
-//   fetchMenuList(
-//     classData.value.id,
-//     currentWeekSelect.value.start,
-//     currentWeekSelect.value.end
-//   );
-// });
-
-watch(currentWeekSelect, async () => {
+watch(currentWeekSelect, () => {
   currentWeekSelectIndex.value = weekList.value.findIndex(
     (e) => e.name == currentWeekSelect.value.name
   );
@@ -103,19 +130,58 @@ watch(currentWeekSelect, async () => {
     currentWeekSelect.value.start,
     currentWeekSelect.value.end
   );
-  await fetchMenuList(
+
+  fetchSchedule(
     classData.value.id,
     currentWeekSelect.value.start,
     currentWeekSelect.value.end
   );
 });
 
+watch(schedules, () => {
+  timetables.value = getTimesWithMostEntries(schedules.value);
+});
+
+const getTimesWithMostEntries = (schedule) => {
+  let maxEntries = 0;
+  let times = [];
+
+  for (const date in schedule) {
+    if (schedule[date].timetable) {
+      const entries = Object.keys(schedule[date].timetable).length;
+      if (entries > maxEntries) {
+        maxEntries = entries;
+        times = [];
+        for (const period in schedule[date].timetable) {
+          const { start_time, end_time, activities, teacher_name, id } =
+            schedule[date].timetable[period];
+          times.push({
+            start_time,
+            end_time,
+          });
+        }
+      }
+    }
+  }
+
+  return times;
+};
+
+function onFocusTeacher(event) {
+  if (event) {
+    teacherHover.value = event.teacher;
+    x.value = event.event.clientX;
+    y.value = event.event.clientY;
+  } else {
+    teacherHover.value = null;
+  }
+}
+
 function getCurrentWeekOfWeekList(weekList) {
   return weekList.find(
     (e) => new Date(e.start) <= new Date() && new Date() <= new Date(e.end)
   );
 }
-
 function nextWeek() {
   if (currentWeekSelectIndex.value < weekList.value.length) {
     currentWeekSelectIndex.value = currentWeekSelectIndex.value + 1;
@@ -128,6 +194,7 @@ function previousWeek() {
     currentWeekSelect.value = weekList.value[currentWeekSelectIndex.value];
   }
 }
+
 function getDayOfWeek(startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -136,15 +203,33 @@ function getDayOfWeek(startDate, endDate) {
   let current = new Date(start);
 
   while (current <= end) {
-    console.log(current.getDay());
     days.push({
       name: getDayOfDate(current.getDay()),
-      date: new Date(current),
+      date: current,
     });
     current = new Date(current.setDate(current.getDate() + 1));
   }
 
   return days;
+}
+
+function getDayOfDate(day) {
+  switch (day) {
+    case 6:
+      return "Chủ nhật";
+    case 0:
+      return "Thứ 2";
+    case 1:
+      return "Thứ 3";
+    case 2:
+      return "Thứ 4";
+    case 3:
+      return "Thứ 5";
+    case 4:
+      return "Thứ 6";
+    case 5:
+      return "Thứ 7";
+  }
 }
 
 /**
@@ -157,48 +242,31 @@ function getWeekList(startDate, endDate) {
   const end = new Date(endDate);
 
   const weeks = [];
-  let current = start;
+  let current = new Date(start);
   let weekIndex = 1;
   while (current <= end) {
     const weekStart = new Date(current);
     const weekEnd = new Date(current);
-    const a = current.getDay();
-    weekEnd.setDate(weekEnd.getDate() + (a != 1 ? 7 - a : 6));
+    const a = weekStart.getDay();
+    weekEnd.setDate(weekEnd.getDate() + (a != 0 ? 7 - a : 6));
     if (weekEnd > end) {
       weekEnd.setDate(end.getDate());
     }
 
     weeks.push({
       name: "Tuần " + weekIndex,
-      start: yyyymmddDateString(weekStart.toLocaleDateString()),
-      end: yyyymmddDateString(weekEnd.toLocaleDateString()),
+      start: weekStart.toISOString().split("T")[0],
+      end: weekEnd.toISOString().split("T")[0],
     });
 
-    current.setDate(current.getDate() + (a != 1 ? 8 - a : 7));
+    current.setDate(current.getDate() + (a != 0 ? 8 - a : 7));
     weekIndex = weekIndex + 1;
   }
 
   return weeks;
 }
 
-function getDayOfDate(day) {
-  switch (day) {
-    case 0:
-      return "Chủ nhật";
-    case 1:
-      return "Thứ 2";
-    case 2:
-      return "Thứ 3";
-    case 3:
-      return "Thứ 4";
-    case 4:
-      return "Thứ 5";
-    case 5:
-      return "Thứ 6";
-    case 6:
-      return "Thứ 7";
-  }
-}
+//funciton
 
 /**
  * Phương thức lấy lớp học theo mã lớp
@@ -221,29 +289,19 @@ async function fetchClassById(classId) {
   }
 }
 
-async function fetchMeals() {
+async function fetchSchedule(classId, startDate, endDate) {
   try {
-    const response = await MenuService.fetchMeals();
-    const dataResponse = response.data;
-    meals.value = dataResponse.data;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function fetchMenuList(classId, startDate, endDate) {
-  try {
+    if (loading.value) return;
     loading.value = true;
-
-    const response = await MenuService.fetchMenuList(
+    const response = await ScheduleService.fetchSchedules(
       classId,
       startDate,
       endDate
     );
 
-    const dataResponse = response.data.data;
+    const dataresponse = response.data.data;
 
-    menuList.value = dataResponse;
+    schedules.value = dataresponse;
   } catch (error) {
     console.log(error);
   } finally {
@@ -255,15 +313,14 @@ onMounted(async () => {
   await getStudentByParentId();
   studentData.value.forEach((student) => {
     if (student.StudentId == studentId) {
-      classId.value = student.class_id;
-      // console.log(classId.value);
+      classID.value = student.class_id;
+      console.log(classID.value);
       return;
     }
   });
-  // console.log(classId.value);
-  await fetchMenuList(classId.value);
-  if (classId) classData.value = await fetchClassById(classId.value);
-  await fetchMeals();
+  console.log(classID.value);
+  await fetchSchedule(classID.value);
+  classData.value = await fetchClassById(classID.value);
 });
 
 async function getStudentByParentId() {
@@ -277,4 +334,10 @@ async function getStudentByParentId() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+th,
+td {
+  border: 1px solid;
+  padding: 10px 10px;
+}
+</style>
