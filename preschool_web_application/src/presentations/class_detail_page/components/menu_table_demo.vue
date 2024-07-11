@@ -161,7 +161,7 @@ function getDailyId(date) {
   const dishes = props.menus.filter((e) => {
     return (
       new Date(e.date).toLocaleDateString() ==
-        new Date(date).toLocaleDateString() && mealName == e.meal_name
+      new Date(date).toLocaleDateString()
     );
   });
   console.log(dishes);
