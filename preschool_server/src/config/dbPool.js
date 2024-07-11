@@ -22,7 +22,7 @@ const pool = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "",
-  database: "preschool_db",
+  database: "preschool_db1",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

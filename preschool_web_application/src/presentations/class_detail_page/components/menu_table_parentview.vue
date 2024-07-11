@@ -40,12 +40,6 @@
           >
             <div v-if="getDishes(meal.meal, day.date).length != 0">
               <div
-                @click="editMenu(meal, day.date)"
-                class="w-6 h-6 border rounded-md absolute drop-shadow-xl content-center top-2 right-2 hover:border-black"
-              >
-                <img :src="menu_icon" class="m-auto drop-shadow-xl" />
-              </div>
-              <div
                 v-for="dish in getDishes(meal.meal, day.date)"
                 :key="dish.dish_id"
               >
@@ -53,14 +47,6 @@
                   <div>{{ dish.dish_name }}</div>
                 </div>
               </div>
-            </div>
-            <div v-else>
-              <button
-                @click="createMenu(meal.id, meal.meal, day.date, day.name)"
-                class="border rounded-md hover:bg-gray-100 cursor-default w-fit px-3 py-1 m-auto"
-              >
-                Thêm
-              </button>
             </div>
           </td>
         </tr>
@@ -160,7 +146,7 @@ function getDailyId(date) {
   const dishes = props.menus.filter((e) => {
     return (
       new Date(e.date).toLocaleDateString() ==
-      new Date(date).toLocaleDateString()
+        new Date(date).toLocaleDateString() && mealName == e.meal_name
     );
   });
   console.log(dishes);

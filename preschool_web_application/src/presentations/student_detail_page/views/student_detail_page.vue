@@ -66,6 +66,8 @@
         :student-data="studentData"
       />
       <ClassHistoryView v-if="getTabActive(3)" />
+      <Menu v-if="getTabActive(1)"></Menu>
+      <Schedule v-if="getTabActive(2)"></Schedule>
     </div>
   </div>
 </template>
@@ -78,6 +80,8 @@ import { convertGender } from "../../../utils/resources/converter";
 import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 import StudentInformationView from "../views/student_detail_infomation_view.vue";
 import ClassHistoryView from "../views/class_history_view.vue";
+import Menu from "../../parent_page/view_detail_i4/menu_food_weekly.vue";
+import Schedule from "../../parent_page/view_detail_i4/schedule_view.vue";
 const router = useRouter();
 
 const studentData = ref(null);
@@ -92,7 +96,11 @@ const tabList = ref([
     active: true,
   },
   {
-    title: "Biểu đồ sức khỏe",
+    title: "Thực đơn hàng tuần",
+    active: false,
+  },
+  {
+    title: "Thời khoá biểu",
     active: false,
   },
   {
@@ -157,7 +165,7 @@ function getTabActive(index) {
 }
 </script>
 
-<style  scoped>
+<style scoped>
 .active {
   color: #3b44d1;
 }

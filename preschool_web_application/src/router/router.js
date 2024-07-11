@@ -28,6 +28,7 @@ import ParentDetailView from "../presentations/parent_page/view_parentLogin/pare
 import StudentDetailParentView from "../presentations/parent_page/view_parentLogin/student_detail.vue";
 import ParentDetailInfoView from "../presentations/parent_page/view_detail_i4/parent_detail_view.vue";
 import StudentDetailViewOfParent from "../presentations/student_detail_page/views/student_detail_page.vue";
+import HistoryClassView from "../presentations/parent_page/view_detail_i4/class_history_view.vue";
 
 import HomePageTeacher from "../presentations/home_page/views/home_page_teacher.vue";
 import InfoTeacherView from "../presentations/teacher_login/views/info_view.vue";
@@ -160,6 +161,11 @@ function Router() {
             name: "ParentDetailInfoView",
             path: "/home-page/:username/parent-info-detail-view",
             component: ParentDetailInfoView,
+          },
+          {
+            name: "HistoryClassView",
+            path: "/home-page/:username/history-class",
+            component: HistoryClassView,
           },
           {
             name: "StudentDetailViewOfParent",
