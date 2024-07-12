@@ -77,7 +77,11 @@ const createEvaluationForm = async (dataToCreate) => {
 
 const isExitCriteriasContent = async (criteriaContentId) => {
   try {
-    const result = await db.select("criteria_contents", "COUNT(*) AS total");
+    const result = await db.select(
+      "criteria_contents",
+      "COUNT(*) AS total",
+      `WHERE id = ${criteriaContentId}`
+    );
     const dbResponse = result[0];
 
     if (!dbResponse["total"]) return false;
@@ -156,6 +160,7 @@ const getEvaluationFormByEvaluationId = async (evaluaitonId) => {
           ef.id AS evaluation_form_id,
           s.name AS student_name,
           s.id AS student_id,
+          s.birthday AS student_birthday,
           s.avatar AS student_avatar,
           e.class_id,
           c.name AS class_name,

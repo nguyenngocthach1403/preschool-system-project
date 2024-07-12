@@ -70,7 +70,6 @@ async function fetchEvaluationById(evalationId) {
   try {
     const response = await EvaluationService.getEvaluationById(evalationId);
     const dataResponse = response.data.data;
-
     evaluation.value = dataResponse;
   } catch (error) {
     console.log(error);
@@ -88,5 +87,15 @@ onMounted(() => {
   background-color: rgb(254, 254, 202);
   border: 1px solid rgb(252, 230, 165) !important;
   color: rgb(220, 162, 38);
+}
+.status_2 {
+  background-color: rgb(217 249 157);
+  border: 1px solid rgb(190 242 100) !important;
+  color: rgb(132 204 22);
+}
+.status_1 {
+  background-color: rgb(186 230 253);
+  border: 1px solid rgb(125 211 252) !important;
+  color: rgb(14 165 233);
 }
 </style>

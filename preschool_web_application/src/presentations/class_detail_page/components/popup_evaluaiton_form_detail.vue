@@ -1,6 +1,6 @@
 <template>
   <PopupLayout
-    :title="'Sửa thời gian biểu'"
+    :title="'Chi tiết phiếu đánh giá'"
     @close="$emit('close')"
     class="absolute top-0 left-0"
   >
@@ -8,7 +8,22 @@
       <div class="w-[1200px] px-10 text-[17px]">
         <div
           class="w-full bg-white drop-shadow-xl border px-5 py-5 rounded-md h-full overflow-y-auto"
+          :class="{ disabled: disabled }"
         >
+          <div
+            class="absolute right-5 px-3 rounded-md py-1"
+            :class="{
+              status_0: props.evaluationForm.status == 0,
+              status_1: props.evaluationForm.status == 1,
+              status_2: props.evaluationForm.status == 2,
+            }"
+          >
+            {{
+              props.evaluationForm
+                ? convertStatusEvaluationForm(props.evaluationForm.status)
+                : ""
+            }}
+          </div>
           <div class="w-full text-[23px] font-bold px-20">
             <span class="text-gray-600">Phiếu đánh giá </span>
             <span>{{ props.evaluationForm.evaluation_name || "..." }}</span>
@@ -25,7 +40,15 @@
           </div>
           <div class="w-full text-start my-5 tracking-[.2em]">
             Ngày sinh:
-            .........................................................................................
+            {{
+              props.evaluationForm
+                ? ddmmyyyyDateString(
+                    new Date(
+                      props.evaluationForm.student_birthday
+                    ).toLocaleDateString()
+                  )
+                : "........................................................................................."
+            }}
           </div>
           <div class="w-full text-start my-5 tracking-[.2em]">
             Lớp:
@@ -37,33 +60,82 @@
               }}
             </span>
           </div>
-          <div
-            v-for="item in evaluationCriterias"
-            :key="item"
-            class="border border-black px-3 py-2 my-2 rounded-md"
-            :class="{ select: evaluationCriterias == item.id }"
-          >
-            <div class="w-full py-3 rounded-md font-bold text-[18px]">
-              <span>{{ item.name }}</span>
-            </div>
-            <div
-              class="py-2 my-1 text-start px-3 text-[17px] hover:bg-gray-100 relative drop-shadow-xl"
-              v-for="(
-                item, index
-              ) in props.evaluationForm.evaluationContents.filter(
-                (e) => e.evaluation_criteria_id == item.id
-              )"
-              :key="index"
-            >
-              <span>{{ item.criteria_content_name }}</span>
-              <button
-                class="absolute right-3 top-1/4 opacity-50 hover:opacity-100"
-                @click="onRemoveItem(item)"
+          <form action="">
+            <div class="h-[500px]">
+              <div
+                v-for="(item, evaCrIdx) in evaluationCriterias"
+                :key="evaCrIdx"
+                class="border border-black px-3 py-2 my-2 rounded-md"
+                :class="{ select: evaluationCriterias == item.id }"
               >
-                <img :src="close_icon" class="w-5 h-5" />
-              </button>
+                <div class="w-full py-3 rounded-md font-bold text-[18px]">
+                  <span>{{ item.name }}</span>
+                </div>
+                <table class="w-full">
+                  <thead>
+                    <tr>
+                      <th class="text-start p-5">Tiêu chí</th>
+                      <th class="text-center p-5">Đạt</th>
+                      <th class="text-center p-5">Chưa đạt</th>
+                      <th class="p-5">Ghi chú</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(
+                        item, index
+                      ) in props.evaluationForm.evaluationContents.filter(
+                        (e) => e.evaluation_criteria_id == item.id
+                      )"
+                      :key="index"
+                      class="hover:bg-gray-100 z-10"
+                    >
+                      <td class="text-start p-5">
+                        {{ item.criteria_content_name }}
+                      </td>
+                      <td class="text-center px-7 py-5">
+                        <input
+                          class="w-5 h-5"
+                          ref="checkBoxA"
+                          :disabled="disabled"
+                          @change="
+                            changeAchieve(item, $event.target.checked, 0)
+                          "
+                          type="checkbox"
+                          name=""
+                          id=""
+                        />
+                      </td>
+                      <td class="text-center px-7 py-5">
+                        <input
+                          class="w-5 h-5"
+                          ref="checkBoxB"
+                          :disabled="disabled"
+                          @change="
+                            changeAchieve(item, $event.target.checked, 1)
+                          "
+                          type="checkbox"
+                          name=""
+                          id=""
+                        />
+                      </td>
+                      <td class="relative">
+                        <textarea
+                          :value="item.description || 'a'"
+                          @change="getDescInput(item, $event)"
+                          :disabled="disabled"
+                          ref="descInput"
+                          class="rounded-md h-[50px] border w-full px-4 py-2 focus:border-none focus:ring-1 outline-none focus:absolute focus:h-[120px] focus:top-0 focus:left-0 focus:z-40 z-10"
+                          cols="30"
+                          rows="10"
+                        ></textarea>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </template>
@@ -115,6 +187,8 @@
 import { computed, onMounted, ref, watch } from "vue";
 import PopupLayout from "../../../components/popup_layout.vue";
 import close_icon from "../../../assets/icons/close.svg";
+import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
+import { convertStatusEvaluationForm } from "../../../utils/resources/converter";
 
 const creating = ref(false);
 
@@ -125,13 +199,80 @@ const props = defineProps({
   },
 });
 
+const checkBoxA = ref();
+const checkBoxB = ref();
+const descInput = ref();
+
+const disabled = computed(() => {
+  return props.evaluationForm.status == 2;
+});
+
 const evaluationCriterias = computed(() => {
   const result = props.evaluationForm.evaluationContents.flatMap((e) => {
     return { id: e.evaluation_criteria_id, name: e.evaluation_criteria_name };
   });
   return Array.from(new Map(result.map((item) => [item.id, item])).values());
 });
+
+function changeAchieve(item, value, index) {
+  const evaluationContentIdx =
+    props.evaluationForm.evaluationContents.findIndex(
+      (e) => e.criteria_content_id == item.criteria_content_id
+    );
+
+  if (evaluationContentIdx == -1) {
+    return;
+  }
+  if (!value) {
+    props.evaluationForm.evaluationContents[evaluationContentIdx].achieve =
+      null;
+    return;
+  }
+
+  if (index == 1) {
+    checkBoxA.value[evaluationContentIdx].checked = false;
+    props.evaluationForm.evaluationContents[
+      evaluationContentIdx
+    ].achieve = false;
+  } else {
+    checkBoxB.value[evaluationContentIdx].checked = false;
+    props.evaluationForm.evaluationContents[
+      evaluationContentIdx
+    ].achieve = true;
+  }
+}
+
+function getDescInput(item, value) {
+  console.log(value.target.value);
+  const evaluationContentIdx =
+    props.evaluationForm.evaluationContents.findIndex(
+      (e) => e.criteria_content_id == item.criteria_content_id
+    );
+  if (evaluationContentIdx == -1) {
+    return;
+  }
+  props.evaluationForm.evaluationContents[evaluationContentIdx].description =
+    value.target.value;
+}
 </script>
             
 <style  scoped>
+.disabled {
+  background-color: rgb(235, 235, 235);
+}
+.status_0 {
+  background-color: rgb(254, 254, 202);
+  border: 1px solid rgb(252, 230, 165) !important;
+  color: rgb(220, 162, 38);
+}
+.status_2 {
+  background-color: rgb(217 249 157);
+  border: 1px solid rgb(190 242 100) !important;
+  color: rgb(132 204 22);
+}
+.status_1 {
+  background-color: rgb(186 230 253);
+  border: 1px solid rgb(125 211 252) !important;
+  color: rgb(14 165 233);
+}
 </style>

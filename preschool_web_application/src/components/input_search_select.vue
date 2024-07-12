@@ -213,7 +213,7 @@ function handleScroll(event) {
   );
   if (
     event.target.scrollTop + event.target.clientHeight >=
-    event.target.scrollHeight
+    event.target.scrollHeight - 10
   ) {
     emits("scrollEnd");
   }
