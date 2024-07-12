@@ -452,7 +452,8 @@ onMounted(() => {
   getTeacher();
 });
 async function getTeacher() {
-  const accountId = window.user.id;
+  // const accountId = window.user.id;
+  const accountId = JSON.parse(localStorage.getItem("user")).id;
   const response = await accountService.getTeacherById(accountId);
 
   console.log(response);

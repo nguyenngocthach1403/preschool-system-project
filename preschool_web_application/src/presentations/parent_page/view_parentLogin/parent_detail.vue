@@ -446,7 +446,8 @@ onMounted(() => {
   count();
 });
 async function getParent() {
-  const accountId = window.user.id;
+  // const accountId = window.user.id;
+  const accountId = JSON.parse(localStorage.getItem("user")).id;
   const response = await accountService.getParentById(accountId);
 
   console.log(response);
