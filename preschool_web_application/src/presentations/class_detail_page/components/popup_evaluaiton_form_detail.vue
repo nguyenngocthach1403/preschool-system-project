@@ -97,6 +97,9 @@
                         <input
                           class="w-5 h-5"
                           ref="checkBoxA"
+                          :checked="
+                            item.achieve != 0 && item.achieve ? true : false
+                          "
                           :disabled="disabled"
                           @change="
                             changeAchieve(item, $event.target.checked, 0)
@@ -107,8 +110,12 @@
                         />
                       </td>
                       <td class="text-center px-7 py-5">
+                        {{ item.achieve }}
                         <input
                           class="w-5 h-5"
+                          :checked="
+                            item.achieve != 1 && item.achieve ? true : false
+                          "
                           ref="checkBoxB"
                           :disabled="disabled"
                           @change="

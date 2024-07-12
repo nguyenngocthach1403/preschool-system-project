@@ -1,17 +1,32 @@
+import VueJwtDecode from "vue-jwt-decode";
+
 /**
  * Phương thức kiểm tra để lấy người dùng hiện tại
  * @returns {Object} currun User
  */
 const isUser = () => {
-  let user = localStorage.getItem("user");
-
-  if (!user) {
-    user = window.user;
-  } else {
-    user = JSON.parse(user);
+  let token = JSON.parse(localStorage.getItem("user"));
+  if (!token) {
+    token = window.user;
   }
 
-  return user;
+  try {
+    let decode = VueJwtDecode.decode(token);
+
+    return decode;
+  } catch (error) {
+    return undefined;
+  }
 };
 
-export { isUser };
+const getToken = () => {
+  let token = JSON.parse(localStorage.getItem("user"));
+
+  if (!token) {
+    token = window.user;
+  }
+
+  return token;
+};
+
+export { isUser, getToken };

@@ -28,7 +28,7 @@
               {{ item.student_name }}
             </p>
             <div
-              class="absolute bottom-0 right-0 text-[14px] px-2 py-1 rounded-md"
+              class="absolute bottom-0 right-0 text-[12px] px-2 py-1 rounded-md"
               :class="{
                 status_0: item.status == 0,
                 status_1: item.status == 1,

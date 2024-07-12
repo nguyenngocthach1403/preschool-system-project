@@ -4,16 +4,16 @@ const checkService = require("../config/check.service");
 const EvaluaitonService = require("./evaluation.service");
 const ClassService = require("../class/class.service");
 const AccountService = require("../account/account.service");
-
+const { decodeHeader } = require("../../middleware/verifyAuth");
 const Response = require("../../helpers/response");
 
 const router = express.Router();
 
-router.get("/evaluation_criterias", getEvaluationCriterias);
-router.get("/criterias_contents", getCriteriaContents);
-router.post("/create/:classId", createEvaluation);
-router.get("/", getEvaluations);
-router.get("/get", getEvaluationById);
+router.get("/evaluation_criterias", decodeHeader, getEvaluationCriterias);
+router.get("/criterias_contents", decodeHeader, getCriteriaContents);
+router.post("/create/:classId", decodeHeader, createEvaluation);
+router.get("/", decodeHeader, getEvaluations);
+router.get("/get", decodeHeader, getEvaluationById);
 
 async function getEvaluationById(req, res) {
   const { evaluationId } = req.query;

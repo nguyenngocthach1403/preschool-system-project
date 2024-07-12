@@ -10,18 +10,23 @@ const checkService = require("../config/check.service");
 const teacherService = require("../teacher/teacher.service");
 const managerRoleService = require("../class_manager_role/class_manager_role.service");
 const config = require("../config/config");
+const { decodeHeader } = require("../../middleware/verifyAuth");
 
 //Router
-router.get("/", getClass);
-router.get("/search/in-comming", findOnGoingAndInCommingClass);
-router.get("/search", findClass);
-router.post("/add", upload.array("files"), createClass);
-router.post("/update", upload.array("files"), updateClass);
-router.get("/students/", getMembers);
-router.post("/add-students", addStudentIntoClass);
-router.get("/manager-roles", getManagerRoles);
-router.get("/id", getClassById);
-router.get("/add-management-position-for-class", updateClassManagerByClassId);
+router.get("/", decodeHeader, getClass);
+router.get("/search/in-comming", decodeHeader, findOnGoingAndInCommingClass);
+router.get("/search", decodeHeader, findClass);
+router.post("/add", upload.array("files"), decodeHeader, createClass);
+router.post("/update", upload.array("files"), decodeHeader, updateClass);
+router.get("/students/", decodeHeader, getMembers);
+router.post("/add-students", decodeHeader, addStudentIntoClass);
+router.get("/manager-roles", decodeHeader, getManagerRoles);
+router.get("/id", decodeHeader, getClassById);
+router.get(
+  "/add-management-position-for-class",
+  decodeHeader,
+  updateClassManagerByClassId
+);
 
 async function updateClassManagerByClassId(req, res) {
   const { classId, role, teacherId } = req.query;
