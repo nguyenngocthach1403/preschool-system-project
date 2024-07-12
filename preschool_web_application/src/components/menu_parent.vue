@@ -88,7 +88,7 @@ function logout() {
 const menu = ref([
   {
     id: 1,
-    title: "Thông tin",
+    title: "Thông tin cá nhân",
     name: "ParentDetailView",
     icon: info,
     active: false,

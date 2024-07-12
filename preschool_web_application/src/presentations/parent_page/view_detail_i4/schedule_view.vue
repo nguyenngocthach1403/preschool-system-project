@@ -54,7 +54,8 @@
 import { computed, onMounted, ref, watch } from "vue";
 // import ScheduleTable from "../../class_detail_page/components/schedule_table_parentview.vue";
 import LoadingComp from "../../../components/loading_comp.vue";
-import Calendar from "../../class_detail_page/components/calender_table.vue";
+// import Calendar from "../../class_detail_page/components/calender_table.vue";
+import Calendar from "../components/calender.vue";
 import accountService from "../../../services/account.service";
 import parentService from "../../../services/parent.service";
 import forward from "../../../assets/icons/Forward.svg";

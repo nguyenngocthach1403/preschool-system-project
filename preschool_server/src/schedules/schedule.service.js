@@ -506,6 +506,74 @@ const updateActivity = async (activityId, dataToUpData) => {
     throw error;
   }
 };
+
+const getScheduleTeacher = async (teacherId) => {
+  try {
+    const query = `
+      SELECT c.name AS ClassName, c.id AS ClassID, sc.id AS ScheduleId, sc.date AS Date, tt.id AS TimeTableId, tt.start_time, tt.end_time
+      FROM ${config.tb.timetable_assignment} ta
+      LEFT JOIN ${config.tb.timetable} tt ON tt.id = ta.timetable_id
+      LEFT JOIN ${config.tb.schedules} sc ON tt.schedule_id = sc.id
+      LEFT JOIN ${config.tb.class} c ON sc.class_id = c.id
+      WHERE ta.teacher_id = ${teacherId}
+    `;
+    const response = await db.query(query);
+
+    if (response.length == 0) return undefined;
+    for (const item in response) {
+      response[item].activities =
+        (await getActivitiName(response[item].TimeTableId)) || [];
+      console.log(response[item].TimeTableId);
+    }
+    return response;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
+
+// const getScheduleTeacher = async (teacherId, startDate, endDate) => {
+//   try {
+//     const query = `
+//       SELECT c.name AS ClassName, c.id AS ClassID, sc.id AS ScheduleId, sc.date AS Date, tt.id AS TimeTableId, tt.start_time, tt.end_time
+//       FROM ${config.tb.timetable_assignment} ta
+//       LEFT JOIN ${config.tb.timetable} tt ON tt.id = ta.timetable_id
+//       LEFT JOIN ${config.tb.schedules} sc ON tt.schedule_id = sc.id
+//       LEFT JOIN ${config.tb.class} c ON sc.class_id = c.id
+//       WHERE ta.teacher_id = ${teacherId}
+//         AND (sc.date BETWEEN '${startDate}' AND '${endDate}')
+//     `;
+//     const response = await db.query(query);
+
+//     if (response.length == 0) return undefined;
+//     for (const item in response) {
+//       response[item].activities =
+//         (await getActivitiName(response[item].TimeTableId)) || [];
+//       console.log(response[item].TimeTableId);
+//     }
+//     return response;
+//   } catch (error) {
+//     console.error(error);
+//     return undefined;
+//   }
+// };
+
+const getActivitiName = async (timetableID) => {
+  try {
+    const response = await db.select(
+      `${config.tb.activity_groups} ag LEFT JOIN ${config.tb.activity} a ON a.id = ag.activity_id `,
+      `a.id AS ActivityID, a.name AS ActivitiName`,
+      `WHERE ag.timetable_id = ${timetableID}`
+    );
+
+    if (response.length == 0) return undefined;
+    return response;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
+
 module.exports = {
   getActivities,
   countActivity,
@@ -528,4 +596,6 @@ module.exports = {
   searchActivities,
   deleteActivity,
   updateActivity,
+  getScheduleTeacher,
+  getActivitiName,
 };

@@ -25,7 +25,7 @@
       ></SearchForm>
 
       <router-link :to="{ name: 'ParentCreationView' }">
-        <CreateButtonComp></CreateButtonComp>
+        <CreateButtonComp :title="'Thêm phụ huynh'"></CreateButtonComp>
       </router-link>
     </div>
     <ResultNumComp>{{ total }}</ResultNumComp>

@@ -24,6 +24,7 @@ router.get("/", getSchedules);
 router.post("/create", createSchedule);
 router.post("/update", updateSchedule);
 router.post("/delete", deleteTimetableOfWeek);
+router.get("/timetable-teacher", getSheduleTeacher);
 
 async function updateActivity(req, res) {
   const { activityId } = req.query;
@@ -552,6 +553,25 @@ async function getActivities(req, res) {
     statusCode: 200,
     responseBody: activities || [],
   });
+}
+
+async function getSheduleTeacher(req, res) {
+  const { teacherId } = req.query;
+
+  // if (!isValidDate(startDate) || !isValidDate(endDate)) {
+  //   return Response.sendErrorResponse({
+  //     res,
+  //     statusCode: 400,
+  //     error: "Ngày không hợp lệ!",
+  //   });
+  // }
+
+  const result = await ScheduleService.getScheduleTeacher(
+    teacherId
+    // startDate,
+    // endDate
+  );
+  Response.sendResponse({ res, statusCode: 200, responseBody: result || [] });
 }
 
 module.exports = router;
