@@ -158,14 +158,15 @@ async function deleteParent(parentToDel) {
 
   if (resultOfDel) {
     emits("add-toast", {
-      title: "Detele Successfully!",
-      content: "Delete " + parentToDel.name + " parent",
+      title: "Xoá thành công!",
+      content: "Đã xoá phụ huynh " + parentToDel.name,
       type: 0,
     });
+    parentStore.getTotalParent();
   } else {
     //emit toast
     emits("add-toast", {
-      title: "Detele Failed!",
+      title: "Xoá thất bại",
       content: `Not found ${parentToDel.name}`,
       type: 1,
     });

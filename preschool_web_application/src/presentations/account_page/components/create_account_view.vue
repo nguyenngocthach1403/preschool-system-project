@@ -110,9 +110,9 @@ import Layout from "@/components/edit_and_create_layout.vue";
 import { onMounted, ref } from "vue";
 import SelectComp from "../../../components/select_comp.vue";
 import accountService from "../../../services/account.service";
-
+import parentService from "../../../services/parent.service";
 const role = ref(null);
-
+console.log(window.user.id);
 onMounted(() => {
   if (drops.parentId) {
     console.log(drops.parentId);
@@ -160,14 +160,13 @@ const drops = defineProps({
 async function createAccount() {
   creating.value = true;
 
-  console.log(window.user.role);
   const accountToCreate = {
     username: usernameInput.value,
     password: passwordInput.value,
     phone: phoneInput.value,
     email: emailInput.value,
     status: 1,
-    created_by: window.user.role,
+    created_by: window.user.id,
   };
 
   if (drops.parentId) {
@@ -209,5 +208,4 @@ async function createAccount() {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

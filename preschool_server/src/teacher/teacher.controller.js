@@ -359,28 +359,42 @@ async function addAccountForTeacher(req, res) {
   //Lấy account id
   const accountId = await accountService.getAccountByUsername(username);
 
-  const result = await teacherService.updateTeacher(id, {
-    account_id: accountId !== undefined ? accountId.id : undefined,
-  });
-
-  if (result.code) {
+  if (accountId.role !== 3) {
     return res.status(200).json({
       success: false,
-      error: result.error,
+      message: "Tài khoản không có quyền thêm cho giáo viên",
     });
   }
+  const teacher = await teacherService.getTeacherByAccountId(accountId.id);
+  if (teacher.length === 0) {
+    const result = await teacherService.updateTeacher(id, {
+      account_id: accountId !== undefined ? accountId.id : undefined,
+    });
 
-  if (!result.success) {
-    return res.status(200).json({
-      success: false,
+    if (result.code) {
+      return res.status(200).json({
+        success: false,
+        error: result.error,
+      });
+    }
+
+    if (!result.success) {
+      return res.status(200).json({
+        success: false,
+        error: result.message,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
       error: result.message,
     });
+  } else {
+    return res.status(200).json({
+      success: false,
+      message: "Tài khoản đã được sử dụng bởi người khác, hãy kiểm tra lại",
+    });
   }
-
-  res.status(200).json({
-    success: true,
-    error: result.message,
-  });
 }
 async function updateTeacher(req, res) {
   const teacherId = req.params.id;
@@ -393,7 +407,6 @@ async function updateTeacher(req, res) {
     email,
     address,
     status,
-    experience,
     username,
     seniority,
   } = req.body;
@@ -444,7 +457,6 @@ async function updateTeacher(req, res) {
     birthday: birthday,
     phone: phone,
     email: email,
-    experience: experience,
     address: address,
     status: status,
     seniority: seniority,

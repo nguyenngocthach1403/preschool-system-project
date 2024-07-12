@@ -126,6 +126,17 @@
                   <span>{{ messageOfParentRole }}</span>
                 </div> -->
               </label>
+              <label class="w-full text-start">
+                <span class="pl-4 text-blue-700">Trạng thái</span>
+                <select
+                  id="status_account"
+                  v-model="status_parent"
+                  class="input-text-default"
+                >
+                  <option value="0">Khoá</option>
+                  <option value="1">Đang hoạt động</option>
+                </select>
+              </label>
             </div>
           </div>
         </div>
@@ -367,6 +378,7 @@ const password = ref("");
 const email_account = ref("");
 const phone_account = ref("");
 const status_account = ref("");
+const status_parent = ref("");
 const accountStore = useAccountStore();
 const updating = ref(false);
 const creating = ref(false);
@@ -422,6 +434,7 @@ async function getParent() {
     parentAvatarPath.value = parents.avatar;
     username_account.value = parents.username;
     password.value = parents.password;
+    status_parent.value = parents.status_parent;
   }
 }
 
@@ -500,6 +513,7 @@ async function updateParent() {
     formData.append("email", email_parent.value);
   formData.append("phone", phone_parent.value);
   formData.append("role", role.value);
+  formData.append("status", status_parent.value);
 
   console.log(formData);
 
