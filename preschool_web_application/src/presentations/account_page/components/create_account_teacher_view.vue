@@ -160,14 +160,13 @@ const drops = defineProps({
 async function createAccount() {
   creating.value = true;
 
-  console.log(window.user.role);
   const accountToCreate = {
     username: usernameInput.value,
     password: passwordInput.value,
     phone: phoneInput.value,
     email: emailInput.value,
     status: 1,
-    created_by: window.user.role,
+    created_by: window.user.id,
   };
 
   if (drops.teacherId) {
