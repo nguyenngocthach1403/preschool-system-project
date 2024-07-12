@@ -124,6 +124,7 @@ import { ref, computed, onMounted } from "vue";
 import accountService from "../../../services/account.service";
 import teacherService from "../../../services/teacher.service";
 import sort_icon from "@/assets/icons/Sorting arrowheads.svg";
+import { isUser } from "../../../utils/resources/validator";
 
 const ClassData = ref([]);
 const startYearFilter = ref(null);
@@ -134,7 +135,9 @@ onMounted(async () => {
 });
 
 async function CurrentClass() {
-  const accountId = window.user.id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
   const response = await accountService.getTeacherById(accountId);
   const teacherId = response.data[0].TeacherId;
   const result = await teacherService.getClassCurrent(teacherId);

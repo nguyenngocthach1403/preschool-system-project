@@ -110,6 +110,7 @@ import Layout from "@/components/edit_and_create_layout.vue";
 import { onMounted, ref } from "vue";
 import SelectComp from "../../../components/select_comp.vue";
 import accountService from "../../../services/account.service";
+import { isUser } from "../../../utils/resources/validator";
 
 const role = ref(null);
 
@@ -159,15 +160,17 @@ const drops = defineProps({
 
 async function createAccount() {
   creating.value = true;
+  const user = isUser();
 
-  console.log(window.user.role);
+  if (!user) return;
+
   const accountToCreate = {
     username: usernameInput.value,
     password: passwordInput.value,
     phone: phoneInput.value,
     email: emailInput.value,
     status: 1,
-    created_by: window.user.role,
+    created_by: user.id,
   };
 
   if (drops.teacherId) {

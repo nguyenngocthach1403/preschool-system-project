@@ -197,7 +197,7 @@ async function login() {
       return;
     }
     loading.value = false;
-    if (rememberPassword) {
+    if (rememberPassword.value) {
       localStorage.setItem("user", JSON.stringify(data.data[0]));
     }
     window.user = {

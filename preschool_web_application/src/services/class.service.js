@@ -18,9 +18,9 @@ function fetchClass(limit, offset) {
 
 function searchClass(searchText, session, status, limit, offset) {
   return api().get(
-    `/class/search?searchText=${searchText}&session=${session}&status=${status}&limit=${limit}&offset=${
-      offset * limit
-    }`
+    `/class/search?searchText=${searchText}&session=${session || ""}&status=${
+      status || ""
+    }&limit=${limit}&offset=${offset * limit}`
   );
 }
 function createClass(data) {

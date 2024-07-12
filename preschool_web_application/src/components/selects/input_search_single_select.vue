@@ -109,7 +109,7 @@
 </template>
   
   <script setup>
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 //icon
 import close_icon from "../../assets/icons/close.svg";
@@ -157,12 +157,17 @@ const props = defineProps({
     require: false,
   },
 });
+
 watch(props, () => {
   if (props.value != "") {
     value.value = props.value;
   }
-  if (props.select) {
+
+  if (props.options.find((e) => e.id == props.select.id))
     selected.value = props.options.find((e) => e.id == props.select.id) || null;
+  else {
+    selected.value = props.select;
+    console.log("a", selected.value);
   }
 });
 

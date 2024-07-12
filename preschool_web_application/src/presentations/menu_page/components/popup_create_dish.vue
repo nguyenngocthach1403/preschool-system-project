@@ -105,6 +105,7 @@ import { isEmpty, isValidTime } from "../../../utils/resources/check_valid";
 
 //Service
 import MenuService from "../../../services/menu.service";
+import { isUser } from "../../../utils/resources/validator";
 //list
 const categories = ref([
   { id: 1, name: "Món nước" },
@@ -153,7 +154,7 @@ async function createDish() {
   if (checkValid()) return;
 
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = isUser();
 
     if (!user) return;
     creating.value = true;

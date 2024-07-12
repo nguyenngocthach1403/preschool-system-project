@@ -109,6 +109,7 @@ app.use(
   "/setting",
   require("./src/setting_homepage/setting_homepage.controller")
 );
+app.use("/evaluation", require("./src/evaluation/evaluation.controller"));
 
 server.listen(port, () => {
   console.log(`listen port ${port}`);

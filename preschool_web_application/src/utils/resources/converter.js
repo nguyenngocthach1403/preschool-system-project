@@ -78,6 +78,16 @@ function convertAccountRole(role) {
       "Nhân viên";
   }
 }
+function convertStatusEvaluationForm(status) {
+  switch (status) {
+    case 0:
+      return "Chờ đánh giá";
+    case 1:
+      return "Chờ duyệt";
+    case 2:
+      return "Hoàn thành";
+  }
+}
 
 function convertStudentStatus(status) {
   switch (status) {
@@ -116,4 +126,5 @@ export {
   convertGender,
   convertFoodCategory,
   convertClassStatus,
+  convertStatusEvaluationForm,
 };

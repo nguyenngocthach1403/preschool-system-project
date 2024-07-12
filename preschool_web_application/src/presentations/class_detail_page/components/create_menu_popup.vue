@@ -100,6 +100,7 @@ import {
   yyyymmddDateString,
 } from "../../../utils/resources/format_date";
 import { onMounted, ref } from "vue";
+import { isUser } from "../../../utils/resources/validator";
 
 //valiable
 const dishes = ref([]);
@@ -178,7 +179,7 @@ async function searchDishes(searchText, limit, page) {
 async function createMenu() {
   try {
     creating.value = true;
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = isUser();
     if (
       isEmpty(props.dataToCreate.classId) ||
       isEmpty(props.dataToCreate.mealId) ||
