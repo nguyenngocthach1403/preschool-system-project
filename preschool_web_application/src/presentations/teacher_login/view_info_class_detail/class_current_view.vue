@@ -142,6 +142,7 @@ async function CurrentClass() {
   const teacherId = response.data[0].TeacherId;
   const result = await teacherService.getClassCurrent(teacherId);
   ClassData.value = result.data.data;
+  console.log(ClassData.value);
 }
 
 // function formatDate(dateString) {

@@ -65,7 +65,7 @@
         v-if="getTabActive(0)"
         :student-data="studentData"
       />
-      <ClassHistoryView v-if="getTabActive(3)" />
+      <!-- <ClassHistoryView v-if="getTabActive(3)" /> -->
       <Menu v-if="getTabActive(1)"></Menu>
       <Schedule v-if="getTabActive(2)"></Schedule>
     </div>
@@ -107,12 +107,12 @@ const tabList = ref([
     title: "Lịch sử khám sức khỏe",
     active: false,
   },
+  // {
+  //   title: "Lịch sử lớp học",
+  //   active: false,
+  // },
   {
-    title: "Lịch sử lớp học",
-    active: false,
-  },
-  {
-    title: "Thành tích",
+    title: "Nhận xét của giáo viên",
     active: false,
   },
 ]);

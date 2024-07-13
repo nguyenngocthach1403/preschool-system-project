@@ -61,7 +61,7 @@ import parentService from "../../../services/parent.service";
 import forward from "../../../assets/icons/Forward.svg";
 import back from "../../../assets/icons/Back.svg";
 import avatar_default from "../../../assets/img/avatar.jpg";
-
+import { isUser } from "../../../utils/resources/validator";
 //Service
 import ClassService from "../../../services/class.service";
 import ScheduleService from "../../../services/schedule.service";
@@ -327,7 +327,10 @@ onMounted(async () => {
 });
 
 async function getStudentByParentId() {
-  const accountId = JSON.parse(localStorage.getItem("user")).id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
+  // const accountId = JSON.parse(localStorage.getItem("user")).id;
   const response = await accountService.getParentById(accountId);
   const result = await parentService.getStudentByParentId(
     response.data[0].ParentID
