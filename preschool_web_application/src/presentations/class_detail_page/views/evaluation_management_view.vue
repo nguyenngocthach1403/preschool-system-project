@@ -133,8 +133,8 @@ onMounted(async () => {
   classData.value = await fetchClassById(
     router.currentRoute.value.query.classID
   );
+  console.log(router.currentRoute.value.query.classID);
 });
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
