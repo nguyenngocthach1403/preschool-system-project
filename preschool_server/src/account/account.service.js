@@ -108,7 +108,8 @@ async function isExistAccountByUsername(username) {
   try {
     const result = await db.select(
       `${config.tb.account} a`,
-      "*"`WHERE a.username like '${username}' AND a.deleted = 0`
+      "*",
+      `WHERE a.username LIKE '${username}' AND a.deleted = 0`
     );
 
     if (result.length == 0) {

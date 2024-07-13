@@ -24,6 +24,7 @@ module.exports = {
   isExistTeacherByID,
   getAssignmentTeacher,
   getScheduleTeacher,
+  getTeacherByAccountId,
 };
 
 async function getTeacher(limit, offset) {
@@ -279,7 +280,7 @@ async function getByID(id) {
   try {
     return db.select(
       `${config.tb.teacher} t LEFT JOIN ${config.tb.account} a ON t.account_id = a.id`,
-      "t.*, t.email AS EmailTeacher, t.phone AS PhoneTeacher , t.status AS StatusTeacher,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
+      "t.*, a.*,t.email AS EmailTeacher, t.phone AS PhoneTeacher , t.status AS StatusTeacher,a.username, a.email AS EmailAccount, a.phone AS PhoneAccount ,a.status AS StatusAccount",
       id !== undefined ? `Where t.id = ${id}` : ""
     );
   } catch (error) {
@@ -564,5 +565,17 @@ async function getScheduleTeacher(teacherId) {
       code: error.code,
       message: error.sqlMessage,
     };
+  }
+}
+async function getTeacherByAccountId(accountId) {
+  try {
+    const data = await db.select(
+      `${config.tb.teacher}`,
+      "*",
+      `WHERE account_id = ${accountId}`
+    );
+    return data;
+  } catch (error) {
+    return error;
   }
 }

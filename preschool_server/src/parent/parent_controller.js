@@ -79,28 +79,41 @@ async function addAccountForParent(req, res) {
 
   //Lấy account id
   const accountId = await accountService.getAccountByUsername(username);
-
-  const result = await parentService.updateParent(id, {
-    account_id: accountId !== undefined ? accountId.id : undefined,
-  });
-
-  if (result.code) {
-    return res.status(500).json({
-      success: false,
-      error: result.error,
-    });
-  }
-
-  if (!result.success) {
+  if (accountId.role !== 4) {
     return res.status(200).json({
       success: false,
-      error: result.message,
+      message: "Tài khoản không có quyền thêm cho phụ huynh",
+    });
+  }
+  const parent = await parentService.getParentByAccountId(accountId.id);
+  if (parent.length === 0) {
+    const result = await parentService.updateParent(id, {
+      account_id: accountId.id,
+    });
+
+    if (result.code) {
+      return res.status(500).json({
+        success: false,
+        error: result.error,
+      });
+    }
+
+    if (!result.success) {
+      return res.status(200).json({
+        success: false,
+        error: result.message,
+      });
+    }
+  } else {
+    return res.status(200).json({
+      success: false,
+      message: "Tài khoản đã được sử dụng bởi người khác, hãy kiểm tra lại",
     });
   }
 
   res.status(200).json({
     success: true,
-    error: result.message,
+    message: "Thêm tài khoản thành công cho phụ huynh",
   });
 }
 

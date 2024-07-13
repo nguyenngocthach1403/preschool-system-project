@@ -133,6 +133,8 @@ async function deleteTeacher(teacherToDel) {
       content: "Xoá giáo viên " + teacherToDel.name,
       type: 0,
     });
+    teacherStore.getTeacher();
+    teacherStore.getTotalTeacher();
   } else {
     emits("add-toast", {
       title: "Xoá thất bại!",

@@ -67,12 +67,12 @@
                 />
               </label>
               <label class="w-full text-start">
-                <span class="pl-4 text-blue-700">Kinh nghiệm</span>
+                <span class="pl-4 text-blue-700">Thâm niên</span>
                 <input
                   type="text"
                   placeholder="0xxxxxxxx"
                   class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
-                  v-model="experience"
+                  v-model="seniority"
                 />
               </label>
             </div>
@@ -121,7 +121,7 @@
                   v-model="status_teacher"
                   class="input-text-default"
                 >
-                  <option value="0">Không hoạt động</option>
+                  <option value="0">Khoá</option>
                   <option value="1">Hoạt động</option>
                 </select>
               </label>
@@ -273,22 +273,15 @@
         </div>
         <div class="flex w-full gap-5 mx-[20px] mb-[20px]">
           <label class="w-full text-start">
-            <span class="pl-4 text-blue-700">Trạng thái</span>
-            <!-- <SelectStatusComp
-                class="h-[45px] rounded-md my-[5px] w-full outline-none focus:border-blue-500"
-                @choose="statusAccount = $event"
-                :active="1"
-                :choose="status_account"
-              /> -->
-            <select
-              id="status_account"
-              v-model="status_account"
-              class="input-text-default"
-            >
-              <option value="0">Khoá</option>
-              <option value="1">Đang hoạt động</option>
-            </select>
+            <span class="pl-4 text-blue-700">Mật khẩu</span>
+            <input
+              type="text"
+              placeholder="0xxxxxxxxx"
+              class="mb-0 h-[45px] rounded-md my-[5px] w-full outline-none border-[0.12rem] focus:border-blue-500 px-4"
+              v-model="password"
+            />
           </label>
+
           <label class="w-full text-start">
             <span class="pl-4 text-blue-700">Email</span>
             <input
@@ -301,6 +294,17 @@
             <div class="mt-1 mb-2 h-[25px] text-red-500">
               <span>{{ messageOfAccountEmail }}</span>
             </div>
+          </label>
+          <label class="w-full text-start">
+            <span class="pl-4 text-blue-700">Trạng thái</span>
+            <select
+              id="status_account"
+              v-model="status_account"
+              class="input-text-default"
+            >
+              <option value="0">Khoá</option>
+              <option value="1">Đang hoạt động</option>
+            </select>
           </label>
         </div>
         <div id="button-side" class="w-full flex text-start mx-5 gap-5">
@@ -379,7 +383,8 @@ const fileUpload = ref(null);
 const teacherAvatarPath = ref(null);
 const accountForTeacher = ref("");
 const status = ref("");
-
+const password = ref("");
+const seniority = ref("");
 const messageOfTeacherName = ref("");
 const messageOfTeacherPhone = ref("");
 const messageOfTeacherEmail = ref("");
@@ -421,13 +426,14 @@ async function getTeacher() {
     address.value = teachers.address;
     email_teacher.value = teachers.email;
     phone_teacher.value = teachers.phone;
-    experience.value = teachers.experience;
+    seniority.value = teachers.seniority;
     status_teacher.value = teachers.status;
     email_account.value = teachers.EmailAccount;
     phone_account.value = teachers.PhoneAccount;
     status_account.value = teachers.StatusAccount;
     teacherAvatarPath.value = teachers.avatar;
     username_account.value = teachers.username;
+    password.value = teachers.password;
   }
 }
 
@@ -495,7 +501,7 @@ async function updateTeacher() {
   if (!isEmpty(email_teacher.value))
     formData.append("email", email_teacher.value);
   formData.append("phone", phone_teacher.value);
-  formData.append("experience", experience.value);
+  formData.append("seniority", seniority.value);
   formData.append("status", status_teacher.value);
 
   console.log(formData);
@@ -594,6 +600,7 @@ async function updateAccount() {
     email: email_account.value,
     phone: phone_account.value,
     status: status_account.value,
+    password: password.value,
   };
   const result = await accountStore.updateAccount(Username, AccountToUpdate);
   if (result.status === 400) {
