@@ -220,6 +220,23 @@ const getEvaluationContentsByEvaluationFormId = async (evaluationFormId) => {
     throw new Error(error.sqlMessage);
   }
 };
+const updateEvaluationContent = async (
+  evaluationFormId,
+  criteriaContentId,
+  dataToUpData
+) => {
+  try {
+    const response = await db.update("evaluation_contents", dataToUpData, {
+      evaluation_form_id: evaluationFormId,
+      criteria_content_id: criteriaContentId,
+    });
+    if (response == 0) throw new Error("Thất bại!");
+
+    console.log("Thành công!");
+  } catch (error) {
+    throw new Error(error.sqlMessage);
+  }
+};
 
 module.exports = {
   getEvaluationCriterias,
@@ -232,4 +249,5 @@ module.exports = {
   getEvaluationById,
   getEvaluationFormByEvaluationId,
   getEvaluationContentsByEvaluationFormId,
+  updateEvaluationContent,
 };

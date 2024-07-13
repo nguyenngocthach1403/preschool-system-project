@@ -14,6 +14,50 @@ router.get("/criterias_contents", decodeHeader, getCriteriaContents);
 router.post("/create/:classId", decodeHeader, createEvaluation);
 router.get("/", decodeHeader, getEvaluations);
 router.get("/get", decodeHeader, getEvaluationById);
+router.post(
+  "/form/update/:evaluationFormId",
+  decodeHeader,
+  updateEvaluationForm
+);
+
+async function updateEvaluationForm(req, res) {
+  const { evaluationFormId } = req.params;
+  const { evaluationContents } = req.body;
+
+  console.log(evaluationContents);
+
+  try {
+    if (
+      checkService.isEmpty(evaluationFormId) ||
+      !checkService.isNumber(evaluationFormId)
+    )
+      return Response.sendErrorResponse({
+        res,
+        statusCode: 500,
+        error: "Mã đơn đánh giá không hợp lệ!",
+      });
+    for (const item in evaluationContents) {
+      await EvaluaitonService.updateEvaluationContent(
+        evaluationFormId,
+        evaluationContents[item].id,
+        {
+          achieve: evaluationContents[item].achieve,
+          description: evaluationContents[item].description,
+        }
+      );
+    }
+    Response.sendResponse({
+      res,
+      statusCode: 200,
+    });
+  } catch (error) {
+    Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      error: error.message,
+    });
+  }
+}
 
 async function getEvaluationById(req, res) {
   const { evaluationId } = req.query;

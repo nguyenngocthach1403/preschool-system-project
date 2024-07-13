@@ -60,7 +60,7 @@
               }}
             </span>
           </div>
-          <form action="">
+          <form @submit.prevent="updateEvaluationForm()">
             <div class="h-[500px]">
               <div
                 v-for="(item, evaCrIdx) in evaluationCriterias"
@@ -82,9 +82,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(
-                        item, index
-                      ) in props.evaluationForm.evaluationContents.filter(
+                      v-for="(item, index) in evaluationContents.filter(
                         (e) => e.evaluation_criteria_id == item.id
                       )"
                       :key="index"
@@ -110,7 +108,6 @@
                         />
                       </td>
                       <td class="text-center px-7 py-5">
-                        {{ item.achieve }}
                         <input
                           class="w-5 h-5"
                           :checked="
@@ -128,7 +125,7 @@
                       </td>
                       <td class="relative">
                         <textarea
-                          :value="item.description || 'a'"
+                          :value="item.description || ''"
                           @change="getDescInput(item, $event)"
                           :disabled="disabled"
                           ref="descInput"
@@ -153,7 +150,8 @@
       >
         <button
           v-if="!creating"
-          type="button"
+          @click.prevent="updateEvaluationForm()"
+          type="submit"
           class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md ]"
         >
           Cập nhật
@@ -196,14 +194,24 @@ import PopupLayout from "../../../components/popup_layout.vue";
 import close_icon from "../../../assets/icons/close.svg";
 import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 import { convertStatusEvaluationForm } from "../../../utils/resources/converter";
+import evaluationService from "../../../services/evaluation.service";
 
 const creating = ref(false);
+
+const evaluationContents = computed(() => {
+  return props.evaluationForm.evaluationContents;
+});
 
 const props = defineProps({
   evaluationForm: {
     type: Object,
     require: true,
   },
+});
+const evaluationFormChanged = computed(() => {
+  return props.evaluationForm.evaluationContents.filter(
+    (el) => el.achieve !== null || el.description
+  );
 });
 
 const checkBoxA = ref();
@@ -215,37 +223,57 @@ const disabled = computed(() => {
 });
 
 const evaluationCriterias = computed(() => {
-  const result = props.evaluationForm.evaluationContents.flatMap((e) => {
+  const result = evaluationContents.value.flatMap((e) => {
     return { id: e.evaluation_criteria_id, name: e.evaluation_criteria_name };
   });
   return Array.from(new Map(result.map((item) => [item.id, item])).values());
 });
 
 function changeAchieve(item, value, index) {
-  const evaluationContentIdx =
-    props.evaluationForm.evaluationContents.findIndex(
-      (e) => e.criteria_content_id == item.criteria_content_id
-    );
+  const evaluationContentIdx = evaluationContents.value.findIndex(
+    (e) => e.criteria_content_id == item.criteria_content_id
+  );
 
   if (evaluationContentIdx == -1) {
     return;
   }
   if (!value) {
-    props.evaluationForm.evaluationContents[evaluationContentIdx].achieve =
-      null;
+    evaluationContents.value[evaluationContentIdx].achieve = null;
     return;
   }
 
   if (index == 1) {
     checkBoxA.value[evaluationContentIdx].checked = false;
-    props.evaluationForm.evaluationContents[
-      evaluationContentIdx
-    ].achieve = false;
+    evaluationContents.value[evaluationContentIdx].achieve = false;
   } else {
     checkBoxB.value[evaluationContentIdx].checked = false;
-    props.evaluationForm.evaluationContents[
-      evaluationContentIdx
-    ].achieve = true;
+    evaluationContents.value[evaluationContentIdx].achieve = true;
+  }
+}
+
+async function updateEvaluationForm() {
+  if (!props?.evaluationForm?.evaluation_form_id) return;
+  if (!evaluationFormChanged.value) return;
+  try {
+    creating.value = true;
+    const dataToUpDate = evaluationFormChanged.value.map((el) => {
+      return {
+        id: el.criteria_content_id,
+        achieve: el.achieve,
+        description: el.description,
+      };
+    });
+    console.log(props.evaluationForm.evaluation_form_id);
+
+    const response = await evaluationService.updateEvaluationForm(
+      props.evaluationForm.evaluation_form_id,
+      { evaluationContents: dataToUpDate }
+    );
+    console.log(response);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    creating.value = false;
   }
 }
 

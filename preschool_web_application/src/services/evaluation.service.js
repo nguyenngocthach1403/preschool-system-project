@@ -26,10 +26,18 @@ const getEvaluationById = (evaluationId) => {
 //   return api().get(`/evaluation/get?evaluationId=${evaluationId}`);
 // };
 
+const updateEvaluationForm = (evaluationFormId, dataToUpDate) => {
+  return api().post(
+    `/evaluation/form/update/${evaluationFormId}`,
+    dataToUpDate
+  );
+};
+
 export default {
   getEvaluationCriterias,
   getCriteriasContents,
   createEvaluation,
   getEvaluations,
   getEvaluationById,
+  updateEvaluationForm,
 };
