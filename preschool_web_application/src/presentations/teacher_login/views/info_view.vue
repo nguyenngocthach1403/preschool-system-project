@@ -17,10 +17,10 @@
           class="w-[130px] h-[130px] rounded-full absolute bottom-[60px] left-10 border-[5px] border-white relative"
         >
           <img :src="avatarPath" alt="" class="w-full h-full rounded-full" />
-          <div
+          <!-- <div
             class="feature w-7 h-7 absolute rounded-[50px] bg-gray-100/75 mr-[3px] hover:bg-[rgb(53,61,186)] content-center bottom-0 right-0 rounded-full z-40"
           >
-            <!-- <img :src="edit_icon" class="w-[14px] m-auto" /> -->
+            <img :src="edit_icon" class="w-[14px] m-auto" />
             <label>
               <input
                 id="fileInput"
@@ -31,7 +31,7 @@
               />
               <img :src="edit_icon" class="w-[14px] m-auto" />
             </label>
-          </div>
+          </div> -->
         </div>
 
         <!--Name and gender-->

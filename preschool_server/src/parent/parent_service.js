@@ -21,6 +21,7 @@ module.exports = {
   getStudentByParentId,
   countStudentByParentId,
   getHistoryClassStudentByParentId,
+  getParentByAccountId,
 };
 
 async function getAll() {
@@ -98,7 +99,7 @@ async function getParentById(id) {
   try {
     return await db.select(
       `${config.tb.parent} p LEFT JOIN ${config.tb.account} a ON a.id = p.account_id`,
-      "p.*,a.*,a.username, p.role AS RoleParent ,a.email AS account_email, a.phone AS account_phone, a.status AS account_status",
+      "p.*,a.*, p.status AS status_parent,a.username, p.role AS RoleParent ,a.email AS account_email, a.phone AS account_phone, a.status AS account_status",
       `WHERE p.id = ${id}`
     );
   } catch (error) {
@@ -364,6 +365,18 @@ async function getHistoryClassStudentByParentId(id) {
       LEFT JOIN ${config.tb.student} s ON r.student_id = s.id LEFT JOIN ${config.tb.classMembers} clm ON s.id = clm.student_id LEFT JOIN ${config.tb.class} c ON clm.class_id = c.id`,
       "s.*,c.id AS ClassId, s.id AS StudentId,s.name AS StudentName ,c.* , c.name AS ClassName,clm.*",
       `WHERE r.parent_id = ${id}`
+    );
+    return data;
+  } catch (error) {
+    return error;
+  }
+}
+async function getParentByAccountId(accountId) {
+  try {
+    const data = await db.select(
+      `${config.tb.parent}`,
+      "*",
+      `WHERE account_id = ${accountId}`
     );
     return data;
   } catch (error) {

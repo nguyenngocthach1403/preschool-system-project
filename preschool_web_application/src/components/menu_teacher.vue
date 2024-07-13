@@ -103,7 +103,7 @@ const menu = ref([
   },
 ]);
 
-const settingItem = ref([{ name: "Đăng xuất", icon: logoutIcon }]);
+const settingItem = ref([{ title: "Đăng xuất", icon: logoutIcon }]);
 
 const drops = defineProps({
   menuStyle: String,

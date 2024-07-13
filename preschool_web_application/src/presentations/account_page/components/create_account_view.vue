@@ -111,9 +111,9 @@ import { onMounted, ref } from "vue";
 import SelectComp from "../../../components/select_comp.vue";
 import accountService from "../../../services/account.service";
 import { isUser } from "../../../utils/resources/validator";
-
+import parentService from "../../../services/parent.service";
 const role = ref(null);
-
+console.log(window.user.id);
 onMounted(() => {
   if (drops.parentId) {
     console.log(drops.parentId);
@@ -160,7 +160,6 @@ const drops = defineProps({
 
 async function createAccount() {
   creating.value = true;
-
   const user = isUser();
   if (!user) return;
   const accountToCreate = {
@@ -211,5 +210,4 @@ async function createAccount() {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
