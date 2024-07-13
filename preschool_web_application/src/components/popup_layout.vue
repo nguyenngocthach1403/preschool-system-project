@@ -19,7 +19,7 @@
       <slot name="content"></slot>
       <div
         id="button-side"
-        class="w-full flex my-2 justify-center gap-5 basis-1/6 text-[14px]"
+        class="w-full flex my-2 justify-center gap-1 basis-1/6 text-[14px]"
       >
         <button
           type="button"

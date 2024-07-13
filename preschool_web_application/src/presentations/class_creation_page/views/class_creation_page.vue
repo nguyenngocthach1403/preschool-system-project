@@ -243,6 +243,7 @@ import { isEmpty } from "../../../utils/resources/check_valid";
 import LoadingComp from "../../../components/loading_comp.vue";
 import classService from "../../../services/class.service";
 import { yyyymmddDateString } from "../../../utils/resources/format_date";
+import { isUser } from "../../../utils/resources/validator";
 
 const classNameInput = ref("");
 const dateBeginInput = ref(null);
@@ -339,6 +340,8 @@ async function handleSubmitAddNewClass() {
   if (checkValid()) {
     return;
   }
+  const user = isUser();
+  if (!user) return;
   creating.value = true;
 
   const formData = new FormData();
@@ -364,7 +367,7 @@ async function handleSubmitAddNewClass() {
   );
   formData.append("type", classTypeInput.value);
 
-  formData.append("created_by", window.user.id);
+  formData.append("created_by", user.id);
 
   const response = await classService.createClass(formData);
 

@@ -408,6 +408,7 @@ import {
   isPhoneValid,
   isEmailValid,
 } from "../../../utils/resources/check_valid";
+import { isUser } from "../../../utils/resources/validator";
 const emits = defineEmits(["add-toast"]);
 const id = ref("");
 const name = ref("");
@@ -452,8 +453,9 @@ onMounted(() => {
   getTeacher();
 });
 async function getTeacher() {
-  // const accountId = window.user.id;
-  const accountId = JSON.parse(localStorage.getItem("user")).id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
   const response = await accountService.getTeacherById(accountId);
 
   console.log(response);
@@ -649,7 +651,9 @@ const getConfirm = (event) => {
   showConfirmDialog.value = null;
 };
 async function updateAccount() {
-  const Username = window.user.username;
+  const user = isUser();
+  if (!user) return;
+  const Username = user.username;
   console.log(Username);
   const AccountToUpdate = {
     email: email_account.value,

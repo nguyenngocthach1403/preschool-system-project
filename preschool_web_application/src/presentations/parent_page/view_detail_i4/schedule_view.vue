@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div ref="container" class="relative w-full h-full">
     <div
       class="inf w-fit absolute top-0 z-30 flex bg-white drop-shadow-xl gap-5 px-5 py-3 rounded-md"
-      :style="{ top: y + 80 + 'px', left: x - 50 + 'px' }"
+      :style="{ top: y + 'px', left: x + 'px' }"
       v-if="teacherHover"
     >
       <img
@@ -82,6 +82,7 @@ const studentData = ref([]);
 const studentId = router.currentRoute.value.query.studentID;
 const classID = ref("");
 
+const container = ref();
 //
 const timetables = ref([
   { start_time: "13:00", end_time: "15:00" },
@@ -170,9 +171,10 @@ const getTimesWithMostEntries = (schedule) => {
 
 function onFocusTeacher(event) {
   if (event) {
+    const rect = container.value.getBoundingClientRect();
     teacherHover.value = event.teacher;
-    x.value = event.event.clientX;
-    y.value = event.event.clientY;
+    x.value = event.event.clientX - rect.left + 20;
+    y.value = event.event.clientY - rect.top - 55;
   } else {
     teacherHover.value = null;
   }

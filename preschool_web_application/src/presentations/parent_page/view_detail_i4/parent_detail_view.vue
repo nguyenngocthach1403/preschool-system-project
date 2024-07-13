@@ -405,6 +405,7 @@ import {
   isEmailValid,
   isPhoneValid,
 } from "../../../utils/resources/check_valid";
+import { isUser } from "../../../utils/resources/validator";
 const emits = defineEmits(["add-toast"]);
 const name = ref("");
 const gender = ref("");
@@ -443,7 +444,9 @@ onMounted(() => {
   count();
 });
 async function getParent() {
-  const accountId = window.user.id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
   const response = await accountService.getParentById(accountId);
 
   console.log(response);
@@ -483,7 +486,9 @@ async function getParent() {
   }
 }
 async function count() {
-  const accountId = window.user.id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
   const response = await accountService.getParentById(accountId);
   // console.log(response.data[0].ParentID);
   const result = await parentService.countStudentByParentId(

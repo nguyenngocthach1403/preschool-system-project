@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const moment = require("moment");
 
 const authService = require("./auth.service");
+const Utils = require("../../helpers/utils");
 
 const {
   isEmpty,
@@ -36,21 +38,48 @@ async function login(req, res) {
     });
   }
 
-  const result = await authService.loginAdmin(username, password);
+  try {
+    const result = await authService.loginAdmin(username, password);
+    if (!result)
+      return Response.sendErrorResponse({
+        res,
+        statusCode: 404,
+        error: "User không tồn tại!",
+      });
 
-  if (result.code) {
-    return res.status(200).json({
-      success: false,
-      error: result.error,
-      message: "Logged in failed.",
+    const token = Utils.generateJWT(result);
+    const refreshExpiry = moment()
+      .utc()
+      .add(3, "days")
+      .endOf("day")
+      .format("X");
+    const refreshtoken = Utils.generateJWT({
+      exp: parseInt(refreshExpiry),
+      data: result.id,
     });
+    delete result.password;
+    return Response.sendResponse({
+      res,
+      responseBody: { user: result, token, refresh: refreshtoken },
+      message: "login successful",
+    });
+  } catch (error) {
+    Response.sendErrorResponse({ res, statusCode: 500, error: error.message });
   }
 
-  return res.status(200).json({
-    success: true,
-    message: "Logged in successful.",
-    data: result,
-  });
+  // if (result.code) {
+  //   return res.status(200).json({
+  //     success: false,
+  //     error: result.error,
+  //     message: "Logged in failed.",
+  //   });
+  // }
+
+  // return res.status(200).json({
+  //   success: true,
+  //   message: "Logged in successful.",
+  //   data: result,
+  // });
 }
 
 // const loginUser = async (req, res) => {

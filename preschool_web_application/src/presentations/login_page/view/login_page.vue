@@ -185,45 +185,31 @@ async function login() {
 
     const response = await authService.login(username.value, password.value);
 
-    const data = response.data;
+    const data = response.data.data;
 
-    if (!data.success) {
-      toasts.value.push({
-        title: "Đăng nhập thất bại.",
-        content: data.error,
-        type: 1,
-      });
-      loading.value = false;
-      return;
+    if (rememberPassword.value) {
+      localStorage.setItem("user", JSON.stringify(data.token));
     }
-    loading.value = false;
-    if (rememberPassword) {
-      localStorage.setItem("user", JSON.stringify(data.data[0]));
-    }
-    window.user = {
-      id: data.data[0]["id"],
-      username: data.data[0]["username"],
-      role: data.data[0]["role"],
-    };
-    if (data.data[0].role === 4) {
+    window.user = data.token;
+    if (data.user.role === 4) {
       router.push({
         name: "homepage-parent",
         params: {
-          username: data.data[0]["username"],
+          username: data.user["username"],
         },
       });
-    } else if (data.data[0].role === 3) {
+    } else if (data.user.role === 3) {
       router.push({
         name: "homepage-teacher",
         params: {
-          username: data.data[0]["username"],
+          username: data.user["username"],
         },
       });
     } else {
       router.push({
         name: "DashBoardView",
         params: {
-          username: data.data[0]["username"],
+          username: data.user["username"],
         },
       });
     }

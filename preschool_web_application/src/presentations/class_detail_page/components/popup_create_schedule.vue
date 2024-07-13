@@ -324,6 +324,9 @@ function handleScrollEnd() {
     fetchActivities(pageActivity.value);
   }
 }
+function handleScroll() {
+  console.log("aaaa");
+}
 function getSearchText(text) {
   if (searchText.value != text) {
     searchText.value = text;

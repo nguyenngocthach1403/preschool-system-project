@@ -75,6 +75,7 @@ import Layout from "@/components/edit_and_create_layout.vue";
 import { onMounted, ref } from "vue";
 import SelectComp from "../../../components/select_comp.vue";
 import syllabusService from "../../../services/syllabus.service";
+import { isUser } from "../../../utils/resources/validator";
 const role = ref(null);
 
 const creating = ref(false);
@@ -85,12 +86,14 @@ const name = ref(null);
 const description = ref(null);
 
 async function createSyllabus() {
+  const user = isUser();
+  if (!user) return;
   creating.value = true;
 
   const SyllabusToCreate = {
     name: name.value,
     description: description.value,
-    created_by: window.user.role,
+    created_by: user.role,
   };
 
   const response = await syllabusService.createSyllabus(SyllabusToCreate);

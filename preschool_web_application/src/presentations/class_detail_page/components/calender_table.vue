@@ -71,6 +71,7 @@
               <div class="w-full text-[13px] flex justify-between">
                 <span>{{ item.start }} - {{ item.end }}</span>
                 <button
+                  v-if="isShowEdit"
                   @click="onClickEdit(day.date, item.start, item.end)"
                   class="w-6 h-6 p-[2px] rounded-full hover:border hover:border-white"
                 >
@@ -106,7 +107,7 @@
                 </div>
               </div>
               <div
-                v-else
+                v-if="isShowEdit && item.teachers.length == 0"
                 @click="
                   $emit('add-teacher', {
                     date: item.date,
@@ -160,6 +161,10 @@ const props = defineProps({
   },
   period: {
     type: Number,
+    require: false,
+  },
+  isShowEdit: {
+    type: Boolean,
     require: false,
   },
 });

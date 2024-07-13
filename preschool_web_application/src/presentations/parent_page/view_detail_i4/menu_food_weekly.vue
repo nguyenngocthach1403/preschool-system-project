@@ -56,6 +56,7 @@ import avatar_default from "../../../assets/img/avatar.jpg";
 import ClassService from "../../../services/class.service";
 import MenuService from "../../../services/menu.service";
 import { yyyymmddDateString } from "../../../utils/resources/format_date";
+import { isUser } from "../../../utils/resources/validator";
 
 const router = useRouter();
 
@@ -267,8 +268,10 @@ onMounted(async () => {
 });
 
 async function getStudentByParentId() {
-  const accountId = JSON.parse(localStorage.getItem("user")).id;
-  const response = await accountService.getParentById(accountId);
+  const currentUser = isUser();
+  if (!currentUser) return;
+
+  const response = await accountService.getParentById(currentUser.id);
   const result = await parentService.getStudentByParentId(
     response.data[0].ParentID
   );

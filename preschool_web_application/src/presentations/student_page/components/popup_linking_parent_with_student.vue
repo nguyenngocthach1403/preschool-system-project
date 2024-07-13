@@ -1,7 +1,7 @@
 <template>
   <Popup :title="'Liên kết phụ huynh'" @close="$emit('close')">
     <template #content>
-      <div id="input-side-1" class="text-start mx-[20px] flex gap-5">
+      <div id="input-side-1" class="text-start mx-[20px] w-[1000px] flex gap-5">
         <div v-if="loading" class="w-full h-[420px] rounded-md border p-2">
           <LoadingComp></LoadingComp>
         </div>
@@ -123,64 +123,54 @@
               <LoadingComp></LoadingComp>
             </li>
           </ul>
-          <div
-            id="button-side"
-            class="w-full flex my-2 justify-center gap-5 basis-1/6 text-[14px]"
-          >
-            <button
-              type="button"
-              @click="exit()"
-              class="h-[35px] my-[5px] border border-[#3B44D1] hover:bg-blue-400 text-black px-[25px] rounded-md"
-            >
-              Hủy
-            </button>
-            <button
-              v-if="!updating"
-              type="button"
-              @click="linkParentWithStudent()"
-              class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md ]"
-            >
-              Thêm
-            </button>
-
-            <button
-              v-if="updating"
-              type="button"
-              class="h-[35px] basis-1/11 rounded-md my-[5px] w-fit outline-none border-[0.12rem] focus:border-blue-500 px-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
-              disabled
-            >
-              <svg
-                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Processing...
-            </button>
-          </div>
         </div>
       </div>
+    </template>
+    <template #button>
+      <button
+        v-if="!updating"
+        type="button"
+        @click="linkParentWithStudent()"
+        class="h-[35px] mx-5 my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md ]"
+      >
+        Thêm
+      </button>
+
+      <button
+        v-if="updating"
+        type="button"
+        class="h-[35px] basis-1/11 rounded-md my-[5px] w-fit outline-none border-[0.12rem] focus:border-blue-500 px-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
+        disabled
+      >
+        <svg
+          class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        Processing...
+      </button>
     </template>
   </Popup>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
-import Popup from "../../../components/edit_and_create_layout.vue";
+import Popup from "../../../components/popup_layout.vue";
 import parentService from "../../../services/parent.service";
 import studentService from "../../../services/student.service";
 import { convertParentRole } from "../../../utils/resources/converter";

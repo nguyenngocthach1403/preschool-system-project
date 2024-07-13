@@ -694,6 +694,7 @@ import SelectStatus from "../components/select_register_status.vue";
 import syllabusService from "../../../services/syllabus.service";
 import levelService from "../../../services/levels.service";
 import registrationService from "../../../services/registration.service";
+import { isUser } from "../../../utils/resources/validator";
 import {
   ddmmyyyyDateString,
   formatTimeString,
@@ -1022,10 +1023,11 @@ function onchangeCity(value) {
   }
 }
 async function addNote() {
-  if (!window.user.id || !noteInput.value || !register) return;
+  const currentUser = isUser();
+  if (!currentUser || !noteInput.value || !register) return;
 
   const data = {
-    created_by: window.user.id,
+    created_by: currentUser.id,
     content: noteInput.value,
     register_id: register.value.id,
   };
@@ -1073,7 +1075,7 @@ async function chooseStatus(event) {
   }
 }
 function isShowDelete(item) {
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = isUser();
   if (!currentUser) return false;
   if (currentUser.id == item.created_by || currentUser.role == 1) return true;
   return false;

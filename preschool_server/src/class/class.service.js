@@ -250,7 +250,6 @@ async function getMembers(class_id) {
       `WHERE s.deleted = 0 AND m.class_id = ${class_id}`
     );
 
-    console.log(data);
     return data;
   } catch (error) {
     console.error(error);

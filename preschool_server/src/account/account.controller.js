@@ -4,19 +4,21 @@ const accountService = require("./account.service");
 const parentService = require("../parent/parent_service");
 const teacherService = require("../teacher/teacher.service");
 const { isEmpty } = require("../config/check.service");
+const { decodeHeader } = require("../../middleware/verifyAuth");
 
 const router = express.Router();
 
-router.get("/", getAccont);
+router.get("/", decodeHeader, getAccont);
 
-router.get("/total", getAccountTotal);
+router.get("/total", decodeHeader, getAccountTotal);
 
-router.post("/create", createAccount);
+router.post("/create", decodeHeader, createAccount);
 
-router.put("/:username", updateAccountByUsername);
+router.put("/:username", decodeHeader, updateAccountByUsername);
 
-router.get("/parent/:id", getParentByID);
-router.get("/teacher/:id", getTeacherByID);
+router.get("/parent/:id", decodeHeader, getParentByID);
+
+router.get("/teacher/:id", decodeHeader, getTeacherByID);
 
 async function createAccount(req, res) {
   const data = req.body;

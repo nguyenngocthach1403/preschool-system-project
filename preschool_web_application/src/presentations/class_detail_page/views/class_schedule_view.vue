@@ -80,6 +80,7 @@
       :week="currentWeekDisplay"
       :schedules="schedules"
       :period="15"
+      :is-show-edit="true"
       @add-new-time="isShowCreate = true"
       @create="createSchedule($event)"
       @show-teacher="onFocusTeacher($event)"

@@ -74,6 +74,7 @@
 import { ref, computed, onMounted } from "vue";
 import teacherService from "../../../services/teacher.service";
 import accountService from "../../../services/account.service";
+import { isUser } from "../../../utils/resources/validator";
 import ScheduleService from "../../../services/schedule.service";
 const ClassData = ref([]);
 const currentDate = new Date();
@@ -86,7 +87,7 @@ onMounted(async () => {
   await fetchSchedule(teacherId.value);
 });
 
-async function fetchSchedule(teacherId, startDate, endDate) {
+async function fetchSchedule(teacherId) {
   try {
     const response = await ScheduleService.fetchSchedulesTeacherLogin(
       teacherId
@@ -100,8 +101,9 @@ async function fetchSchedule(teacherId, startDate, endDate) {
 }
 
 async function getTeacher() {
-  // const accountId = window.user.id;
-  const accountId = JSON.parse(localStorage.getItem("user")).id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
   const response = await accountService.getTeacherById(accountId);
 
   console.log(response);

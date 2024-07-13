@@ -233,8 +233,15 @@ function selectActive(index) {
   menu.value.forEach((e) => (e.active = false));
   menu.value.find((e) => e.id == index).active = true;
 }
-function getUser() {
-  user.value = JSON.parse(localStorage.getItem("user"));
+
+import VueJWTToken from "vue-jwt-decode";
+import { isUser } from "../utils/resources/validator";
+async function getUser() {
+  try {
+    user.value = isUser();
+  } catch (error) {
+    console.log(error);
+  }
 }
 function getCurrentActive() {
   const currentMenuActive = localStorage.getItem("currentActiveMenu");

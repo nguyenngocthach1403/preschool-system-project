@@ -108,7 +108,7 @@
           <td class="min-w-[200px] px-3 relative">
             <button
               @click.prevent="$emit('link-parent-with-student', item)"
-              v-if="!item.parents"
+              v-if="item.parents.length == 0"
               class="hover:bg-yellow-500/50 active:scale-95 rounded-[5px] h-[30px] w-fit px-2 content-center text-center border-yellow-300 text-[12px] border bg-yellow-200/25 text-yellow-600 cursor-default"
             >
               Thêm phụ huynh

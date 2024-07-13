@@ -110,6 +110,7 @@ import Layout from "@/components/edit_and_create_layout.vue";
 import { onMounted, ref } from "vue";
 import SelectComp from "../../../components/select_comp.vue";
 import accountService from "../../../services/account.service";
+import { isUser } from "../../../utils/resources/validator";
 import parentService from "../../../services/parent.service";
 const role = ref(null);
 console.log(window.user.id);
@@ -159,14 +160,15 @@ const drops = defineProps({
 
 async function createAccount() {
   creating.value = true;
-
+  const user = isUser();
+  if (!user) return;
   const accountToCreate = {
     username: usernameInput.value,
     password: passwordInput.value,
     phone: phoneInput.value,
     email: emailInput.value,
     status: 1,
-    created_by: window.user.id,
+    created_by: user.id,
   };
 
   if (drops.parentId) {

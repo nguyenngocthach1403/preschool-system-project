@@ -76,11 +76,16 @@ async function loginAdmin(usename, password) {
       };
     }
 
-    return db.select(
+    const response = await db.select(
       config.tb.account,
       "id, username, role",
       `WHERE username = '${usename}' AND password = '${password}' AND role in (1,2,3,4,5)`
     );
+    const dbResponse = response[0];
+
+    if (!dbResponse) throw new Error("Thất bại");
+
+    return dbResponse;
   } catch (error) {
     return {
       code: error.code,

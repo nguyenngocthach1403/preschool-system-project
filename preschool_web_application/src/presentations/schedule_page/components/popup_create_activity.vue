@@ -85,6 +85,7 @@ import { isEmpty, isValidTime } from "../../../utils/resources/check_valid";
 
 //Service
 import ScheduleService from "../../../services/schedule.service";
+import { isUser } from "../../../utils/resources/validator";
 //list
 
 //   //model
@@ -106,7 +107,7 @@ async function createActivity() {
     return;
   }
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = isUser();
   if (!user) {
     return;
   }

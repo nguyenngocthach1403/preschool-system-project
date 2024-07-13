@@ -176,6 +176,7 @@ import { onBeforeMount, ref, computed } from "vue";
 import studentService from "../../../services/student.service";
 import parentService from "../../../services/parent.service";
 import accountService from "../../../services/account.service";
+import { isUser } from "../../../utils/resources/validator";
 
 const studentData = ref({ data: [] });
 
@@ -184,8 +185,9 @@ onBeforeMount(() => {
 });
 
 async function getStudentByParentId() {
-  // const accountId = window.user.id;
-  const accountId = JSON.parse(localStorage.getItem("user")).id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
   const response = await accountService.getParentById(accountId);
   console.log(response.data[0].ParentID);
   const result = await parentService.getHistoryClassStudentByTeacherId(

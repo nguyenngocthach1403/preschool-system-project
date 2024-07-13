@@ -112,6 +112,7 @@ import { isEmpty } from "../../../utils/resources/check_valid";
 //service
 import admissionService from "../../../services/admission_period.service";
 import { yyyymmddDateString } from "../../../utils/resources/format_date";
+import { isUser } from "../../../utils/resources/validator";
 
 //Model
 const admissionName = ref("");
@@ -204,7 +205,7 @@ async function submitCreateAdmission() {
   if (checkValidInput()) {
     return;
   }
-  if (!window.user.id) return;
+  const user = isUser();
   loading.value = true;
 
   const dataToCreate = {
@@ -216,7 +217,7 @@ async function submitCreateAdmission() {
       new Date(admissionEndDate.value).toLocaleDateString()
     ),
     status: admissionStatus.value,
-    accountId: window.user.id,
+    accountId: user.id,
   };
 
   const response = await admissionService.createAddmissionPeriod(dataToCreate);
