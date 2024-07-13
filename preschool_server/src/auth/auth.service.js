@@ -56,12 +56,8 @@ async function loginAdmin(usename, password) {
       `WHERE username = '${usename}' AND role in (1,2,3,4,5)`
     );
 
-    if (isExistAccount[0]["account"] == 0) {
-      return {
-        code: 1,
-        error: "Account is not exited",
-      };
-    }
+    if (isExistAccount[0]["account"] == 0)
+      throw new Error("Tài khoản không tồn tại!");
 
     const rightPassword = await db.select(
       config.tb.account,
@@ -69,12 +65,8 @@ async function loginAdmin(usename, password) {
       `WHERE username = '${usename}' AND password = '${password}' AND role in (1,2,3,4,5)`
     );
 
-    if (rightPassword[0]["account"] == 0) {
-      return {
-        code: 1,
-        error: "Mật khẩu không đúng.",
-      };
-    }
+    if (rightPassword[0]["account"] == 0)
+      throw new Error({ message: "Mật khẩu không đúng" });
 
     const response = await db.select(
       config.tb.account,
@@ -87,10 +79,7 @@ async function loginAdmin(usename, password) {
 
     return dbResponse;
   } catch (error) {
-    return {
-      code: error.code,
-      error: error.sqlMessage,
-    };
+    throw new Error(error.sqlMessage);
   }
 }
 

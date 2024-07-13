@@ -125,6 +125,7 @@ import authService from "../../../services/authentication.service";
 import { isEmpty } from "../../../utils/resources/check_valid";
 import LoadingComp from "../../../components/loading_comp.vue";
 // import { log } from "console";
+import JsonWebToken from "vue-jwt-decode";
 
 const router = useRouter();
 const route = useRoute();
@@ -190,6 +191,8 @@ async function login() {
     if (rememberPassword.value) {
       localStorage.setItem("user", JSON.stringify(data.token));
     }
+
+    console.log(JsonWebToken.decode(data.refresh));
     window.user = data.token;
     if (data.user.role === 4) {
       router.push({

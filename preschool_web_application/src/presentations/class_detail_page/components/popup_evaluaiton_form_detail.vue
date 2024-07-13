@@ -223,9 +223,15 @@ const disabled = computed(() => {
 });
 
 const evaluationCriterias = computed(() => {
-  const result = evaluationContents.value.flatMap((e) => {
-    return { id: e.evaluation_criteria_id, name: e.evaluation_criteria_name };
-  });
+  if (evaluationContents.value) {
+    const result =
+      evaluationContents?.value?.flatMap((e) => {
+        return {
+          id: e.evaluation_criteria_id,
+          name: e.evaluation_criteria_name,
+        };
+      }) || [];
+  }
   return Array.from(new Map(result.map((item) => [item.id, item])).values());
 });
 
