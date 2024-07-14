@@ -157,20 +157,17 @@
             <div class="w-full">
               <label class="pl-2">
                 <span>Thâm niên</span>
-                <select
-                  id="gender"
-                  v-model="selectedYear"
-                  class="input-text-default"
-                  :disabled="!allowEditTeacher"
-                >
-                  <option value="">Chọn năm</option>
-                  <option v-for="year in years()" :key="year" :value="year">
-                    {{ year }}
-                  </option>
-                </select>
+                <label class="pl-2">
+                  <span>Thâm niên</span>
+                  <input
+                    type="text"
+                    class="input-text-default"
+                    v-model="seniority"
+                  />
+                </label>
               </label>
             </div>
-            <div class="w-full">
+            <!-- <div class="w-full">
               <label class="pl-2">
                 <span>Kinh nghiệm làm việc</span>
                 <input
@@ -180,9 +177,7 @@
                   v-model="experience"
                 />
               </label>
-            </div>
-          </section>
-          <section class="w-full my-5 flex gap-5">
+            </div> -->
             <div class="w-full">
               <label class="pl-2">
                 <span>Email</span>
@@ -193,15 +188,23 @@
                   v-model="email_teacher"
                   :class="{ 'in-valid': messageOfTeacherEmail }"
                 />
-                <div
-                  v-if="messageOfTeacherEmail"
-                  class="mt-1 mb-2 h-[25px] text-red-500"
-                >
-                  <span>{{ messageOfTeacherEmail }}</span>
-                </div>
               </label>
             </div>
-            <div class="w-full">
+          </section>
+          <section class="w-full my-5 flex gap-5">
+            <!-- <div class="w-full">
+              <label class="pl-2">
+                <span>Email</span>
+                <input
+                  type="text"
+                  class="input-text-default"
+                  :disabled="!allowEditTeacher"
+                  v-model="email_teacher"
+                  :class="{ 'in-valid': messageOfTeacherEmail }"
+                />
+              </label>
+            </div> -->
+            <div class="w-[50%]">
               <label class="pl-2">
                 <span>Trạng thái hoạt động</span>
                 <select
@@ -424,7 +427,7 @@ const phone_account = ref("");
 const email_account = ref("");
 const username = ref("");
 const password = ref("");
-// const seniority = ref("");
+const seniority = ref("");
 const avatarPath = ref("");
 const allowEditTeacher = ref(false);
 const allowEditAccount = ref(false);
@@ -489,9 +492,10 @@ async function getTeacher() {
     phone_account.value = account.PhoneAccount;
     email_account.value = account.EmailAccount;
     avatarPath.value = account.avatar;
-    selectedYear.value = account.seniority;
+    // selectedYear.value = account.seniority;
     status_account.value = account.StatusAccount;
     status_teacher.value = account.StatusTeacher;
+    seniority.value = account.seniority;
   }
 }
 function toggleEditTeacher() {

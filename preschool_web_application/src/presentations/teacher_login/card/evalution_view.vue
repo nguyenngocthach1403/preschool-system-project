@@ -1,24 +1,7 @@
 <template>
   <div class="w-full h-full bg-white rounded-xl overflow-hidden">
-    <PopupCreateEvaluation
-      class="absolute top-0 left-0"
-      v-if="isShowCreate"
-      :class-ob="isShowCreate"
-      @add-toast="$emit('add-toast', $event)"
-      @close="closePopupCreate($event)"
-    />
-    <div class="py-4 px-7 text-start border-b flex justify-between">
-      <span class="text-[20px] font-bold">Quản lý đánh giá</span>
-    </div>
     <div class="w-full px-5 py-5">
       <!--Chức năng-->
-      <div class="flex justify-between w-full">
-        <SearchComp class="w-[450px]" />
-        <CreateButtonComp
-          @click="onShowCreateEvaluetion()"
-          :title="'Tạo đợt đánh giá mới'"
-        />
-      </div>
       <!--Body-->
       <div class="w-full grid grid-cols-3 gap-4 my-10">
         <EvaluationCardComp
@@ -36,10 +19,8 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 //component
-import SearchComp from "../../../components/search_form_comp.vue";
-import CreateButtonComp from "../../../components/create_button.vue";
-import PopupCreateEvaluation from "../components/popup_create_evaluation.vue";
-import EvaluationCardComp from "../components/evaluation_card.vue";
+
+import EvaluationCardComp from "../../class_detail_page/components/evaluation_card.vue";
 //icon
 import avatar_default from "../../../assets/img/avartar_default.jpg";
 import { useRouter } from "vue-router";
@@ -80,17 +61,6 @@ async function fetchClassById(classId) {
   }
 }
 
-function onShowCreateEvaluetion() {
-  if (classData.value) {
-    isShowCreate.value = classData.value;
-  } else {
-    emits("add-toast", {
-      title: "Dữ liệu lớp không tồn tại!",
-      type: 1,
-    });
-  }
-}
-
 async function fetchEvaluation(classId) {
   try {
     loading.value = true;
@@ -111,29 +81,19 @@ async function fetchEvaluation(classId) {
  * @param {Boolean} result
  * @returns TRUE or False
  */
-async function closePopupCreate(result) {
-  if (result) {
-    //Load lại
-    evaluations.value = await fetchEvaluation(classData.value.id);
-  }
-  isShowCreate.value = false;
-}
 
 function onClickEvaluationDetail(eva) {
   router.push({
-    name: "EvaluattionDetailView",
+    name: "TeacherEvalutionDetailView",
     query: {
-      classID: router.currentRoute.value.query.classID,
+      classID: router.currentRoute.value.params.id,
       evaluationId: eva.id,
     },
   });
 }
 
 onMounted(async () => {
-  classData.value = await fetchClassById(
-    router.currentRoute.value.query.classID
-  );
-  console.log(router.currentRoute.value.query.classID);
+  classData.value = await fetchClassById(router.currentRoute.value.params.id);
 });
 </script>
 
