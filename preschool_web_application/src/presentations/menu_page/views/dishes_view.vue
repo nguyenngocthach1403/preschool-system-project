@@ -68,6 +68,7 @@ import { checkPermissions } from "../../../utils/resources/check_valid";
 import { useDishesStore } from "../../../stores/dishes_store";
 import { storeToRefs } from "pinia";
 import menuService from "../../../services/menu.service";
+import { isUser } from "../../../utils/resources/validator";
 const dishesStore = useDishesStore();
 
 const isShowCreate = ref(false);
@@ -94,7 +95,7 @@ function closePopupCreate(event) {
 }
 
 function openCreateDish() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = isUser();
   if (!checkPermissions(user.role)) {
     emits("add-toast", {
       title: "Bạn không đủ quyền thực hiện chức năng này",

@@ -221,8 +221,6 @@ async function submitCreateAdmission() {
   };
 
   const response = await admissionService.createAddmissionPeriod(dataToCreate);
-
-  alert("a");
   loading.value = false;
 
   console.log(response);

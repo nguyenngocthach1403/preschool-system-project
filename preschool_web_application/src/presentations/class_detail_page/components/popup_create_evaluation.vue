@@ -1,7 +1,7 @@
 <template>
   <PopupLayout :title="'Tạo đợt đánh giá mới'" @close="$emit('close')">
     <template #content>
-      <div class="w-[1400px] h-[800px] px-8 flex gap-3 py-5">
+      <div class="w-[1400px] h-[700px] px-8 flex gap-3 py-5">
         <div
           class="w-full bg-white drop-shadow-xl border px-5 py-5 rounded-md h-full overflow-y-auto"
         >

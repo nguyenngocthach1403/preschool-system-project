@@ -64,6 +64,7 @@ async function login(req, res) {
       message: "login successful",
     });
   } catch (error) {
+    console.log(error);
     Response.sendErrorResponse({ res, statusCode: 500, error: error.message });
   }
 
