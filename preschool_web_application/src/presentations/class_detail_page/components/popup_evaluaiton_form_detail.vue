@@ -223,8 +223,9 @@ const disabled = computed(() => {
 });
 
 const evaluationCriterias = computed(() => {
+  let result = [];
   if (evaluationContents.value) {
-    const result =
+    result =
       evaluationContents?.value?.flatMap((e) => {
         return {
           id: e.evaluation_criteria_id,

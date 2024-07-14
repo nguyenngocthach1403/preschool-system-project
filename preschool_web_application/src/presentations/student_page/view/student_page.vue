@@ -54,8 +54,9 @@
       v-if="!dataOfTable || status == 'loading'"
       class="w-full h-full"
     ></LoadingComp>
+    <EmptyBox v-if="students.length == 0" />
     <TableComp
-      v-if="status == 'loaded'"
+      v-if="status == 'loaded' && students.length != 0"
       :data-table="dataOfTable"
       @delete-student="showConfirmDialog = $event"
       @edit-student="editStudent"
@@ -115,6 +116,7 @@ import { useStudentStore } from "../../../stores/student_store";
 import LoadingComp from "../../../components/loading_comp.vue";
 import ResultNumComp from "../../../components/result_comp.vue";
 import ShowNumberComp from "../../../components/show_number_comp.vue";
+import EmptyBox from "../../../components/empty_data.vue";
 const searchText = ref("");
 const studentStore = useStudentStore();
 /* Data demo of Student Table */

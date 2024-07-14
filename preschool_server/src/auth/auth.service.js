@@ -66,7 +66,7 @@ async function loginAdmin(usename, password) {
     );
 
     if (rightPassword[0]["account"] == 0)
-      throw new Error({ message: "Mật khẩu không đúng" });
+      throw new Error("Mật khẩu không đúng");
 
     const response = await db.select(
       config.tb.account,
@@ -79,7 +79,8 @@ async function loginAdmin(usename, password) {
 
     return dbResponse;
   } catch (error) {
-    throw new Error(error.sqlMessage);
+    console.log(error);
+    throw new Error(error.sqlMessage || error);
   }
 }
 

@@ -219,7 +219,7 @@ async function login() {
   } catch (error) {
     toasts.value.push({
       title: "Thất bại!",
-      content: error,
+      content: error.response.data.error || "Thất bại",
       type: 1,
     });
   } finally {
