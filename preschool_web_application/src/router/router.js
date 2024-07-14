@@ -37,6 +37,8 @@ import ClassCurentDetailView from "../presentations/teacher_login/view_info_clas
 import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_history_view.vue";
 import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
 import MenuFoodStudent from "../presentations/parent_page/view_detail_i4/menu_food_weekly.vue";
+import TeacherEvalutionView from "../presentations/teacher_login/component/evalution_view.vue";
+import TeacherEvalutionDetailView from "../presentations/teacher_login/component/evalution_detail.vue";
 // import ClassHistoryView from "../presentations/teacher_login/view_info_class_detail/class_before_view.vue";
 // import ExpertiseAndProgramView from "../presentations/program_configuration_page/views/expertise_and_programs.vue";
 
@@ -208,6 +210,21 @@ function Router() {
             name: "ClassHistoryView",
             path: "/home-page/:username/info-class-history-detail-view",
             component: ClassHistoryView,
+          },
+          {
+            name: "TeacherEvalutionView",
+            path: "/home-page/:username/evalution/:id",
+            component: TeacherEvalutionView,
+          },
+          {
+            name: "TeacherEvalutionDetailView",
+            path: "/home-page/:username/evalution-detail",
+            component: TeacherEvalutionDetailView,
+            beforeEnter(to, from) {
+              if (!to.query.classID || !to.query.evaluationId) {
+                return from.path;
+              }
+            },
           },
         ],
       },

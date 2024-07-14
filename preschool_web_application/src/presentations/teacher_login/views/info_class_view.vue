@@ -22,6 +22,7 @@
       <CalenderDetail v-if="getTabActive(0)" />
       <ClassCurrentView v-if="getTabActive(1)" />
       <ClassHistoryView v-if="getTabActive(2)" />
+      <Evalution v-if="getTabActive(3)" />
     </div>
   </div>
 </template>
@@ -32,6 +33,7 @@ import { useRouter } from "vue-router";
 import ClassCurrentView from "../../teacher_login/view_info_class_detail/class_current_view.vue";
 import ClassHistoryView from "../view_info_class_detail/class_history_view.vue";
 import CalenderDetail from "../view_info_class_detail/calender_detail.vue";
+import Evalution from "../view_info_class_detail/evalution.vue";
 const router = useRouter();
 
 //element
@@ -49,6 +51,10 @@ const tabList = ref([
   },
   {
     title: "Lớp đã giảng dạy",
+    active: false,
+  },
+  {
+    title: "Đánh giá học sinh",
     active: false,
   },
 ]);

@@ -509,7 +509,7 @@ async function getClassCurrent(teacherId) {
       LEFT JOIN ${config.tb.levels} l ON c.level_id = l.id
       LEFT JOIN ${config.tb.classManager} cm ON c.id = cm.class_id
       LEFT JOIN ${config.tb.managerRole} cmr ON cm.role = cmr.id`,
-      "c.*, c.name AS ClassName, l.name AS levelsName, s.name AS syllabusName, cmr.name AS RoleName",
+      "c.*, c.id AS ClassID,c.name AS ClassName, l.name AS levelsName, s.name AS syllabusName, cmr.name AS RoleName",
       `WHERE c.deleted = 0 AND c.end_date > '${date[2]}-${date[0]}-${date[1]}'  AND cm.teacher_id = ${teacherId}`
     );
   } catch (error) {

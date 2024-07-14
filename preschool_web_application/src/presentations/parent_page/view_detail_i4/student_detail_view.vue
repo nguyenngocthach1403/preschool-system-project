@@ -1,167 +1,27 @@
 <template>
   <div class="w-full">
-    <div
-      v-for="(student, index) in studentData"
-      :key="index"
-      class="m-10 border rounded-md"
-      @click="onClickStudent(student)"
-    >
-      <button
-        class="w-full py-4 px-10 font-bold text-[18px] border-b text-start"
+    <div class="flex flex-wrap -mx-3">
+      <div
+        v-for="(student, index) in studentData"
+        :key="index"
+        class="w-full sm:w-1/2 md:w-1/3 lg:w-1/3 xl:w-1/3 px-3 mb-6"
+        @click="onClickStudent(student)"
       >
-        Thông tin cá nhân bé {{ student.StudentName }}
-      </button>
-      <!-- <div class="w-full px-10 py-5 content-center text-start">
-        Each student's information 
-        <section class="w-full my-5 flex gap-5">
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Họ và tên</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.StudentName"
-                disabled
-              />
-            </label>
+        <div class="border rounded-md overflow-hidden">
+          <div class="ml-4 mt-3">
+            <img
+              v-if="student.avatar"
+              :src="student.avatar"
+              alt="Avatar"
+              class="w-fit h-fit rounded-t-md"
+            />
           </div>
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Mã học sinh</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.StudentId"
-                disabled
-              />
-            </label>
+          <div class="py-3 px-5 text-[18px] border-b text-start bg-white">
+            <p class="font-bold">Họ tên: {{ student.StudentName }}</p>
+            <p class="mt-2">Lớp: {{ student.ClassName }}</p>
           </div>
-        </section>
-        <section class="w-full my-5 flex gap-5">
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Ngày sinh</span>
-              <VueDatePicker
-                :enable-time-picker="false"
-                v-model="student.birthday"
-                disabled
-              />
-            </label>
-          </div>
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Giới tính</span>
-              <select
-                class="input-text-default"
-                v-model="student.gender"
-                disabled
-              >
-                <option :value="0">Nam</option>
-                <option :value="1">Nữ</option>
-              </select>
-            </label>
-          </div>
-        </section>
-        <section class="w-full my-5 flex gap-5">
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Dân tộc</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.fork"
-                disabled
-              />
-            </label>
-          </div>
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Nơi sinh</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.place_of_birth"
-                disabled
-              />
-            </label>
-          </div>
-        </section>
-        <section class="w-full my-5 flex gap-5">
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Quốc tịch</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.nation"
-                disabled
-              />
-            </label>
-          </div>
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Trạng thái học</span>
-              <select
-                class="input-text-default"
-                v-model="student.study_status"
-                disabled
-              >
-                <option value="0">Chờ xếp lớp</option>
-                <option value="1">Đang học</option>
-                <option value="2">Lên lớp</option>
-                <option value="3">Bảo lưu</option>
-                <option value="4">Tạm nghỉ</option>
-              </select>
-            </label>
-          </div>
-        </section>
-        <section class="w-full my-5 flex gap-5">
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Lớp học</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.ClassName"
-                disabled
-              />
-            </label>
-          </div>
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Niên khoá</span>
-              <input
-                type="text"
-                class="input-text-default"
-                :value="student.session"
-                disabled
-              />
-            </label>
-          </div>
-        </section>
-        <section class="w-full my-5 flex gap-5">
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Ngày bắt đầu lớp học</span>
-              <VueDatePicker
-                :enable-time-picker="false"
-                v-model="student.start_date"
-                disabled
-              />
-            </label>
-          </div>
-          <div class="w-full">
-            <label class="pl-2">
-              <span>Ngày kết thúc lớp học</span>
-              <VueDatePicker
-                :enable-time-picker="false"
-                v-model="student.end_date"
-                disabled
-              />
-            </label>
-          </div>
-        </section>
-      </div> -->
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -171,7 +31,7 @@ import { onBeforeMount, onMounted, ref, watch } from "vue";
 import studentService from "../../../services/student.service";
 import parentService from "../../../services/parent.service";
 import accountService from "../../../services/account.service";
-
+import { isUser } from "../../../utils/resources/validator";
 const studentName = ref("");
 const studentID = ref("");
 const studentGender = ref("");
@@ -193,7 +53,10 @@ function onClickStudent(student) {
 }
 
 async function getStudentByParentId() {
-  const accountId = JSON.parse(localStorage.getItem("user")).id;
+  // const accountId = JSON.parse(localStorage.getItem("user")).id;
+  const user = isUser();
+  if (!user) return;
+  const accountId = user.id;
   const response = await accountService.getParentById(accountId);
   console.log(response.data[0].ParentID);
   const result = await parentService.getStudentByParentId(

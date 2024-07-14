@@ -49,7 +49,11 @@ async function getNews() {
   newsItems.value = respone.data.data;
 }
 const filteredNews = computed(() => {
-  return newsItems.value.filter((item) => item.status === 1);
+  const sortedNews = newsItems.value
+    .filter((newsItem) => newsItem.status === 1) // Lọc tin tức có status là 1
+    .sort((a, b) => new Date(b.created) - new Date(a.created));
+
+  return sortedNews.slice(0, 9);
 });
 </script>
 

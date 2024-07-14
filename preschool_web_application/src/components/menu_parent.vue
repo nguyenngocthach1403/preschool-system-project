@@ -71,7 +71,8 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 onMounted(() => {
-  user.value = JSON.parse(localStorage.getItem("user"));
+  // user.value = JSON.parse(localStorage.getItem("user"));
+  getUser();
 });
 
 const router = useRouter();
@@ -113,6 +114,14 @@ const drops = defineProps({
 function selectActive(index) {
   menu.value.forEach((e) => (e.active = false));
   menu.value.find((e) => e.id == index).active = true;
+}
+import { isUser } from "../utils/resources/validator";
+async function getUser() {
+  try {
+    user.value = isUser();
+  } catch (error) {
+    console.log(error);
+  }
 }
 </script>
 
