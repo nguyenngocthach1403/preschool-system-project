@@ -18,9 +18,9 @@
             alt=""
             class="w-full h-full rounded-full"
           />
-          <button
+          <!-- <button
             class="w-7 h-7 bg-black absolute bottom-0 right-0 rounded-full z-40"
-          ></button>
+          ></button> -->
         </div>
         <!--Name and gender-->
         <div class="mx-[60px] text-start">
