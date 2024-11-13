@@ -2,8 +2,7 @@
   <LayoutPopup
     @close="exit()"
     class="absolute top-0 right-0 z-20"
-    :title="'Tạo kỳ tuyển sinh'"
-  >
+    :title="'Tạo kỳ tuyển sinh'">
     <template #content>
       <div class="w-[700px]">
         <form class="px-20 text-start">
@@ -29,8 +28,7 @@
                   ><span class="text-red-600"> (*) </span>
                   <VueDatePicker
                     :enable-time-picker="false"
-                    v-model="admissionStartDate"
-                  ></VueDatePicker>
+                    v-model="admissionStartDate"></VueDatePicker>
                 </label>
               </div>
               <div class="w-full">
@@ -39,8 +37,7 @@
                   ><span class="text-red-600"> (*) </span>
                   <VueDatePicker
                     :enable-time-picker="false"
-                    v-model="admissionEndDate"
-                  ></VueDatePicker>
+                    v-model="admissionEndDate"></VueDatePicker>
                 </label>
               </div>
             </div>
@@ -53,7 +50,9 @@
               <label for=""
                 ><span class="pl-2">Trạng thái</span
                 ><span class="text-red-600"> (*) </span>
-                <select class="input-text-default" v-model="admissionStatus">
+                <select
+                  class="input-text-default"
+                  v-model="admissionStatus">
                   <option value="0">Đóng</option>
                   <option value="1">Mở</option>
                 </select>
@@ -68,35 +67,30 @@
         v-if="!loading"
         @click="submitCreateAdmission()"
         type="button"
-        class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md"
-      >
+        class="h-[35px] my-[5px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md">
         Thêm
       </button>
       <button
         v-if="loading"
         type="button"
         class="h-[35px] basis-1/11 rounded-md my-[5px] w-fit outline-none border-[0.12rem] focus:border-blue-500 px-4 inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
-        disabled
-      >
+        disabled>
         <svg
           class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
-          viewBox="0 0 24 24"
-        >
+          viewBox="0 0 24 24">
           <circle
             class="opacity-25"
             cx="12"
             cy="12"
             r="10"
             stroke="currentColor"
-            stroke-width="4"
-          ></circle>
+            stroke-width="4"></circle>
           <path
             class="opacity-75"
             fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         Processing...
       </button></template
@@ -217,7 +211,7 @@ async function submitCreateAdmission() {
       new Date(admissionEndDate.value).toLocaleDateString()
     ),
     status: admissionStatus.value,
-    accountId: user.id,
+    accountId: user.user_id,
   };
 
   const response = await admissionService.createAddmissionPeriod(dataToCreate);
@@ -248,7 +242,7 @@ function exit() {
 }
 </script>
 
-<style  scoped>
+<style scoped>
 .dp__theme_light {
   --dp-button-height: 35px;
   --dp-border-radius: 5px;

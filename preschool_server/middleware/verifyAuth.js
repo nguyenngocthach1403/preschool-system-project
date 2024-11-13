@@ -18,6 +18,8 @@ const authenticate = () => {
 
       const user = Utils.verifyJWT(token);
 
+      console.log(`User verify token ${user}`);
+
       if (!user) throw new Error("Failed to authenticate token. ");
 
       res.user = user.data;
