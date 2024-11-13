@@ -23,15 +23,13 @@
                 :altText="newsItem.altText"
                 :title="newsItem.title"
                 :description="newsItem.description"
-                class="mb-4"
-              />
+                class="mb-4" />
             </div>
           </div>
         </div>
 
         <div
-          class="bg-[#ec774b] shadow-md rounded-md p-5 w-screen h-[400px] flex items-center justify-between"
-        >
+          class="bg-[#ec774b] shadow-md rounded-md p-5 w-screen h-[400px] flex items-center justify-between">
           <div class="w-[60%]">
             <ul class="list-disc mt-4 mr-4">
               <li class="text-white text-left text-[20px] list-none">
@@ -52,8 +50,7 @@
             <img
               src="https://mndongmai.edu.vn/uploads/mndongmai/news/2022_11/hdnk10.jpg"
               alt="Image description"
-              class="top-0 left-0 h-[300px] w-full rounded-lg"
-            />
+              class="top-0 left-0 h-[300px] w-full rounded-lg" />
           </div>
         </div>
         <div class="bg-gray-100 py-8 w-screen">
@@ -66,13 +63,11 @@
               <div
                 v-for="image in images"
                 :key="image.id"
-                class="activity-item"
-              >
+                class="activity-item">
                 <img
                   :src="image.url"
                   :alt="image.alt"
-                  class="w-full h-[200px] rounded-lg"
-                />
+                  class="w-full h-[200px] rounded-lg" />
               </div>
             </div>
           </div>
@@ -120,33 +115,6 @@ const filteredNews = computed(() => {
 
   return sortedNews.slice(0, 3);
 });
-
-// const mockSlideshows = [
-//   {
-//     id: 1,
-//     url: "https://cdn.popsww.com/blog/sites/2/2022/01/thanh-guom-diet-quy-review.jpg",
-//     description: "Slideshow 1",
-//     status: 1,
-//   },
-//   {
-//     id: 2,
-//     url: "https://png.pngtree.com/thumb_back/fw800/background/20190221/ourmid/pngtree-cartoon-wind-simple-starting-school-enrollment-image_13850.jpg",
-//     description: "Slideshow 2",
-//     status: 1,
-//   },
-//   {
-//     id: 3,
-//     url: "https://cdn.popsww.com/blog/sites/2/2022/01/thanh-guom-diet-quy-review.jpg",
-//     description: "Slideshow 1",
-//     status: 1,
-//   },
-//   {
-//     id: 4,
-//     url: "https://png.pngtree.com/thumb_back/fw800/background/20190221/ourmid/pngtree-cartoon-wind-simple-starting-school-enrollment-image_13850.jpg",
-//     description: "Slideshow 2",
-//     status: 1,
-//   },
-// ];
 
 const images = [
   {

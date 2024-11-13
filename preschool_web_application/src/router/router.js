@@ -133,7 +133,7 @@ function Router() {
       },
       //Parent View Login
       {
-        path: "/home-page-parent/:username/",
+        path: "/home-page-parent/",
         name: "homepage-parent",
         component: HomePageParent,
         meta: {
@@ -142,12 +142,12 @@ function Router() {
         children: [
           {
             name: "ParentDetailView",
-            path: "/home-page/:username/parent-detail-view",
+            path: "/home-page/parent-detail-view",
             component: ParentDetailView,
           },
           {
             name: "StudentDetailParentView",
-            path: "/home-page/:username/student-detail-parent-view",
+            path: "/home-page/student-detail-parent-view",
             component: StudentDetailParentView,
             // beforeEnter(to, from) {
             //   if (!to.query.parentId) {
@@ -157,22 +157,22 @@ function Router() {
           },
           {
             name: "MenuFoodStudent",
-            path: "/home-page/:username/student-menu-food-view",
+            path: "/home-page/student-menu-food-view",
             component: MenuFoodStudent,
           },
           {
             name: "ParentDetailInfoView",
-            path: "/home-page/:username/parent-info-detail-view",
+            path: "/home-page/parent-info-detail-view",
             component: ParentDetailInfoView,
           },
           {
             name: "HistoryClassView",
-            path: "/home-page/:username/history-class",
+            path: "/home-page/history-class",
             component: HistoryClassView,
           },
           {
             name: "StudentDetailViewOfParent",
-            path: "/home-page/:username/student/detail",
+            path: "/home-page/student/detail",
             component: StudentDetailViewOfParent,
             beforeEnter(to, from) {
               if (to.query.studentID == null) {
@@ -184,7 +184,7 @@ function Router() {
       },
       // Teacher View Login
       {
-        path: "/home-page-teacher/:username/",
+        path: "/home-page-teacher/",
         name: "homepage-teacher",
         component: HomePageTeacher,
         meta: {
@@ -193,32 +193,32 @@ function Router() {
         children: [
           {
             name: "InfoTeacherView",
-            path: "/home-page/:username/info-detail-view",
+            path: "/home-page/info-detail-view",
             component: InfoTeacherView,
           },
           {
             name: "ClassTeacherDetailView",
-            path: "/home-page/:username/info-class-detail-view",
+            path: "/home-page/info-class-detail-view",
             component: ClassTeacherDetailView,
           },
           {
             name: "ClassCurentDetailView",
-            path: "/home-page/:username/info-class-current-detail-view",
+            path: "/home-page/info-class-current-detail-view",
             component: ClassCurentDetailView,
           },
           {
             name: "ClassHistoryView",
-            path: "/home-page/:username/info-class-history-detail-view",
+            path: "/home-page/info-class-history-detail-view",
             component: ClassHistoryView,
           },
           {
             name: "TeacherEvalutionView",
-            path: "/home-page/:username/evalution/:id",
+            path: "/home-page/evalution/:id",
             component: TeacherEvalutionView,
           },
           {
             name: "TeacherEvalutionDetailView",
-            path: "/home-page/:username/evalution-detail",
+            path: "/home-page/evalution-detail",
             component: TeacherEvalutionDetailView,
             beforeEnter(to, from) {
               if (!to.query.classID || !to.query.evaluationId) {
@@ -229,7 +229,7 @@ function Router() {
         ],
       },
       {
-        path: "/home/:username",
+        path: "/home",
         name: "homepage",
         component: HomePage,
         meta: {
@@ -238,17 +238,17 @@ function Router() {
         children: [
           {
             name: "StudentView",
-            path: "/home/:username/students",
+            path: "/home/students",
             component: StudentView,
           },
           {
             name: "AssignmentView",
-            path: "/home/:username/asignment",
+            path: "/home/asignment",
             component: AssignmentView,
           },
           {
             name: "StudentDetailView",
-            path: "/home/:username/students/detail",
+            path: "/home/students/detail",
             component: StudentDetailView,
             beforeEnter(to, from) {
               if (to.query.studentID == null) {
@@ -258,12 +258,12 @@ function Router() {
           },
           {
             name: "ParentStudentCreationView",
-            path: "/home/:username/registration/create_parent_student",
+            path: "/home/registration/create_parent_student",
             component: ParentStudentCreationView,
           },
           {
             name: "ClassDetailPage",
-            path: "/home/:username/classes/detail",
+            path: "/home/classes/detail",
             component: ClassDetailPage,
             beforeEnter(to, from) {
               if (!to.query.classID) {
@@ -273,7 +273,7 @@ function Router() {
             children: [
               {
                 name: "ClassScheduleView",
-                path: "/home/:username/classes/detail/schedule",
+                path: "/home/classes/detail/schedule",
                 component: ClassScheduleView,
                 beforeEnter(to, from) {
                   if (!to.query.classID) {
@@ -283,7 +283,7 @@ function Router() {
               },
               {
                 name: "StudentReviewManagementView",
-                path: "/home/:username/classes/detail/student_preview_management",
+                path: "/home/classes/detail/student_preview_management",
                 component: StudentReviewManagementView,
                 beforeEnter(to, from) {
                   if (!to.query.classID) {
@@ -293,7 +293,7 @@ function Router() {
                 // children: [
                 //   {
                 //     name: "EvaluattionDetailView",
-                //     path: "/home/:username/classes/detail/student_preview_management/evaluation_detail",
+                //     path: "/home/classes/detail/student_preview_management/evaluation_detail",
                 //     component: EvaluattionDetailView,
                 //     beforeEnter(to, from) {
                 //       if (!to.query.classID || !to.query.evaluationId) {
@@ -305,7 +305,7 @@ function Router() {
               },
               {
                 name: "EvaluattionDetailView",
-                path: "/home/:username/classes/detail/student_preview_management",
+                path: "/home/classes/detail/student_preview_management",
                 component: EvaluattionDetailView,
                 beforeEnter(to, from) {
                   if (!to.query.classID || !to.query.evaluationId) {
@@ -316,7 +316,7 @@ function Router() {
 
               {
                 name: "ClassMenuView",
-                path: "/home/:username/classes/detail/menu",
+                path: "/home/classes/detail/menu",
                 component: ClassMenuView,
                 beforeEnter(to, from) {
                   if (!to.query.classID) {
@@ -326,7 +326,7 @@ function Router() {
               },
               {
                 name: "ClassManagerView",
-                path: "/home/:username/classes/detail/managers",
+                path: "/home/classes/detail/managers",
                 component: ClassManagerView,
                 beforeEnter(to, from) {
                   if (!to.query.classID) {
@@ -336,7 +336,7 @@ function Router() {
               },
               {
                 name: "ClassMemberView",
-                path: "/home/:username/classes/detail/members",
+                path: "/home/classes/detail/members",
                 component: ClassMemberView,
                 beforeEnter(to, from) {
                   if (!to.query.classID) {
@@ -348,190 +348,190 @@ function Router() {
           },
           {
             name: "SchedulePage",
-            path: "/home/:username/schedule_manage_page",
+            path: "/home/schedule_manage_page",
             component: SchedulePage,
             children: [
               {
                 name: "ActivityView",
-                path: "/home/:username/schedule_manage_page/activity",
+                path: "/home/schedule_manage_page/activity",
                 component: ActivityView,
               },
               {
                 name: "TimetableView",
-                path: "/home/:username/schedule_manage_page/timetables",
+                path: "/home/schedule_manage_page/timetables",
                 component: TimetableView,
               },
             ],
           },
           {
             name: "ProgramConfigurationView",
-            path: "/home/:username/program-configuration",
+            path: "/home/program-configuration",
             component: ProgramConfigurationView,
             children: [
               {
                 name: "AdmissionPeriodView",
-                path: "/home/:username/program-configuration/addmission-period",
+                path: "/home/program-configuration/addmission-period",
                 component: AdmissionPeriodView,
               },
               {
                 name: "ExpertiseAndProgramView",
-                path: "/home/:username/program-configuration/expertise-and-programs",
+                path: "/home/program-configuration/expertise-and-programs",
                 component: ExpertiseAndProgramView,
               },
             ],
           },
           {
             name: "CategoryView",
-            path: "/home/:username/management",
+            path: "/home/management",
             component: CategoryView,
             children: [
               {
                 name: "HomePageSlideView",
-                path: "/home/:username/management/home-page",
+                path: "/home/management/home-page",
                 component: HomePageSlideView,
               },
               {
                 name: "NewsManagementView",
-                path: "/home/:username/management/news",
+                path: "/home/management/news",
                 component: NewsManagementView,
               },
               {
                 name: "SettingHomePageView",
-                path: "/home/:username/management/setting-page",
+                path: "/home/management/setting-page",
                 component: SettingHomePageView,
               },
               {
                 name: "CreateNewsView",
-                path: "/home-page/:username/management/create-news",
+                path: "/home-page/management/create-news",
                 component: CreateNewsView,
               },
               {
                 name: "EditNewsView",
-                path: "/home-page/:username/management/edit-news/:id",
+                path: "/home-page/management/edit-news/:id",
                 component: EditNewsView,
               },
               {
                 name: "CreateSlideView",
-                path: "/home-page/:username/create-slide",
+                path: "/home-page/create-slide",
                 component: CreateSlideView,
               },
               {
                 name: "EditSlideView",
-                path: "/home-page/:username/edit-slide/:id",
+                path: "/home-page/edit-slide/:id",
                 component: EditSlideView,
               },
               {
                 name: "EditSettingHomePageView",
-                path: "/home-page/:username/setting",
+                path: "/home-page/setting",
                 component: EditSettingHomePageView,
               },
             ],
           },
           {
             name: "MenuManagementView",
-            path: "/home/:username/menu_management",
+            path: "/home/menu_management",
             component: MenuManagementView,
             children: [
               {
                 name: "DishesView",
-                path: "/home/:username/menu_management/dishes",
+                path: "/home/menu_management/dishes",
                 component: DishesView,
               },
               {
                 name: "MealView",
-                path: "/home/:username/menu_management/meals",
+                path: "/home/menu_management/meals",
                 component: MealView,
               },
               {
                 name: "ClassMenuManagement",
-                path: "/home/:username/menu_management/class_menu",
+                path: "/home/menu_management/class_menu",
                 component: ClassMenuManagement,
               },
             ],
           },
           {
             name: "ParentView",
-            path: "/home/:username/parent",
+            path: "/home/parent",
             component: ParentView,
           },
           {
             name: "TeacherView",
-            path: "/home/:username/teacher",
+            path: "/home/teacher",
             component: TeacherView,
           },
           {
             name: "TeacherEditView",
-            path: "/home/:username/teacher-edit/:id",
+            path: "/home/teacher-edit/:id",
             component: TeacherEditView,
           },
           {
             name: "DashBoardView",
-            path: "/home/:username/dashboard",
+            path: "/home/dashboard",
             component: DashBoardView,
           },
           {
             name: "ClassView",
-            path: "/home/:username/class",
+            path: "/home/class",
             component: ClassView,
           },
           {
             name: "StudentCreationView",
-            path: "/home/:username/student-creation",
+            path: "/home/student-creation",
             component: StudentCreationView,
           },
           {
             name: "ParentCreationView",
-            path: "/home/:username/parent-creation",
+            path: "/home/parent-creation",
             component: ParentCreationView,
           },
           {
             name: "RegistrationView",
-            path: "/home/:username/registration",
+            path: "/home/registration",
             component: RegistrationView,
           },
           {
             name: "AccountView",
-            path: "/home/:username/account",
+            path: "/home/account",
             component: AccountView,
           },
           {
             name: "ParentEditView",
-            path: "/home/:username/parent-edit/:id",
+            path: "/home/parent-edit/:id",
             component: ParentEditView,
           },
           {
             name: "RegisterAdditionView",
-            path: "/home/:username/registration-addition-admin",
+            path: "/home/registration-addition-admin",
             component: RegisterAdditionView,
           },
           // {
           //   name: "CategoryView",
-          //   path: "/home/:username/category",
+          //   path: "/home/category",
           //   component: CategoryView,
           // },
           {
             name: "TeacherCreationView",
-            path: "/home/:username/teacher",
+            path: "/home/teacher",
             component: TeacherCreationView,
           },
           // {
           //   name: "CreateNewsView",
-          //   path: "/home-page/:username/create-news",
+          //   path: "/home-page/create-news",
           //   component: CreateNewsView,
           // },
           // {
           //   name: "EditNewsView",
-          //   path: "/home-page/:username/edit-news/:id",
+          //   path: "/home-page/edit-news/:id",
           //   component: EditNewsView,
           // },
           // {
           //   name: "CreateSlideView",
-          //   path: "/home-page/:username/create-slide",
+          //   path: "/home-page/create-slide",
           //   component: CreateSlideView,
           // },
           // {
           //   name: "EditSlideView",
-          //   path: "/home-page/:username/edit-slide/:id",
+          //   path: "/home-page/edit-slide/:id",
           //   component: EditSlideView,
           // },
         ],

@@ -3,7 +3,7 @@ import { getToken } from "../utils/resources/validator";
 
 function api() {
   return axios.create({
-    baseURL: "http://localhost:9000",
+    baseURL: "http://localhost:9000/api/v1",
     timeout: 10000,
     headers: {
       Authorization: getToken(),
