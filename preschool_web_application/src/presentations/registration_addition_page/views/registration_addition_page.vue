@@ -1,22 +1,25 @@
 <template>
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
     <div
-      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
-    >
+      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1">
       Tạo đơn đăng ký
     </div>
 
     <div
-      class="bg-white ml-4 mt-[20px] px-20 rounded-xl mr-2 text-center h-fit pb-[60px]"
-    >
-      <div id="site" class="flex px-[100px] py-[30px]">
-        <div id="input-side" class="w-full pr-[20px]">
+      class="bg-white ml-4 mt-[20px] px-20 rounded-xl mr-2 text-center h-fit pb-[60px]">
+      <div
+        id="site"
+        class="flex px-[100px] py-[30px]">
+        <div
+          id="input-side"
+          class="w-full pr-[20px]">
           <div
-            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit"
-          >
+            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit">
             Thông tin người đăng ký
           </div>
-          <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-2">
+          <div
+            id="input-side-1"
+            class="flex w-full gap-5 mx-[20px] mt-2">
             <label class="w-full text-start">
               <span class="pl-4 text-gray-500">Họ và tên người đăng ký</span
               ><span class="text-red-600"> (*) </span>
@@ -25,8 +28,7 @@
                 type="text"
                 placeholder="Họ và tên"
                 class="input-text-default"
-                :class="{ valid: messageOfName }"
-              />
+                :class="{ valid: messageOfName }" />
               <div class="px-3">
                 <p class="text-red-600 mt-1">{{ messageOfName }}</p>
               </div>
@@ -37,8 +39,7 @@
               <select
                 id="relationship"
                 v-model="relationship"
-                class="input-text-default"
-              >
+                class="input-text-default">
                 <option value="0">Bố</option>
                 <option value="1">Mẹ</option>
                 <option value="2">Người giám hộ</option>
@@ -54,8 +55,7 @@
                 type="text"
                 placeholder="0xxxxxxxxx"
                 class="input-text-default"
-                :class="{ valid: messageOfPhone }"
-              />
+                :class="{ valid: messageOfPhone }" />
               <div class="px-3">
                 <p class="text-red-600 mt-1">{{ messageOfPhone }}</p>
               </div>
@@ -68,28 +68,28 @@
                 type="email"
                 placeholder="abc@abc.com"
                 class="input-text-default"
-                :class="{ valid: messageOfEmail }"
-              />
+                :class="{ valid: messageOfEmail }" />
               <div class="px-3">
                 <p class="text-red-600 mt-1">{{ messageOfEmail }}</p>
               </div>
             </label>
           </div>
           <div
-            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit"
-          >
+            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit">
             Nhu cầu học
           </div>
           <div class="flex w-full gap-5 mx-[20px] mb-[20px] mt-2">
             <label class="w-full text-start">
               <span class="pl-4 text-gray-500">Cấp bậc</span
               ><span class="text-red-600"> (*) </span>
-              <select id="levels" v-model="levels" class="input-text-default">
+              <select
+                id="levels"
+                v-model="levels"
+                class="input-text-default">
                 <option
                   v-for="item in levelList"
                   :key="item"
-                  :value="item.value"
-                >
+                  :value="item.value">
                   {{ item.name }}
                 </option>
               </select>
@@ -100,24 +100,23 @@
               <select
                 id="syllabus"
                 v-model="syllabus"
-                class="input-text-default"
-              >
+                class="input-text-default">
                 <option
                   v-for="item in syllabusList"
                   :key="item"
-                  :value="item.value"
-                >
+                  :value="item.value">
                   {{ item.name }}
                 </option>
               </select>
             </label>
           </div>
           <div
-            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit"
-          >
+            class="text-start font-bold text-[16px] px-4 py-2 bg-blue-600 text-white rounded-md w-fit">
             Thông tin trẻ
           </div>
-          <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-5">
+          <div
+            id="input-side-1"
+            class="flex w-full gap-5 mx-[20px] mt-5">
             <label class="w-full text-start">
               <span class="pl-4 text-gray-500">Họ và tên bé</span
               ><span class="text-red-600"> (*) </span>
@@ -126,8 +125,7 @@
                 type="text"
                 placeholder="Họ và tên"
                 class="input-text-default"
-                :class="{ valid: messageOfStudentName }"
-              />
+                :class="{ valid: messageOfStudentName }" />
               <div class="px-3">
                 <p class="text-red-600 mt-1">{{ messageOfStudentName }}</p>
               </div>
@@ -138,22 +136,22 @@
               <select
                 id="relationship"
                 v-model="studentGender"
-                class="input-text-default"
-              >
+                class="input-text-default">
                 <option value="0">Nam</option>
                 <option value="1">Nữ</option>
               </select>
             </label>
           </div>
-          <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-5">
+          <div
+            id="input-side-1"
+            class="flex w-full gap-5 mx-[20px] mt-5">
             <label class="w-full text-start">
               <span class="pl-4 text-gray-500">Ngày sinh</span
               ><span class="text-red-600"> (*) </span>
               <VueDatePicker
                 v-model="studentBirthday"
                 :enable-time-picker="false"
-                :class="{ valid: messageOfstudentBirthDay }"
-              />
+                :class="{ valid: messageOfstudentBirthDay }" />
               <div class="px-3">
                 <p class="text-red-600 mt-1">{{ messageOfstudentBirthDay }}</p>
               </div>
@@ -163,23 +161,29 @@
               <select
                 id="relationship"
                 v-model="studentBirthOfOrigin"
-                class="input-text-default"
-              >
-                <option v-for="item in cities" :key="item" :value="item.Name">
+                class="input-text-default">
+                <option
+                  v-for="item in cities"
+                  :key="item"
+                  :value="item.Name">
                   {{ item.Name }}
                 </option>
               </select>
             </label>
           </div>
-          <div id="input-side-1" class="flex w-full gap-5 mx-[20px] mt-2">
+          <div
+            id="input-side-1"
+            class="flex w-full gap-5 mx-[20px] mt-2">
             <label class="w-full text-start">
               <span class="pl-4 text-gray-500">Dân tộc</span>
               <select
                 id="relationship"
                 v-model="studentFork"
-                class="input-text-default"
-              >
-                <option v-for="item in forkList" :key="item" :value="item.name">
+                class="input-text-default">
+                <option
+                  v-for="item in forkList"
+                  :key="item"
+                  :value="item.name">
                   {{ item.name }}
                 </option>
               </select>
@@ -192,8 +196,7 @@
               <input
                 type="text"
                 class="input-text-default"
-                v-model="studentNation"
-              />
+                v-model="studentNation" />
             </label>
           </div>
           <div class="w-full mx-[20px] mb-[20px] mt-2 text-start">
@@ -205,14 +208,16 @@
                   v-model="city"
                   @change="onCityChange"
                   class="input-text-default"
-                  :class="{ valid: messageOfAddress }"
-                >
-                  <option value="" selected>Chọn thành phố</option>
+                  :class="{ valid: messageOfAddress }">
+                  <option
+                    value=""
+                    selected>
+                    Chọn thành phố
+                  </option>
                   <option
                     v-for="city in cities"
                     :value="city.Name"
-                    :key="city.Id"
-                  >
+                    :key="city.Id">
                     {{ city.Name }}
                   </option>
                 </select>
@@ -224,14 +229,16 @@
                   v-model="district"
                   @change="onDistrictChange"
                   class="input-text-default"
-                  :class="{ valid: messageOfAddress }"
-                >
-                  <option value="" selected>Chọn quận/huyện</option>
+                  :class="{ valid: messageOfAddress }">
+                  <option
+                    value=""
+                    selected>
+                    Chọn quận/huyện
+                  </option>
                   <option
                     v-for="district in districts"
                     :value="district.Name"
-                    :key="district.Id"
-                  >
+                    :key="district.Id">
                     {{ district.Name }}
                   </option>
                 </select>
@@ -243,14 +250,16 @@
                   v-model="town"
                   @change="onWardChange"
                   class="input-text-default"
-                  :class="{ valid: messageOfAddress }"
-                >
-                  <option value="" selected>Chọn phường/xã</option>
+                  :class="{ valid: messageOfAddress }">
+                  <option
+                    value=""
+                    selected>
+                    Chọn phường/xã
+                  </option>
                   <option
                     v-for="ward in wards"
                     :value="ward.Name"
-                    :key="ward.Id"
-                  >
+                    :key="ward.Id">
                     {{ ward.Name }}
                   </option>
                 </select>
@@ -260,15 +269,16 @@
               <p class="text-red-600 mt-1">{{ messageOfAddress }}</p>
             </div>
           </div>
-          <div id="input-side-4" class="flex w-full gap-5 mx-[20px] mb-[20px]">
+          <div
+            id="input-side-4"
+            class="flex w-full gap-5 mx-[20px] mb-[20px]">
             <label class="w-full text-start">
               <span class="pl-4 text-gray-500">Địa chỉ</span>
               <input
                 v-model="address"
                 type="text"
                 placeholder="23 abc/3123, Tp.Hồ Chí Minh, Việt Nam"
-                class="input-text-default"
-              />
+                class="input-text-default" />
             </label>
             <label class="w-full text-start">
               <span class="pl-4 text-gray-500">Trạng thái đơn</span
@@ -276,8 +286,7 @@
               <RegisterSelectComp
                 :options="statusList"
                 class="h-[50px] my-1"
-                @choose="status = $event.id"
-              />
+                @choose="status = $event.id" />
             </label>
           </div>
           <section class="w-full text-start mx-[20px]">
@@ -285,20 +294,19 @@
               <label>
                 <span class="pl-5">Hình ảnh đơn đăng ký</span>
                 <div
-                  class="relative w-full content-center text-center gap-10 h-[300px] rounded-md border border-gray-400 border-dotted object-contain"
-                >
+                  class="relative w-full content-center text-center gap-10 h-[300px] rounded-md border border-gray-400 border-dotted object-contain">
                   <img
                     v-if="fileUpload || imageUpload"
                     :src="imageUpload"
-                    class="h-full"
-                  />
+                    class="h-full" />
                   <input
                     type="file"
                     class="absolute top-0 w-full h-full opacity-0"
-                    @change="handleUploadFile($event)"
-                  />
+                    @change="handleUploadFile($event)" />
                   <div v-if="!fileUpload && !imageUpload">
-                    <img :src="image_default" class="w-10 m-auto my-5" />
+                    <img
+                      :src="image_default"
+                      class="w-10 m-auto my-5" />
                     <span class="text-gray-500">Click</span>
                     <span> để thêm ảnh</span>
                   </div>
@@ -309,40 +317,37 @@
         </div>
       </div>
 
-      <div id="button-side" class="w-full flex justify-center">
+      <div
+        id="button-side"
+        class="w-full flex justify-center">
         <button
           @click.prevent="submitCreateRegister"
           v-if="!creating"
           type="submit"
-          class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]"
-        >
+          class="h-[48px] border border-[#3B44D1] bg-[#3B44D1] hover:bg-blue-900 text-white px-[25px] rounded-md text-[20px]">
           Tạo đơn đăng ký
         </button>
         <button
           v-if="creating"
           type="button"
           class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#3B44D1] hover:bg-indigo-400 transition ease-in-out duration-150 cursor-not-allowed"
-          disabled
-        >
+          disabled>
           <svg
             class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
-            viewBox="0 0 24 24"
-          >
+            viewBox="0 0 24 24">
             <circle
               class="opacity-25"
               cx="12"
               cy="12"
               r="10"
               stroke="currentColor"
-              stroke-width="4"
-            ></circle>
+              stroke-width="4"></circle>
             <path
               class="opacity-75"
               fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           Processing...
         </button>
@@ -362,7 +367,7 @@ import { useRegistrionStore } from "../../../stores/registration_store";
 import RegisterSelectComp from "../../registration_page/components/select_register_status.vue";
 import studentService from "../../../services/student.service";
 import { yyyymmddDateString } from "../../../utils/resources/format_date";
-import addmissionPeriodService from "../../../services/admission_period.service";
+import addmissionPeriodService from "../../../services/enrollment.service";
 import axios from "axios";
 
 import {

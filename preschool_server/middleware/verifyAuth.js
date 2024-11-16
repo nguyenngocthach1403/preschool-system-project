@@ -5,10 +5,7 @@ const authenticate = () => {
   console.log("got here");
   return (req, res, next) => {
     try {
-      let token =
-        req.headers["x-access-token"] ||
-        req.headers.authorization ||
-        req.body.token;
+      let token = getTokenInRequest(req);
       console.log(token, "token");
       if (!token) throw new Error("No token provided.");
       if (token.startsWith("Bearer ")) token = token.slice(7, token.length);
@@ -36,11 +33,26 @@ const authenticate = () => {
   };
 };
 
-const decodeHeader = (req, res, next) => {
+function getTokenInRequest(req) {
   let token =
     req.headers["x-access-token"] ||
     req.headers.authorization ||
     req.body.token;
+
+  if (!token) return;
+
+  if (token.startsWith("Bearer ")) {
+    // Remove Bearer from string
+    token = token.slice(7, token.length);
+    if (!token || token === "") return;
+
+    return token;
+  }
+  return;
+}
+
+const decodeHeader = (req, res, next) => {
+  let token = getTokenInRequest(req);
   console.log(token, "------------------");
   if (!token) {
     return Response.sendErrorResponse({
@@ -49,16 +61,7 @@ const decodeHeader = (req, res, next) => {
       statusCode: 401,
     });
   }
-  if (token.startsWith("Bearer ")) {
-    // Remove Bearer from string
-    token = token.slice(7, token.length);
-    if (!token || token === "")
-      Response.sendErrorResponse({
-        res,
-        message: "No token provided",
-        statusCode: 401,
-      });
-  }
+
   const decoded = Utils.verifyJWT(token);
   if (!decoded)
     Response.sendErrorResponse({
@@ -71,4 +74,23 @@ const decodeHeader = (req, res, next) => {
   res.token = token;
   return next();
 };
-module.exports = { authenticate, decodeHeader };
+
+const isAdmin = (req, res, next) => {
+  user = res.user;
+  if (!user)
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      message: "Bạn không đủ quyền để thực hiện chức năng này!",
+    });
+  if (user.user_id != 1) {
+    return Response.sendErrorResponse({
+      res,
+      statusCode: 400,
+      message: "Bạn không đủ quyền để thực hiện chức năng này!",
+    });
+  }
+  next();
+};
+
+module.exports = { authenticate, decodeHeader, isAdmin };

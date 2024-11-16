@@ -18,6 +18,7 @@ import CategoryView from "../presentations/category_page/component/tab.vue";
 import ParentStudentCreationView from "../presentations/registration_page/view/parent_and_student_creation.vue";
 import ProgramConfigurationView from "../presentations/program_configuration_page/views/program_configuration_page.vue";
 import AdmissionPeriodView from "../presentations/program_configuration_page/views/admission_period_view.vue";
+import EnrollmentView from "../presentations/program_configuration_page/views/enrollment_view.vue";
 import TeacherCreationView from "../presentations/teacher_page/view/teacher_create.vue";
 import StudentDetailView from "../presentations/student_detail_page/views/student_detail_page.vue";
 import TeacherEditView from "../presentations/teacher_page/view/teacher_edit.vue";
@@ -372,6 +373,11 @@ function Router() {
                 name: "AdmissionPeriodView",
                 path: "/home/program-configuration/addmission-period",
                 component: AdmissionPeriodView,
+              },
+              {
+                name: "EnrollmentView",
+                path: "/home/program-configuration/enrollment",
+                component: EnrollmentView,
               },
               {
                 name: "ExpertiseAndProgramView",

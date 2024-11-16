@@ -6,7 +6,7 @@ function api() {
     baseURL: "http://localhost:9000/api/v1",
     timeout: 10000,
     headers: {
-      Authorization: getToken(),
+      Authorization: `Bearer ${getToken()}`,
     },
   });
 }

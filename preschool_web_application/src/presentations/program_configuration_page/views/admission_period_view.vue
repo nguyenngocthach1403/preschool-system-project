@@ -4,13 +4,11 @@
     <PopupRegisterDeTail
       v-if="registerToViewDetail"
       @close="closeRegisterDatailPopup"
-      :data="registerToViewDetail"
-    />
+      :data="registerToViewDetail" />
     <CreateAdmissionPopUp
       v-if="showCreateAdmissionPopup"
       @close="closePopCreateAdmission()"
-      @add-toast="$emit('add-toast', $event)"
-    />
+      @add-toast="$emit('add-toast', $event)" />
     <section class="w-full my-10 h-[170px] flex gap-5 rounded-xl">
       <div class="w-[250px] h-full rounded-md shadow p-5 text-start">
         <div>
@@ -37,10 +35,11 @@
         </div>
       </div>
       <div
-        class="w-[280px] h-full rounded-md content-center flex items-center gap-5 shadow p-5 align-center justify-center"
-      >
+        class="w-[280px] h-full rounded-md content-center flex items-center gap-5 shadow p-5 align-center justify-center">
         <div class="bg-blue-700 rounded-full w-[70px] h-[70px] content-center">
-          <img :src="register_icon" class="w-[50px] m-auto" />
+          <img
+            :src="register_icon"
+            class="w-[50px] m-auto" />
         </div>
         <div class="text-black h-full content-center">
           <span class="font-bold text-[15px]">Số người đăng ký</span>
@@ -49,7 +48,7 @@
           </p>
         </div>
       </div>
-      <div
+      <!-- <div
         class="w-[350px] h-full rounded-md content-center flex text-[13px] gap-5 items-center"
       >
         <div class="w-full">
@@ -118,9 +117,9 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <div class="grow h-full border px-1 py-2 shadow">
+      <!-- <div class="grow h-full border px-1 py-2 shadow">
         <div class="w-full grow h-full rounded-md align-start flex">
           <div class="w-[120px] overflow-y-auto">
             <button
@@ -134,23 +133,24 @@
                   level.value
                 ),
                   (levelSelected = level.value)
-              "
-            >
+              ">
               {{ level.name }}
             </button>
           </div>
-          <div v-if="loadingTotalSyllabus" class="h-full grow">
+          <div
+            v-if="loadingTotalSyllabus"
+            class="h-full grow">
             <LoadingComp />
           </div>
-          <div v-if="!loadingTotalSyllabus" class="h-full grow">
+          <div
+            v-if="!loadingTotalSyllabus"
+            class="h-full grow">
             <div
-              class="border-b border-l border-gray-500 h-full rounded-[3px] mx-2 w-full flex items-end px-5 gap-5 span-1 overflow-x-auto"
-            >
+              class="border-b border-l border-gray-500 h-full rounded-[3px] mx-2 w-full flex items-end px-5 gap-5 span-1 overflow-x-auto">
               <div
                 v-for="(item, index) in syllabusList"
                 :key="index"
-                class="text-center"
-              >
+                class="text-center">
                 {{ returnSyllabus(item.value) }}
                 <div
                   class="w-5"
@@ -165,8 +165,7 @@
                     height:
                       (100 / totalRegistration) * returnSyllabus(item.value) +
                       'px',
-                  }"
-                ></div>
+                  }"></div>
               </div>
             </div>
           </div>
@@ -174,8 +173,7 @@
             <div
               v-for="(syllabus, index) in syllabusList"
               :key="index"
-              class="text-center flex gap-5 mx-3 items-center"
-            >
+              class="text-center flex gap-5 mx-3 items-center">
               <div
                 class="w-5 h-5 rounded-md"
                 :class="{
@@ -184,13 +182,12 @@
                   'bg-green': index == 2,
                   'bg-yellow': index == 3,
                   'bg-black': index == 4,
-                }"
-              ></div>
+                }"></div>
               <span>{{ syllabus.name }}</span>
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </section>
 
     <section class="w-full">
@@ -199,32 +196,27 @@
         <VueDatePicker
           v-model="date"
           :enable-time-picker="false"
-          :range="{ partialRange: true }"
-        />
+          :range="{ partialRange: true }" />
         <CreatButton
           class="my-2"
-          @click="showCreateAdmissionPopup = true"
-        ></CreatButton>
+          @click="showCreateAdmissionPopup = true"></CreatButton>
       </div>
       <div class="flex h-[500px] mb-10 gap-5">
         <div class="w-[700px]">
           <AdmissionTable
             :data="admissionList || []"
-            @selected="selectedAdmission($event)"
-          />
+            @selected="selectedAdmission($event)" />
         </div>
         <div class="w-full">
           <RegistrationTable
             :data="registrationList"
             :loading="loading"
-            @view-detail="registerToViewDetail = $event"
-          />
+            @view-detail="registerToViewDetail = $event" />
           <Pagination
             :page-active="page"
             :page-nums="round(totalRegistration / limit)"
             class="my-2 bg-white w-full text-end pr-[20px]"
-            @click-page="page = $event - 1"
-          />
+            @click-page="page = $event - 1" />
         </div>
       </div>
     </section>
@@ -233,21 +225,27 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import admissionService from "../../../services/admission_period.service";
-import registrationService from "../../../services/registration.service";
+
+//Assets
 import register_icon from "../../../assets/icons/Signing A Document.svg";
+
+//Component
 import AdmissionTable from "../components/admission_table.vue";
 import RegistrationTable from "../components/registration_table.vue";
 import Pagination from "../../../components/pagination.vue";
 import SearchForm from "../../../components/search_form_comp.vue";
 import CreatButton from "../../../components/create_button.vue";
-import CreateAdmissionPopUp from "../components/create_admission_period_popup.vue";
+import CreateAdmissionPopUp from "../components/enrollment_creation_popup.vue";
 import LoadingComp from "../../../components/loading_comp.vue";
 import PopupRegisterDeTail from "../../registration_page/components/popup_detail.vue";
 
 //Service
 import syllabusService from "../../../services/syllabus.service";
 import levelService from "../../../services/levels.service";
+import admissionService from "../../../services/enrollment.service";
+import registrationService from "../../../services/registration.service";
+
+//function
 import { ddmmyyyyDateString } from "../../../utils/resources/format_date";
 
 const admissionList = ref([1, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1231]);
@@ -405,7 +403,7 @@ function closeRegisterDatailPopup() {
 }
 </script>
 
-<style  scoped>
+<style scoped>
 .dp__theme_light {
   --dp-button-height: 35px;
   --dp-border-radius: 5px;

@@ -45,7 +45,7 @@ async function insert(table, data) {
     const [result] = await dbPool.query(sql, data);
     return result;
   } catch (error) {
-    throw error;
+    throw error.sqlMessage;
   }
 }
 
