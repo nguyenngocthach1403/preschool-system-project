@@ -7,24 +7,22 @@
     </div> -->
 
     <!--List-->
-    <section class="menu-list px-5">
-      <ul class="w-fit flex border-b">
+    <section class="menu-list">
+      <ul class="w-fit flex border-b mx-5">
         <router-link
           v-for="(item, index) in menuList"
           :key="index"
-          :to="{ name: item.name }"
-        >
+          :to="{ name: item.name }">
           <li
             class="menu-item h-[40px] content-center px-5 text-black hover:bg-gray-100 cursor-default relative text-center"
             :class="{ active: item.checked }"
-            @click="changeActiveMenu(index)"
-          >
+            @click="changeActiveMenu(index)">
             {{ item.title }}
           </li>
         </router-link>
       </ul>
     </section>
-    <section class="px-5">
+    <section class="">
       <!--Router-->
       <router-view @add-toast="$emit('add-toast', $event)"></router-view>
     </section>
@@ -46,7 +44,7 @@ onMounted(() => {
 });
 
 const menuList = ref([
-  { title: "Đợt tuyển sinh", checked: true, name: "AdmissionPeriodView" },
+  { title: "Đợt tuyển sinh", checked: true, name: "EnrollmentView" },
   {
     title: "Chương trình học",
     checked: false,

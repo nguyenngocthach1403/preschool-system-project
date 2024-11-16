@@ -160,8 +160,6 @@ watch(password, () => {
 
 //Action
 const pressedLoginAction = () => {
-  console.log("Pressed Login Button");
-
   //Kiểm tra
   if (checkVadidation()) return;
 
@@ -199,7 +197,7 @@ async function login() {
 
     const data = loginResponsed.data.data;
 
-    if (rememberPassword.value) rememberUser();
+    if (rememberPassword.value) rememberUser(data);
 
     window.user = data.token;
 
@@ -215,7 +213,7 @@ async function login() {
   }
 }
 
-function rememberUser() {
+function rememberUser(data) {
   localStorage.setItem("user", JSON.stringify(data.token));
   localStorage.setItem("refresh", JSON.stringify(data.refresh));
 }

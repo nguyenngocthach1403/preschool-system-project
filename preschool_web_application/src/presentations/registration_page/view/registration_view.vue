@@ -2,31 +2,26 @@
   <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
     <div
       v-if="showRegisterImg"
-      class="absolute w-full h-full bg-gray-500/75 left-0 top-0 z-30 content-center overflow-y-auto"
-    >
+      class="absolute w-full h-full bg-gray-500/75 left-0 top-0 z-30 content-center overflow-y-auto">
       <button
         class="w-[40px] h-[40px] absolute right-10 top-10"
-        @click="showRegisterImg = null"
-      >
+        @click="showRegisterImg = null">
         <img :src="close_icon" />
       </button>
       <img
         class="m-auto bg-white rounded-xl w-[1000px] object-contain"
-        :src="showRegisterImg"
-      />
+        :src="showRegisterImg" />
     </div>
     <RegisterDetailPopup
       v-if="registerToViewDetail"
       @close="closeRegisterDatailPopup"
-      :data="registerToViewDetail"
-    />
+      :data="registerToViewDetail" />
     <ConfirmDialog
       v-if="showConfirmDialog"
       class="absolute top-0 left-0"
       :content="`Bạn có muốn xóa đơn đăng ký với số điện ${showConfirmDialog.phone} của người đăng ký tên ${showConfirmDialog.name} không?`"
       @confirm="getConfirm($event)"
-      :value="showConfirmDialog"
-    />
+      :value="showConfirmDialog" />
     <ConfirmDialog
       v-if="registerUpdateStatus"
       class="absolute top-0 left-0"
@@ -34,13 +29,11 @@
         registerUpdateStatus.id
       } thành '${convertRegisterStatus(registerUpdateStatus.status)}'  không?`"
       @confirm="comfirmChangeRegisterStatus($event)"
-      :value="registerUpdateStatus"
-    />
+      :value="registerUpdateStatus" />
 
     <!-- Header -->
     <div
-      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1"
-    >
+      class="text-left px-6 text-[36px] py-4 mb-5 font-bold border border-b-1">
       Đơn đăng ký
     </div>
 
@@ -49,8 +42,7 @@
       <SearchFormComp
         @passSearchText="getSearchText($event)"
         class="w-[400px] ml-[20px]"
-        :value="searchText"
-      ></SearchFormComp>
+        :value="searchText"></SearchFormComp>
       <router-link :to="{ name: 'RegisterAdditionView' }">
         <CreateButtonComp></CreateButtonComp>
       </router-link>
@@ -60,14 +52,12 @@
       <select
         class="input-text-default w-[200px]"
         @change="changeAdmissionPeriod()"
-        v-model="admissionPeriod"
-      >
+        v-model="admissionPeriod">
         <option value="null">Chọn đợt tuyển sinh</option>
         <option
           v-for="item in admissionPeriodList"
           :key="item"
-          :value="item.id"
-        >
+          :value="item.id">
           {{ item.name }}
         </option>
       </select>
@@ -75,14 +65,12 @@
         v-model="date"
         class="date-picker"
         :enable-time-picker="false"
-        :range="{ partialRange: true }"
-      />
+        :range="{ partialRange: true }" />
     </div>
     <div class="flex items-center">
       <ShowNumberComp
         :numb-show="limit"
-        @change-limit="changeLimit($event)"
-      ></ShowNumberComp>
+        @change-limit="changeLimit($event)"></ShowNumberComp>
       <div class="w-full flex gap-2">
         <ItemCheckBox
           v-for="item in statusList"
@@ -91,17 +79,18 @@
           :checked="item.checked"
           :id="item.id"
           :total="item.total"
-          @change="changeChecked($event, item)"
-        >
+          @change="changeChecked($event, item)">
         </ItemCheckBox>
       </div>
     </div>
 
     <div
       v-if="registrations.length == 0 && status != 'loading'"
-      class="h-full py-20 w-full align-center py-10"
-    >
-      <img :src="empty_icon" class="m-auto" alt="" />
+      class="h-full py-20 w-full align-center py-10">
+      <img
+        :src="empty_icon"
+        class="m-auto"
+        alt="" />
       <span class="text-gray-500">Không có dữ liệu</span>
     </div>
 
@@ -113,8 +102,7 @@
 
         <!-- Table components -->
         <LoadingComp
-          v-if="status === 'loading' || status === 'initial'"
-        ></LoadingComp>
+          v-if="status === 'loading' || status === 'initial'"></LoadingComp>
         <TableComp
           v-if="status == 'loaded' && status !== 'initial'"
           :data="registrations"
@@ -130,40 +118,34 @@
           @update-status="registerUpdateStatus = $event"
           @show-register-img="showRegisterImg = $event"
           @create-parent="createParent($event)"
-          @add-toast="$emit('add-toast', $event)"
-        ></TableComp>
+          @add-toast="$emit('add-toast', $event)"></TableComp>
         <div
-          class="bottom-table-section flex justify-between my-3 h-[37px] content-center"
-        >
+          class="bottom-table-section flex justify-between my-3 h-[37px] content-center">
           <div
             v-if="
               status !== 'search_failed' &&
               status !== 'load_failed' &&
               total !== 0
             "
-            class="h-[37px] content-center mx-[20px]"
-          >
+            class="h-[37px] content-center mx-[20px]">
             Hiển thị từ {{ page * limit + 1 }} đến
             {{ (page + 1) * limit - (limit - registrations.length) }} trong
             {{ total }} đơn đăng ký
           </div>
           <div
             v-if="status == 'search_failed' || total == 0"
-            class="h-[37px] content-center mx-[20px]"
-          >
+            class="h-[37px] content-center mx-[20px]">
             Không tìm thấy đơn đăng ký nào!
           </div>
           <div
             v-if="status == 'load_failed'"
-            class="h-[37px] content-center mx-[20px]"
-          >
+            class="h-[37px] content-center mx-[20px]">
             Không có đơn đăng ký nào tồn tại!
           </div>
           <Pagination
             :page-nums="round(total / limit)"
             :page-active="page + 1"
-            @click-page="changePage($event)"
-          ></Pagination>
+            @click-page="changePage($event)"></Pagination>
         </div>
       </div>
     </div>
@@ -187,7 +169,7 @@ import close_icon from "../../../assets/icons/close.svg";
 import ResultNumComp from "../../../components/result_comp.vue";
 import ShowNumberComp from "../../../components/show_number_comp.vue";
 import empty_icon from "../../../assets/icons/Empty Box.svg";
-import addmissionPeriodService from "../../../services/admission_period.service";
+import addmissionPeriodService from "../../../services/enrollment.service";
 import { convertRegisterStatus } from "../../../utils/resources/converter";
 import io from "socket.io-client";
 import { useRouter } from "vue-router";

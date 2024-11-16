@@ -6,7 +6,7 @@ const router = express.Router();
 
 const levelsService = require("../levels/levels.service");
 
-const admissionService = require("../admission_period/admission_period.service");
+const admissionService = require("../enrollment_sessions/enrollment_sessions.service");
 
 const registrationService = require("../registrations/registration.service");
 

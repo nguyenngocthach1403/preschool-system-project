@@ -15,7 +15,7 @@ const sendErrorResponse = ({
   res,
   statusCode = 500,
   message = "error",
-  error = "",
+  error,
   responseBody,
 }) => {
   res.status(statusCode).send({

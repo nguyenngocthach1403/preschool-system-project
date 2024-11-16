@@ -8,15 +8,14 @@ router.get("/", (req, res) => {
 });
 
 router.use("/login", require("./auth.router"));
+router.use("/enrollment", require("./enrollment.router"));
 
 router.use("/students", require("../student/student.controller"));
 router.use("/parents", require("../parent/parent_controller"));
-
 router.use(
   "/registrations",
   require("../registrations/registation.controller")
 );
-
 router.use("/news", require("../news/news.controller"));
 router.use("/register", require("../register/register"));
 router.use("/images", express.static(path.join(__dirname, "uploads")));
@@ -39,10 +38,7 @@ router.use(
 router.use("/levels", require("../levels/levels.controller"));
 router.use("/syllabus", require("../syllabus/syllabus.controller"));
 router.use("/relationship", require("../relationship/relationship.controller"));
-router.use(
-  "/addmission_period",
-  require("../admission_period/admission_period.controller")
-);
+
 router.use("/teacher", require("../teacher/teacher.controller"));
 router.use(
   "/classCurrent",
