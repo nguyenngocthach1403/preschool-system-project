@@ -19,6 +19,7 @@ module.exports = {
   deleteRelationship,
   getStudentWithoutClass,
   searchStudentWithoutClass,
+  createStudent,
 };
 
 async function createNewStudent(studentToCreate) {
@@ -40,6 +41,20 @@ async function createNewStudent(studentToCreate) {
       message: error.sqlMessage,
     };
   }
+}
+
+async function createStudent(studentToCreate) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await db.insert(config.tb.student, studentToCreate);
+      if (result.effectedRows == 0) {
+        reject("Tạo thất bại.");
+      }
+      resolve(result.insertId);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
 }
 
 async function deleteRelationship(studentId, parentId) {

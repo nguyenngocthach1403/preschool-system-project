@@ -15,6 +15,7 @@ export default {
   updateRegister,
   addNote,
   deleteNode,
+  createRegistration,
 };
 
 function createRegister(data) {
@@ -24,6 +25,10 @@ function createRegister(data) {
     },
   });
 }
+function createRegistration(data) {
+  return api().post("/registrations/register", data);
+}
+
 function getRegisterByID(id) {
   return api().get(`/registrations/id/${id}`);
 }

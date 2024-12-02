@@ -22,7 +22,46 @@ module.exports = {
   countStudentByParentId,
   getHistoryClassStudentByParentId,
   getParentByAccountId,
+  createParent,
 };
+
+async function createParent(parentToCreate, studentId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await db.insert(config.tb.parent, parentToCreate);
+
+      if (result.affectedRows == 0) {
+        reject("Tạo thất bại");
+      }
+
+      await createRelatioship(result.insertId, studentId, parentToCreate.role);
+
+      resolve(result.insertId);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
+}
+
+async function createRelatioship(parentId, studentId, relationshipId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await db.insert(config.tb.relationship, {
+        student_id: studentId,
+        parent_id: parentId,
+        relationship: relationshipId,
+      });
+
+      if (result.affectedRows == 0) {
+        reject("Tạo thất bại");
+      }
+
+      resolve(true);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
+}
 
 async function getAll() {
   try {

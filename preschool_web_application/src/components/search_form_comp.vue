@@ -3,11 +3,11 @@
     :style="{ width: `${width}px` }"
     class="w-full">
     <form
-      @submit.prevent="sendSearchText()"
-      class="relative">
+      class="relative"
+      @submit.prevent="$emit('submit')">
       <input
         type="text"
-        v-model="searchText"
+        v-model="value"
         placeholder="Search here"
         :style="{ height: `${props.height}px`, fontSize: `${fontSize}px` }"
         class="rounded-[8px] border-[1px] pl-3 w-full focus:outline-0 focus:ring-[#3B44D1] focus:border-[#3B44D1]" />
@@ -29,12 +29,7 @@ import { onMounted, ref, watch } from "vue";
 
 import search_white_icon from "@/assets/icons/search-white.svg";
 
-const searchText = ref("");
-
 const props = defineProps({
-  value: {
-    type: String,
-  },
   width: {
     type: Number,
     default: 300,
@@ -48,20 +43,8 @@ const props = defineProps({
     default: 17,
   },
 });
-onMounted(() => {
-  searchText.value = props.value;
-});
 
-function sendSearchText() {
-  emits("passSearchText", searchText.value);
-}
-
-const emits = defineEmits(["passSearchText"]);
-watch(searchText, () => {
-  if (searchText.value == "") {
-    emits("passSearchText", searchText.value);
-  }
-});
+const value = defineModel("value");
 </script>
 
 <style scoped></style>

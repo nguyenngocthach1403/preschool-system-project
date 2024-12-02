@@ -1,48 +1,12 @@
-const express = require("express");
-
 const config = require("../config/config");
-
-const registationService = require("./registration.service");
-
 const fs = require("fs");
-
+const registationService = require("./registration.service");
 const checkService = require("../config/check.service");
-
 const Response = require("../../helpers/response");
+const studentService = require("../student/student.service");
+const parentService = require("../parent/parent_service");
 
-const multer = require("multer");
 const { error } = require("console");
-
-const upload = multer({ dest: "uploads/registration" });
-
-const router = express.Router();
-
-router.get("/:admission_period_id/total", getTotalRegistration);
-
-router.get("/:admission_period_id/", getRegistration);
-
-router.get("/:admission_period_id/search", searchRegistration);
-
-router.get(
-  "/:admission_period_id/search/status",
-  getRegistrationWithStatusAndSearch
-);
-
-router.get("/update/status/:id", updateStatus);
-
-router.post("/update/:id", upload.array("files"), updateRegister);
-
-router.get("/:admission_period_id/status/total", getTotalOfStatus);
-
-router.get("/:admission_period_id/status", getRegistrationsWithStatus);
-
-router.get("/delete/id", deleteRegistration);
-
-router.get("/id/:id", getRegisterByID);
-
-router.post("/note/add", addNoteByRegisterId);
-
-router.get("/note/delete", deleteNote);
 
 async function addNoteByRegisterId(req, res) {
   const data = req.body;
@@ -193,6 +157,49 @@ async function updateRegister(req, res) {
     success: true,
     message: result.message,
   });
+}
+
+async function register(req, res) {
+  const { student, parent, registration } = req.body;
+  console.log(student);
+
+  try {
+    const studentIdCreated = await studentService.createStudent({
+      name: student.name,
+      birthday: student.date_of_birth,
+      nation: student.nation,
+      status: 0,
+    });
+
+    const parentIdCreated = await parentService.createParent(
+      {
+        name: parent.name,
+        phone: parent.phone,
+        email: parent.email,
+        birthday: parent.date_of_birth,
+        role: parent.relationship,
+        job: parent.job,
+        status: 0,
+      },
+      studentIdCreated
+    );
+
+    const registationStateIdCreated =
+      await registationService.createRegistration({
+        student_id: studentIdCreated,
+        class_id: registration.class_id,
+        session_id: registration.session_id,
+      });
+
+    Response.sendResponse({
+      res,
+      message: "Successful",
+    });
+  } catch (error) {
+    console.log(error);
+
+    Response.sendErrorResponse({ res, error: error });
+  }
 }
 
 async function getRegistrationsWithStatus(req, res) {
@@ -508,4 +515,18 @@ async function getRegistration(req, res) {
   });
 }
 
-module.exports = router;
+module.exports = {
+  getRegistration,
+  getTotalRegistration,
+  updateStatus,
+  addNoteByRegisterId,
+  deleteNote,
+  updateRegister,
+  getTotalOfStatus,
+  searchRegistration,
+  getRegistrationWithStatusAndSearch,
+  deleteRegistration,
+  getRegisterByID,
+  getRegistrationsWithStatus,
+  register,
+};

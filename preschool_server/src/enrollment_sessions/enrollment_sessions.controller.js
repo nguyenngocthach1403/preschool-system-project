@@ -1,5 +1,6 @@
 const addmissionService = require("./enrollment_sessions.service");
 const { sendResponse, sendErrorResponse } = require("../../helpers/response");
+const { getClassById } = require("../class/class.service");
 
 async function getAddmissionPeriod(req, res) {
   const result = await addmissionService.getAddmissionPeriod();
@@ -78,8 +79,32 @@ async function createEnrollmentSessions(req, res) {
   }
 }
 
+async function getSessionClasses(req, res) {
+  const { enrollmentSessionId } = req.query;
+  try {
+    const enrollment = await addmissionService.getEnrollmentById(
+      enrollmentSessionId
+    );
+    const sessionClasses = await addmissionService.getSessionClassesBySessionId(
+      enrollment.id
+    );
+    console.log(sessionClasses);
+
+    for (item in sessionClasses) {
+      const classData = await getClassById(sessionClasses[item].class_id);
+      console.log(`${classData}`);
+      delete sessionClasses[item].class_id;
+      sessionClasses[item] = { ...sessionClasses[item], ...classData };
+    }
+    sendResponse({ res, statusCode: 200, responseBody: sessionClasses });
+  } catch (error) {
+    sendErrorResponse({ res, error: error, statusCode: 400 });
+  }
+}
+
 module.exports = {
   getAddmissionPeriod,
   getAddmissionPeriodOpenning,
   createEnrollmentSessions,
+  getSessionClasses,
 };

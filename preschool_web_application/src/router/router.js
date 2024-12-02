@@ -10,7 +10,7 @@ import HomePage from "@/presentations/home_page/views/home_page.vue";
 import LoginView from "@/presentations/login_page/view/login_page.vue";
 import RegistrationForm from "@/presentations/registration/view/registration-form.vue";
 import ParentEditView from "@/presentations/parent_page/views/parent_edit_page.vue";
-import RegistrationView from "@/presentations/registration_page/view/registration_view.vue";
+import RegistrationView from "@/presentations/registration_page/view/registration_view1.vue";
 import AccountView from "@/presentations/account_page/views/account_view.vue";
 import RegisterAdditionView from "../presentations/registration_addition_page/views/registration_addition_page.vue";
 import TeacherView from "../presentations/teacher_page/view/teacher_view.vue";

@@ -9,6 +9,8 @@ module.exports = {
   createSessionClasses,
   getSessionClassesBySessionId,
   getEnrollmentById,
+  isExistEnrollmentSession,
+  isExistClassBySessioId,
 };
 
 async function getAddmissionPeriodOpenning() {
@@ -68,27 +70,6 @@ async function getAddmissionPeriod() {
     };
   }
 }
-
-// async function createAdmissionPeriod(dataToCreate) {
-//   try {
-//     const result = await db.insert(config.tb.enrollmentSessions, dataToCreate);
-//     if (result.affectedRows == 0) {
-//       return {
-//         success: false,
-//         message: "Tạo thất bại hãy thử lại..",
-//       };
-//     }
-//     return {
-//       success: true,
-//       data: result.insertId,
-//     };
-//   } catch (error) {
-//     return {
-//       code: error.code,
-//       error: error.sqlMessage,
-//     };
-//   }
-// }
 
 /**
  *
@@ -159,6 +140,45 @@ async function getEnrollmentById(id) {
 
     resolve(enrollment);
   });
+}
+
+async function isExistEnrollmentSession(id) {
+  try {
+    const response = await db.query(
+      `SELECT es.*, ac.id as created_id, ac.username as created_by 
+      FROM enrollment_sessions as es 
+      LEFT JOIN accounts ac ON es.created_by = ac.id
+      WHERE es.id = ${id}`
+    );
+
+    let enrollment = response[0];
+
+    if (!enrollment) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function isExistClassBySessioId(session_id, class_id) {
+  try {
+    const response = await db.select(
+      `${config.tb.sessionClasses} as sc`,
+      "sc.*",
+      `WHERE session_id = ${session_id} AND class_id = ${class_id}`
+    );
+
+    let sessionClass = response[0];
+
+    if (!sessionClass) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 async function getSessionClassesBySessionId(sessionId) {

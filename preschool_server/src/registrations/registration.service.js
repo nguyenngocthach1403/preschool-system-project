@@ -25,7 +25,24 @@ module.exports = {
   createNotes,
   getNoteById,
   deleteNote,
+  createRegistration,
 };
+
+async function createRegistration(data) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await db.insert(`registration_state`, data);
+
+      if (result.affectedRows == 0) {
+        reject("Tạp thất bại!");
+      }
+
+      resolve(reject.insertId);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
+}
 
 async function createNotes(data) {
   try {

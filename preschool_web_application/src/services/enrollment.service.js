@@ -4,6 +4,7 @@ export default {
   getEnrollmentSessionsOpenning,
   getEnrollmentSessions,
   createEnrollmentSessions,
+  getSessionClasses,
 };
 
 function getEnrollmentSessionsOpenning() {
@@ -16,4 +17,10 @@ function getEnrollmentSessions() {
 
 function createEnrollmentSessions(dataToCreate) {
   return api().post("/enrollment/create", dataToCreate);
+}
+
+function getSessionClasses(enrollmentSession) {
+  return api().get(
+    `/enrollment/session-classes?enrollmentSessionId=${enrollmentSession}`
+  );
 }

@@ -416,7 +416,7 @@ import {
 } from "../../../utils/resources/check_valid";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import addmissionPeriodService from "../../../services/enrollment.service";
+import enrollmentService from "../../../services/enrollment.service";
 import {
   yyyymmddDateString,
   ddmmyyyyDateString,
@@ -538,7 +538,7 @@ onMounted(() => {
 });
 
 async function getAddmissionPeriod() {
-  const response = await addmissionPeriodService.getAddmissionPeriodOpenning();
+  const response = await enrollmentService.getEnrollmentSessionsOpenning();
 
   console.log(response);
 
