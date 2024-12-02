@@ -769,7 +769,6 @@ async function handleCreateRegistration() {
       return;
     }
     emits("add-toast", { title: "Thành công!", type: 0 });
-
     emits("close");
   } catch (error) {
     emits("add-toast", {
