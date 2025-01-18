@@ -9,6 +9,8 @@
       @focus.prevent="isShow = true"
       @focusout="closeList"
       @click.prevent=""
+      @mouseenter="handleHover()"
+      @mouseleave="isShowDeleteIcon = false"
       :disabled="disapled"
       :style="{
         borderRadius: `${props.radius}px`,
@@ -21,19 +23,22 @@
         @focusout="outFocusInput"
         @click.prevent="focusInput"
         @keydown="handleKeyDown"
+        @mouseenter="handleHover()"
         :disabled="disapled"
         :style="{
           cursor: disapled ? `not-allowed` : `default`,
         }"
         v-model="searchText"
-        class="focus:outline-none w-full z-20 pr-5 h-full bg-transparent" />
+        class="focus:outline-none w-full z-20 mr-5 h-full bg-transparent" />
       <div
         v-if="searchText.trim() == ''"
         :style="{
-          top: `${props.height / 2 - 12}px`,
+          top: `${props.height / 2 - 10.5}px`,
           color: isInputFocus ? `gray` : `black`,
           maxWidth: `${props.width * 2 - 30}px`,
+          fontSize: `${fontSize}px`,
         }"
+        ref="valueContainer"
         class="absolute left-2 overflow-hidden z-10">
         {{ value }}
       </div>
@@ -48,12 +53,15 @@
       </div>
     </button>
     <img
-      :src="isShow ? searchIcon : iconSelect"
+      @mouseenter="handleHover()"
+      @click="handleDeleteValue()"
+      :src="isShow ? searchIcon : isShowDeleteIcon ? exitIcon : iconSelect"
       alt=""
       width="14"
+      :class="{ 'delete-button': isShowDeleteIcon }"
       :style="{
         top: `${props.height / 2 - 7}px`,
-        rotate: isShow ? `90deg` : ``,
+        rotate: isShow ? `90deg` : isShowDeleteIcon ? `90deg` : ``,
       }"
       class="absolute right-2 -rotate-90" />
     <transition
@@ -94,10 +102,13 @@ import { computed, ref, watch } from "vue";
 import iconSelect from "@/assets/icons/back-black.svg";
 import searchIcon from "@/assets/icons/search-black.svg";
 import emptyIcon from "@/assets/icons/Empty Box.svg";
+import exitIcon from "@/assets/icons/close.svg";
 
 const isShow = ref(false);
+const isShowDeleteIcon = ref(false);
 let isInputFocus = ref(false);
 let value = defineModel("value");
+const valueContainer = ref(null);
 let searchText = ref("");
 const selectedIndex = ref(-1);
 const props = defineProps({
@@ -123,6 +134,14 @@ const props = defineProps({
   disapled: {
     type: Boolean,
     default: false,
+  },
+  deleteDisapled: {
+    type: Boolean,
+    default: true,
+  },
+  fontSize: {
+    type: Number,
+    default: 14,
   },
 });
 
@@ -153,8 +172,16 @@ function outFocusInput() {
 
 function focusInput() {
   setTimeout(() => {
+    isShowDeleteIcon.value = false;
     isInputFocus.value = !isInputFocus.value;
   }, 100);
+}
+
+function handleDeleteValue() {
+  if (isShowDeleteIcon.value) {
+    isShowDeleteIcon.value = false;
+    value.value = null;
+  }
 }
 
 function handleKeyDown(event) {
@@ -176,8 +203,28 @@ function handleKeyDown(event) {
   }
 }
 
+function halfHeightValueContainer() {
+  return valueContainer.value?.clientHeight / 2;
+}
+
+function handleHover() {
+  if (value.value != null && !isShow.value && !props.deleteDisapled) {
+    isShowDeleteIcon.value = true;
+  }
+}
+
 // @focus="isShow = true"
 //       @focusout="closeList"
 //         @focus="isInputFocus = true"
 </script>
-<style scoped></style>
+<style scoped>
+.delete-button {
+  background-color: rgba(226, 226, 226, 0.799);
+  padding: 3px;
+  border-radius: 10px;
+  z-index: 10;
+}
+.delete-button:hover {
+  border: 1px solid rgb(122, 122, 122);
+}
+</style>
