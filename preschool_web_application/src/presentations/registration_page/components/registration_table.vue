@@ -29,7 +29,7 @@
         </thead>
         <tbody class="text-[13px]">
           <tr
-            v-for="item in lst"
+            v-for="item in props.registrations"
             :key="item">
             <td
               :class="{
@@ -44,30 +44,41 @@
               }"
               class="left-[49px] text-left pl-4 pr-[50px] py-[5px] w-dvw max-w-[280px] min-w-[200px] content-start border-y-[1px]">
               <div class="py-1 text-[15px] text-blue-800 font-[500]">
-                Nguyễn Ngọc Thach
+                {{ item.student_name || `---` }}
               </div>
               <div class="flex place-content-between">
-                <dl class="py-1">Giới tính: Nu</dl>
-                <dl class="py-1">Tuổi: 9</dl>
+                <dl class="py-1">
+                  Giới tính: {{ item.student_gender || `--` }}
+                </dl>
+                <dl class="py-1">
+                  Tuổi:
+                  {{ "--" }}
+                </dl>
               </div>
               <dl class="py-1 text-[#536076] flex gap-2">
                 <p>Địa chỉ:</p>
-                <p class="text-[#23272e]">ấp 3, xã Long Kh....</p>
+                <p class="text-[#23272e]">{{ item.address || `--` }}</p>
               </dl>
             </td>
             <td
               class="text-left w-dvw px-4 py-[5px] max-w-[320px] min-w-[280px] text-[14px] font-[350] text-[#536076] content-start border-y-[1px]">
               <div class="py-1 flex place-content-between">
                 <p class="">Tên:</p>
-                <p class="text-[#23272e]">Nguyễn Ngọc Thach</p>
+                <p class="text-[#23272e]">
+                  {{ item.parents[0]?.name || "--" }}
+                </p>
               </div>
               <div class="py-1 flex place-content-between">
                 <p class="">Quan hệ:</p>
-                <p class="text-[#23272e]">Bố</p>
+                <p class="text-[#23272e]">
+                  {{ item.parents[0]?.relationship || "--" }}
+                </p>
               </div>
               <div class="py-1 flex place-content-between">
                 <p class="">Nghề nghiệp:</p>
-                <p class="text-[#23272e]">Công nhân</p>
+                <p class="text-[#23272e]">
+                  {{ item.parents[0]?.job || "--" }}
+                </p>
               </div>
               <div class="h-[14px]"></div>
             </td>
@@ -75,26 +86,34 @@
               class="text-left w-dvw px-4 py-[5px] 2xl:max-w-[280px] min-w-[200px] text-[14px] font-[350] text-[#536076] content-start border-y-[1px]">
               <div class="py-1 flex place-content-between">
                 <p class="">Email:</p>
-                <p class="text-[#23272e]">--</p>
+                <p class="text-[#23272e]">
+                  {{ item.parents[0]?.email || "--" }}
+                </p>
               </div>
               <div class="py-1 flex place-content-between">
                 <p class="">Sđt:</p>
-                <p class="text-[#23272e]">0899982782</p>
+                <p class="text-[#23272e]">
+                  {{ item.parents[0]?.phone || "--" }}
+                </p>
               </div>
             </td>
             <td
               class="text-left w-dvw px-4 py-[5px] max-w-[300px] text-[14px] min-w-[200px] font-[350] text-[#536076] content-start border-y-[1px]">
               <div class="py-1 flex place-content-between">
                 <p class="">Tên lớp:</p>
-                <p class="text-[#23272e]">Lớp Mầm non Tinh Hoa</p>
+                <p class="text-[#23272e]">{{ item.class_name }}</p>
               </div>
               <div class="py-1 flex place-content-between">
                 <p class="">Chương trình:</p>
-                <p class="text-[#23272e]">Hội nhập Quốc Tế</p>
+                <p class="text-[#23272e]">
+                  {{ `${item.class_level} || ${item.class_syllabus}` }}
+                </p>
               </div>
               <div class="py-1 flex place-content-between">
                 <p class="">Số lượng:</p>
-                <p class="text-[#23272e]">30/40</p>
+                <p class="text-[#23272e]">
+                  {{ `${item.members || "--"}/${item.member_limit || "--"}` }}
+                </p>
               </div>
             </td>
             <td
@@ -103,7 +122,7 @@
                 <p class="">Trạng thái:</p>
                 <div
                   class="py-[3px] px-3 border rounded-md border-[#00c05e] text-[#00c05e]">
-                  Đã đăng ký
+                  {{ item.status || `Đã đăng ký` }}
                 </div>
               </div>
               <div class="py-[2px] flex place-content-between">
@@ -154,20 +173,38 @@
       </table>
     </div>
     <div class="my-5 flex place-content-end">
-      <Pagination />
+      <Pagination
+        :page-active="page"
+        @page-active="page = $event"
+        :total="totalItem" />
     </div>
   </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ddmmyyyyDateString } from "../../../utils/resources/format_date.js";
 //Assets
 import deleteIcon from "@/assets/icons/delete.svg";
 //Components
 import CheckBox from "@/components/checkbox.vue";
 import Pagination from "@/components/pagination.vue";
+
+const props = defineProps({
+  registrations: {
+    type: Array,
+    default: [],
+  },
+  totalItem: {
+    type: Number,
+    require: true,
+    default: 0,
+  },
+});
+const currentPage = defineModel("page");
 const tableContainer = ref(null);
 const isTitleSticky = ref(false);
 const isToolSticky = ref(false);
+const page = ref(currentPage.value);
 
 const lst = ref([1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5]);
 const handleScrollTableContainer = () => {
@@ -184,6 +221,14 @@ function isTalbleContainerScrolling() {
   const scrollLeft = tableContainer.value?.scrollLeft || 0;
   return scrollLeft > 0;
 }
+
+watch(currentPage, () => {
+  page.value = currentPage.value;
+});
+
+watch(page, () => {
+  currentPage.value = page.value;
+});
 
 onMounted(() => {
   tableContainer.value?.addEventListener("scroll", handleScrollTableContainer);

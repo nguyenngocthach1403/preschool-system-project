@@ -23,6 +23,7 @@ module.exports = {
   getHistoryClassStudentByParentId,
   getParentByAccountId,
   createParent,
+  getParentByStudentId,
 };
 
 async function createParent(parentToCreate, studentId) {
@@ -421,4 +422,20 @@ async function getParentByAccountId(accountId) {
   } catch (error) {
     return error;
   }
+}
+
+async function getParentByStudentId(studentId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await db.select(
+        `${config.tb.relationship} r LEFT JOIN parents p ON p.id = r.parent_id`,
+        `p.name, p.id, r.relationship, p.job, p.phone, p.email`,
+        `WHERE r.student_id = ${studentId}`
+      );
+
+      resolve(response);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
 }

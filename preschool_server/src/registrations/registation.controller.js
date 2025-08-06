@@ -515,7 +515,97 @@ async function getRegistration(req, res) {
   });
 }
 
+async function getRegistrations(req, res) {
+  const { search, start_time, end_time, session_id, class_id, limit, offset } =
+    req.query;
+
+  try {
+    if (!class_id && !start_time && !end_time) {
+      const registrations =
+        await registationService.getRegistrationsBySearchAndSeessionId({
+          limit,
+          offset,
+          search,
+          sessionId: session_id,
+        });
+
+      for (item in registrations) {
+        registrations[item].parents = await parentService.getParentByStudentId(
+          registrations[item].student_id
+        );
+      }
+
+      Response.sendResponse({ res, responseBody: registrations });
+
+      return;
+    }
+
+    if (!start_time && !end_time) {
+      const registrations =
+        await registationService.getRegistraionsByClassIdAndSessionId({
+          limit,
+          offset,
+          search,
+          classId: class_id,
+          sessionId: session_id,
+        });
+
+      for (item in registrations) {
+        registrations[item].parents = await parentService.getParentByStudentId(
+          registrations[item].student_id
+        );
+      }
+
+      Response.sendResponse({ res, responseBody: registrations });
+      return;
+    }
+
+    if (!class_id) {
+      const registrations =
+        await registationService.getRegistrationsByTimeLineAndSessionId({
+          limit,
+          offset,
+          search,
+          sessionId: session_id,
+          startTime: start_time,
+          endTime: end_time,
+        });
+
+      for (item in registrations) {
+        registrations[item].parents = await parentService.getParentByStudentId(
+          registrations[item].student_id
+        );
+      }
+
+      Response.sendResponse({ res, responseBody: registrations });
+      return;
+    }
+
+    const registrations =
+      await registationService.getRegistrationsBySearchAndClassIdAndTimelineAndSessionId(
+        {
+          limit,
+          offset,
+          classId: class_id,
+          search,
+          sessionId: session_id,
+          endTime: end_time,
+          startTime: start_time,
+        }
+      );
+    for (item in registrations) {
+      registrations[item].parents = await parentService.getParentByStudentId(
+        registrations[item].student_id
+      );
+    }
+    Response.sendResponse({ res, responseBody: registrations });
+  } catch (error) {
+    Response.sendErrorResponse({ res, error: error });
+  }
+}
+
 module.exports = {
+  getRegistrations,
   getRegistration,
   getTotalRegistration,
   updateStatus,

@@ -16,13 +16,20 @@
       </div>
       <div class="w-full wrap text-start overflow-hidden">
         <p class="mr-5 font-[500]">
-          Lớp: {{ props.value?.className || "----" }}
+          Lớp:
+          <span class="text-blue-800">{{ props.value?.name || "----" }}</span>
         </p>
         <p class="font-[300] text-[13px]">
           Số lượng: {{ props.value?.member_limit || `--` }}
         </p>
         <p class="font-[300] text-[13px]">
           Số lượng hiện tại: {{ props.value?.current_quantity || `0` }}
+        </p>
+        <p class="font-[300] text-[13px]">
+          Cô:
+          <span class="font-[400]">{{
+            props.value?.teachers?.[0].name || `---`
+          }}</span>
         </p>
       </div>
     </div>

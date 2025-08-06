@@ -26,7 +26,165 @@ module.exports = {
   getNoteById,
   deleteNote,
   createRegistration,
+  getRegistrationsBySearchAndSeessionId,
+  getRegistrationsByTimeLineAndSessionId,
+  getRegistraionsByClassIdAndSessionId,
+  getRegistrationsBySearchAndClassIdAndTimelineAndSessionId,
 };
+
+async function getRegistrationsBySearchAndClassIdAndTimelineAndSessionId({
+  limit,
+  offset,
+  search,
+  classId,
+  sessionId,
+  startTime,
+  endTime,
+}) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //handle
+      const response = await db.query(
+        `
+        SELECT 
+        rs.*,
+        st.id as student_id,st.name as student_name, st.gender as student_gender, st.birthday as student_birthday, st.address,
+        c.name as class_name, l.name as class_level, s.name as class_syllabus, c.members, c.member_limit
+        FROM registration_state rs 
+        LEFT JOIN students st ON rs.student_id = st.id
+        LEFT JOIN classes c ON rs.class_id = c.id
+        LEFT JOIN relationship r ON r.student_id = st.id
+        LEFT JOIN levels l ON l.id = c.level_id
+        LEFT JOIN syllabus s ON s.id = c.syllabus_id
+        JOIN parents p ON p.id = r.parent_id
+        WHERE rs.session_id = ${sessionId} AND rs.class_id = ${classId} AND rs.date BETWEEN  '${startTime}' AND '${endTime}'
+        AND (st.name like '%${search}%' OR st.address like '%${search}%' OR p.phone like '${search}%' OR p.email like '${search}%')
+        GROUP BY rs.id, st.id 
+        LIMIT  ${limit}
+        OFFSET ${offset}
+        `
+      );
+
+      resolve(response);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
+}
+
+async function getRegistraionsByClassIdAndSessionId({
+  limit,
+  offset,
+  search,
+  classId,
+  sessionId,
+}) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //handle
+      const response = await db.query(
+        `
+        SELECT 
+        rs.*,
+        st.id as student_id,st.name as student_name, st.gender as student_gender, st.birthday as student_birthday, st.address,
+        c.name as class_name, l.name as class_level, s.name as class_syllabus, c.members, c.member_limit
+        FROM registration_state rs 
+        LEFT JOIN students st ON rs.student_id = st.id
+        LEFT JOIN classes c ON rs.class_id = c.id
+        LEFT JOIN relationship r ON r.student_id = st.id
+        LEFT JOIN levels l ON l.id = c.level_id
+        LEFT JOIN syllabus s ON s.id = c.syllabus_id
+        JOIN parents p ON p.id = r.parent_id
+        WHERE rs.session_id = ${sessionId} AND rs.class_id = ${classId}
+        AND (st.name like '%${search}%' OR st.address like '%${search}%' OR p.phone like '${search}%' OR p.email like '${search}%')
+        GROUP BY rs.id, st.id 
+        LIMIT  ${limit}
+        OFFSET ${offset}
+        `
+      );
+
+      resolve(response);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
+}
+
+async function getRegistrationsByTimeLineAndSessionId({
+  limit,
+  offset,
+  search,
+  sessionId,
+  startTime,
+  endTime,
+}) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //handle
+      const response = await db.query(
+        `
+        SELECT 
+        rs.*,
+        st.id as student_id,st.name as student_name, st.gender as student_gender, st.birthday as student_birthday, st.address,
+        c.name as class_name, l.name as class_level, s.name as class_syllabus, c.members, c.member_limit
+        FROM registration_state rs 
+        LEFT JOIN students st ON rs.student_id = st.id
+        LEFT JOIN classes c ON rs.class_id = c.id
+        LEFT JOIN relationship r ON r.student_id = st.id
+        LEFT JOIN levels l ON l.id = c.level_id
+        LEFT JOIN syllabus s ON s.id = c.syllabus_id
+        JOIN parents p ON p.id = r.parent_id
+        WHERE rs.session_id = ${sessionId} AND rs.date BETWEEN  '${startTime}' AND '${endTime}'
+        AND (st.name like '%${search}%' OR st.address like '%${search}%' OR p.phone like '${search}%' OR p.email like '${search}%')
+        GROUP BY rs.id, st.id 
+        LIMIT  ${limit}
+        OFFSET ${offset}
+        `
+      );
+
+      resolve(response);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
+}
+
+async function getRegistrationsBySearchAndSeessionId({
+  limit,
+  offset,
+  search,
+  sessionId,
+}) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //handle
+      const response = await db.query(
+        `
+        SELECT 
+        rs.*,
+        st.id as student_id,st.name as student_name, st.gender as student_gender, st.birthday as student_birthday, st.address,
+        c.name as class_name, l.name as class_level, s.name as class_syllabus, c.members, c.member_limit
+        FROM registration_state rs 
+        LEFT JOIN students st ON rs.student_id = st.id
+        LEFT JOIN classes c ON rs.class_id = c.id
+        LEFT JOIN relationship r ON r.student_id = st.id
+        LEFT JOIN levels l ON l.id = c.level_id
+        LEFT JOIN syllabus s ON s.id = c.syllabus_id
+        JOIN parents p ON p.id = r.parent_id
+        WHERE rs.session_id = ${sessionId}
+        AND (st.name like '%${search}%' OR st.address like '%${search}%' OR p.phone like '${search}%' OR p.email like '${search}%')
+        GROUP BY rs.id, st.id 
+        LIMIT  ${limit}
+        OFFSET ${offset}
+        `
+      );
+
+      resolve(response);
+    } catch (error) {
+      reject(error.sqlMessage || error);
+    }
+  });
+}
 
 async function createRegistration(data) {
   return new Promise(async (resolve, reject) => {

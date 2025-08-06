@@ -37,24 +37,31 @@ function isExistRegistration(phone) {
   return api().get(`/registrations?phone=${phone}`);
 }
 
-function getRegistrations(admission_period_id, limit, page) {
-  console.log(`/registrations?limit=${limit}&page=${page}`);
+function getRegistrations({
+  enrollmentSessionId,
+  limit,
+  offset,
+  classId,
+  search,
+  startTime,
+  endTime,
+}) {
   return api().get(
-    `/registrations/${admission_period_id}/?limit=${limit}&page=${page}`
+    `/registrations?limit=${limit}&offset=${offset}&search=${search}&session_id=${enrollmentSessionId}&start_time=${startTime}&end_time=${endTime}&class_id=${classId}`
   );
 }
 
-function getRegistrationsWithStatus(admission_period_id, status, page, limit) {
+function getRegistrationsWithStatus(enrollmentSessionId, status, page, limit) {
   return api().get(
-    `/registrations/${admission_period_id}/status?status=${status}&limit=${limit}&offset=${
+    `/registrations/${enrollmentSessionId}/status?status=${status}&limit=${limit}&offset=${
       page * limit
     }`
   );
 }
 
-function getRegistrationTotal(admission_period_id) {
+function getRegistrationTotal(enrollmentSessionId) {
   console.log("/registrations/total");
-  return api().get(`/registrations/${admission_period_id}/total`);
+  return api().get(`/registrations/${enrollmentSessionId}/total`);
 }
 function updateStatus(id, status, by, status_before) {
   return api().get(
@@ -62,27 +69,27 @@ function updateStatus(id, status, by, status_before) {
   );
 }
 
-function getTotalOfStatus(admission_period_id) {
-  return api().get(`/registrations/${admission_period_id}/status/total`);
+function getTotalOfStatus(enrollmentSessionId) {
+  return api().get(`/registrations/${enrollmentSessionId}/status/total`);
 }
 
-function searchRegister(admission_period_id, searchText, page, limit) {
+function searchRegister(enrollmentSessionId, searchText, page, limit) {
   return api().get(
-    `registrations/${admission_period_id}/search?searchText=${searchText}&limit=${limit}&offset=${
+    `registrations/${enrollmentSessionId}/search?searchText=${searchText}&limit=${limit}&offset=${
       page * limit
     }`
   );
 }
 
 function getRegistrationWithStatusAndSearch(
-  admission_period_id,
+  enrollmentSessionId,
   searchText,
   status,
   page,
   limit
 ) {
   return api().get(
-    `registrations/${admission_period_id}/search/status?searchText=${searchText}&status=${status}&limit=${limit}&offset=${
+    `registrations/${enrollmentSessionId}/search/status?searchText=${searchText}&status=${status}&limit=${limit}&offset=${
       page * limit
     }`
   );

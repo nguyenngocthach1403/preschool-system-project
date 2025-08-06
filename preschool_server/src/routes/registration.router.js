@@ -1,15 +1,5 @@
 const express = require("express");
 const multer = require("multer");
-const {
-  getTotalRegistration,
-  updateStatus,
-  updateRegister,
-  getTotalOfStatus,
-  getRegistrationsWithStatus,
-  deleteRegistration,
-  getRegisterByID,
-  deleteNote,
-} = require("../registrations/registration.service");
 
 const {
   getRegistration,
@@ -17,6 +7,15 @@ const {
   getRegistrationWithStatusAndSearch,
   addNoteByRegisterId,
   register,
+  getRegistrations,
+  getRegisterByID,
+  deleteRegistration,
+  getRegistrationsWithStatus,
+  deleteNote,
+  updateRegister,
+  getTotalOfStatus,
+  updateStatus,
+  getTotalRegistration,
 } = require("../registrations/registation.controller");
 const { validateStudent } = require("../../middleware/student");
 const validateParent = require("../../middleware/parent.middleware");
@@ -31,6 +30,8 @@ router.get("/:admission_period_id/total", getTotalRegistration);
 router.get("/:admission_period_id/", getRegistration);
 
 router.get("/:admission_period_id/search", searchRegistration);
+
+router.get("/", getRegistrations);
 
 router.post(
   "/register",

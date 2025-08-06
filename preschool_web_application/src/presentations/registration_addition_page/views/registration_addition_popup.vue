@@ -2,7 +2,8 @@
   <PopUpLayout
     :title="`Tạo thông tin đăng ký mới`"
     :width="800"
-    class="absolute top-0 left-0">
+    class="absolute top-0 left-0"
+    @close="close()">
     <template #content>
       <div
         v-if="enrollmentSession != null"
@@ -404,7 +405,7 @@
             class="border rounded-[10px] shadow-card mt-5 mb-[50px] relative overflow-hidden">
             <div
               class="flex items-center bg-gray-100 rounded-tl-[10px] rounded-tr-[10px] py-3">
-              <p class="mx-3 text-[16px] text-blue-700">Lớp đăng ký</p>
+              <p class="mx-3 text-[16px] text-blue-700">Chọn lớp học</p>
             </div>
             <div
               class="absolute w-full h-[30px] bottom-0 z-30 bg-gradient-to-b from-transparent to-gray-100/50"></div>
@@ -856,6 +857,10 @@ watch(placeOfOriginWard, () => {
     placeOfOriginWard.value
   );
 });
+
+function close() {
+  emits("close");
+}
 
 onBeforeMount(async () => {
   await getEnrollmentSessionOpenning();

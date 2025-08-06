@@ -1,6 +1,5 @@
 <template lang="">
-  <div
-    class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px] overflow-hidden">
+  <div class="bg-white ml-4 rounded-3xl text-center h-fit pb-[10px]">
     <RegistrationAdditionPopup
       v-if="isRegistrationPopupShow"
       @close="isRegistrationPopupShow = false"
@@ -10,17 +9,25 @@
       Đơn đăng ký
     </div>
     <div class="p-3 flex place-content-between gap-5">
-      <div class="flex gap-5">
+      <div class="flex gap-3">
         <Search
           :fontSize="14"
           :height="40"
-          v-model:value="searchValue" />
+          v-model:value="search" />
         <SelectVue
           :height="40"
-          :options="['Đợt 1', 'Đợt 2', 'Đợt 3', 'Đợt 4', 'Đợt 5', 'Đợt 6']"
+          :width="170"
+          :options="sessions.map((item) => `${item.id} - ${item.name}`)"
           v-model:value="enrollmentSesionSelected" />
+        <SelectVue
+          :height="40"
+          :width="170"
+          :delete-disapled="false"
+          :options="sessionClasses.map((item) => `${item.id} - ${item.name}`)"
+          v-model:value="sessionClassSelectBox"
+          :placeholder="`Chọn lớp`" />
         <VueDatePicker
-          v-model="date"
+          v-model="timeline"
           range
           multi-calendars
           date-picker />
@@ -45,31 +52,116 @@
       </div>
     </div>
     <div>
-      <RegistrationTalble />
+      <RegistrationTalble
+        v-if="!loading && !isRegistraionEmpty"
+        :registrations="registrations"
+        :total-item="100"
+        v-model:page="offset" />
+      <div
+        class="h-[150px]"
+        v-if="loading">
+        <LoadingComp />
+      </div>
+      <div
+        v-if="isRegistraionEmpty && !loading"
+        class="py-5">
+        <EmptyComp />
+      </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 //Components
 import RegistrationTalble from "../components/registration_table.vue";
 import Search from "@/components/search_form_comp.vue";
 import SelectVue from "@/components/selects/dropdown_search_selected_box.vue";
 import ButtonCustom from "@/components/button.vue";
 import RegistrationAdditionPopup from "@/presentations/registration_addition_page/views/registration_addition_popup.vue";
+import LoadingComp from "@/components/loading_comp.vue";
+import EmptyComp from "@/components/empty_data.vue";
 //Assets
 import excelIcon from "@/assets/icons/excel.svg";
 
-const searchValue = ref("dadssd");
+//State management
+import { userRegistrationStateStore } from "../../../stores/registration_state_store.js";
+import { storeToRefs } from "pinia";
+
+const emits = defineEmits(["add-toast"]);
+
+const registrationStore = userRegistrationStateStore();
+const {
+  limit,
+  offset,
+  sessionSelected,
+  sessionClasses,
+  sessionClassSelected,
+  sessions,
+  loading,
+  registrations,
+  isRegistraionEmpty,
+  timeline,
+  search,
+  msgErr,
+} = storeToRefs(registrationStore);
+
 let isRegistrationPopupShow = ref(false);
 const enrollmentSesionSelected = ref(null);
+const sessionClassSelectBox = ref(null);
 
 const date = ref();
 
-onMounted(() => {
+watch(sessionSelected, () => {
+  enrollmentSesionSelected.value = `${sessionSelected.value.id} - ${sessionSelected.value.name}`;
+});
+
+watch(msgErr, () => {
+  emits("add-toast", {
+    title: "Error",
+    type: 1,
+    content: msgErr.value,
+  });
+});
+
+watch(enrollmentSesionSelected, async () => {
+  const enrollmentSesionSelectedId =
+    enrollmentSesionSelected.value.split(" - ");
+
+  sessionSelected.value = sessions.value.find(
+    (item) => item.id == enrollmentSesionSelectedId[0]
+  );
+  await registrationStore.fetchRegistrations({
+    sessionId: enrollmentSesionSelectedId[0],
+  });
+  await registrationStore.fetchSessionClassesBySessionId(
+    enrollmentSesionSelectedId[0]
+  );
+});
+
+watch(sessionClassSelectBox, async () => {
+  const sessionClassSelectedId =
+    sessionClassSelectBox.value?.split(" - ") || [];
+
+  sessionClassSelected.value =
+    sessionClasses.value.find((item) => item.id == sessionClassSelectedId[0]) ||
+    {};
+
+  await registrationStore.fetchRegistrations({
+    classId: sessionClassSelected.value?.id || "",
+  });
+});
+
+onMounted(async () => {
   const startDate = new Date();
   const endDate = new Date(new Date().setDate(startDate.getDate() + 7));
   date.value = [startDate, endDate];
+  // if (registrations) return;
+  await registrationStore.getEnrollmentSessions();
+  await registrationStore.fetchRegistrations({});
+});
+
+watch(search, async () => {
+  await registrationStore.fetchRegistrations({ search: search.value });
 });
 </script>
 <style scoped>
